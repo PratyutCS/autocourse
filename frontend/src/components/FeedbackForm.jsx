@@ -266,18 +266,6 @@ const FeedbackForm = (props) => {
             5
           </div>
           <h2 className="section-title text-xl font-semibold">
-            PEOs and POs & PSOs of the Program
-          </h2>
-        </div>
-        <ProgramOutcomesEditor onChange={handleOutcomesChange} />
-      </div>
-
-      <div className="form-section">
-        <div className="flex items-center mb-2">
-          <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            6
-          </div>
-          <h2 className="section-title text-xl font-semibold">
             Course Description and its objectives
           </h2>
         </div>
@@ -286,7 +274,7 @@ const FeedbackForm = (props) => {
 
       <div className="form-section f2">
         <div className="flex items-center mb-2">
-          <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">7</div>
+          <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">6</div>
           <h2 className="section-title text-xl font-semibold">Course Outcomes and CO-PO Mapping</h2>
         </div>
         <COPOMapping 
@@ -299,7 +287,7 @@ const FeedbackForm = (props) => {
         {/* Course Syllabus Section */}
         <div className="flex items-center mb-2">
           <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            8
+            7
           </div>
           <h2 className="section-title text-xl font-semibold">
             Course Syllabus
@@ -315,7 +303,7 @@ const FeedbackForm = (props) => {
         {/* Learning Resources Section */}
         <div className="flex items-center mb-2">
           <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            9
+            8
           </div>
           <h2 className="section-title text-xl font-semibold">
             Learning Resources
@@ -332,7 +320,7 @@ const FeedbackForm = (props) => {
       <div className="form-section">
         <div className="flex items-center mb-2">
           <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            10
+            9
           </div>
           <h2 className="section-title text-xl font-semibold">
             Weekly Time-Table
@@ -344,7 +332,7 @@ const FeedbackForm = (props) => {
       <div className="form-section">
         <div className="flex items-center mb-2">
           <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            11
+            10
           </div>
           <h2 className="section-title text-xl font-semibold">
             Registered Student List
@@ -386,7 +374,7 @@ const FeedbackForm = (props) => {
       <div className="form-section">
         <div className="flex items-center mb-2">
           <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            12
+            11
           </div>
           <h2 className="section-title text-xl font-semibold">
             Details of Internal Assessments; weightages, due dates
@@ -403,7 +391,7 @@ const FeedbackForm = (props) => {
       <div className="form-section">
         <div className="flex items-center mb-2">
           <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            13
+            12
           </div>
           <h2 className="section-title text-xl font-semibold">
             Sample Evaluated Internal Submissions and Mid Semester Question
@@ -416,7 +404,7 @@ const FeedbackForm = (props) => {
       <div className="form-section">
         <div className="flex items-center mb-2">
           <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            14
+            13
           </div>
           <h2 className="section-title text-xl font-semibold">
             Identification of weak students
@@ -447,7 +435,7 @@ const FeedbackForm = (props) => {
       <div className="form-section">
         <div className="flex items-center mb-2">
           <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            17
+            14
           </div>
           <h2 className="section-title text-xl font-semibold">
             Assignments/Quiz/Internal Components/ Projects taken throughout semester
@@ -459,7 +447,7 @@ const FeedbackForm = (props) => {
       <div className="form-section">
         <div className="flex items-center mb-2">
           <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            18
+            15
           </div>
           <h2 className="section-title text-xl font-semibold">
             Detail of Marks in all components up to the End Semester
@@ -470,7 +458,7 @@ const FeedbackForm = (props) => {
       <div className="form-section">
         <div className="flex items-center mb-2">
           <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            19
+            16
           </div>
           <h2 className="section-title text-xl font-semibold">
             {" "}

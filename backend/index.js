@@ -415,9 +415,6 @@ app.post("/form", auth, async (req, res) => {
         data[num]["Course_details"]['course_name'] = req.body.coursetitle;
         data[num]["Course_details"]['Module/Semester'] = req.body.module;
         data[num]["Course_details"]['Session'] = req.body.session;
-        data[num]["Program Educational Objectives (PEO)"] = req.body.programOutcomesData['peo'];
-        data[num]["Program Outcomes (PO)"] = req.body.programOutcomesData['po'];
-        data[num]["Program Specific Outcomes (PSO)"] = req.body.programOutcomesData['pso'];
         data[num]["course_description"] = req.body.EditableCourseDescriptionData['description'];
         fs.writeFileSync(directoryPath, JSON.stringify(data));
       }

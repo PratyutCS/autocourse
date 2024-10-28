@@ -50,7 +50,6 @@ const Info = () => {
     <div className='dash'>
       <AsideComp/>
       <div className="right">
-        {/* <div className="box"></div> */}
         <div className="box23">
           {file && file.done === 1 ? (
             <FeedbackForm
