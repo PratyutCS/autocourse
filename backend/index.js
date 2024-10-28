@@ -416,6 +416,8 @@ app.post("/form", auth, async (req, res) => {
         data[num]["Course_details"]['Module/Semester'] = req.body.module;
         data[num]["Course_details"]['Session'] = req.body.session;
         data[num]["course_description"] = req.body.EditableCourseDescriptionData['description'];
+        data[num]["Course Syllabus"] = req.body.courseSyllabus;
+        data[num]["Learning Resources"] = req.body.learningResources;
         fs.writeFileSync(directoryPath, JSON.stringify(data));
       }
       catch (error) {
