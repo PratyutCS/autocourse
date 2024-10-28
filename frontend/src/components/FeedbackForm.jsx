@@ -30,14 +30,6 @@ const FeedbackForm = (props) => {
   };
 
   useEffect(() => {
-    if (programOutcomesData != null) {
-      console.log(programOutcomesData['peo']);
-      console.log(programOutcomesData['po']);
-      console.log(programOutcomesData['pso']);
-    }
-  }, [programOutcomesData]);
-
-  useEffect(() => {
     if (EditableCourseDescriptionData != null) {
       console.log("changed");
     }
