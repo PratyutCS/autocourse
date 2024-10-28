@@ -1,0 +1,41 @@
+.box1 {
+    height: 65%;
+    width: 90%;
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 0.4rem;
+    padding-top: 4vh;
+    padding-bottom: 2vh;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: minmax(min-content, max-content);
+    gap: 4vh;
+    align-items: center;
+    justify-items: center;
+}
+
+.box1.flex-display {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 2vh 2vw 2vw 2vw;
+}
+
+.box2 {
+    height: 72%;
+    width: 90%;
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 0.4rem;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-evenly;
+    overflow-y: auto;
+    padding-top: 4vh;
+    padding-bottom: 2vh;
+}

@@ -1,0 +1,494 @@
+{
+  "Program Educational Objectives (PEO)": {
+    "PEO 1": "Identify real-life problems and develop creative and innovative hardware/software-based solutions.",
+    "PEO 2": "Achieve professional development through self-learning to adapt to the technological changes in the ever changing field of computing.",
+    "PEO 3": "Engage in life-long learning of computer engineering technologies, critical thinking and continuous ingenuity and apply them in real-life applications.",
+    "PEO 4": "Accomplish leadership roles by imbibing ethics and professionalism with emphasis on sustainable development of the society."
+  },
+  "Program Outcomes (PO)": {
+    "PO1": "Apply the foundational concepts of mathematics, science and computer engineering to find novel solutions for complex real-life engineering problems.",
+    "PO2": "Identify, formulate, review literature and analyze complex computer engineering problems reaching substantiated conclusions and derive a coherent logic that can be implemented by computers.",
+    "PO3": "Design analytical and computational models for solving complex engineering problems giving due consideration to issues related to public health and safety, cultural and societal constraints, and environmental concerns.",
+    "PO4": "Use research-based knowledge, methods, tools and techniques for data collection, designing digital computing systems, analyzing and interpreting the results to provide substantiated conclusions.",
+    "PO5": "Use appropriate tools to model complex computer engineering problems through identification of the limitations and creating solutions to predict the real-world phenomena.",
+    "PO6": "Use appropriate contextual knowledge of computer engineering to review and assess societal, health, legal, cultural, safety and contemporary issues and rationalize the ensuing responsibilities towards the society.",
+    "PO7": "Adopt computer engineering practices in congruence with societal need, understand the working practices and its impact on natural resources for sustainable development.",
+    "PO8": "Use ethical principles to pursue excellence in developing computer engineering systems and behave appropriately to develop a reliable and trustworthy relationship with others.",
+    "PO9": "Function effectively as a reliable and responsible individual, and as a member or leader in diverse computer engineering teams, and in multidisciplinary settings, thereby placing team goals ahead of individual interests.",
+    "PO10": "Communicate effectively by capturing the desirable computer system requirements for preparation of specification documents, write clear and concise report such as laboratory files, research papers, thesis, and presentation materials.",
+    "PO11": "Demonstrate knowledge of computer engineering and management principles for the completion of individual or group projects in multidisciplinary environments.",
+    "PO12": "Recognize the evolving technological changes and engage as an independent and life-long learner in both computing and non-computing fields."
+  },
+  "Program Specific Outcomes (PSO)": {
+    "PSO1": "Identify applicable tools and techniques related to data science practice such as data collection, cleaning, analysis, modelling, evaluation and result interpretation and apply them for deriving hidden and meaningful patterns for appropriate actionable insights.",
+    "PSO2": "Develop intelligent systems for various real-life domains like healthcare, transportation, finance etc. using Artificial Intelligence methodologies.",
+    "PSO3": "Understand the foundational concepts and techniques to protect computing systems against constantly evolving cybersecurity threats and analyze security breaches and violations of cyber systems and networks to provide appropriate solutions.",
+    "PSO4": "Design effective security systems to mitigate risks, threats and vulnerabilities for protecting the organizations against cyber threats."
+  },
+  "Course_details": {
+    "Program": "BTECH (CSE) 2020-2024",
+    "Session": "2023-2024",
+    "course_code": "SKL4702",
+    "course_name": "Foundations of Public Speaking",
+    "credits": "3",
+    "Module/Semester": "VI"
+  },
+  "course_description": "This course includes relevant background materials on blockchain technology, Ethereum, and full-scale coding capability. Students will learn various Blockchain Protocols using relevant coding languages like Solidity for Ethereum. Through a practical approach, students will get hands-on experience designing, coding, and implementing a DApp for various applications. The aim of this course “Blockchain” is about the implementation of various business use cases on the Blockchain network using Ethereum. Students will learn how to build relevant platforms for business problems and transactions using blockchain technology. The engineering goal is to design, implement, and test smart contracts in Ethereum for various practical business applications.",
+  "Course Outcomes (CO)": {
+    "CO1": "To understand the concept of money, the reason behind the birth of Blockchain and the evolution of blockchain protocols.",
+    "CO2": {
+      "description": "To learn and apply:",
+      "bullets": [
+        "the central concept of the blockchain ecosystem and PoW",
+        "how to use crypto wallets for transactions and transfer of value",
+        "the advanced concepts of Ethereum and smart contract application",
+        "Solidity (language used in Ethereum) to design and build smart contracts."
+      ]
+    },
+    "CO3": "To analyze the problems and design and deploy a decentralized app on Remix and using Truffle.",
+    "CO4": "To analyze the problems and design and deploy a decentralized app on Remix and using Truffle."
+  },
+  "CO_PO_Mapping": {
+    "CO1": {
+      "PO1": "",
+      "PO2": "",
+      "PO3": "",
+      "PO4": "",
+      "PO5": 1,
+      "PO6": 1,
+      "PO7": 1,
+      "PO8": "",
+      "PO9": "",
+      "PO10": 3,
+      "PO11": "",
+      "PO12": "",
+      "PSO1": "",
+      "PSO2": "",
+      "PSO3": "",
+      "PSO4": ""
+    },
+    "CO2": {
+      "PO1": "",
+      "PO2": "",
+      "PO3": "",
+      "PO4": 3,
+      "PO5": "",
+      "PO6": "",
+      "PO7": "",
+      "PO8": 2,
+      "PO9": 3,
+      "PO10": "",
+      "PO11": 3,
+      "PO12": 3,
+      "PSO1": "",
+      "PSO2": "",
+      "PSO3": 2,
+      "PSO4": ""
+    },
+    "CO3": {
+      "PO1": "",
+      "PO2": "",
+      "PO3": "",
+      "PO4": "",
+      "PO5": "",
+      "PO6": 3,
+      "PO7": 2,
+      "PO8": "",
+      "PO9": "",
+      "PO10": 3,
+      "PO11": "",
+      "PO12": "",
+      "PSO1": 2,
+      "PSO2": "",
+      "PSO3": "",
+      "PSO4": ""
+    }
+  },
+  "sessions": [
+    {
+      "Sr_No": 1,
+      "Content": "Background leading to blockchain, Mining Mechanism, Distributed Consensus",
+      "CO": [
+        "CO1"
+      ],
+      "No_of_sessions": "2 sessions"
+    },
+    {
+      "Sr_No": 2,
+      "Content": "Merkle Patricia Tree, Gas Limit, Transactions and Fee, Anonymity, Reward, Chain Policy, Life of Blockchain application, Private and Public blockchain",
+      "CO": [
+        "CO1"
+      ],
+      "No_of_sessions": "3 sessions"
+    },
+    {
+      "Sr_No": 3,
+      "Content": "The consensus problem - Asynchronous Byzantine Agreement - AAP protocol and its analysis - Nakamoto Consensus",
+      "CO": [
+        "CO1"
+      ],
+      "No_of_sessions": "2 sessions"
+    },
+    {
+      "Sr_No": 4,
+      "Content": "Deep details of blockchain transaction ecosystem - hashing, Merkle tree, PoW, etc.",
+      "CO": [
+        "CO1",
+        "CO2"
+      ],
+      "No_of_sessions": "3 sessions"
+    },
+    {
+      "Sr_No": 5,
+      "Content": "Crypto-currencies, wallets and crypto economy, Applications of Blockchain",
+      "CO": [
+        "CO1",
+        "CO2"
+      ],
+      "No_of_sessions": "2 sessions"
+    },
+    {
+      "Sr_No": 6,
+      "Content": "Ethereum - Ethereum Virtual Machine (EVM) - Wallets for Ethereum - Solidity - Smart Contracts, Basics of Solidity, Advanced Solidity, Deployment of Smart Contract",
+      "CO": [
+        "CO1",
+        "CO2"
+      ],
+      "No_of_sessions": "8 sessions"
+    },
+    {
+      "Sr_No": 7,
+      "Content": "Developing a DApp using Remix, developing a DApp using Truffle, Understanding and implementing frontend (HTML-CSS-JS) and backend basics (CMD Node.js)",
+      "CO": [
+        "CO1",
+        "CO2",
+        "CO3"
+      ],
+      "No_of_sessions": "8 sessions"
+    },
+    {
+      "Sr_No": 8,
+      "Content": "Introduction to Hyperledger Fabric, Hyperledger Fabric architecture",
+      "CO": [
+        "CO1"
+      ],
+      "No_of_sessions": "4 sessions"
+    }
+  ],
+  "Textbooks": [
+    "Tapscott, D., & Tapscott, A. (2016). Blockchain revolution: how the technology behind bitcoin is changing money, business, and the world. Penguin.",
+    "Andreas M. Antonopoulos. (2017). Mastering Bitcoin: Unlocking Digital Crypto-Currencies (2nd. ed.). O'Reilly Media, Inc."
+  ],
+  "ReferenceLinks": [
+    "https://analyticsindiamag.com/top-7-blockchain-developments-in-india-2019/",
+    "https://learnmeabitcoin.com/technical/target#:~:text=The%20target%20adjusts%20every%202016,(via%20the%20block%20reward).",
+    "https://nakamotoinstitute.org/bitcoin/",
+    "https://medium.com/@moshababo/forks-in-the-blockchain-discrepancies-between-competing-chains-93a75f96decb#:~:text=At%20any%20given%20time%2C%20there,happen%20on%20a%20daily%20basis.",
+    "https://www.technologyreview.com/2019/02/19/239592/once-hailed-as-unhackable-blockchains-are-now-getting-hacked/",
+    "https://www.coindesk.com/crypto-51-attacks-etc",
+    "https://www.quora.com/Why-do-you-need-to-wait-for-6-confirmations-for-bitcoins#:~:text=The%206%20confirmations%20means%2C%20there,confirms%20your%20transaction%20was%20legit.",
+    "https://support.bitpay.com/hc/en-us/articles/115005363786-What-is-a-double-spend-bitcoin-transaction-",
+    "https://www.simplilearn.com/bitcoin-mining-explained-article",
+    "https://www.blockchain.com/btc/block/00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048",
+    "https://www.theverge.com/2020/3/3/21163658/facebook-libra-cryptocurrency-token-ditching-plans-calibra-wallet-delay",
+    "https://www.theverge.com/2019/6/18/18682838/facebook-digital-wallet-calibra-libra-cryptocurrency-kevin-weil-david-marcus-interview",
+    "https://ethereum.org/en/developers/docs/smart-contracts/",
+    "https://www.investopedia.com/terms/a/asic.asp#:~:text=An%20application%2Dspecific%20integrated%20circuit,miner%20can%20mine%20only%20bitcoin."
+  ],
+  "students": [
+    {
+      "Sr_No": 1,
+      "Roll_No": "200C2030009",
+      "Student_Name": "Mahi Singhal"
+    },
+    {
+      "Sr_No": 2,
+      "Roll_No": "200C2030010",
+      "Student_Name": "Ajeet Kumar Verma"
+    },
+    {
+      "Sr_No": 3,
+      "Roll_No": "200C2030016",
+      "Student_Name": "Aditya Bisht"
+    },
+    {
+      "Sr_No": 4,
+      "Roll_No": "200C2030018",
+      "Student_Name": "Gonuguntla Udaya Kiran"
+    },
+    {
+      "Sr_No": 5,
+      "Roll_No": "200C2030019",
+      "Student_Name": "Ishita Chauhan"
+    },
+    {
+      "Sr_No": 6,
+      "Roll_No": "200C2030025",
+      "Student_Name": "K Sri Sai Sri Vamsi Krishna"
+    },
+    {
+      "Sr_No": 7,
+      "Roll_No": "200C2030035",
+      "Student_Name": "Nitish Kuntal"
+    },
+    {
+      "Sr_No": 8,
+      "Roll_No": "200C2030041",
+      "Student_Name": "Kedarisetti Siva Bhadra Sai Vaibhav"
+    },
+    {
+      "Sr_No": 9,
+      "Roll_No": "200C2030044",
+      "Student_Name": "Vishesh Garg"
+    },
+    {
+      "Sr_No": 10,
+      "Roll_No": "200C2030049",
+      "Student_Name": "Vishnu Sudagani"
+    },
+    {
+      "Sr_No": 11,
+      "Roll_No": "200C2030050",
+      "Student_Name": "Marali Jayaram Uday"
+    },
+    {
+      "Sr_No": 12,
+      "Roll_No": "200C2030068",
+      "Student_Name": "Tanmay Rajeev Khurana"
+    },
+    {
+      "Sr_No": 13,
+      "Roll_No": "200C2030069",
+      "Student_Name": "Pradyumn Garg"
+    },
+    {
+      "Sr_No": 14,
+      "Roll_No": "200C2030074",
+      "Student_Name": "Kethepally Ajith"
+    },
+    {
+      "Sr_No": 15,
+      "Roll_No": "200C2030078",
+      "Student_Name": "Divyanshu Goyal"
+    },
+    {
+      "Sr_No": 16,
+      "Roll_No": "200C2030081",
+      "Student_Name": "Aryan Singhal"
+    },
+    {
+      "Sr_No": 17,
+      "Roll_No": "200C2030083",
+      "Student_Name": "Ekansh Singh Bisht"
+    },
+    {
+      "Sr_No": 18,
+      "Roll_No": "200C2030091",
+      "Student_Name": "Ishaan Pandey"
+    },
+    {
+      "Sr_No": 19,
+      "Roll_No": "200C2030094",
+      "Student_Name": "Monika Raghav"
+    },
+    {
+      "Sr_No": 20,
+      "Roll_No": "200C2030098",
+      "Student_Name": "Tanya Ahuja"
+    },
+    {
+      "Sr_No": 21,
+      "Roll_No": "200C2030099",
+      "Student_Name": "Priyanshu Kaushik"
+    },
+    {
+      "Sr_No": 22,
+      "Roll_No": "200C2030102",
+      "Student_Name": "Khushi Mahawar"
+    },
+    {
+      "Sr_No": 23,
+      "Roll_No": "200C2030103",
+      "Student_Name": "Prachi Bagga"
+    },
+    {
+      "Sr_No": 24,
+      "Roll_No": "200C2030104",
+      "Student_Name": "Manan Chadha"
+    },
+    {
+      "Sr_No": 25,
+      "Roll_No": "200C2030106",
+      "Student_Name": "Raghav Khandelwal"
+    },
+    {
+      "Sr_No": 26,
+      "Roll_No": "200C2030108",
+      "Student_Name": "Parveen"
+    },
+    {
+      "Sr_No": 27,
+      "Roll_No": "200C2030109",
+      "Student_Name": "Shreya Sheoran"
+    },
+    {
+      "Sr_No": 28,
+      "Roll_No": "200C2030111",
+      "Student_Name": "Razina Khanam"
+    },
+    {
+      "Sr_No": 29,
+      "Roll_No": "200C2030112",
+      "Student_Name": "Umang Garg"
+    },
+    {
+      "Sr_No": 30,
+      "Roll_No": "200C2030113",
+      "Student_Name": "Himanshu Bhalla"
+    },
+    {
+      "Sr_No": 31,
+      "Roll_No": "200C2030114",
+      "Student_Name": "Hardikya Gupta"
+    },
+    {
+      "Sr_No": 32,
+      "Roll_No": "200C2030125",
+      "Student_Name": "Saketh Kudupudi"
+    },
+    {
+      "Sr_No": 33,
+      "Roll_No": "200C2030127",
+      "Student_Name": "Karan Singh Patrick"
+    },
+    {
+      "Sr_No": 34,
+      "Roll_No": "200C2030137",
+      "Student_Name": "Aditi Goel"
+    },
+    {
+      "Sr_No": 35,
+      "Roll_No": "200C2030139",
+      "Student_Name": "Kriti Shrivastava"
+    },
+    {
+      "Sr_No": 36,
+      "Roll_No": "200C2030140",
+      "Student_Name": "Nippuleti Tarun Sai"
+    },
+    {
+      "Sr_No": 37,
+      "Roll_No": "200C2030147",
+      "Student_Name": "Aditya Raj Agrawal"
+    },
+    {
+      "Sr_No": 38,
+      "Roll_No": "200C2030148",
+      "Student_Name": "Divyam Jain"
+    },
+    {
+      "Sr_No": 39,
+      "Roll_No": "200C2030152",
+      "Student_Name": "Dharyatra Chauhan"
+    },
+    {
+      "Sr_No": 40,
+      "Roll_No": "200C2030164",
+      "Student_Name": "Jyotiraditya Singh Rathore"
+    },
+    {
+      "Sr_No": 41,
+      "Roll_No": "200C2030175",
+      "Student_Name": "Nishant Sharma"
+    },
+    {
+      "Sr_No": 42,
+      "Roll_No": "200C2030181",
+      "Student_Name": "Bagul Suyash Sunil"
+    },
+    {
+      "Sr_No": 43,
+      "Roll_No": "200C2030191",
+      "Student_Name": "Sujit Dalai"
+    },
+    {
+      "Sr_No": 44,
+      "Roll_No": "200C2030197",
+      "Student_Name": "Divyanshi Singhal"
+    }
+  ],
+  "Details": [
+    {
+      "Component": "Class Participation (Experiential Learning)",
+      "Duration": "Continuous",
+      "Weightage (%)": "10%",
+      "Evaluation": "The level of participation, On the basis of discussion",
+      "Week": "",
+      "Remarks": ""
+    },
+    {
+      "Component": "Quiz/Assignment",
+      "Duration": "Week 8",
+      "Weightage (%)": "30%",
+      "Evaluation": "",
+      "Week": "8",
+      "Remarks": ""
+    },
+    {
+      "Component": "Project Phase Evaluation - 1",
+      "Duration": "Continuous",
+      "Weightage (%)": "20% (5% each)",
+      "Evaluation": "Introduction, Literature Survey, Proposed Framework, Results & Discussion, Conclusion",
+      "Week": "",
+      "Remarks": ""
+    },
+    {
+      "Component": "End Term Evaluation (Project Phase Evaluation - 2)",
+      "Duration": "Week 15/16",
+      "Weightage (%)": "40%",
+      "Evaluation": "Project-Based (Panel Evaluation)",
+      "Week": "15/16",
+      "Remarks": ""
+    }
+  ],
+  "Weak_Students": [
+    {
+      "Sr_No": 1,
+      "Roll_No": "200C2030074",
+      "Student_Name": "Kethepally Ajith",
+      "Mid_Term_Examination": 8.25
+    },
+    {
+      "Sr_No": 2,
+      "Roll_No": "200C2030111",
+      "Student_Name": "Razina Khanam",
+      "Mid_Term_Examination": 6.75
+    },
+    {
+      "Sr_No": 3,
+      "Roll_No": "200C2030125",
+      "Student_Name": "Saketh Kudupudi",
+      "Mid_Term_Examination": 0
+    },
+    {
+      "Sr_No": 4,
+      "Roll_No": "200C2030140",
+      "Student_Name": "Nippuleti Tarun Sai",
+      "Mid_Term_Examination": 4.5
+    }
+  ],
+  "Actions_Taken": [
+    {
+      "Step": 1,
+      "Description": "Recognition of struggling students and exploration of the specific topics causing challenges."
+    },
+    {
+      "Step": 2,
+      "Description": "Provision of extra time for the resolution of doubts."
+    },
+    {
+      "Step": 3,
+      "Description": "Discussion of additional examples across various topics to foster greater insight and concentration."
+    }
+  ]
+}

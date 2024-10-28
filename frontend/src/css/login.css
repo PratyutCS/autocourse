@@ -1,0 +1,75 @@
+
+*{
+    margin: 0;
+    padding: 0;
+}
+.login-form{
+    background-color: antiquewhite;
+    width: 28vw;
+    height: 55vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: column;
+    border-radius: 0.7rem;
+    border: 1px solid rgba(6, 6, 6, 0.121);
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+.login-form>form{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    /* margin-top: 6vh; */
+    gap: 1vh;
+    flex-direction: column;
+    height: 45%;
+    width: 100%;
+}
+.login-form>form>input{
+    background-color: white;
+    width: 20vw;
+    height: 5vh;
+    border: 1px solid rgba(92, 92, 92, 0.184);
+    padding-left: 0.7vw;
+    outline: none;
+    border-radius: 0.3rem;
+}
+.lgn-upper>img{
+    height: 14vh;
+    width: auto;
+}
+.lgn-upper>h1{
+    color: rgba(26, 26, 26, 0.718);
+    font-size: 3vmin;
+    font-family: "Nunito", sans-serif;
+}
+.lgn-upper>p{
+    font-family: "Space Grotesk", sans-serif;
+    margin-top: 1vh;
+    color: rgba(26, 26, 26, 0.433);
+}
+
+
+.lgn-upper{
+    height: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+.login-form>form>button{
+    background-color: rgb(33, 33, 33);
+    border: none;
+    width: 10vw;
+    height: 4vh;
+    color: white;
+    margin-top: 1vh;
+    cursor: pointer;
+    border-radius: 0.3rem;
+}
+.login-form>form>button:hover{
+    background-color: white;
+    cursor: pointer;
+    color: black;
+    border: 1px solid black;
+}

@@ -1,0 +1,23 @@
+.co{
+    width: 40vw;
+    height: auto;
+}
+.c1{
+    padding: 2vmin;
+}
+.co2{
+    width: 100%;
+    height: 24vh;
+}
+td{
+    text-align: center;
+    font-size: 1.2vmin;
+}
+td>input{
+    width: 100%;
+    height: 100%;
+    outline: none;
+}
+th{
+    font-size: 1.5vmin;
+}

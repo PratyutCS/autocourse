@@ -1,0 +1,146 @@
+.dash{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    
+    justify-content: center;
+    align-items: center;
+}
+
+.dash-left{
+    display: flex;
+    background-color: #323439;
+    overflow: hidden;
+    position: relative;
+    height: 100%;
+    width: 20vw;
+    flex-direction: column;
+}
+.logo-bmu{
+    /* background-color: antiquewhite; */
+
+    height: 20%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1vw;
+    flex-direction: row;
+}
+.logo-bmu>img{
+    height: 7vh;
+    width: auto;
+}
+.logo-bmu>h1{
+    font-family: "Nunito", sans-serif;
+    font-weight: 300;
+    color: #c3c3c3;
+    font-size: 2vmin;
+}
+.btm{
+    position:absolute;
+    bottom: 4vh;
+    left: 3vh;
+    height: 15%;
+    width: 90%;
+    color: #c3c3c3;
+    /* background-color: aquamarine; */
+    font-family: "Lato", sans-serif;
+    font-weight: 100;
+    display: flex;
+    justify-content: space-evenly;
+    overflow: hidden;
+    align-items: flex-start;
+    flex-direction: column;
+}
+.btm>form{
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: 20%;
+}
+.btm>form>button{
+    background-color: transparent;
+    width: 7vw;
+    border: none;
+    color: #c3c3c3;
+    font-family: "Lato", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 2vw;
+    font-weight: 100;
+    font-size: 2vmin;
+    cursor: pointer;
+}
+.btm>button{
+    background-color: transparent;
+    width: 7vw;
+    border: none;
+    color: #c3c3c3;
+    font-family: "Lato", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 2vw;
+    font-weight: 100;
+    font-size: 2vmin;
+    cursor: pointer;
+}
+.btm>button:hover{
+    color: aliceblue;
+}
+.btm>form>button:hover{
+    color: aliceblue;
+}
+.btm>form>button>span{
+    width: 2vw;
+    height: 100%;
+    
+}
+.btm>form>button>div{
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column;
+    gap: 0.5vh;
+}.btm>form>button>div>p{
+    font-size: 1.75vmin;
+    color: #afafaf;
+}
+.right{
+    height: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    background-color: rgb(255, 252, 248);
+}
+.line{
+    height: 1.5px;
+    width: 70%;
+    background-color: rgba(0, 0, 0, 0.079);
+    margin-top: 1vh;
+}
+
+.line1{
+    height: 1.5px;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.079);
+    
+}
+.box{
+    margin-top: 3vh;
+    width: 90%;
+    height: 25vh;
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+    border-radius: 0.3rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    overflow-y: scroll;
+    
+}
