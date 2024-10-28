@@ -54,13 +54,13 @@ const Info = () => {
             <FeedbackForm
               file={file.filename}
               num={num}
-              courseDescription={file["course_description"]||""}
-              coursecode={file["Course_details"]['course_code']||""}
-              coursetitle={file["Course_details"]['course_name']||""}
-              module={file["Course_details"]['Module/Semester']||""}
-              session={file["Course_details"]['Session']||""}
-              courseSyllabus={file["Course Syllabus"]||""}
-              learningResources={file["Learning Resources"]||""}
+              courseDescription={file["course_description"] || ""}
+              coursecode={file['course_code'] || ""}
+              coursetitle={file['course_name'] || ""}
+              module={file['Module/Semester'] || ""}
+              session={file['Session'] || ""}
+              courseSyllabus={file["Course Syllabus"] || ""}
+              learningResources={file["Learning Resources"] || ""}
             />
           ) : (
             <p>Loading file information...</p>

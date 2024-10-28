@@ -429,7 +429,7 @@ const FeedbackForm = (props) => {
       <div className="form-section">
         <div className="flex items-center mb-2">
           <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            14
+            15
           </div>
           <h2 className="section-title text-xl font-semibold">
             Assignments/Quiz/Internal Components/ Projects taken throughout semester
@@ -441,7 +441,7 @@ const FeedbackForm = (props) => {
       <div className="form-section">
         <div className="flex items-center mb-2">
           <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            15
+            16
           </div>
           <h2 className="section-title text-xl font-semibold">
             Detail of Marks in all components up to the End Semester
@@ -452,7 +452,7 @@ const FeedbackForm = (props) => {
       <div className="form-section">
         <div className="flex items-center mb-2">
           <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            16
+            17
           </div>
           <h2 className="section-title text-xl font-semibold">
             {" "}

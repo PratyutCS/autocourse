@@ -26,7 +26,7 @@ const ActionsForWeakStudents = () => {
     <div className="form-section">
       <div className="flex items-center mb-2">
         <div className="section-number bg-pink-400 text-white rounded-full w-16 h-8 flex items-center justify-center mr-2">
-          15, 16
+          14
         </div>
         <h2 className="section-title text-xl font-semibold">
           Actions Taken for Weak Students

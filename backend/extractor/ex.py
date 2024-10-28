@@ -21,48 +21,19 @@ def extract(file):
         return eText
 
 def ai(text):
-    # prompt = f"""
-    # You are a precise course information extraction system. Your task is to carefully analyze the following course handout and extract specific information into a structured JSON format. 
+    prompt = f"""Extract the following course information from the document:
+{{
+    "Session": null,
+    "course_code": null,
+    "course_name": null,
+    "Module/Semester": null
+}}
 
-    #     Rules:
-    #     - Make sure there are no changes in the words or sequence; extract as it is
-    #     - Extract only factual information present in the text
-    #     - Use exact numbers and text from the source
-    #     - If information is not found, leave the field null
-    #     - Return only valid JSON without any other text
-    #     - Do not add something of your own or correct the language 
-    #     - NO buffer text No explaination only JSON
+Here is the text: {text[:1000]}
 
-    #     Extract this information into the following structure:
-    #     "Course_details": {{
-    #         "Program": "",
-    #         "Session": "",
-    #         "course_code": "",
-    #         "course_name": "",
-    #         "credits": "",
-    #         "Module/Semester": ""
-    #     }},
-
-    #     Course handout text:
-    #     {text[:1000]}
-    #     """
-    prompt = f"""
-        Extract the following course information from the document:
-        "Course_details": {{
-            "Program": "",
-            "Session": "",
-            "course_code": "",
-            "course_name": "",
-            "credits": "",
-            "Module/Semester": ""
-        }},
-
-        Here is the text: {text[:1000]}
-        Make sure there are no changes in the words or sequence; extract as it is. If you can't find anything, keep it as null.
-        No explanation is needed.
-        Output the result in JSON format only without any buffer text.
-        NO buffer text No Output should only contain only JSON format
-        """
+Make sure there are no changes in the words or sequence; extract as it is. If you can't find anything, keep it as null.
+No explanation is needed.
+Output the result in JSON format only without any buffer text."""
     
     response = llm1.invoke(prompt)
     return response
@@ -72,6 +43,12 @@ if __name__ == '__main__':
     q1 = ""
     for data in eData1:
         q1 += data
+    
+    # cd = os.getcwd()
+    # print("Current Directory:", cd)
+
+    with open('./extractor/mainData.json', 'r') as file:
+        mainData = json.load(file)
 
     response = ai(q1)
     response = response.strip()
@@ -85,27 +62,23 @@ if __name__ == '__main__':
             datnum = i
             break
     
-    # cd = os.getcwd()
-    # print("Current Directory:", cd)
     print(fn)
+    print(mainData)
 
     try :
         res = json.loads(response)
+        mainData["Session"] = res["Session"]
+        mainData["course_code"] = res["course_code"]
+        mainData["course_name"] = res["course_name"]
+        mainData["Module/Semester"] = res["Module/Semester"]
     except:
         print("------- error in parsing ai response ---------")
         print(response)
-        os.remove(fn)
-        if datnum != (len(data) - 1):
-            data[datnum] = data[-1]
-        data.pop()
-        print(data)
-        with open(jfn, 'w') as f:
-            json.dump(data, f)
-        sys.exit(1)
+        print(mainData)
 
     if datnum is not None:
         print("datnum is: {}".format(datnum))
-        data[datnum].update(res)
+        data[datnum].update(mainData)
         data[datnum]['done'] = 1
     else:
         print(f"Filename {fn} not found in the JSON file.")

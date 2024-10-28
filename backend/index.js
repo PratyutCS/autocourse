@@ -411,10 +411,10 @@ app.post("/form", auth, async (req, res) => {
       try{
         data = JSON.parse(data);
         // data[num].reflections = req.body.reflections;
-        data[num]["Course_details"]['course_code'] = req.body.coursecode;
-        data[num]["Course_details"]['course_name'] = req.body.coursetitle;
-        data[num]["Course_details"]['Module/Semester'] = req.body.module;
-        data[num]["Course_details"]['Session'] = req.body.session;
+        data[num]['course_code'] = req.body.coursecode;
+        data[num]['course_name'] = req.body.coursetitle;
+        data[num]['Module/Semester'] = req.body.module;
+        data[num]['Session'] = req.body.session;
         data[num]["course_description"] = req.body.EditableCourseDescriptionData['description'];
         data[num]["Course Syllabus"] = req.body.courseSyllabus;
         data[num]["Learning Resources"] = req.body.learningResources;

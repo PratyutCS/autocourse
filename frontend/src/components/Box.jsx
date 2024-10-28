@@ -18,7 +18,7 @@ export default function Box(props) {
         props.files.map((file, index) => (
           <div key={index} className="file-card">
             <NewC 
-              name={(file["Course_details"] && file["Course_details"]["course_name"]) || file.filename || "Unknown Course"} 
+              name={(file["course_name"]) || file.filename || "Unknown Course"} 
               num={index} 
             /> 
           </div>
