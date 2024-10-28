@@ -11,7 +11,6 @@ import InternalAssessmentTable from './InternalAssessmentTable';
 import PDFUploader from './PDFUploader';
 import ActionsForWeakStudents from './ActionsForWeakStudents';
 import ExcelUploader from './ExcelUploader';
-import ProgramOutcomesEditor from './ProgramOutcomesEditor';
 import EditableCourseDescription from './EditableCourseDescription';
 
 
@@ -24,13 +23,7 @@ const FeedbackForm = (props) => {
   const [session, setSession] = useState(props.session || "");
   const [file, setFile] = useState(null);
   const [fileContent, setFileContent] = useState(null);
-  const [programOutcomesData, setProgramOutcomesData] = useState(null);
   const [EditableCourseDescriptionData, setEditableCourseDescriptionData] = useState(null);
-
-  const handleOutcomesChange = (data) => {
-    setProgramOutcomesData(data);
-  };
-// const [internalAssessmentData, setInternalAssessmentData] = useState(null);
 
   const EditableCourseDescriptionDataChange = (data) => {
     setEditableCourseDescriptionData(data);
@@ -83,7 +76,7 @@ const FeedbackForm = (props) => {
     },
   });
   // const [copoMappingData, setCopoMappingData] = useState(null);
-  
+
 
   const [copoMappingData, setCopoMappingData] = useState({
     courseOutcomes: {},
@@ -111,7 +104,7 @@ const FeedbackForm = (props) => {
     }
   };
 
-  
+
   const postData = async () => {
     if (num !== undefined) {
       try {
@@ -143,9 +136,9 @@ const FeedbackForm = (props) => {
             headers: { "x-auth-token": token },
           }
         );
-        
+
         console.log("Server response:", response.data);
-        
+
         // Add success notification
         alert("Data saved successfully!");
       } catch (error) {
@@ -167,19 +160,19 @@ const FeedbackForm = (props) => {
   return (
     <div className="feedback-form1">
       <div className='sb'>
-      <button onClick={() => window.history.back()} className="back-button">
-        {" "}
-        <IoReturnUpBackSharp />
-        Back to Files
-      </button>
-      <div className='sbt-btn'>
-      <button
-        onClick={postData}
-        className="btn bg-blue-500 text-white rounded-md px-6 py-2 mx-auto block"
-      >
-        SUBMIT
-      </button>
-      </div>
+        <button onClick={() => window.history.back()} className="back-button">
+          {" "}
+          <IoReturnUpBackSharp />
+          Back to Files
+        </button>
+        <div className='sbt-btn'>
+          <button
+            onClick={postData}
+            className="btn bg-blue-500 text-white rounded-md px-6 py-2 mx-auto block"
+          >
+            SUBMIT
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -269,15 +262,19 @@ const FeedbackForm = (props) => {
             Course Description and its objectives
           </h2>
         </div>
-        <EditableCourseDescription courseDescription={props.courseDescription} onChange={EditableCourseDescriptionDataChange}/>
+        <EditableCourseDescription courseDescription={props.courseDescription} onChange={EditableCourseDescriptionDataChange} />
       </div>
 
       <div className="form-section f2">
         <div className="flex items-center mb-2">
-          <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">6</div>
-          <h2 className="section-title text-xl font-semibold">Course Outcomes and CO-PO Mapping</h2>
+          <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+            6
+          </div>
+          <h2 className="section-title text-xl font-semibold">
+            Course Outcomes and CO-PO Mapping
+          </h2>
         </div>
-        <COPOMapping 
+        <COPOMapping
           onSave={handleCOPOMappingChange}
           initialData={copoMappingData}
         />
@@ -380,11 +377,11 @@ const FeedbackForm = (props) => {
             Details of Internal Assessments; weightages, due dates
           </h2>
         </div>
-        <InternalAssessmentTable 
+        <InternalAssessmentTable
           onSave={handleInternalAssessmentChange}
           initialData={internalAssessmentData}
         />
-        
+
       </div>
 
 
