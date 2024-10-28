@@ -57,7 +57,6 @@ const COPOMapping = ({ onSave, initialData }) => {
       };
       setMappingData(newMappingData);
       
-      // Save the complete state
       if (onSave) {
         onSave({
           courseOutcomes,
@@ -77,7 +76,6 @@ const COPOMapping = ({ onSave, initialData }) => {
     };
     setCourseOutcomes(newCourseOutcomes);
     
-    // Save the complete state
     if (onSave) {
       onSave({
         courseOutcomes: newCourseOutcomes,
@@ -96,7 +94,24 @@ const COPOMapping = ({ onSave, initialData }) => {
     };
     setCourseOutcomes(newCourseOutcomes);
     
-    // Save the complete state
+    if (onSave) {
+      onSave({
+        courseOutcomes: newCourseOutcomes,
+        mappingData
+      });
+    }
+  };
+
+  const removeBullet = (co, index) => {
+    const newCourseOutcomes = {
+      ...courseOutcomes,
+      [co]: {
+        ...courseOutcomes[co],
+        bullets: courseOutcomes[co].bullets.filter((_, i) => i !== index)
+      }
+    };
+    setCourseOutcomes(newCourseOutcomes);
+    
     if (onSave) {
       onSave({
         courseOutcomes: newCourseOutcomes,
@@ -117,7 +132,6 @@ const COPOMapping = ({ onSave, initialData }) => {
     };
     setCourseOutcomes(newCourseOutcomes);
     
-    // Save the complete state
     if (onSave) {
       onSave({
         courseOutcomes: newCourseOutcomes,
@@ -130,7 +144,6 @@ const COPOMapping = ({ onSave, initialData }) => {
     const newCoNumber = Object.keys(mappingData).length + 1;
     const newCo = `CO${newCoNumber}`;
     
-    // Create empty mapping for all POs and PSOs
     const newPoMap = headers.slice(1).reduce((acc, po) => {
       acc[po] = '';
       return acc;
@@ -149,11 +162,47 @@ const COPOMapping = ({ onSave, initialData }) => {
     setMappingData(newMappingData);
     setCourseOutcomes(newCourseOutcomes);
     
-    // Save the complete state
     if (onSave) {
       onSave({
         courseOutcomes: newCourseOutcomes,
         mappingData: newMappingData
+      });
+    }
+  };
+
+  const removeCourseOutcome = (coToRemove) => {
+    // Create new objects without the removed CO
+    const remainingOutcomes = Object.fromEntries(
+      Object.entries(courseOutcomes)
+        .filter(([key]) => key !== coToRemove)
+    );
+
+    const remainingMappings = Object.fromEntries(
+      Object.entries(mappingData)
+        .filter(([key]) => key !== coToRemove)
+    );
+
+    // Renumber the remaining COs
+    const renumberedOutcomes = {};
+    const renumberedMappings = {};
+    
+    Object.entries(remainingOutcomes).forEach(([_, value], index) => {
+      const newKey = `CO${index + 1}`;
+      renumberedOutcomes[newKey] = value;
+    });
+
+    Object.entries(remainingMappings).forEach(([_, value], index) => {
+      const newKey = `CO${index + 1}`;
+      renumberedMappings[newKey] = value;
+    });
+
+    setCourseOutcomes(renumberedOutcomes);
+    setMappingData(renumberedMappings);
+
+    if (onSave) {
+      onSave({
+        courseOutcomes: renumberedOutcomes,
+        mappingData: renumberedMappings
       });
     }
   };
@@ -176,6 +225,14 @@ const COPOMapping = ({ onSave, initialData }) => {
                   className="flex-1 p-2 border rounded focus:ring-2 focus:ring-blue-500" 
                   placeholder="Enter course outcome description"
                 />
+                {Object.keys(courseOutcomes).length > 1 && (
+                  <button 
+                    onClick={() => removeCourseOutcome(co)}
+                    className="px-2 py-1 text-red-600 hover:text-red-800"
+                  >
+                    Remove CO
+                  </button>
+                )}
               </div>
               {outcome.bullets.map((bullet, index) => (
                 <div key={index} className="ml-8 mb-2 flex items-center gap-2">
@@ -187,6 +244,12 @@ const COPOMapping = ({ onSave, initialData }) => {
                     className="flex-1 p-2 border rounded" 
                     placeholder="Enter bullet point"
                   />
+                  <button 
+                    onClick={() => removeBullet(co, index)}
+                    className="text-red-600 hover:text-red-800 px-2"
+                  >
+                    ✕
+                  </button>
                 </div>
               ))}
               <button 
