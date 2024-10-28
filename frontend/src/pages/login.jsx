@@ -85,6 +85,7 @@ function Login() {
         />
         <p>{message}</p>
         <button type="submit">Login</button>
+        {/* <button type="submit">SignUp</button> */}
       </form>
       
     </div>

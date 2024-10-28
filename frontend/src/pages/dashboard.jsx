@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { TfiPowerOff } from "react-icons/tfi";
-import { RxQuestionMarkCircled } from "react-icons/rx";
 import constants from "../constants";
 import "../css/dash.css";
 import Box from "../components/Box";
+import AsideComp from "../components/AsideComp";
+
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -74,60 +74,16 @@ function Dashboard() {
 
   // console.log(file);
 
-  const handleLogout = async (e) => {
-    e.preventDefault();
-
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.post(
-        constants.url + "/api/signout",
-        {},
-        {
-          headers: { "x-auth-token": token },
-        }
-      );
-
-      if (response.status !== 500) {
-        localStorage.removeItem("token");
-        navigate("/");
-      }
-    } catch (error) {
-      console.error("Error during logout:", error);
-    }
-  };
+  
 
   if (!userData) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div className="dash">
-      <aside className="dash-left">
-        <div className="logo-bmu">
-          <img src="/customer-logo.png" alt="" />
-          <h1>Bml Munjal University</h1>
-        </div>
-        <div className="btm">
-          <button>
-            <span>
-              <RxQuestionMarkCircled size={24} />{" "}
-            </span>
-            Support
-          </button>
-          <form onSubmit={handleLogout}>
-            <button type="submit">
-              <span>
-                {" "}
-                <TfiPowerOff size={24} />
-              </span>
-              <div>
-                <span>Logout</span>
-                <p>{userData.email}</p>
-              </div>
-            </button>
-          </form>
-        </div>
-      </aside>
+    <div className="dash"> 
+    <AsideComp/>
+    
       <div className="right">
         <div className="box p-6 rounded-lg shadow-lg">
           <h2 className="text-s font-bold mb-4">

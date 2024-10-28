@@ -482,7 +482,7 @@ const FeedbackForm = (props) => {
 
       <button
         onClick={postData}
-        className="btn bg-blue-500 text-white rounded-md px-6 py-2 mx-auto block"
+        className="bg-blue-500 text-white rounded-md px-8 py-2 mx-auto mt-2 mb-2 block"
       >
         SUBMIT
       </button>

@@ -4,7 +4,8 @@ import axios from 'axios';
 import { RxQuestionMarkCircled } from 'react-icons/rx';
 import FeedbackForm from '../components/FeedbackForm';
 import { useLocation } from 'react-router-dom';
-
+import AsideComp from '../components/AsideComp';
+import '../css/dash.css'
 const Info = () => {
   const location = useLocation();
   const { num } = location.state || {};
@@ -12,6 +13,7 @@ const Info = () => {
   const token = localStorage.getItem('token');
   const [file, setFileData] = useState(null);
   const [error, setError] = useState(null);
+  
 
   useEffect(() => {
     let pollingInterval = null;
@@ -46,18 +48,10 @@ const Info = () => {
 
   return (
     <div className='dash'>
-      <aside className='dash-left'>
-        <div className='logo-bmu'>
-          <img src="/customer-logo.png" alt="Logo" />
-          <h1>Bml Munjal University</h1>
-        </div>
-        <div className='btm'>
-          <button><span><RxQuestionMarkCircled size={24} /> </span>Support</button>
-        </div>
-      </aside>
+      <AsideComp/>
       <div className="right">
-        <div className="box"></div>
-        <div className="box2">
+        {/* <div className="box"></div> */}
+        <div className="box23">
           {file && file.done === 1 ? (
             <FeedbackForm
               file={file.filename}
