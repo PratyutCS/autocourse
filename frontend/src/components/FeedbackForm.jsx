@@ -19,6 +19,8 @@ const FeedbackForm = (props) => {
   let num = props.num;
   const [coursecode, setCourseCode] = useState(props.coursecode || "");
   const [coursetitle, setCourseTitle] = useState(props.coursetitle || "");
+  const [courseSyllabus, setCourseSyllabus] = useState(props.courseSyllabus || "");
+  const [learningResources, setLearningResources] = useState(props.learningResources || "");
   const [module, setModule] = useState(props.module || "");
   const [session, setSession] = useState(props.session || "");
   const [file, setFile] = useState(null);
@@ -67,8 +69,6 @@ const FeedbackForm = (props) => {
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
     },
   });
-  // const [copoMappingData, setCopoMappingData] = useState(null);
-
 
   const [copoMappingData, setCopoMappingData] = useState({
     courseOutcomes: {},
@@ -114,8 +114,9 @@ const FeedbackForm = (props) => {
             coursetitle,
             module,
             session,
-            programOutcomesData,
             EditableCourseDescriptionData,
+            courseSyllabus,
+            learningResources,
             copoMappingData: {
               courseOutcomes: copoMappingData.courseOutcomes,
               mappingData: copoMappingData.mappingData
@@ -286,6 +287,8 @@ const FeedbackForm = (props) => {
           <textarea
             className="w-full h-full p-2 border-none outline-none resize-none text-gray-800"
             placeholder="Enter course content, module-wise teaching hours, readings, activities, and teaching strategy..."
+            value={courseSyllabus}
+            onChange={(e) => setCourseSyllabus(e.target.value)}
           ></textarea>
         </div>
 
@@ -302,6 +305,8 @@ const FeedbackForm = (props) => {
           <textarea
             className="w-full h-full p-2 border-none outline-none resize-none text-gray-800"
             placeholder="Enter textbooks, reference books, and other learning resources..."
+            value={learningResources}
+            onChange={(e) => setLearningResources(e.target.value)}
           ></textarea>
         </div>
       </div>

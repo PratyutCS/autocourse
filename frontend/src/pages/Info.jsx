@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import constants from "../constants";
 import axios from 'axios';
-import { RxQuestionMarkCircled } from 'react-icons/rx';
 import FeedbackForm from '../components/FeedbackForm';
 import { useLocation } from 'react-router-dom';
 import AsideComp from '../components/AsideComp';
@@ -56,10 +55,12 @@ const Info = () => {
               file={file.filename}
               num={num}
               courseDescription={file["course_description"]||""}
-              coursecode={file["Course_details"]['course_code']}
-              coursetitle={file["Course_details"]['course_name']}
-              module={file["Course_details"]['Module/Semester']}
-              session={file["Course_details"]['Session']}
+              coursecode={file["Course_details"]['course_code']||""}
+              coursetitle={file["Course_details"]['course_name']||""}
+              module={file["Course_details"]['Module/Semester']||""}
+              session={file["Course_details"]['Session']||""}
+              courseSyllabus={file["Course Syllabus"]||""}
+              learningResources={file["Learning Resources"]||""}
             />
           ) : (
             <p>Loading file information...</p>

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import data from './data.json';
 
-const EditableCourseDescription = ({courseDescription, onChange}) => {
+const EditableCourseDescription = ({ courseDescription, onChange }) => {
   const [description, setDescription] = useState(courseDescription);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -15,8 +14,6 @@ const EditableCourseDescription = ({courseDescription, onChange}) => {
 
   const handleSave = () => {
     setIsEditing(false);
-    // Here you would typically update the data in your backend
-    console.log('Saving new description:', description);
   };
 
   const handleChange = (e) => {
