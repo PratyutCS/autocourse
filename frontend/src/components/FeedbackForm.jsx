@@ -461,13 +461,22 @@ const FeedbackForm = (props) => {
         </div>
         <ExcelUploader />
       </div>
+      <div className='sb'>
+        <button onClick={() => window.history.back()} className="back-button">
+          {" "}
+          <IoReturnUpBackSharp />
+          Back to Files
+        </button>
+        <div className='sbt-btn'>
+          <button
+            onClick={postData}
+            className="btn bg-blue-500 text-white rounded-md px-6 py-2 mx-auto block"
+          >
+            SUBMIT
+          </button>
+        </div>
+      </div>
 
-      <button
-        onClick={postData}
-        className="bg-blue-500 text-white rounded-md px-8 py-2 mx-auto mt-2 mb-2 block"
-      >
-        SUBMIT
-      </button>
     </div>
   );
 };
