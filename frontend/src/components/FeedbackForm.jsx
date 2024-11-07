@@ -33,6 +33,7 @@ const FeedbackForm = (props) => {
   const [internalAssessmentData, setInternalAssessmentData] = useState( props.internalAssessmentData || {
     components: []
   });
+  const [actionsForWeakStudentsData, setActionsForWeakStudentsData] = useState( props.actionsForWeakStudentsData || "");
 
   const EditableCourseDescriptionDataChange = (data) => {
     setEditableCourseDescriptionData(data);
@@ -94,6 +95,18 @@ const FeedbackForm = (props) => {
     }
   };
 
+  const handleactionsForWeakStudentsDataChange = (data) => {
+    // console.log(data);
+    setActionsForWeakStudentsData(data);
+  }
+
+  // useEffect(() => {
+  //   if (actionsForWeakStudentsData != null) {
+  //     console.log(actionsForWeakStudentsData);
+  //   }
+  // }, [actionsForWeakStudentsData]);
+
+
 
   const postData = async () => {
     if (num !== undefined) {
@@ -120,7 +133,8 @@ const FeedbackForm = (props) => {
             },
             internalAssessmentData: {
               components: internalAssessmentData.components
-            }
+            },
+            actionsForWeakStudentsData
           },
           {
             headers: { "x-auth-token": token },
@@ -402,10 +416,12 @@ const FeedbackForm = (props) => {
             Identification of weak students
           </h2>
         </div>
-        <ExcelUploader />
+        <ExcelUploader/>
       </div>
 
-      <ActionsForWeakStudents />
+      <ActionsForWeakStudents  
+          onSave={handleactionsForWeakStudentsDataChange}
+          initialData={actionsForWeakStudentsData}/>
 
       {/* <div className="form-section">
         <div className="flex items-center mb-2">

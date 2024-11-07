@@ -410,7 +410,6 @@ app.post("/form", auth, async (req, res) => {
     } else {
       try{
         data = JSON.parse(data);
-        // data[num].reflections = req.body.reflections;
         data[num]['course_code'] = req.body.coursecode || "";
         data[num]['course_name'] = req.body.coursetitle || "";
         data[num]['Module/Semester'] = req.body.module || "";
@@ -420,7 +419,8 @@ app.post("/form", auth, async (req, res) => {
         data[num]["Learning Resources"] = req.body.learningResources || "";
         data[num]["copoMappingData"] = req.body.copoMappingData || "";
         data[num]["internalAssessmentData"] = req.body.internalAssessmentData || "";
-        // console.log(req.body.internalAssessmentData);
+        data[num]["actionsForWeakStudentsData"] = req.body.actionsForWeakStudentsData || "";
+        // console.log(req.body.actionsForWeakStudentsData);
         fs.writeFileSync(directoryPath, JSON.stringify(data));
       }
       catch (error) {

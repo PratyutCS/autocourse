@@ -1,17 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const ActionsForWeakStudents = () => {
-  const [actions, setActions] = useState([
-    { id: 1, text: '' }
+const ActionsForWeakStudents = ({ onSave, initialData }) => {
+  const [actions, setActions] = useState(initialData || [
+    { id: Date.now(), text: '' }
   ]);
 
+  // Update actions if initialData prop changes
+  useEffect(() => {
+    if (initialData) {
+      setActions(initialData);
+    }
+  }, [initialData]);
+
   const addNewAction = () => {
-    const newId = actions.length + 1;
+    const newId = Date.now();
     setActions([...actions, { id: newId, text: '' }]);
   };
 
   const updateAction = (id, newText) => {
-    setActions(actions.map(action => 
+    setActions(actions.map(action =>
       action.id === id ? { ...action, text: newText } : action
     ));
   };
@@ -21,6 +28,13 @@ const ActionsForWeakStudents = () => {
       setActions(actions.filter(action => action.id !== id));
     }
   };
+
+  useEffect(() => {
+    // console.log("Actions have been updated:", actions);
+    if (onSave) {
+      onSave(actions);
+    }
+  }, [actions, onSave]);
 
   return (
     <div className="form-section">
@@ -32,7 +46,7 @@ const ActionsForWeakStudents = () => {
           Actions Taken for Weak Students
         </h2>
       </div>
-      
+
       <div className="space-y-3">
         {actions.map((action, index) => (
           <div key={action.id} className="flex items-start space-x-2">
