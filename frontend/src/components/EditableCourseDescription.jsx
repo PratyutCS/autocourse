@@ -1,8 +1,17 @@
-import React from 'react';
+// import React from 'react';
+
+import React, { useState, useEffect } from 'react';
 
 const EditableCourseDescription = ({ courseDescription, onChange }) => {
+  const [description, setDescription] = useState(courseDescription);
+
+  useEffect(() => {
+    setDescription(courseDescription);
+  }, [courseDescription]);
+
   const handleChange = (e) => {
-    onChange(e.target.value);
+    setDescription(e.target.value);
+    onChange(e.target.value );
   };
 
   return (
@@ -10,7 +19,7 @@ const EditableCourseDescription = ({ courseDescription, onChange }) => {
       <h3 className="text-lg font-semibold text-gray-800 mb-4">Course Description and its objectives</h3>
       <textarea
         className="w-full p-2 border rounded-md min-h-[150px] text-sm"
-        value={courseDescription}
+        value={description}
         onChange={handleChange}
         rows={10}
         placeholder="Enter course description..."
