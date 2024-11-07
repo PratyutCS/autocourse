@@ -25,17 +25,21 @@ const FeedbackForm = (props) => {
   const [session, setSession] = useState(props.session || "");
   const [file, setFile] = useState(null);
   const [fileContent, setFileContent] = useState(null);
-  const [EditableCourseDescriptionData, setEditableCourseDescriptionData] = useState(null);
+  const [EditableCourseDescriptionData, setEditableCourseDescriptionData] = useState(props.courseDescription || "");
+  const [copoMappingData, setCopoMappingData] = useState( props.copoMappingData || {
+    courseOutcomes: {},
+    mappingData: {}
+  });
 
   const EditableCourseDescriptionDataChange = (data) => {
     setEditableCourseDescriptionData(data);
   };
 
-  useEffect(() => {
-    if (EditableCourseDescriptionData != null) {
-      console.log("changed");
-    }
-  }, [EditableCourseDescriptionData]);
+  // useEffect(() => {
+  //   if (EditableCourseDescriptionData != null) {
+  //     console.log(EditableCourseDescriptionData);
+  //   }
+  // }, [EditableCourseDescriptionData]);
 
   const onDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
@@ -68,11 +72,6 @@ const FeedbackForm = (props) => {
       'text/csv': ['.csv'],
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
     },
-  });
-
-  const [copoMappingData, setCopoMappingData] = useState({
-    courseOutcomes: {},
-    mappingData: {}
   });
 
   const [internalAssessmentData, setInternalAssessmentData] = useState({
@@ -134,6 +133,7 @@ const FeedbackForm = (props) => {
 
         // Add success notification
         alert("Data saved successfully!");
+        window.location.reload();
       } catch (error) {
         console.error("Error submitting form data:", error);
         // Add error notification
@@ -141,13 +141,13 @@ const FeedbackForm = (props) => {
       }
     }
   };
-  useEffect(() => {
-    console.log("COPO Mapping Data changed:", copoMappingData);
-  }, [copoMappingData]);
+  // useEffect(() => {
+  //   console.log("COPO Mapping Data changed:", copoMappingData);
+  // }, [copoMappingData]);
 
-  useEffect(() => {
-    console.log("Internal Assessment Data changed:", internalAssessmentData);
-  }, [internalAssessmentData]);
+  // useEffect(() => {
+  //   console.log("Internal Assessment Data changed:", internalAssessmentData);
+  // }, [internalAssessmentData]);
 
 
   return (
@@ -255,7 +255,7 @@ const FeedbackForm = (props) => {
             Course Description and its objectives
           </h2>
         </div>
-        <EditableCourseDescription courseDescription={props.courseDescription} onChange={EditableCourseDescriptionDataChange} />
+        <EditableCourseDescription courseDescription={EditableCourseDescriptionData} onChange={EditableCourseDescriptionDataChange} />
       </div>
 
       <div className="form-section f2">

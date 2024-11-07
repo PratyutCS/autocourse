@@ -50,7 +50,7 @@ app.use(authRouter);
 // app.use(express.static(__dirname + "/public/assets"));
 
 const DB =
-  "mongodb+srv://AikataPratyut:aikata%40123@mscdb.0tplylu.mongodb.net/kkpr";
+  "mongodb+srv://AikataPratyut:qazwsxedc%400987654321@mscdb.0tplylu.mongodb.net/kkpr";
 
 mongoose
   .connect(DB)
@@ -411,13 +411,15 @@ app.post("/form", auth, async (req, res) => {
       try{
         data = JSON.parse(data);
         // data[num].reflections = req.body.reflections;
-        data[num]['course_code'] = req.body.coursecode;
-        data[num]['course_name'] = req.body.coursetitle;
-        data[num]['Module/Semester'] = req.body.module;
-        data[num]['Session'] = req.body.session;
-        data[num]["course_description"] = req.body.EditableCourseDescriptionData['description'];
-        data[num]["Course Syllabus"] = req.body.courseSyllabus;
-        data[num]["Learning Resources"] = req.body.learningResources;
+        data[num]['course_code'] = req.body.coursecode || "";
+        data[num]['course_name'] = req.body.coursetitle || "";
+        data[num]['Module/Semester'] = req.body.module || "";
+        data[num]['Session'] = req.body.session  || "";
+        data[num]["course_description"] = req.body.EditableCourseDescriptionData || "";
+        data[num]["Course Syllabus"] = req.body.courseSyllabus || "";
+        data[num]["Learning Resources"] = req.body.learningResources || "";
+        data[num]["copoMappingData"] = req.body.copoMappingData || "";
+        // console.log(req.body.EditableCourseDescriptionData);
         fs.writeFileSync(directoryPath, JSON.stringify(data));
       }
       catch (error) {

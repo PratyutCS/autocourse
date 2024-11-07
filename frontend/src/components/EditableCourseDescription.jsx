@@ -2,7 +2,7 @@ import React from 'react';
 
 const EditableCourseDescription = ({ courseDescription, onChange }) => {
   const handleChange = (e) => {
-    onChange({ description: e.target.value });
+    onChange(e.target.value);
   };
 
   return (
