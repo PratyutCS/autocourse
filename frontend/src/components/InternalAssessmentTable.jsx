@@ -28,22 +28,18 @@ const InternalAssessmentTable = ({ onSave, initialData }) => {
         [field]: value
       }
     };
-    
     const newData = {
       ...assessmentData,
       components: newComponents
     };
-    
+
     setAssessmentData(newData);
-    
-    // Always call onSave with the complete new state
     if (onSave) {
       onSave(newData);
     }
   };
-
   const addRow = () => {
-    const newKey = `component${Date.now()}`; // Use timestamp for unique key
+    const newKey = `component${Date.now()}`;
     const newComponents = {
       ...assessmentData.components,
       [newKey]: {
@@ -60,10 +56,7 @@ const InternalAssessmentTable = ({ onSave, initialData }) => {
       ...assessmentData,
       components: newComponents
     };
-
     setAssessmentData(newData);
-    
-    // Save immediately when adding a row
     if (onSave) {
       onSave(newData);
     }
@@ -72,15 +65,11 @@ const InternalAssessmentTable = ({ onSave, initialData }) => {
   const removeRow = (componentKey) => {
     if (Object.keys(assessmentData.components).length > 1) {
       const { [componentKey]: _, ...newComponents } = assessmentData.components;
-
       const newData = {
         ...assessmentData,
         components: newComponents
       };
-
       setAssessmentData(newData);
-      
-      // Save immediately when removing a row
       if (onSave) {
         onSave(newData);
       }
@@ -97,7 +86,7 @@ const InternalAssessmentTable = ({ onSave, initialData }) => {
           Add Row
         </button>
       </div>
-      
+
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-300">
           <thead>

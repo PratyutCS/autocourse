@@ -30,6 +30,9 @@ const FeedbackForm = (props) => {
     courseOutcomes: {},
     mappingData: {}
   });
+  const [internalAssessmentData, setInternalAssessmentData] = useState( props.internalAssessmentData || {
+    components: []
+  });
 
   const EditableCourseDescriptionDataChange = (data) => {
     setEditableCourseDescriptionData(data);
@@ -74,10 +77,6 @@ const FeedbackForm = (props) => {
     },
   });
 
-  const [internalAssessmentData, setInternalAssessmentData] = useState({
-    components: []
-  });
-
   const handleCOPOMappingChange = (data) => {
     if (data && data.courseOutcomes && data.mappingData) {
       setCopoMappingData({
@@ -101,7 +100,6 @@ const FeedbackForm = (props) => {
       try {
         // Log the data being sent for debugging
         console.log("Sending data:", {
-          copoMappingData,
           internalAssessmentData
         });
 

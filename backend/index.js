@@ -419,7 +419,8 @@ app.post("/form", auth, async (req, res) => {
         data[num]["Course Syllabus"] = req.body.courseSyllabus || "";
         data[num]["Learning Resources"] = req.body.learningResources || "";
         data[num]["copoMappingData"] = req.body.copoMappingData || "";
-        // console.log(req.body.EditableCourseDescriptionData);
+        data[num]["internalAssessmentData"] = req.body.internalAssessmentData || "";
+        // console.log(req.body.internalAssessmentData);
         fs.writeFileSync(directoryPath, JSON.stringify(data));
       }
       catch (error) {
