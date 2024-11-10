@@ -11,7 +11,7 @@ function App() {
     <div className='App'>
       <BrowserRouter>
         <Routes>
-          <Route index element={<Login />} />
+          <Route path="/login" index element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/form" element={<Info />} />
           <Route path="*" element={<NotFound />} />
