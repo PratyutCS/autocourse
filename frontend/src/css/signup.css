@@ -1,0 +1,98 @@
+.signup-form {
+    background-color: antiquewhite;
+    width: 28vw;
+    height: 65vh;  /* Slightly taller than login to accommodate extra fields */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: column;
+    border-radius: 0.7rem;
+    border: 1px solid rgba(6, 6, 6, 0.121);
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.signup-form > form {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1vh;
+    flex-direction: column;
+    height: 55%;
+    width: 100%;
+}
+
+.signup-form > form > input {
+    background-color: white;
+    width: 20vw;
+    height: 5vh;
+    border: 1px solid rgba(92, 92, 92, 0.184);
+    padding-left: 0.7vw;
+    outline: none;
+    border-radius: 0.3rem;
+}
+
+.sgn-upper {
+    height: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.sgn-upper > img {
+    height: 14vh;
+    width: auto;
+}
+
+.sgn-upper > h1 {
+    color: rgba(26, 26, 26, 0.718);
+    font-size: 3vmin;
+    font-family: "Nunito", sans-serif;
+}
+
+.sgn-upper > p {
+    font-family: "Space Grotesk", sans-serif;
+    margin-top: 1vh;
+    color: rgba(26, 26, 26, 0.433);
+}
+
+.signup-form > form > button {
+    background-color: rgb(33, 33, 33);
+    border: none;
+    width: 10vw;
+    height: 4vh;
+    color: white;
+    margin-top: 1vh;
+    cursor: pointer;
+    border-radius: 0.3rem;
+}
+
+.signup-form > form > button:hover {
+    background-color: white;
+    cursor: pointer;
+    color: black;
+    border: 1px solid black;
+}
+
+.message {
+    color: rgb(220, 53, 69);
+    font-size: 0.9rem;
+    margin: 0.5vh 0;
+    font-family: "Space Grotesk", sans-serif;
+}
+
+.login-link {
+    font-family: "Space Grotesk", sans-serif;
+    color: rgba(26, 26, 26, 0.433);
+    font-size: 0.9rem;
+}
+
+.login-link > span {
+    color: rgb(33, 33, 33);
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.login-link > span:hover {
+    color: rgba(33, 33, 33, 0.8);
+}

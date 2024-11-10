@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './pages/login';
+import Signup from './pages/signup';
 import Dashboard from './pages/dashboard';
 import NotFound from './pages/notfound';
 import Info from './pages/Info';
@@ -14,6 +15,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/form" element={<Info />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/signup" element={<Signup />} />
         </Routes>
       </BrowserRouter>
     </div>
