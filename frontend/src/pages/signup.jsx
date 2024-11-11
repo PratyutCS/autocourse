@@ -96,7 +96,7 @@ function Signup() {
         <p className="message">{message}</p>
         <button type="submit">Sign Up</button>
         <p className="login-link">
-          Already have an account? <span onClick={() => navigate('/login')}>Login</span>
+          Already have an account? <span onClick={() => navigate('/')}>Login</span>
         </p>
       </form>
     </div>
