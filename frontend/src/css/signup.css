@@ -56,7 +56,7 @@
     color: rgba(26, 26, 26, 0.433);
 }
 
-.signup-form > form > button {
+.btn-sb {
     background-color: rgb(33, 33, 33);
     border: none;
     width: 10vw;
@@ -67,7 +67,7 @@
     border-radius: 0.3rem;
 }
 
-.signup-form > form > button:hover {
+.btn-sb:hover {
     background-color: white;
     cursor: pointer;
     color: black;

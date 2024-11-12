@@ -4,6 +4,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../css/login.css'
 
+// import { useNavigate } from "react-router-dom";
+
 function Login() {
   const link = constants.url + "/api/signin";
   const navigate = useNavigate();
@@ -84,9 +86,11 @@ function Login() {
           required
         />
         <p>{message}</p>
-        <button type="submit">Login</button>
+        <button className="btn-sb" type="submit">Login</button>
+        
         {/* <button type="submit">SignUp</button> */}
       </form>
+      <button className="btn-sb sbn" onClick={ () => navigate('/signup')}>Signup</button>
       
     </div>
   );

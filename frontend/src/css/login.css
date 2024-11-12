@@ -22,7 +22,7 @@
     /* margin-top: 6vh; */
     gap: 1vh;
     flex-direction: column;
-    height: 45%;
+    height: auto;
     width: 100%;
 }
 .login-form>form>input{
@@ -72,4 +72,7 @@
     cursor: pointer;
     color: black;
     border: 1px solid black;
+}
+.sbn{
+    margin-bottom: 2vh;
 }
