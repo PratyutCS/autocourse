@@ -23,17 +23,18 @@ const FeedbackForm = (props) => {
   const [learningResources, setLearningResources] = useState(props.learningResources || "");
   const [module, setModule] = useState(props.module || "");
   const [session, setSession] = useState(props.session || "");
+  const [program, setProgram] = useState(props.program || "");
   const [file, setFile] = useState(null);
   const [fileContent, setFileContent] = useState(null);
   const [EditableCourseDescriptionData, setEditableCourseDescriptionData] = useState(props.courseDescription || "");
-  const [copoMappingData, setCopoMappingData] = useState( props.copoMappingData || {
+  const [copoMappingData, setCopoMappingData] = useState(props.copoMappingData || {
     courseOutcomes: {},
     mappingData: {}
   });
-  const [internalAssessmentData, setInternalAssessmentData] = useState( props.internalAssessmentData || {
+  const [internalAssessmentData, setInternalAssessmentData] = useState(props.internalAssessmentData || {
     components: []
   });
-  const [actionsForWeakStudentsData, setActionsForWeakStudentsData] = useState( props.actionsForWeakStudentsData || "");
+  const [actionsForWeakStudentsData, setActionsForWeakStudentsData] = useState(props.actionsForWeakStudentsData || "");
 
   const EditableCourseDescriptionDataChange = (data) => {
     setEditableCourseDescriptionData(data);
@@ -119,6 +120,7 @@ const FeedbackForm = (props) => {
         const response = await axios.post(
           constants.url + "/form",
           {
+            program,
             num,
             coursecode,
             coursetitle,
@@ -181,6 +183,23 @@ const FeedbackForm = (props) => {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
+        {/* Program Section */}
+        <div className="form-section">
+          <div className="flex items-center mb-2">
+            <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+              0
+            </div>
+            <h2 className="section-title text-xl font-semibold">Program</h2>
+          </div>
+          <div className="reflection-textarea w-full h-16 p-2 border border-gray-300 rounded">
+            <textarea
+              className="w-full h-full p-2 border-none outline-none resize-none text-gray-800"
+              placeholder="Enter course code here..."
+              value={program}
+              onChange={(e) => setProgram(e.target.value)}
+            ></textarea>
+          </div>
+        </div>
         {/* Course Code Section */}
         <div className="form-section">
           <div className="flex items-center mb-2">
@@ -416,12 +435,12 @@ const FeedbackForm = (props) => {
             Identification of weak students
           </h2>
         </div>
-        <ExcelUploader/>
+        <ExcelUploader />
       </div>
 
-      <ActionsForWeakStudents  
-          onSave={handleactionsForWeakStudentsDataChange}
-          initialData={actionsForWeakStudentsData}/>
+      <ActionsForWeakStudents
+        onSave={handleactionsForWeakStudentsDataChange}
+        initialData={actionsForWeakStudentsData} />
 
       {/* <div className="form-section">
         <div className="flex items-center mb-2">

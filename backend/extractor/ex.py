@@ -26,7 +26,8 @@ def ai(text):
     "Session": null,
     "course_code": null,
     "course_name": null,
-    "Module/Semester": null
+    "Module/Semester": null,
+    "Program": null
 }}
 
 Here is the text: {text[:1000]}
@@ -71,6 +72,7 @@ if __name__ == '__main__':
         mainData["course_code"] = res["course_code"]
         mainData["course_name"] = res["course_name"]
         mainData["Module/Semester"] = res["Module/Semester"]
+        mainData["Program"] = res["Program"]
     except:
         print("------- error in parsing ai response ---------")
         print(response)

@@ -43,9 +43,32 @@ def replace_placeholders(doc, data):
                             value = ""
                         cell.text = cell.text.replace(placeholder, value)
 
-if data.get('Course_details'):
-    details = data["Course_details"]
-    replace_placeholders(doc, details)
+# if data.get('Course_details'):
+#     details = data["Course_details"]
+#     replace_placeholders(doc, details)
+
+def rep(doc, key):
+    for paragraph in doc.paragraphs:
+        placeholder = f'{{{{{key}}}}}'
+        if placeholder in paragraph.text:
+                value = data.get(key, "")
+                paragraph.text = paragraph.text.replace(placeholder, value)
+
+if data.get('Session'):
+    rep(doc,"Session")
+
+if data.get('course_code'):
+    rep(doc,"course_code")
+
+if data.get('course_name'):
+    rep(doc,"course_name")
+
+if data.get('Module/Semester'):
+    rep(doc,"Module/Semester")
+
+if data.get('Program'):
+    rep(doc,"Program")
+
 
 
 #  PEOs and POs & PSOs of the Program

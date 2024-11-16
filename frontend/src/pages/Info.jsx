@@ -65,6 +65,7 @@ const Info = () => {
               copoMappingData={file["copoMappingData"] || ""}
               internalAssessmentData={file["internalAssessmentData"] || ""}
               actionsForWeakStudentsData={file["actionsForWeakStudentsData"] || ""}
+              program = {file["Program"] || ""}
             />
           ) : (
             <p>Loading file information...</p>

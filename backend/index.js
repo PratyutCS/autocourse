@@ -420,6 +420,7 @@ app.post("/form", auth, async (req, res) => {
         data[num]["copoMappingData"] = req.body.copoMappingData || "";
         data[num]["internalAssessmentData"] = req.body.internalAssessmentData || "";
         data[num]["actionsForWeakStudentsData"] = req.body.actionsForWeakStudentsData || "";
+        data[num]["Program"] = req.body.program || "";
         // console.log(req.body.actionsForWeakStudentsData);
         fs.writeFileSync(directoryPath, JSON.stringify(data));
       }
