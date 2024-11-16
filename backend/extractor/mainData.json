@@ -1,5 +1,5 @@
 {
-  "Program":"",
+  "Program": "",
   "Session": "",
   "course_code": "",
   "course_name": "",
@@ -34,6 +34,23 @@
         "PSO4": ""
       }
     },
-    "actionsForWeakStudentsData" : [{"id":"1", "text": ""}]
+    "actionsForWeakStudentsData": [
+      {
+        "id": "1",
+        "text": ""
+      }
+    ],
+    "internalAssessmentData": {
+      "components": {
+        "component1731776591362": {
+          "component": "",
+          "duration": "",
+          "weightage": "",
+          "evaluation": "",
+          "week": "",
+          "remarks": ""
+        }
+      }
+    }
   }
 }
