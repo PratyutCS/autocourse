@@ -471,12 +471,13 @@ app.post("/form", auth, async (req, res) => {
       
       // Add new Excel/CSV data fields
       if (req.body.uploadedFiles) {
-        data[num]["weeklyTimetable"] = req.body.uploadedFiles.weeklyTimetable || null;
-        data[num]["studentList"] = req.body.uploadedFiles.studentList || null;
-        data[num]["weakstudent"] = req.body.uploadedFiles.weakstudent || null;
-        data[num]["assignmentsTaken"] = req.body.uploadedFiles.assignmentsTaken || null;
-        data[num]["marksDetails"] = req.body.uploadedFiles.marksDetails || null;
-        data[num]["attendanceReport"] = req.body.uploadedFiles.attendanceReport || null;
+        const uploadedFiles = req.body.uploadedFiles;
+        data[num]["weeklyTimetable"] = uploadedFiles.weeklyTimetable || null;
+        data[num]["studentList"] = uploadedFiles.studentList || null;
+        data[num]["weakstudent"] = uploadedFiles.weakstudent || null;
+        data[num]["assignmentsTaken"] = uploadedFiles.assignmentsTaken || null;
+        data[num]["marksDetails"] = uploadedFiles.marksDetails || null;
+        data[num]["attendanceReport"] = uploadedFiles.attendanceReport || null;
       }
 
       fs.writeFileSync(directoryPath, JSON.stringify(data));

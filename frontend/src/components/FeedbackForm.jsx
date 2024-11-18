@@ -125,13 +125,15 @@ const FeedbackForm = (props) => {
     setActionsForWeakStudentsData(data);
   };
 
-  const handleFileChange = (identifier, fileData) => {
+  const handleFileChange = (fileData, identifier) => {
+    console.log("Updating uploadedFiles:", identifier, fileData);
     setUploadedFiles((prev) => {
-        const updatedFiles = { ...prev, [identifier]: fileData };
-        console.log("Updated uploadedFiles:", updatedFiles);
-        return updatedFiles;
+      const updatedFiles = { ...prev, [identifier]: fileData };
+      console.log("Updated uploadedFiles:", updatedFiles);
+      return updatedFiles;
     });
-};
+  };
+  
 
   const postData = async () => {
     if (num !== undefined) {

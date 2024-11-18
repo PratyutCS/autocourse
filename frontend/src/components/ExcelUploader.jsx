@@ -8,16 +8,16 @@ const ExcelUploader = ({ title, identifier, onFileChange, initialData }) => {
   const [fileData, setFileData] = useState(initialData || null);
 
   const processFile = (data) => {
-    // Format the data to match the required JSON structure
     const formattedData = {
-      fileName: file?.name || '',
+      fileName: file?.name || "",
       uploadDate: new Date().toISOString(),
-      data: data
+      data: data,
     };
-    
+  
     setFileData(formattedData);
-    onFileChange && onFileChange(formattedData, identifier);
+    onFileChange && onFileChange(formattedData, identifier); // Ensure correct order
   };
+  
 
   const onDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
@@ -94,7 +94,37 @@ const ExcelUploader = ({ title, identifier, onFileChange, initialData }) => {
         </div>
       )}
 
-     
+      {fileData && fileData.data && (
+        <div className="mt-4 overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+            <thead>
+              <tr>
+                {Object.keys(fileData.data[0] || {}).map((header) => (
+                  <th key={header} className="px-4 py-2 bg-gray-50 text-left text-gray-600 border-b">
+                    {header}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {fileData.data.slice(0, 5).map((row, index) => (
+                <tr key={index}>
+                  {Object.values(row).map((cell, cellIndex) => (
+                    <td key={cellIndex} className="px-4 py-2 border-b text-gray-700">
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {fileData.data.length > 5 && (
+            <p className="mt-2 text-gray-500 text-sm">
+              Showing first 5 rows of {fileData.data.length} total rows
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 };
