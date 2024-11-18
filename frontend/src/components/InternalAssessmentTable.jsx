@@ -78,14 +78,9 @@ const InternalAssessmentTable = ({ onSave, initialData }) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
-        <button
-          onClick={addRow}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Add Row
-        </button>
-      </div>
+      {/* <div className="flex justify-end">
+        
+      </div> */}
 
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-300">
@@ -165,6 +160,12 @@ const InternalAssessmentTable = ({ onSave, initialData }) => {
           </tbody>
         </table>
       </div>
+      <button
+          onClick={addRow}
+          className="px-4 py-2 bg-[#FFB255] text-white rounded hover:bg-[#FFB255]/[0.8]"
+        >
+          Add Row
+        </button>
     </div>
   );
 };
