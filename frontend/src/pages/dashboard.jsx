@@ -11,6 +11,8 @@ function Dashboard() {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const [file, setFileData] = useState(null);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
 
   useEffect(() => {
     const checkTokenValidity = async () => {
@@ -82,7 +84,7 @@ function Dashboard() {
 
   return (
     <div className="dash"> 
-    <AsideComp/>
+    <AsideComp isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed}/>
     
       <div className="right">
         <div className="box p-6 rounded-lg shadow-lg">

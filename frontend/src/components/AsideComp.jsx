@@ -6,10 +6,9 @@ import constants from "../constants";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const AsideComp = () => {
+const AsideComp = ({ isCollapsed, setIsCollapsed }) => {
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {

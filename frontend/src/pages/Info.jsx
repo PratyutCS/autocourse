@@ -7,6 +7,7 @@ import AsideComp from '../components/AsideComp';
 import '../css/dash.css'
 const Info = () => {
   const location = useLocation();
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const { num } = location.state || {};
 
   const token = localStorage.getItem('token');
@@ -47,7 +48,7 @@ const Info = () => {
 
   return (
     <div className='dash'>
-      <AsideComp/>
+      <AsideComp isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed}/>
       <div className="right">
         <div className="box23">
           {file && file.done === 1 ? (
