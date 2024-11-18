@@ -23,11 +23,8 @@ const FeedbackForm = (props) => {
   const [courseSyllabus, setCourseSyllabus] = useState(
     props.courseSyllabus || ""
   );
-  // const [learningResources, setLearningResources] = useState(
-  //   props.learningResources || ""
-  // );
   const [learningResources, setLearningResources] = useState({
-    textBooks: [],
+    textBooks:[],
     referenceLinks: []
   });
   
@@ -56,12 +53,6 @@ const FeedbackForm = (props) => {
   const EditableCourseDescriptionDataChange = (data) => {
     setEditableCourseDescriptionData(data);
   };
-
-  // useEffect(() => {
-  //   if (EditableCourseDescriptionData != null) {
-  //     console.log(EditableCourseDescriptionData);
-  //   }
-  // }, [EditableCourseDescriptionData]);
 
   const onDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
@@ -123,15 +114,8 @@ const FeedbackForm = (props) => {
   
 
   const handleactionsForWeakStudentsDataChange = (data) => {
-    // console.log(data);
     setActionsForWeakStudentsData(data);
   };
-
-  // useEffect(() => {
-  //   if (actionsForWeakStudentsData != null) {
-  //     console.log(actionsForWeakStudentsData);
-  //   }
-  // }, [actionsForWeakStudentsData]);
 
   const postData = async () => {
     if (num !== undefined) {
@@ -179,14 +163,6 @@ const FeedbackForm = (props) => {
       }
     }
   };
-  // useEffect(() => {
-  //   console.log("COPO Mapping Data changed:", copoMappingData);
-  // }, [copoMappingData]);
-
-  // useEffect(() => {
-  //   console.log("Internal Assessment Data changed:", internalAssessmentData);
-  // }, [internalAssessmentData]);
-
   return (
     <div className="feedback-form1">
       <div className="sb">
@@ -343,12 +319,6 @@ const FeedbackForm = (props) => {
             Learning Resources
           </h2>
         </div>
-        {/* <textarea
-            className="w-full h-full p-2 border-none outline-none resize-none text-gray-800"
-            placeholder="Enter textbooks, reference books, and other learning resources..."
-            value={learningResources}
-            onChange={(e) => setLearningResources(e.target.value)}
-          ></textarea> */}
         <AddField
           label="Text Book"
           onChange={(updatedFields) => handleLearningResourcesChange(updatedFields, 'textBooks')}
