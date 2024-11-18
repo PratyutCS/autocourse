@@ -114,10 +114,9 @@ const FeedbackForm = (props) => {
   const [uploadedFiles, setUploadedFiles] = useState({
     weeklyTimetable: props.weeklyTimetable || null,
     studentList: props.studentList || null,
-    // Add more identifiers as needed
+    weakstudent:props.weakstudent ||null,
   });
   
-
   const handleactionsForWeakStudentsDataChange = (data) => {
     setActionsForWeakStudentsData(data);
   };
