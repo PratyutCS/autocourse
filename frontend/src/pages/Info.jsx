@@ -23,7 +23,6 @@ const Info = () => {
           headers: { 'x-auth-token': token }
         });
         setFileData(response.data);
-        // console.log("copoMappingData fron info.jsx is : "+response.data.copoMappingData);
 
         if (response.data.done === 1) {
           clearInterval(pollingInterval);
@@ -63,7 +62,7 @@ const Info = () => {
               courseSyllabus={file["Course Syllabus"] || ""}
               learningResources={file["Learning Resources"] || ""}
               copoMappingData={file["copoMappingData"] || ""}
-              internalAssessmentData={file["internalAssessmentData"] || ""}
+              internalAssessmentData={file["internalAssessmentData"] }
               actionsForWeakStudentsData={file["actionsForWeakStudentsData"] || ""}
               program = {file["Program"] || ""}
             />

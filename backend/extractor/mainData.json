@@ -7,6 +7,18 @@
   "course_description": "",
   "Course Syllabus": "",
   "Learning Resources": "",
+  "internalAssessmentData": {
+    "components": {
+      "component1731776591362": {
+        "component": "",
+        "duration": "",
+        "weightage": "",
+        "evaluation": "",
+        "week": "",
+        "remarks": ""
+      }
+    }
+  },
   "copoMappingData": {
     "courseOutcomes": {
       "CO1": {
@@ -33,24 +45,12 @@
         "PSO3": "",
         "PSO4": ""
       }
-    },
-    "actionsForWeakStudentsData": [
-      {
-        "id": "1",
-        "text": ""
-      }
-    ],
-    "internalAssessmentData": {
-      "components": {
-        "component1731776591362": {
-          "component": "",
-          "duration": "",
-          "weightage": "",
-          "evaluation": "",
-          "week": "",
-          "remarks": ""
-        }
-      }
     }
-  }
+  },
+  "actionsForWeakStudentsData": [
+    {
+      "id": "1",
+      "text": ""
+    }
+  ]
 }
