@@ -3,9 +3,9 @@ import { useDropzone } from 'react-dropzone';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
 
-const ExcelUploader = ({ title, onFileChange }) => {
+const ExcelUploader = ({ title, identifier, onFileChange, initialData }) => {
   const [file, setFile] = useState(null);
-  // const [fileContent, setFileContent] = useState(null);
+  const [data, setData] = useState(initialData || null);
 
   const onDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
@@ -14,8 +14,14 @@ const ExcelUploader = ({ title, onFileChange }) => {
     if (file.type === 'text/csv') {
       Papa.parse(file, {
         complete: (result) => {
-          // setFileContent(result.data);
-          onFileChange && onFileChange(result.data);
+          const processedData = {
+            fileName: file.name,
+            type: 'csv',
+            content: result.data,
+            uploadedAt: new Date().toISOString()
+          };
+          setData(processedData);
+          onFileChange && onFileChange(identifier, processedData);
         },
         header: true,
       });
@@ -27,18 +33,24 @@ const ExcelUploader = ({ title, onFileChange }) => {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const json = XLSX.utils.sheet_to_json(worksheet);
-        console.log(json);
-        // setFileContent(json);
-        onFileChange && onFileChange(json);
+        
+        const processedData = {
+          fileName: file.name,
+          type: 'xlsx',
+          content: json,
+          uploadedAt: new Date().toISOString()
+        };
+        setData(processedData);
+        onFileChange && onFileChange(identifier, processedData);
       };
       reader.readAsArrayBuffer(file);
     }
-  }, [onFileChange]);
+  }, [onFileChange, identifier]);
 
   const removeFile = () => {
     setFile(null);
-    // setFileContent(null);
-    onFileChange && onFileChange(null);
+    setData(null);
+    onFileChange && onFileChange(identifier, null);
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -50,8 +62,11 @@ const ExcelUploader = ({ title, onFileChange }) => {
   });
 
   return (
-    <div>
-      <div {...getRootProps()} className="file-upload-area border-2 border-dashed border-gray-300 p-8 text-center rounded cursor-pointer">
+    <div className="mb-6">
+      {title && (
+        <h3 className="text-lg font-semibold text-gray-700 mb-2">{title}</h3>
+      )}
+      <div {...getRootProps()} className="file-upload-area border-2 border-dashed border-gray-300 p-8 text-center rounded cursor-pointer hover:border-orange-400 transition-colors">
         <input {...getInputProps()} />
         {isDragActive ? (
           <p className="text-gray-500">Drop the file here ...</p>
@@ -74,29 +89,6 @@ const ExcelUploader = ({ title, onFileChange }) => {
           </button>
         </div>
       )}
-
-      {/* {fileContent && (
-        <div className="mt-4 overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-300">
-            <thead>
-              <tr>
-                {Object.keys(fileContent[0]).map((header) => (
-                  <th key={header} className="px-4 py-2 border-b bg-gray-100">{header}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {fileContent.map((row, index) => (
-                <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                  {Object.values(row).map((cell, cellIndex) => (
-                    <td key={cellIndex} className="px-4 py-2 border-b">{cell}</td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )} */}
     </div>
   );
 };

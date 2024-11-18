@@ -111,19 +111,31 @@ const FeedbackForm = (props) => {
       [fieldType]: updatedFields,
     }));
   };
+  const [uploadedFiles, setUploadedFiles] = useState({
+    weeklyTimetable: props.weeklyTimetable || null,
+    studentList: props.studentList || null,
+    // Add more identifiers as needed
+  });
+  
 
   const handleactionsForWeakStudentsDataChange = (data) => {
     setActionsForWeakStudentsData(data);
   };
 
+  const handleFileChange = (identifier, fileData) => {
+    setUploadedFiles(prev => ({
+      ...prev,
+      [identifier]: fileData
+    }));
+  };
   const postData = async () => {
     if (num !== undefined) {
       try {
-        // Log the data being sent for debugging
         console.log("Sending data:", {
           internalAssessmentData,
+          uploadedFiles, // Include the uploaded files data
         });
-
+        
         const response = await axios.post(
           constants.url + "/form",
           {
@@ -144,24 +156,23 @@ const FeedbackForm = (props) => {
               components: internalAssessmentData.components,
             },
             actionsForWeakStudentsData,
+            uploadedFiles, // Add the uploaded files to the POST request
           },
           {
             headers: { "x-auth-token": token },
           }
         );
-
+        
         console.log("Server response:", response.data);
-
-        // Add success notification
         alert("Data saved successfully!");
         window.location.reload();
       } catch (error) {
         console.error("Error submitting form data:", error);
-        // Add error notification
         alert("Error saving data. Please check console for details.");
       }
     }
   };
+  
   return (
     <div className="feedback-form1 bg-[#FFFEFD] min-h-screen">
            <div className="mb-8 flex justify-between items-center bg-white rounded-xl shadow-md p-5">
@@ -334,7 +345,12 @@ const FeedbackForm = (props) => {
             <h2 className="text-xl font-semibold text-gray-800">Weekly Time-Table</h2>
         </div>
         <div className=" p-4 rounded-lg">
-          <ExcelUploader />
+        <ExcelUploader 
+      title="Weekly Time-Table"
+      identifier="weeklyTimetable"
+      onFileChange={handleFileChange}
+      initialData={uploadedFiles.weeklyTimetable}
+    />
         </div>
       </div>
 
@@ -347,7 +363,12 @@ const FeedbackForm = (props) => {
             Registered Student List
           </h2>
         </div>
-        <ExcelUploader />
+        <ExcelUploader 
+      title="Student List"
+      identifier="studentList"
+      onFileChange={handleFileChange}
+      initialData={uploadedFiles.studentList}
+    />
       </div>
 
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
@@ -387,7 +408,12 @@ const FeedbackForm = (props) => {
             Identification of weak students
           </h2>
         </div>
-        <ExcelUploader />
+        <ExcelUploader 
+      title="Weak Students"
+      identifier="weakstudent"
+      onFileChange={handleFileChange}
+      initialData={uploadedFiles.weakstudent}
+    />
       </div>
 
       <ActionsForWeakStudents
