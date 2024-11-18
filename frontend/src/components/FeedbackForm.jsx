@@ -12,6 +12,7 @@ import PDFUploader from './PDFUploader';
 import ActionsForWeakStudents from './ActionsForWeakStudents';
 import ExcelUploader from './ExcelUploader';
 import EditableCourseDescription from './EditableCourseDescription';
+import CourseSyllabus from './CourseSyllabus';
 
 
 const FeedbackForm = (props) => {
@@ -306,14 +307,7 @@ const FeedbackForm = (props) => {
 
       <div className="form-section">
         {/* Course Syllabus Section */}
-        <div className="flex items-center mb-2">
-          <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            7
-          </div>
-          <h2 className="section-title text-xl font-semibold">
-            Course Syllabus
-          </h2>
-        </div>
+        <CourseSyllabus/>
         <div className="syllabus-textarea w-full h-48 p-2 border border-gray-300 rounded mb-4">
           <textarea
             className="w-full h-full p-2 border-none outline-none resize-none text-gray-800"
