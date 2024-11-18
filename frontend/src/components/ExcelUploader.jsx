@@ -1,11 +1,11 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
 
 const ExcelUploader = ({ title, onFileChange }) => {
   const [file, setFile] = useState(null);
-  const [fileContent, setFileContent] = useState(null);
+  // const [fileContent, setFileContent] = useState(null);
 
   const onDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
@@ -14,7 +14,7 @@ const ExcelUploader = ({ title, onFileChange }) => {
     if (file.type === 'text/csv') {
       Papa.parse(file, {
         complete: (result) => {
-          setFileContent(result.data);
+          // setFileContent(result.data);
           onFileChange && onFileChange(result.data);
         },
         header: true,
@@ -27,7 +27,8 @@ const ExcelUploader = ({ title, onFileChange }) => {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const json = XLSX.utils.sheet_to_json(worksheet);
-        setFileContent(json);
+        console.log(json);
+        // setFileContent(json);
         onFileChange && onFileChange(json);
       };
       reader.readAsArrayBuffer(file);
@@ -36,7 +37,7 @@ const ExcelUploader = ({ title, onFileChange }) => {
 
   const removeFile = () => {
     setFile(null);
-    setFileContent(null);
+    // setFileContent(null);
     onFileChange && onFileChange(null);
   };
 
@@ -74,7 +75,7 @@ const ExcelUploader = ({ title, onFileChange }) => {
         </div>
       )}
 
-      {fileContent && (
+      {/* {fileContent && (
         <div className="mt-4 overflow-x-auto">
           <table className="min-w-full bg-white border border-gray-300">
             <thead>
@@ -95,7 +96,7 @@ const ExcelUploader = ({ title, onFileChange }) => {
             </tbody>
           </table>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

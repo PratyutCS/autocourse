@@ -1,41 +1,57 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useDropzone } from 'react-dropzone';
-import * as XLSX from 'xlsx';
-import Papa from 'papaparse';
+import { useState, useEffect, useCallback } from "react";
+import { useDropzone } from "react-dropzone";
+import * as XLSX from "xlsx";
+import Papa from "papaparse";
 import constants from "../constants";
 import axios from "axios";
 import "../css/feedback.css";
 import { IoReturnUpBackSharp } from "react-icons/io5";
-import COPOMapping from './COPOMapping';
-import InternalAssessmentTable from './InternalAssessmentTable';
-import PDFUploader from './PDFUploader';
-import ActionsForWeakStudents from './ActionsForWeakStudents';
-import ExcelUploader from './ExcelUploader';
-import EditableCourseDescription from './EditableCourseDescription';
-import CourseSyllabus from './CourseSyllabus';
-
+import COPOMapping from "./COPOMapping";
+import InternalAssessmentTable from "./InternalAssessmentTable";
+import PDFUploader from "./PDFUploader";
+import ActionsForWeakStudents from "./ActionsForWeakStudents";
+import ExcelUploader from "./ExcelUploader";
+import EditableCourseDescription from "./EditableCourseDescription";
+import CourseSyllabus from "./CourseSyllabus";
+import AddField from "./AddFiled";
 
 const FeedbackForm = (props) => {
   const token = localStorage.getItem("token");
   let num = props.num;
   const [coursecode, setCourseCode] = useState(props.coursecode || "");
   const [coursetitle, setCourseTitle] = useState(props.coursetitle || "");
-  const [courseSyllabus, setCourseSyllabus] = useState(props.courseSyllabus || "");
-  const [learningResources, setLearningResources] = useState(props.learningResources || "");
+  const [courseSyllabus, setCourseSyllabus] = useState(
+    props.courseSyllabus || ""
+  );
+  // const [learningResources, setLearningResources] = useState(
+  //   props.learningResources || ""
+  // );
+  const [learningResources, setLearningResources] = useState({
+    textBooks: [],
+    referenceLinks: []
+  });
+  
   const [module, setModule] = useState(props.module || "");
   const [session, setSession] = useState(props.session || "");
   const [program, setProgram] = useState(props.program || "");
   const [file, setFile] = useState(null);
   const [fileContent, setFileContent] = useState(null);
-  const [EditableCourseDescriptionData, setEditableCourseDescriptionData] = useState(props.courseDescription || "");
-  const [copoMappingData, setCopoMappingData] = useState(props.copoMappingData || {
-    courseOutcomes: {},
-    mappingData: {}
-  });
-  const [internalAssessmentData, setInternalAssessmentData] = useState(props.internalAssessmentData || {
-    components: []
-  });
-  const [actionsForWeakStudentsData, setActionsForWeakStudentsData] = useState(props.actionsForWeakStudentsData || "");
+  const [EditableCourseDescriptionData, setEditableCourseDescriptionData] =
+    useState(props.courseDescription || "");
+  const [copoMappingData, setCopoMappingData] = useState(
+    props.copoMappingData || {
+      courseOutcomes: {},
+      mappingData: {},
+    }
+  );
+  const [internalAssessmentData, setInternalAssessmentData] = useState(
+    props.internalAssessmentData || {
+      components: [],
+    }
+  );
+  const [actionsForWeakStudentsData, setActionsForWeakStudentsData] = useState(
+    props.actionsForWeakStudentsData || ""
+  );
 
   const EditableCourseDescriptionDataChange = (data) => {
     setEditableCourseDescriptionData(data);
@@ -51,7 +67,7 @@ const FeedbackForm = (props) => {
     const file = acceptedFiles[0];
     setFile(file);
 
-    if (file.type === 'text/csv') {
+    if (file.type === "text/csv") {
       Papa.parse(file, {
         complete: (result) => {
           setFileContent(result.data);
@@ -62,7 +78,7 @@ const FeedbackForm = (props) => {
       const reader = new FileReader();
       reader.onload = (e) => {
         const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
+        const workbook = XLSX.read(data, { type: "array" });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const json = XLSX.utils.sheet_to_json(worksheet);
@@ -75,8 +91,10 @@ const FeedbackForm = (props) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'text/csv': ['.csv'],
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+      "text/csv": [".csv"],
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+        ".xlsx",
+      ],
     },
   });
 
@@ -84,7 +102,7 @@ const FeedbackForm = (props) => {
     if (data && data.courseOutcomes && data.mappingData) {
       setCopoMappingData({
         courseOutcomes: data.courseOutcomes,
-        mappingData: data.mappingData
+        mappingData: data.mappingData,
       });
     }
   };
@@ -92,7 +110,7 @@ const FeedbackForm = (props) => {
   const handleInternalAssessmentChange = (data) => {
     if (data && data.components) {
       setInternalAssessmentData({
-        components: data.components
+        components: data.components,
       });
     }
   };
@@ -100,7 +118,7 @@ const FeedbackForm = (props) => {
   const handleactionsForWeakStudentsDataChange = (data) => {
     // console.log(data);
     setActionsForWeakStudentsData(data);
-  }
+  };
 
   // useEffect(() => {
   //   if (actionsForWeakStudentsData != null) {
@@ -108,14 +126,12 @@ const FeedbackForm = (props) => {
   //   }
   // }, [actionsForWeakStudentsData]);
 
-
-
   const postData = async () => {
     if (num !== undefined) {
       try {
         // Log the data being sent for debugging
         console.log("Sending data:", {
-          internalAssessmentData
+          internalAssessmentData,
         });
 
         const response = await axios.post(
@@ -132,12 +148,12 @@ const FeedbackForm = (props) => {
             learningResources,
             copoMappingData: {
               courseOutcomes: copoMappingData.courseOutcomes,
-              mappingData: copoMappingData.mappingData
+              mappingData: copoMappingData.mappingData,
             },
             internalAssessmentData: {
-              components: internalAssessmentData.components
+              components: internalAssessmentData.components,
             },
-            actionsForWeakStudentsData
+            actionsForWeakStudentsData,
           },
           {
             headers: { "x-auth-token": token },
@@ -164,16 +180,15 @@ const FeedbackForm = (props) => {
   //   console.log("Internal Assessment Data changed:", internalAssessmentData);
   // }, [internalAssessmentData]);
 
-
   return (
     <div className="feedback-form1">
-      <div className='sb'>
+      <div className="sb">
         <button onClick={() => window.history.back()} className="back-button">
           {" "}
           <IoReturnUpBackSharp />
           Back to Files
         </button>
-        <div className='sbt-btn'>
+        <div className="sbt-btn">
           <button
             onClick={postData}
             className="btn bg-blue-500 text-white rounded-md px-6 py-2 mx-auto block"
@@ -287,7 +302,10 @@ const FeedbackForm = (props) => {
             Course Description and its objectives
           </h2>
         </div>
-        <EditableCourseDescription courseDescription={EditableCourseDescriptionData} onChange={EditableCourseDescriptionDataChange} />
+        <EditableCourseDescription
+          courseDescription={EditableCourseDescriptionData}
+          onChange={EditableCourseDescriptionDataChange}
+        />
       </div>
 
       <div className="form-section f2">
@@ -307,8 +325,7 @@ const FeedbackForm = (props) => {
 
       <div className="form-section">
         {/* Course Syllabus Section */}
-        <CourseSyllabus/>
-        
+        <CourseSyllabus />
 
         {/* Learning Resources Section */}
         <div className="flex items-center mb-2">
@@ -319,14 +336,30 @@ const FeedbackForm = (props) => {
             Learning Resources
           </h2>
         </div>
-        <div className="learning-resources-textarea w-full h-32 p-2 border border-gray-300 rounded">
-          <textarea
+        {/* <textarea
             className="w-full h-full p-2 border-none outline-none resize-none text-gray-800"
             placeholder="Enter textbooks, reference books, and other learning resources..."
             value={learningResources}
             onChange={(e) => setLearningResources(e.target.value)}
-          ></textarea>
-        </div>
+          ></textarea> */}
+        <AddField
+          label="Text Book"
+          onChange={(updatedFields) =>
+            setLearningResources({
+              ...learningResources,
+              textBooks: updatedFields,
+            })
+          }
+        />
+        <AddField
+          label="Reference Link"
+          onChange={(updatedFields) =>
+            setLearningResources({
+              ...learningResources,
+              referenceLinks: updatedFields,
+            })
+          }
+        />
       </div>
 
       <div className="form-section">
@@ -350,37 +383,7 @@ const FeedbackForm = (props) => {
             Registered Student List
           </h2>
         </div>
-        <div {...getRootProps()} className="file-upload-area border-2 border-dashed border-gray-300 p-8 text-center rounded cursor-pointer">
-          <input {...getInputProps()} />
-          {isDragActive ? (
-            <p className="text-gray-500">Drop the file here ...</p>
-          ) : (
-            <p className="text-gray-500">Drag & drop a CSV or XLSX file here, or click to select a file</p>
-          )}
-          {file && <p className="mt-2 text-green-500">File uploaded: {file.name}</p>}
-        </div>
-        {fileContent && (
-          <div className="mt-4 overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-300">
-              <thead>
-                <tr>
-                  {Object.keys(fileContent[0]).map((header) => (
-                    <th key={header} className="px-4 py-2 border-b">{header}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {fileContent.map((row, index) => (
-                  <tr key={index}>
-                    {Object.values(row).map((cell, cellIndex) => (
-                      <td key={cellIndex} className="px-4 py-2 border-b">{cell}</td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <ExcelUploader />
       </div>
 
       <div className="form-section">
@@ -396,9 +399,7 @@ const FeedbackForm = (props) => {
           onSave={handleInternalAssessmentChange}
           initialData={internalAssessmentData}
         />
-
       </div>
-
 
       <div className="form-section">
         <div className="flex items-center mb-2">
@@ -427,7 +428,8 @@ const FeedbackForm = (props) => {
 
       <ActionsForWeakStudents
         onSave={handleactionsForWeakStudentsDataChange}
-        initialData={actionsForWeakStudentsData} />
+        initialData={actionsForWeakStudentsData}
+      />
 
       {/* <div className="form-section">
         <div className="flex items-center mb-2">
@@ -452,7 +454,8 @@ const FeedbackForm = (props) => {
             15
           </div>
           <h2 className="section-title text-xl font-semibold">
-            Assignments/Quiz/Internal Components/ Projects taken throughout semester
+            Assignments/Quiz/Internal Components/ Projects taken throughout
+            semester
           </h2>
         </div>
         <ExcelUploader />
@@ -481,13 +484,13 @@ const FeedbackForm = (props) => {
         </div>
         <ExcelUploader />
       </div>
-      <div className='sb'>
+      <div className="sb">
         <button onClick={() => window.history.back()} className="back-button">
           {" "}
           <IoReturnUpBackSharp />
           Back to Files
         </button>
-        <div className='sbt-btn'>
+        <div className="sbt-btn">
           <button
             onClick={postData}
             className="btn bg-blue-500 text-white rounded-md px-6 py-2 mx-auto block"
@@ -496,7 +499,6 @@ const FeedbackForm = (props) => {
           </button>
         </div>
       </div>
-
     </div>
   );
 };
