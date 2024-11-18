@@ -15,7 +15,7 @@ const ActionsForWeakStudents = ({ onSave, initialData }) => {
   return (
     <div className="form-section">
       <div className="flex items-center mb-2">
-        <div className="section-number bg-pink-400 text-white rounded-full w-16 h-8 flex items-center justify-center mr-2">
+        <div className="section-number bg-[#FFB255] text-white rounded-full w-16 h-8 flex items-center justify-center mr-2">
           14
         </div>
         <h2 className="section-title text-xl font-semibold">

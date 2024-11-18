@@ -66,7 +66,7 @@ const CourseSyllabus = ({ onSave, initialData }) => {
   return (
     <div className="form-section">
       <div className="flex items-center mb-4">
-        <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+        <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
           7
         </div>
         <h2 className="section-title text-xl font-semibold">
@@ -132,7 +132,7 @@ const CourseSyllabus = ({ onSave, initialData }) => {
 
       <button 
         onClick={addRow}
-        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+        className="px-4 py-2 bg-[#FFB255] text-white rounded hover:bg-[#FFB255] transition-colors"
       >
         Add Row
       </button>

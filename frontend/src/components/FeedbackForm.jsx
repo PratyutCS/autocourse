@@ -25,10 +25,9 @@ const FeedbackForm = (props) => {
   );
   const [learningResources, setLearningResources] = useState({
     textBooks: props.learningResources?.textBooks || [],
-    referenceLinks: props.learningResources?.referenceLinks || []
+    referenceLinks: props.learningResources?.referenceLinks || [],
   });
-  
-  
+
   const [module, setModule] = useState(props.module || "");
   const [session, setSession] = useState(props.session || "");
   const [program, setProgram] = useState(props.program || "");
@@ -107,12 +106,11 @@ const FeedbackForm = (props) => {
     }
   };
   const handleLearningResourcesChange = (updatedFields, fieldType) => {
-    setLearningResources(prevState => ({
+    setLearningResources((prevState) => ({
       ...prevState,
-      [fieldType]: updatedFields
+      [fieldType]: updatedFields,
     }));
   };
-  
 
   const handleactionsForWeakStudentsDataChange = (data) => {
     setActionsForWeakStudentsData(data);
@@ -175,7 +173,7 @@ const FeedbackForm = (props) => {
         <div className="sbt-btn">
           <button
             onClick={postData}
-            className="btn bg-blue-500 text-white rounded-md px-6 py-2 mx-auto block"
+            className="btn bg-[#FFB255] text-white rounded-md px-6 py-2 mx-auto block"
           >
             SUBMIT
           </button>
@@ -186,8 +184,8 @@ const FeedbackForm = (props) => {
         {/* Program Section */}
         <div className="form-section">
           <div className="flex items-center mb-2">
-            <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              0
+            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+              1
             </div>
             <h2 className="section-title text-xl font-semibold">Program</h2>
           </div>
@@ -203,8 +201,8 @@ const FeedbackForm = (props) => {
         {/* Course Code Section */}
         <div className="form-section">
           <div className="flex items-center mb-2">
-            <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              1
+            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+              2
             </div>
             <h2 className="section-title text-xl font-semibold">Course Code</h2>
           </div>
@@ -221,8 +219,8 @@ const FeedbackForm = (props) => {
         {/* Course Title Section */}
         <div className="form-section">
           <div className="flex items-center mb-2">
-            <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              2
+            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+              3
             </div>
             <h2 className="section-title text-xl font-semibold">
               Course Title
@@ -241,8 +239,8 @@ const FeedbackForm = (props) => {
         {/* Module/Semester Section */}
         <div className="form-section">
           <div className="flex items-center mb-2">
-            <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              3
+            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+              4
             </div>
             <h2 className="section-title text-xl font-semibold">
               Module/Semester
@@ -261,8 +259,8 @@ const FeedbackForm = (props) => {
         {/* Session Section */}
         <div className="form-section">
           <div className="flex items-center mb-2">
-            <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              4
+            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+              5
             </div>
             <h2 className="section-title text-xl font-semibold">Session</h2>
           </div>
@@ -279,8 +277,8 @@ const FeedbackForm = (props) => {
 
       <div className="form-section">
         <div className="flex items-center mb-2">
-          <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            5
+          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+            6
           </div>
           <h2 className="section-title text-xl font-semibold">
             Course Description and its objectives
@@ -294,8 +292,8 @@ const FeedbackForm = (props) => {
 
       <div className="form-section f2">
         <div className="flex items-center mb-2">
-          <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            6
+          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+            7
           </div>
           <h2 className="section-title text-xl font-semibold">
             Course Outcomes and CO-PO Mapping
@@ -313,32 +311,32 @@ const FeedbackForm = (props) => {
 
         {/* Learning Resources Section */}
         <div className="flex items-center mb-2">
-          <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
             8
           </div>
           <h2 className="section-title text-xl font-semibold">
             Learning Resources
           </h2>
         </div>
-        <AddField 
-  label="Text Book"
-  initialData={learningResources.textBooks}
-  onChange={(updatedFields) => 
-    handleLearningResourcesChange(updatedFields, 'textBooks')
-  }
-/>
-<AddField 
-  label="Reference Link"
-  initialData={learningResources.referenceLinks}
-  onChange={(updatedFields) => 
-    handleLearningResourcesChange(updatedFields, 'referenceLinks')
-  }
-/>
+        <AddField
+          label="Text Book"
+          initialData={learningResources.textBooks}
+          onChange={(updatedFields) =>
+            handleLearningResourcesChange(updatedFields, "textBooks")
+          }
+        />
+        <AddField
+          label="Reference Link"
+          initialData={learningResources.referenceLinks}
+          onChange={(updatedFields) =>
+            handleLearningResourcesChange(updatedFields, "referenceLinks")
+          }
+        />
       </div>
 
       <div className="form-section">
         <div className="flex items-center mb-2">
-          <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
             9
           </div>
           <h2 className="section-title text-xl font-semibold">
@@ -350,7 +348,7 @@ const FeedbackForm = (props) => {
 
       <div className="form-section">
         <div className="flex items-center mb-2">
-          <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
             10
           </div>
           <h2 className="section-title text-xl font-semibold">
@@ -362,7 +360,7 @@ const FeedbackForm = (props) => {
 
       <div className="form-section">
         <div className="flex items-center mb-2">
-          <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
             11
           </div>
           <h2 className="section-title text-xl font-semibold">
@@ -377,7 +375,7 @@ const FeedbackForm = (props) => {
 
       <div className="form-section">
         <div className="flex items-center mb-2">
-          <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
             12
           </div>
           <h2 className="section-title text-xl font-semibold">
@@ -390,7 +388,7 @@ const FeedbackForm = (props) => {
 
       <div className="form-section">
         <div className="flex items-center mb-2">
-          <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
             13
           </div>
           <h2 className="section-title text-xl font-semibold">
@@ -407,7 +405,7 @@ const FeedbackForm = (props) => {
 
       {/* <div className="form-section">
         <div className="flex items-center mb-2">
-          <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
             16
           </div>
           <h2 className="section-title text-xl font-semibold">
@@ -424,7 +422,7 @@ const FeedbackForm = (props) => {
 
       <div className="form-section">
         <div className="flex items-center mb-2">
-          <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
             15
           </div>
           <h2 className="section-title text-xl font-semibold">
@@ -437,7 +435,7 @@ const FeedbackForm = (props) => {
 
       <div className="form-section">
         <div className="flex items-center mb-2">
-          <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
             16
           </div>
           <h2 className="section-title text-xl font-semibold">
@@ -448,7 +446,7 @@ const FeedbackForm = (props) => {
       </div>
       <div className="form-section">
         <div className="flex items-center mb-2">
-          <div className="section-number bg-pink-400 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
             17
           </div>
           <h2 className="section-title text-xl font-semibold">
@@ -467,7 +465,7 @@ const FeedbackForm = (props) => {
         <div className="sbt-btn">
           <button
             onClick={postData}
-            className="btn bg-blue-500 text-white rounded-md px-6 py-2 mx-auto block"
+            className="btn bg-[#FFB255] text-white rounded-md px-6 py-2 mx-auto block"
           >
             SUBMIT
           </button>
