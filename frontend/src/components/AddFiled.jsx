@@ -34,7 +34,7 @@ const AddField = ({ label, onChange, initialData = [] }) => {
   return (
     <div className="mb-4">
       <div className="flex justify-between items-center mb-2">
-        <h3 className="text-lg font-semibold">{label}</h3>
+        <p className="text-lg font-normal">{label}</p>
         <button
           onClick={addField}
           className="px-3 py-1 bg-[#FFB255] text-white rounded hover:bg-blue-600"

@@ -163,191 +163,183 @@ const FeedbackForm = (props) => {
     }
   };
   return (
-    <div className="feedback-form1">
-      <div className="sb">
-        <button onClick={() => window.history.back()} className="back-button">
-          {" "}
-          <IoReturnUpBackSharp />
-          Back to Files
+    <div className="feedback-form1 bg-[#FFFEFD] min-h-screen">
+           <div className="mb-8 flex justify-between items-center bg-white rounded-xl shadow-md p-5">
+        <button 
+          onClick={() => window.history.back()} 
+          className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors px-4 py-2 rounded-lg hover:bg-gray-50"
+        >
+          <IoReturnUpBackSharp className="text-xl" />
+          <span className="font-medium">Back to Files</span>
         </button>
-        <div className="sbt-btn">
-          <button
-            onClick={postData}
-            className="btn bg-[#FFB255] text-white rounded-md px-6 py-2 mx-auto block"
-          >
-            SUBMIT
-          </button>
-        </div>
+        <button
+          onClick={postData}
+          className="bg-[#FFB255] hover:bg-[#f5a543] transition-colors text-white font-semibold rounded-lg px-8 py-3 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+        >
+          Submit Form
+        </button>
       </div>
-
+      <div className="space-y-6">
       <div className="grid grid-cols-2 gap-4">
         {/* Program Section */}
-        <div className="form-section">
-          <div className="flex items-center mb-2">
-            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              1
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
+                1
+              </div>
+              <h2 className="text-xl font-semibold text-gray-800">Program</h2>
             </div>
-            <h2 className="section-title text-xl font-semibold">Program</h2>
-          </div>
-          <div className="reflection-textarea w-full h-16 p-2 border border-gray-300 rounded">
             <textarea
-              className="w-full h-full p-2 border-none outline-none resize-none text-gray-800"
-              placeholder="Enter course code here..."
+              className="w-full p-3 border border-gray-200 rounded-md focus:none  transition-all resize-none text-gray-700"
+              placeholder="Enter program details here..."
               value={program}
               onChange={(e) => setProgram(e.target.value)}
-            ></textarea>
+              rows="2"
+            />
           </div>
-        </div>
         {/* Course Code Section */}
-        <div className="form-section">
-          <div className="flex items-center mb-2">
-            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              2
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
+                2
+              </div>
+              <h2 className="text-xl font-semibold text-gray-800">Course Code</h2>
             </div>
-            <h2 className="section-title text-xl font-semibold">Course Code</h2>
-          </div>
-          <div className="reflection-textarea w-full h-16 p-2 border border-gray-300 rounded">
             <textarea
-              className="w-full h-full p-2 border-none outline-none resize-none text-gray-800"
+              className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#FFB255] focus:border-transparent transition-all resize-none text-gray-700"
               placeholder="Enter course code here..."
               value={coursecode}
               onChange={(e) => setCourseCode(e.target.value)}
-            ></textarea>
+              rows="2"
+            />
           </div>
-        </div>
+
 
         {/* Course Title Section */}
-        <div className="form-section">
-          <div className="flex items-center mb-2">
-            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              3
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
+                3
+              </div>
+              <h2 className="text-xl font-semibold text-gray-800">Course Title</h2>
             </div>
-            <h2 className="section-title text-xl font-semibold">
-              Course Title
-            </h2>
-          </div>
-          <div className="reflection-textarea w-full h-16 p-2 border border-gray-300 rounded">
             <textarea
-              className="w-full h-full p-2 border-none outline-none resize-none text-gray-800"
+              className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#FFB255] focus:border-transparent transition-all resize-none text-gray-700"
               placeholder="Enter course title here..."
               value={coursetitle}
               onChange={(e) => setCourseTitle(e.target.value)}
-            ></textarea>
+              rows="2"
+            />
           </div>
-        </div>
 
         {/* Module/Semester Section */}
-        <div className="form-section">
-          <div className="flex items-center mb-2">
-            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              4
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
+                4
+              </div>
+              <h2 className="text-xl font-semibold text-gray-800">Module/Semester</h2>
             </div>
-            <h2 className="section-title text-xl font-semibold">
-              Module/Semester
-            </h2>
-          </div>
-          <div className="reflection-textarea w-full h-16 p-2 border border-gray-300 rounded">
             <textarea
-              className="w-full h-full p-2 border-none outline-none resize-none text-gray-800"
+              className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#FFB255] focus:border-transparent transition-all resize-none text-gray-700"
               placeholder="Enter module/semester here..."
               value={module}
               onChange={(e) => setModule(e.target.value)}
-            ></textarea>
+              rows="2"
+            />
           </div>
-        </div>
-
         {/* Session Section */}
-        <div className="form-section">
-          <div className="flex items-center mb-2">
-            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              5
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
+                5
+              </div>
+              <h2 className="text-xl font-semibold text-gray-800">Session</h2>
             </div>
-            <h2 className="section-title text-xl font-semibold">Session</h2>
-          </div>
-          <div className="reflection-textarea w-full h-16 p-2 border border-gray-300 rounded">
             <textarea
-              className="w-full h-full p-2 border-none outline-none resize-none text-gray-800"
+              className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#FFB255] focus:border-transparent transition-all resize-none text-gray-700"
               placeholder="Enter session here..."
               value={session}
               onChange={(e) => setSession(e.target.value)}
-            ></textarea>
+              rows="2"
+            />
           </div>
         </div>
-      </div>
 
-      <div className="form-section">
-        <div className="flex items-center mb-2">
-          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            6
+      {/* Course Description Section */}
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
+              6
+            </div>
+            <h2 className="text-xl font-semibold text-gray-800">Course Description and its objectives</h2>
           </div>
-          <h2 className="section-title text-xl font-semibold">
-            Course Description and its objectives
-          </h2>
+          <EditableCourseDescription
+            courseDescription={EditableCourseDescriptionData}
+            onChange={EditableCourseDescriptionDataChange}
+          />
         </div>
-        <EditableCourseDescription
-          courseDescription={EditableCourseDescriptionData}
-          onChange={EditableCourseDescriptionDataChange}
-        />
-      </div>
 
-      <div className="form-section f2">
-        <div className="flex items-center mb-2">
-          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            7
+       {/* CO-PO Mapping Section */}
+       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
+              7
+            </div>
+            <h2 className="text-xl font-semibold text-gray-800">Course Outcomes and CO-PO Mapping</h2>
           </div>
-          <h2 className="section-title text-xl font-semibold">
-            Course Outcomes and CO-PO Mapping
-          </h2>
+          <COPOMapping
+            onSave={handleCOPOMappingChange}
+            initialData={copoMappingData}
+          />
         </div>
-        <COPOMapping
-          onSave={handleCOPOMappingChange}
-          initialData={copoMappingData}
-        />
-      </div>
 
       <div className="form-section">
         {/* Course Syllabus Section */}
         <CourseSyllabus />
 
         {/* Learning Resources Section */}
-        <div className="flex items-center mb-2">
-          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            8
+      
+      </div>
+      {/* Learning Resources Section */}
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
+              8
+            </div>
+            <h2 className="text-xl font-semibold text-gray-800">Learning Resources</h2>
           </div>
-          <h2 className="section-title text-xl font-semibold">
-            Learning Resources
-          </h2>
+          <div className="space-y-6">
+            <AddField
+              label="Text Book"
+              initialData={learningResources.textBooks}
+              onChange={(updatedFields) =>
+                handleLearningResourcesChange(updatedFields, "textBooks")
+              }
+            />
+            <AddField
+              label="Reference Link"
+              initialData={learningResources.referenceLinks}
+              onChange={(updatedFields) =>
+                handleLearningResourcesChange(updatedFields, "referenceLinks")
+              }
+            />
+          </div>
         </div>
-        <AddField
-          label="Text Book"
-          initialData={learningResources.textBooks}
-          onChange={(updatedFields) =>
-            handleLearningResourcesChange(updatedFields, "textBooks")
-          }
-        />
-        <AddField
-          label="Reference Link"
-          initialData={learningResources.referenceLinks}
-          onChange={(updatedFields) =>
-            handleLearningResourcesChange(updatedFields, "referenceLinks")
-          }
-        />
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+        <div className="flex items-center gap-4 mb-6">
+            <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
+              9
+            </div>
+            <h2 className="text-xl font-semibold text-gray-800">Weekly Time-Table</h2>
+        </div>
+        <div className=" p-4 rounded-lg">
+          <ExcelUploader />
+        </div>
       </div>
 
-      <div className="form-section">
-        <div className="flex items-center mb-2">
-          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            9
-          </div>
-          <h2 className="section-title text-xl font-semibold">
-            Weekly Time-Table
-          </h2>
-        </div>
-        <ExcelUploader />
-      </div>
-
-      <div className="form-section">
-        <div className="flex items-center mb-2">
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+        <div className="flex items-center gap-4 mb-6">
           <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
             10
           </div>
@@ -358,8 +350,8 @@ const FeedbackForm = (props) => {
         <ExcelUploader />
       </div>
 
-      <div className="form-section">
-        <div className="flex items-center mb-2">
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+        <div className="flex items-center gap-4 mb-6">
           <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
             11
           </div>
@@ -373,8 +365,8 @@ const FeedbackForm = (props) => {
         />
       </div>
 
-      <div className="form-section">
-        <div className="flex items-center mb-2">
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+        <div className="flex items-center gap-4 mb-6">
           <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
             12
           </div>
@@ -386,8 +378,8 @@ const FeedbackForm = (props) => {
         <PDFUploader />
       </div>
 
-      <div className="form-section">
-        <div className="flex items-center mb-2">
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+        <div className="flex items-center gap-4 mb-6">
           <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
             13
           </div>
@@ -420,8 +412,8 @@ const FeedbackForm = (props) => {
         />
       </div> */}
 
-      <div className="form-section">
-        <div className="flex items-center mb-2">
+<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+<div className="flex items-center gap-4 mb-6">
           <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
             15
           </div>
@@ -433,8 +425,8 @@ const FeedbackForm = (props) => {
         <ExcelUploader />
       </div>
 
-      <div className="form-section">
-        <div className="flex items-center mb-2">
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+        <div className="flex items-center gap-4 mb-6">
           <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
             16
           </div>
@@ -444,8 +436,8 @@ const FeedbackForm = (props) => {
         </div>
         <ExcelUploader />
       </div>
-      <div className="form-section">
-        <div className="flex items-center mb-2">
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+        <div className="flex items-center gap-4 mb-6">
           <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
             17
           </div>
@@ -456,18 +448,20 @@ const FeedbackForm = (props) => {
         </div>
         <ExcelUploader />
       </div>
-      <div className="sb">
-        <button onClick={() => window.history.back()} className="back-button">
-          {" "}
-          <IoReturnUpBackSharp />
-          Back to Files
-        </button>
-        <div className="sbt-btn">
+     {/* Footer Section */}
+     <div className="mt-8 flex justify-between items-center bg-white rounded-xl shadow-md p-5">
+          <button 
+            onClick={() => window.history.back()} 
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors px-4 py-2 rounded-lg hover:bg-gray-50"
+          >
+            <IoReturnUpBackSharp className="text-xl" />
+            <span className="font-medium">Back to Files</span>
+          </button>
           <button
             onClick={postData}
-            className="btn bg-[#FFB255] text-white rounded-md px-6 py-2 mx-auto block"
+            className="bg-[#FFB255] hover:bg-[#f5a543] transition-colors text-white font-semibold rounded-lg px-8 py-3 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
           >
-            SUBMIT
+            Submit Form
           </button>
         </div>
       </div>
