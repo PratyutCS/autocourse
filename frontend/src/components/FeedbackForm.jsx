@@ -24,9 +24,10 @@ const FeedbackForm = (props) => {
     props.courseSyllabus || ""
   );
   const [learningResources, setLearningResources] = useState({
-    textBooks:[],
-    referenceLinks: []
+    textBooks: props.learningResources?.textBooks || [],
+    referenceLinks: props.learningResources?.referenceLinks || []
   });
+  
   
   const [module, setModule] = useState(props.module || "");
   const [session, setSession] = useState(props.session || "");
@@ -319,19 +320,20 @@ const FeedbackForm = (props) => {
             Learning Resources
           </h2>
         </div>
-        <AddField
-          label="Text Book"
-          onChange={(updatedFields) => handleLearningResourcesChange(updatedFields, 'textBooks')}
-        />
-        <AddField
-          label="Reference Link"
-          onChange={(updatedFields) =>
-            setLearningResources({
-              ...learningResources,
-              referenceLinks: updatedFields,
-            })
-          }
-        />
+        <AddField 
+  label="Text Book"
+  initialData={learningResources.textBooks}
+  onChange={(updatedFields) => 
+    handleLearningResourcesChange(updatedFields, 'textBooks')
+  }
+/>
+<AddField 
+  label="Reference Link"
+  initialData={learningResources.referenceLinks}
+  onChange={(updatedFields) => 
+    handleLearningResourcesChange(updatedFields, 'referenceLinks')
+  }
+/>
       </div>
 
       <div className="form-section">
