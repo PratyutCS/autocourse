@@ -1,10 +1,16 @@
 import AddField from './AddFiled';
-import { useState } from 'react';
-const ActionsForWeakStudents = () => {
- 
+import { useState, useEffect } from 'react';
+const ActionsForWeakStudents = ({ onSave, initialData }) => {
   const [learningResources, setLearningResources] = useState({
-    weakStudents: []
+    weakStudents: initialData?.weakStudents || [],
   });
+
+  // Save changes when learningResources is updated
+  useEffect(() => {
+    if (onSave) {
+      onSave(learningResources);
+    }
+  }, [learningResources, onSave]);
 
   return (
     <div className="form-section">
@@ -18,9 +24,10 @@ const ActionsForWeakStudents = () => {
       </div>
       <AddField
         label="The data for weak students"
-        onChange={(updatedFields) => setLearningResources({ ...learningResources, weakStudents: updatedFields })}
-        />
-     
+        onChange={(updatedFields) =>
+          setLearningResources({ weakStudents: updatedFields })
+        }
+      />
     </div>
   );
 };

@@ -114,6 +114,13 @@ const FeedbackForm = (props) => {
       });
     }
   };
+  const handleLearningResourcesChange = (updatedFields, fieldType) => {
+    setLearningResources(prevState => ({
+      ...prevState,
+      [fieldType]: updatedFields
+    }));
+  };
+  
 
   const handleactionsForWeakStudentsDataChange = (data) => {
     // console.log(data);
@@ -344,12 +351,7 @@ const FeedbackForm = (props) => {
           ></textarea> */}
         <AddField
           label="Text Book"
-          onChange={(updatedFields) =>
-            setLearningResources({
-              ...learningResources,
-              textBooks: updatedFields,
-            })
-          }
+          onChange={(updatedFields) => handleLearningResourcesChange(updatedFields, 'textBooks')}
         />
         <AddField
           label="Reference Link"
