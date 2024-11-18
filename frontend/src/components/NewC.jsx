@@ -1,5 +1,4 @@
 import React from 'react';
-import '../css/newc.css';
 import constants from "../constants";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -56,20 +55,44 @@ export default function NewC(props) {
       console.error("Error downloading file:", error);
     }
   }
-  
 
   return (
-    <div className='newc'>
-      <div className='up'>
-        <FcDocument size={40} />
-        <h1 title={props.name}>{props.name}</h1>
-        {/* <h1>{props.num}</h1> */}
-      </div>
-      <div className="down">
-        <button className="del_btn" onClick={() => form(props.num)}> <FaRegFilePdf />View</button>
-        <div className='del'>
-          <button className="del_btn" onClick={() => Delete(props.num)}> <AiFillDelete /></button>
-          <button className="del_btn" onClick={() => Download(props.num)}><IoMdDownload /></button>
+    <div className="relative group bg-white rounded-xl border border-gray-200 hover:border-[#FFB255] transition-all duration-300 overflow-hidden">
+      <div className="p-6 flex flex-col items-center justify-center gap-4 h-full">
+        <div className="bg-orange-50 rounded-full p-4 group-hover:bg-orange-100 transition-colors">
+          <FcDocument className="w-8 h-8" />
+        </div>
+        
+        <div className="text-center">
+          <h3 className="text-lg font-semibold text-gray-800 mb-1" title={props.name}>
+            {props.name}
+          </h3>
+          
+          <div className="flex flex-col gap-2 mt-4">
+            <button
+              onClick={() => form(props.num)}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#FFB255] hover:bg-[#ffa133] text-white rounded-lg transition-colors duration-200"
+            >
+              <FaRegFilePdf className="w-5 h-5" />
+              <span>View</span>
+            </button>
+            
+            <div className="flex justify-center gap-2">
+              <button
+                onClick={() => Delete(props.num)}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors duration-200"
+              >
+                <AiFillDelete className="w-5 h-5" />
+              </button>
+              
+              <button
+                onClick={() => Download(props.num)}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-200"
+              >
+                <IoMdDownload className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

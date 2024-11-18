@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import constants from "../constants";
 import axios from 'axios';
 import FeedbackForm from '../components/FeedbackForm';
+import { IoReturnUpBackSharp } from "react-icons/io5";
 import { useLocation } from 'react-router-dom';
 import AsideComp from '../components/AsideComp';
 import '../css/dash.css'
@@ -50,6 +51,7 @@ const Info = () => {
     <div className='dash'>
       <AsideComp isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed}/>
       <div className="right">
+          
         <div className="box23">
           {file && file.done === 1 ? (
             <FeedbackForm
