@@ -111,10 +111,14 @@ const FeedbackForm = (props) => {
       [fieldType]: updatedFields,
     }));
   };
+  // here
   const [uploadedFiles, setUploadedFiles] = useState({
     weeklyTimetable: props.weeklyTimetable || null,
     studentList: props.studentList || null,
     weakstudent:props.weakstudent ||null,
+    assignmentsTaken:props.assignmentsTaken || null,
+    marksDetails : props.marksDetails || null,
+    attendanceReport: props.attendanceReport || null,
   });
   
   const handleactionsForWeakStudentsDataChange = (data) => {
@@ -447,7 +451,12 @@ const FeedbackForm = (props) => {
             semester
           </h2>
         </div>
-        <ExcelUploader />
+        <ExcelUploader 
+      title="Assingments"
+      identifier="assignmentsTaken"
+      onFileChange={handleFileChange}
+      initialData={uploadedFiles.assignmentsTaken}
+    />
       </div>
 
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
@@ -459,7 +468,12 @@ const FeedbackForm = (props) => {
             Detail of Marks in all components up to the End Semester
           </h2>
         </div>
-        <ExcelUploader />
+        <ExcelUploader 
+      title="Marks Details"
+      identifier="marksDetails"
+      onFileChange={handleFileChange}
+      initialData={uploadedFiles.marksDetails}
+    />
       </div>
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
         <div className="flex items-center gap-4 mb-6">
@@ -471,7 +485,12 @@ const FeedbackForm = (props) => {
             Attendance Report
           </h2>
         </div>
-        <ExcelUploader />
+        <ExcelUploader 
+      title="Attendance Report"
+      identifier="attendanceReport"
+      onFileChange={handleFileChange}
+      initialData={uploadedFiles.attendanceReport}
+    />
       </div>
      {/* Footer Section */}
      <div className="mt-8 flex justify-between items-center bg-white rounded-xl shadow-md p-5">
