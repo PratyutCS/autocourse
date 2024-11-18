@@ -308,14 +308,7 @@ const FeedbackForm = (props) => {
       <div className="form-section">
         {/* Course Syllabus Section */}
         <CourseSyllabus/>
-        <div className="syllabus-textarea w-full h-48 p-2 border border-gray-300 rounded mb-4">
-          <textarea
-            className="w-full h-full p-2 border-none outline-none resize-none text-gray-800"
-            placeholder="Enter course content, module-wise teaching hours, readings, activities, and teaching strategy..."
-            value={courseSyllabus}
-            onChange={(e) => setCourseSyllabus(e.target.value)}
-          ></textarea>
-        </div>
+        
 
         {/* Learning Resources Section */}
         <div className="flex items-center mb-2">
