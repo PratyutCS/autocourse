@@ -126,11 +126,13 @@ const FeedbackForm = (props) => {
   };
 
   const handleFileChange = (identifier, fileData) => {
-    setUploadedFiles(prev => ({
-      ...prev,
-      [identifier]: fileData
-    }));
-  };
+    setUploadedFiles((prev) => {
+        const updatedFiles = { ...prev, [identifier]: fileData };
+        console.log("Updated uploadedFiles:", updatedFiles);
+        return updatedFiles;
+    });
+};
+
   const postData = async () => {
     if (num !== undefined) {
       try {
@@ -159,7 +161,7 @@ const FeedbackForm = (props) => {
               components: internalAssessmentData.components,
             },
             actionsForWeakStudentsData,
-            uploadedFiles, // Add the uploaded files to the POST request
+            uploadedFiles,
           },
           {
             headers: { "x-auth-token": token },

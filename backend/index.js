@@ -386,55 +386,108 @@ app.post("/download", auth, async (req, res) => {
 });
 
 //To modify form parts
+// app.post("/form", auth, async (req, res) => {
+//   const user = await User.findById(req.user);
+//   const num = req.body.num;
+//   if(num === undefined || num === null){
+//     console.log("error in reading num : "+num);
+//     return res.status(400).json({
+//       message: "Error in /form",
+//     });
+//   }
+//   console.log("lmfoa is : "+num);
+//   const directoryPath = path.join(
+//     __dirname,
+//     "/json/" + user.number + ".json"
+//   );
+  
+//   fs.readFile(directoryPath, "utf8", (err, data) => {
+//     if (err) {
+//       console.log(err);
+//       res.status(400).json({
+//         message: "Error in read /form",
+//       });
+//     } else {
+//       try{
+//         data = JSON.parse(data);
+//         data[num]['course_code'] = req.body.coursecode || "";
+//         data[num]['course_name'] = req.body.coursetitle || "";
+//         data[num]['Module/Semester'] = req.body.module || "";
+//         data[num]['Session'] = req.body.session  || "";
+//         data[num]["course_description"] = req.body.EditableCourseDescriptionData || "";
+//         data[num]["Course Syllabus"] = req.body.courseSyllabus || "";
+//         data[num]["Learning Resources"] = req.body.learningResources || "";
+//         data[num]["copoMappingData"] = req.body.copoMappingData || "";
+//         data[num]["internalAssessmentData"] = req.body.internalAssessmentData || "";
+//         data[num]["actionsForWeakStudentsData"] = req.body.actionsForWeakStudentsData || "";
+//         data[num]["Program"] = req.body.program || "";
+//         // console.log(req.body.actionsForWeakStudentsData);
+//         fs.writeFileSync(directoryPath, JSON.stringify(data));
+//       }
+//       catch (error) {
+//         console.log(error);
+//         return res.status(400).json({
+//           message: "Error in /form",
+//         });
+//       }
+//       res.status(200).json("done scene hai apna /form");
+//     }
+//   });
+// });
+
+
 app.post("/form", auth, async (req, res) => {
   const user = await User.findById(req.user);
   const num = req.body.num;
-  if(num === undefined || num === null){
-    console.log("error in reading num : "+num);
-    return res.status(400).json({
-      message: "Error in /form",
-    });
+  
+  if (num === undefined || num === null) {
+    console.log("error in reading num : " + num);
+    return res.status(400).json({ message: "Error in /form" });
   }
-  console.log("lmfoa is : "+num);
-  const directoryPath = path.join(
-    __dirname,
-    "/json/" + user.number + ".json"
-  );
+
+  const directoryPath = path.join(__dirname, "/json/" + user.number + ".json");
   
   fs.readFile(directoryPath, "utf8", (err, data) => {
     if (err) {
       console.log(err);
-      res.status(400).json({
-        message: "Error in read /form",
-      });
-    } else {
-      try{
-        data = JSON.parse(data);
-        data[num]['course_code'] = req.body.coursecode || "";
-        data[num]['course_name'] = req.body.coursetitle || "";
-        data[num]['Module/Semester'] = req.body.module || "";
-        data[num]['Session'] = req.body.session  || "";
-        data[num]["course_description"] = req.body.EditableCourseDescriptionData || "";
-        data[num]["Course Syllabus"] = req.body.courseSyllabus || "";
-        data[num]["Learning Resources"] = req.body.learningResources || "";
-        data[num]["copoMappingData"] = req.body.copoMappingData || "";
-        data[num]["internalAssessmentData"] = req.body.internalAssessmentData || "";
-        data[num]["actionsForWeakStudentsData"] = req.body.actionsForWeakStudentsData || "";
-        data[num]["Program"] = req.body.program || "";
-        // console.log(req.body.actionsForWeakStudentsData);
-        fs.writeFileSync(directoryPath, JSON.stringify(data));
+      return res.status(400).json({ message: "Error in read /form" });
+    }
+
+    try {
+      data = JSON.parse(data);
+      
+      // Update existing fields
+      data[num]['course_code'] = req.body.coursecode || "";
+      data[num]['course_name'] = req.body.coursetitle || "";
+      data[num]['Module/Semester'] = req.body.module || "";
+      data[num]['Session'] = req.body.session || "";
+      data[num]["course_description"] = req.body.EditableCourseDescriptionData || "";
+      data[num]["Course Syllabus"] = req.body.courseSyllabus || "";
+      data[num]["Learning Resources"] = req.body.learningResources || "";
+      data[num]["copoMappingData"] = req.body.copoMappingData || "";
+      data[num]["internalAssessmentData"] = req.body.internalAssessmentData || "";
+      data[num]["actionsForWeakStudentsData"] = req.body.actionsForWeakStudentsData || "";
+      data[num]["Program"] = req.body.program || "";
+      
+      // Add new Excel/CSV data fields
+      if (req.body.uploadedFiles) {
+        data[num]["weeklyTimetable"] = req.body.uploadedFiles.weeklyTimetable || null;
+        data[num]["studentList"] = req.body.uploadedFiles.studentList || null;
+        data[num]["weakstudent"] = req.body.uploadedFiles.weakstudent || null;
+        data[num]["assignmentsTaken"] = req.body.uploadedFiles.assignmentsTaken || null;
+        data[num]["marksDetails"] = req.body.uploadedFiles.marksDetails || null;
+        data[num]["attendanceReport"] = req.body.uploadedFiles.attendanceReport || null;
       }
-      catch (error) {
-        console.log(error);
-        return res.status(400).json({
-          message: "Error in /form",
-        });
-      }
-      res.status(200).json("done scene hai apna /form");
+
+      fs.writeFileSync(directoryPath, JSON.stringify(data));
+      res.status(200).json({ message: "Form data saved successfully" });
+      
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({ message: "Error in /form" });
     }
   });
 });
-
 app.listen(PORT, () => {
   console.log(`connected at port ${PORT}`);
 });

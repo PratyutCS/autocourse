@@ -5,7 +5,19 @@ import Papa from 'papaparse';
 
 const ExcelUploader = ({ title, identifier, onFileChange, initialData }) => {
   const [file, setFile] = useState(null);
-  const [data, setData] = useState(initialData || null);
+  const [fileData, setFileData] = useState(initialData || null);
+
+  const processFile = (data) => {
+    // Format the data to match the required JSON structure
+    const formattedData = {
+      fileName: file?.name || '',
+      uploadDate: new Date().toISOString(),
+      data: data
+    };
+    
+    setFileData(formattedData);
+    onFileChange && onFileChange(formattedData, identifier);
+  };
 
   const onDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
@@ -14,14 +26,7 @@ const ExcelUploader = ({ title, identifier, onFileChange, initialData }) => {
     if (file.type === 'text/csv') {
       Papa.parse(file, {
         complete: (result) => {
-          const processedData = {
-            fileName: file.name,
-            type: 'csv',
-            content: result.data,
-            uploadedAt: new Date().toISOString()
-          };
-          setData(processedData);
-          onFileChange && onFileChange(identifier, processedData);
+          processFile(result.data);
         },
         header: true,
       });
@@ -33,24 +38,16 @@ const ExcelUploader = ({ title, identifier, onFileChange, initialData }) => {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const json = XLSX.utils.sheet_to_json(worksheet);
-        
-        const processedData = {
-          fileName: file.name,
-          type: 'xlsx',
-          content: json,
-          uploadedAt: new Date().toISOString()
-        };
-        setData(processedData);
-        onFileChange && onFileChange(identifier, processedData);
+        processFile(json);
       };
       reader.readAsArrayBuffer(file);
     }
-  }, [onFileChange, identifier]);
+  }, [file, identifier, onFileChange]);
 
   const removeFile = () => {
     setFile(null);
-    setData(null);
-    onFileChange && onFileChange(identifier, null);
+    setFileData(null);
+    onFileChange && onFileChange(null, identifier);
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -62,33 +59,42 @@ const ExcelUploader = ({ title, identifier, onFileChange, initialData }) => {
   });
 
   return (
-    <div className="mb-6">
-      {title && (
-        <h3 className="text-lg font-semibold text-gray-700 mb-2">{title}</h3>
-      )}
-      <div {...getRootProps()} className="file-upload-area border-2 border-dashed border-gray-300 p-8 text-center rounded cursor-pointer hover:border-orange-400 transition-colors">
+    <div className="w-full">
+      <div
+        {...getRootProps()}
+        className="border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 transition-colors p-8 rounded-lg cursor-pointer"
+      >
         <input {...getInputProps()} />
-        {isDragActive ? (
-          <p className="text-gray-500">Drop the file here ...</p>
-        ) : (
-          <p className="text-gray-500">Drag & drop a CSV or XLSX file here, or click to select a file</p>
-        )}
+        <div className="text-center">
+          <div className="text-gray-500 mb-2">
+            {isDragActive ? (
+              <p>Drop the file here ...</p>
+            ) : (
+              <>
+                <p className="mb-2">Drag & drop a CSV or XLSX file here</p>
+                <p className="text-sm">or click to select a file</p>
+              </>
+            )}
+          </div>
+        </div>
       </div>
-      
-      {file && (
+
+      {(file || fileData) && (
         <div className="mt-4 p-4 bg-gray-50 rounded-lg flex items-center justify-between">
-          <div className="flex items-center">
+          <div className="flex items-center space-x-2">
             <span className="text-gray-600">📄</span>
-            <span className="ml-2 text-gray-700">{file.name}</span>
+            <span className="text-gray-700">{file?.name || fileData?.fileName}</span>
           </div>
           <button
             onClick={removeFile}
-            className="text-red-500 hover:text-red-700 px-3 py-1 rounded-md hover:bg-red-50"
+            className="text-red-500 hover:text-red-700 px-3 py-1 rounded-md hover:bg-red-50 transition-colors"
           >
             Remove
           </button>
         </div>
       )}
+
+     
     </div>
   );
 };

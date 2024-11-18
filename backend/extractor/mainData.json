@@ -47,6 +47,8 @@
       }
     }
   },
+  "weeklyTimetable": "",
+  "studentList":"",
   "actionsForWeakStudentsData": [
     {
       "id": "1",
