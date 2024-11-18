@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { X, Plus, Trash2 } from 'lucide-react';
 
 const COPOMapping = ({ onSave, initialData }) => {
   // Initialize state for CO descriptions
@@ -208,68 +209,68 @@ const COPOMapping = ({ onSave, initialData }) => {
   };
 
   return (
-    <div className="w-full p-4 bg-white rounded-lg shadow">
+    <div className="w-full">
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Course Outcomes Mapping</h2>
         
         {/* Course Outcomes Section */}
-        <div className="space-y-4">
-          {Object.entries(courseOutcomes).map(([co, outcome]) => (
-            <div key={co} className="p-4 border rounded-lg">
-              <div className="flex items-center gap-2 mb-2">
-                <strong className="text-gray-700 min-w-[60px]">{co}:</strong>
+         <div className="space-y-4 mb-8">
+        {Object.entries(courseOutcomes).map(([co, outcome]) => (
+          <div key={co} className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="text-gray-700 font-semibold min-w-[48px]">{co}:</span>
+              <input 
+                type="text" 
+                value={outcome.description} 
+                onChange={(e) => handleOutcomeChange(co, 'description', e.target.value)} 
+                className="flex-1 p-2.5 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-gray-700"
+                placeholder="Enter course outcome description"
+              />
+              {Object.keys(courseOutcomes).length > 1 && (
+                <button 
+                  onClick={() => removeCourseOutcome(co)}
+                  className="p-2 text-gray-400 hover:text-red-500 rounded-full hover:bg-red-50 transition-colors"
+                  title="Remove course outcome"
+                >
+                  <Trash2 size={18} />
+                </button>
+              )}
+            </div>
+            {outcome.bullets.map((bullet, index) => (
+              <div key={index} className="ml-8 mb-2 flex items-center gap-2">
+                <span className="text-gray-400">•</span>
                 <input 
                   type="text" 
-                  value={outcome.description} 
-                  onChange={(e) => handleOutcomeChange(co, 'description', e.target.value)} 
-                  className="flex-1 p-2 border rounded focus:ring-2 focus:ring-blue-500" 
-                  placeholder="Enter course outcome description"
+                  value={bullet} 
+                  onChange={(e) => handleBulletChange(co, index, e.target.value)} 
+                  className="flex-1 p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-gray-700" 
+                  placeholder="Enter bullet point"
                 />
-                {Object.keys(courseOutcomes).length > 1 && (
-                  <button 
-                    onClick={() => removeCourseOutcome(co)}
-                    className="px-2 py-1 text-red-600 hover:text-red-800"
-                  >
-                    Remove CO
-                  </button>
-                )}
+                <button 
+                  onClick={() => removeBullet(co, index)}
+                  className="p-1.5 text-gray-400 hover:text-red-500 rounded-full hover:bg-red-50 transition-colors"
+                >
+                  <X size={16} />
+                </button>
               </div>
-              {outcome.bullets.map((bullet, index) => (
-                <div key={index} className="ml-8 mb-2 flex items-center gap-2">
-                  <span>•</span>
-                  <input 
-                    type="text" 
-                    value={bullet} 
-                    onChange={(e) => handleBulletChange(co, index, e.target.value)} 
-                    className="flex-1 p-2 border rounded" 
-                    placeholder="Enter bullet point"
-                  />
-                  <button 
-                    onClick={() => removeBullet(co, index)}
-                    className="text-red-600 hover:text-red-800 px-2"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
-              <button 
-                onClick={() => addBullet(co)}
-                className="ml-8 text-sm text-blue-600 hover:text-blue-800"
-              >
-                + Add Bullet Point
-              </button>
-            </div>
-          ))}
-        </div>
+            ))}
+            <button 
+              onClick={() => addBullet(co)}
+              className="ml-8 mt-2 flex items-center gap-1.5 text-sm text-orange-500 hover:text-orange-600 transition-colors"
+            >
+              <Plus size={16} />
+              Add Bullet Point
+            </button>
+          </div>
+        ))}
       </div>
 
       {/* Mapping Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
+      <div className="overflow-x-auto rounded-lg border border-gray-200">
+        <table className="w-full border-collapse" style={{ minWidth: '800px' }}>
           <thead>
-            <tr>
+            <tr className="bg-gray-50">
               {headers.map(header => (
-                <th key={header} className="border border-gray-300 bg-gray-100 p-3 text-sm font-semibold">
+                <th key={header} className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 w-12 first:w-20">
                   {header}
                 </th>
               ))}
@@ -277,18 +278,19 @@ const COPOMapping = ({ onSave, initialData }) => {
           </thead>
           <tbody>
             {Object.entries(mappingData).map(([co, poMap]) => (
-              <tr key={co}>
-                <td className="border border-gray-300 font-semibold p-3 bg-gray-50">
+              <tr key={co} className="hover:bg-gray-50 transition-colors">
+                <td className="border-b border-r border-gray-200 font-semibold p-3 bg-gray-50 text-gray-700">
                   {co}
                 </td>
                 {headers.slice(1).map(po => (
-                  <td key={`${co}-${po}`} className="border border-gray-300 p-2">
+                  <td key={`${co}-${po}`} className="border-b border-r border-gray-200 p-2">
                     <input
                       type="text"
                       value={poMap[po]}
                       onChange={(e) => handleCellChange(co, po, e.target.value)}
-                      className="w-full text-center p-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full h-8 text-center outline-none bg-transparent hover:bg-white transition-colors text-gray-700"
                       maxLength={1}
+                      placeholder="-"
                     />
                   </td>
                 ))}
@@ -297,7 +299,7 @@ const COPOMapping = ({ onSave, initialData }) => {
           </tbody>
         </table>
       </div>
-
+      </div>
       <button 
         onClick={addRow} 
         className="mt-4 px-4 py-2 bg-[#FFB255] text-white rounded hover:bg-blue-700 transition-colors"

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Trash2 } from 'lucide-react';
 
 const CourseSyllabus = ({ onSave, initialData }) => {
   const [syllabusData, setSyllabusData] = useState([
@@ -69,58 +70,62 @@ const CourseSyllabus = ({ onSave, initialData }) => {
         <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
           7
         </div>
-        <h2 className="section-title text-xl font-semibold">
+        <h2 className="text-2xl font-semibold text-gray-800">
           Course Syllabus
         </h2>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto rounded-lg border border-gray-200">
         <table className="w-full border-collapse mb-4">
           <thead>
-            <tr>
-              <th className="border border-gray-300 bg-gray-100 p-3 text-sm font-semibold">Sr. No.</th>
-              <th className="border border-gray-300 bg-gray-100 p-3 text-sm font-semibold">Content</th>
-              <th className="border border-gray-300 bg-gray-100 p-3 text-sm font-semibold">CO</th>
-              <th className="border border-gray-300 bg-gray-100 p-3 text-sm font-semibold">Number of Sessions</th>
-              <th className="border border-gray-300 bg-gray-100 p-3 text-sm font-semibold">Actions</th>
+            <tr className="bg-gray-50">
+              <th className="border-b border-gray-200 p-4 text-sm font-semibold text-gray-600 text-left w-20">Sr. No.</th>
+              <th className="border-b border-gray-200 p-4 text-sm font-semibold text-gray-600 text-left">Content</th>
+              <th className="border-b border-gray-200 p-4 text-sm font-semibold text-gray-600 text-left w-32">CO</th>
+              <th className="border-b border-gray-200 p-4 text-sm font-semibold text-gray-600 text-left w-40">Sessions</th>
+              <th className="border-b border-gray-200 p-4 text-sm font-semibold text-gray-600 text-left w-24">Actions</th>
             </tr>
           </thead>
           <tbody>
             {syllabusData.map((row, index) => (
-              <tr key={index}>
-                <td className="border border-gray-300 p-2 text-center">
+              <tr key={index} className="hover:bg-gray-50 transition-colors">
+                <td className="border-b border-gray-200 p-4 text-gray-600">
                   {row.srNo}
                 </td>
-                <td className="border border-gray-300 p-2">
+                <td className="border-b border-gray-200 p-4">
                   <textarea
                     value={row.content}
                     onChange={(e) => handleInputChange(index, 'content', e.target.value)}
-                    className="w-full p-1 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[60px] resize-y"
+                    className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none min-h-[40px] resize-y text-gray-700"
+                    placeholder="Enter content..."
                   />
                 </td>
-                <td className="border border-gray-300 p-2">
+                <td className="border-b border-gray-200 p-4">
                   <input
                     type="text"
                     value={row.co}
                     onChange={(e) => handleInputChange(index, 'co', e.target.value)}
-                    className="w-full p-1 text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-center text-gray-700"
+                    placeholder="CO"
                   />
                 </td>
-                <td className="border border-gray-300 p-2">
+                <td className="border-b border-gray-200 p-4">
                   <input
                     type="number"
                     value={row.sessions}
                     onChange={(e) => handleInputChange(index, 'sessions', e.target.value)}
-                    className="w-full p-1 text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-center text-gray-700"
+                    placeholder="Sessions"
                   />
                 </td>
-                <td className="border border-gray-300 p-2 text-center">
+                <td className="border-b border-gray-200 p-4">
                   {syllabusData.length > 1 && (
                     <button 
                       onClick={() => removeRow(index)}
-                      className="text-red-600 hover:text-red-800 px-2"
+                      className="p-2 text-gray-400 hover:text-red-500 rounded-full hover:bg-red-50 transition-colors"
+                      title="Remove row"
                     >
-                      Remove
+                      <Trash2 size={18} />
                     </button>
                   )}
                 </td>
@@ -132,7 +137,7 @@ const CourseSyllabus = ({ onSave, initialData }) => {
 
       <button 
         onClick={addRow}
-        className="px-4 py-2 bg-[#FFB255] text-white rounded hover:bg-[#FFB255] transition-colors"
+        className="mt-4 px-4 py-2 bg-[#FFB255] text-white rounded hover:bg-[#FFB255] transition-colors"
       >
         Add Row
       </button>

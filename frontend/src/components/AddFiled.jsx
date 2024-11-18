@@ -39,7 +39,7 @@ const AddField = ({ label, onChange, initialData = [] }) => {
           onClick={addField}
           className="px-3 py-1 bg-[#FFB255] text-white rounded hover:bg-blue-600"
         >
-          Add {label}
+          Add Row
         </button>
       </div>
       

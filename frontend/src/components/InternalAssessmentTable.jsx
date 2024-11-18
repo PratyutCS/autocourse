@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Plus, Trash2 } from 'lucide-react';
+
 
 const InternalAssessmentTable = ({ onSave, initialData }) => {
   const [assessmentData, setAssessmentData] = useState({
@@ -82,90 +84,99 @@ const InternalAssessmentTable = ({ onSave, initialData }) => {
         
       </div> */}
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-300">
+<div className="overflow-x-auto rounded-lg border border-gray-200">
+        <table className="w-full border-collapse" style={{ minWidth: '1000px' }}>
           <thead>
-            <tr className="bg-gray-100">
-              <th className="px-4 py-2 border-b">Component</th>
-              <th className="px-4 py-2 border-b">Duration</th>
-              <th className="px-4 py-2 border-b">Weightage (%)</th>
-              <th className="px-4 py-2 border-b">Evaluation</th>
-              <th className="px-4 py-2 border-b">Week</th>
-              <th className="px-4 py-2 border-b">Remarks</th>
-              <th className="px-4 py-2 border-b">Actions</th>
+            <tr className="bg-gray-50">
+              <th className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 text-left">Component</th>
+              <th className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 text-left w-32">Duration</th>
+              <th className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 text-left w-32">Weightage (%)</th>
+              <th className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 text-left w-40">Evaluation</th>
+              <th className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 text-left w-28">Week</th>
+              <th className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 text-left">Remarks</th>
+              <th className="border-b border-gray-200 p-3 text-sm font-semibold text-gray-600 text-center w-24">Actions</th>
             </tr>
           </thead>
           <tbody>
             {Object.keys(assessmentData.components).map((componentKey) => (
-              <tr key={componentKey}>
-                <td className="px-4 py-2 border-b">
+              <tr key={componentKey} className="hover:bg-gray-50 transition-colors">
+                <td className="border-b border-r border-gray-200 p-3">
                   <input
                     type="text"
                     value={assessmentData.components[componentKey].component}
                     onChange={(e) => handleInputChange(componentKey, 'component', e.target.value)}
-                    className="w-full p-1 border rounded"
+                    className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-gray-700"
+                    placeholder="Enter component"
                   />
                 </td>
-                <td className="px-4 py-2 border-b">
+                <td className="border-b border-r border-gray-200 p-3">
                   <input
                     type="text"
                     value={assessmentData.components[componentKey].duration}
                     onChange={(e) => handleInputChange(componentKey, 'duration', e.target.value)}
-                    className="w-full p-1 border rounded"
+                    className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-gray-700"
+                    placeholder="e.g. 2 hrs"
                   />
                 </td>
-                <td className="px-4 py-2 border-b">
+                <td className="border-b border-r border-gray-200 p-3">
                   <input
                     type="text"
                     value={assessmentData.components[componentKey].weightage}
                     onChange={(e) => handleInputChange(componentKey, 'weightage', e.target.value)}
-                    className="w-full p-1 border rounded"
+                    className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-gray-700"
+                    placeholder="e.g. 20"
                   />
                 </td>
-                <td className="px-4 py-2 border-b">
+                <td className="border-b border-r border-gray-200 p-3">
                   <input
                     type="text"
                     value={assessmentData.components[componentKey].evaluation}
                     onChange={(e) => handleInputChange(componentKey, 'evaluation', e.target.value)}
-                    className="w-full p-1 border rounded"
+                    className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-gray-700"
+                    placeholder="Enter evaluation method"
                   />
                 </td>
-                <td className="px-4 py-2 border-b">
+                <td className="border-b border-r border-gray-200 p-3">
                   <input
                     type="text"
                     value={assessmentData.components[componentKey].week}
                     onChange={(e) => handleInputChange(componentKey, 'week', e.target.value)}
-                    className="w-full p-1 border rounded"
+                    className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-gray-700"
+                    placeholder="e.g. Week 5"
                   />
                 </td>
-                <td className="px-4 py-2 border-b">
+                <td className="border-b border-r border-gray-200 p-3">
                   <input
                     type="text"
                     value={assessmentData.components[componentKey].remarks}
                     onChange={(e) => handleInputChange(componentKey, 'remarks', e.target.value)}
-                    className="w-full p-1 border rounded"
+                    className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-gray-700"
+                    placeholder="Add remarks"
                   />
                 </td>
-                <td className="px-4 py-2 border-b">
-                  <button
-                    onClick={() => removeRow(componentKey)}
-                    className="text-red-500 hover:text-red-700 px-2 py-1"
-                    disabled={Object.keys(assessmentData.components).length === 1}
-                  >
-                    Delete
-                  </button>
+                <td className="border-b border-gray-200 p-3 text-center">
+                  {Object.keys(assessmentData.components).length > 1 && (
+                    <button
+                      onClick={() => removeRow(componentKey)}
+                      className="p-2 text-gray-400 hover:text-red-500 rounded-full hover:bg-red-50 transition-colors"
+                      title="Remove row"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <button
-          onClick={addRow}
-          className="px-4 py-2 bg-[#FFB255] text-white rounded hover:bg-[#FFB255]/[0.8]"
-        >
-          Add Row
-        </button>
+      <button 
+        onClick={addRow}
+        className="mt-6 px-6 py-2.5 bg-orange-400 text-white rounded-lg hover:bg-orange-500 transition-colors font-medium shadow-sm flex items-center gap-2"
+      >
+        <Plus size={18} />
+        Add Component
+      </button>
     </div>
   );
 };

@@ -6,8 +6,7 @@ const EditableCourseDescription = ({ courseDescription, onChange }) => {
   };
 
   return (
-    <div className="mb-6 p-4 border rounded-lg shadow-sm">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4">Course Description and its objectives</h3>
+    <div className="">
       <textarea
         className="w-full p-2 border rounded-md min-h-[150px] text-sm"
         value={courseDescription}
