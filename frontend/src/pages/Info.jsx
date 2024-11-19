@@ -5,7 +5,15 @@ import FeedbackForm from '../components/FeedbackForm';
 import { IoReturnUpBackSharp } from "react-icons/io5";
 import { useLocation } from 'react-router-dom';
 import AsideComp from '../components/AsideComp';
-import '../css/dash.css'
+import '../css/dash.css';
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+const ErrorDisplay = ({ message }) => (
+  <div className="flex items-center justify-center min-h-[400px] w-full">
+    <div className="text-red-500 bg-red-50 px-6 py-4 rounded-lg shadow-sm">
+      <p className="font-medium">{message}</p>
+    </div>
+  </div>
+)
 const Info = () => {
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -44,7 +52,7 @@ const Info = () => {
   }, [num, token]);
 
   if (error) {
-    return <div>{error}</div>;
+    return <ErrorDisplay message={error} />;
   }
 
   return (
@@ -70,7 +78,7 @@ const Info = () => {
               program = {file["Program"] || ""}
             />
           ) : (
-            <p>Loading file information...</p>
+            <LoadingSpinner />
           )}
         </div>
       </div>

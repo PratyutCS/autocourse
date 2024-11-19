@@ -4,7 +4,9 @@ import * as XLSX from "xlsx";
 import Papa from "papaparse";
 import constants from "../constants";
 import axios from "axios";
+import LoadingSpinner from './LoadingSpinner';
 import "../css/feedback.css";
+
 import { IoReturnUpBackSharp } from "react-icons/io5";
 import COPOMapping from "./COPOMapping";
 import InternalAssessmentTable from "./InternalAssessmentTable";
@@ -15,7 +17,9 @@ import EditableCourseDescription from "./EditableCourseDescription";
 import CourseSyllabus from "./CourseSyllabus";
 import AddField from "./AddFiled";
 
+
 const FeedbackForm = (props) => {
+  const [isLoading, setIsLoading] = useState(false);
   const token = localStorage.getItem("token");
   let num = props.num;
   const [coursecode, setCourseCode] = useState(props.coursecode || "");
@@ -197,6 +201,7 @@ const FeedbackForm = (props) => {
   const postData = async () => {
     if (num !== undefined) {
       try {
+        setIsLoading(true); 
         console.log("Preparing to save uploadedFiles:", uploadedFiles);
         console.log("Sending data:", {
           internalAssessmentData,
@@ -559,7 +564,10 @@ const FeedbackForm = (props) => {
           />
         </div>
         {/* Footer Section */}
+    
+    {isLoading && <LoadingSpinner />}
       </div>
+      
     </div>
   );
 };
