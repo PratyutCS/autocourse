@@ -2,6 +2,7 @@ import json
 from docx import Document
 from docx.shared import Pt, RGBColor, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.shared import Pt, Inches
 from docx.oxml import OxmlElement
 from docx.enum.table import WD_TABLE_ALIGNMENT
@@ -198,6 +199,752 @@ if data.get('copoMappingData'):
             trPr.append(cantSplit)
 
 #################################################################################################################
+
+# Course Syllabus Table
+if data.get('Course Syllabus'):
+    doc.add_page_break()
+    syllabus_heading = doc.add_heading(level=1)
+    syllabus_run = syllabus_heading.add_run('8. Course Syllabus')
+    syllabus_run.font.name = 'Carlito'
+    syllabus_run.font.size = Pt(16)
+    syllabus_run.font.color.rgb = RGBColor(28, 132, 196)
+    syllabus_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
+
+    doc.add_paragraph()
+
+    # Create table
+    table = doc.add_table(rows=1, cols=4)  # 4 columns for srNo, content, co, sessions
+    
+    # Set header cells
+    hdr_cells = table.rows[0].cells
+    headers = ['Sr. No.', 'Content', 'CO', 'Sessions']
+    for i, header in enumerate(headers):
+        hdr_cells[i].text = header
+        # Make headers bold
+        paragraph = hdr_cells[i].paragraphs[0]
+        run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(header)
+        run.bold = True
+        run.font.size = Pt(10)
+
+    # Add data rows
+    for item in data['Course Syllabus']:
+        row_cells = table.add_row().cells
+        row_cells[0].text = str(item.get('srNo', ''))
+        row_cells[1].text = str(item.get('content', ''))
+        row_cells[2].text = str(item.get('co', ''))
+        row_cells[3].text = str(item.get('sessions', ''))
+        
+        # Set font size for data cells
+        for cell in row_cells:
+            for paragraph in cell.paragraphs:
+                for run in paragraph.runs:
+                    run.font.size = Pt(10)
+
+    # Set column widths
+    widths = [Inches(0.8), Inches(3.5), Inches(0.8), Inches(0.8)]
+    for row in table.rows:
+        for idx, cell in enumerate(row.cells):
+            cell.width = widths[idx]
+
+    # Add borders to cells
+    def set_cell_border(cell, border_type, border_size, border_color):
+        tc = cell._tc
+        tcPr = tc.get_or_add_tcPr()
+        
+        border = OxmlElement(f'w:{border_type}')
+        border.set(qn('w:val'), 'single')
+        border.set(qn('w:sz'), str(border_size))
+        border.set(qn('w:color'), border_color)
+        
+        element = tcPr.xpath(f"./w:{border_type}")
+        if element:
+            element[0].getparent().replace(element[0], border)
+        else:
+            tcPr.append(border)
+
+    # Apply borders to all cells
+    for row in table.rows:
+        for cell in row.cells:
+            set_cell_border(cell, 'top', 4, '000000')
+            set_cell_border(cell, 'bottom', 4, '000000')
+            set_cell_border(cell, 'left', 4, '000000')
+            set_cell_border(cell, 'right', 4, '000000')
+
+    # Set table alignment to center
+    table.alignment = WD_TABLE_ALIGNMENT.CENTER
+
+    # Prevent table rows from splitting across pages
+    for row in table.rows:
+        tr = row._tr
+        trPr = tr.get_or_add_trPr()
+        cantSplit = OxmlElement('w:cantSplit')
+        trPr.append(cantSplit)
+
+#############################################################################################################
+
+def create_learning_resources_doc(data):
+    # Add Learning Resources heading
+    doc.add_page_break()
+    timetable_heading = doc.add_heading(level=1)
+    timetable_run = timetable_heading.add_run('9. Learning Resources')
+    timetable_run.font.name = 'Carlito'
+    timetable_run.font.size = Pt(16)
+    timetable_run.font.color.rgb = RGBColor(28, 132, 196)
+    timetable_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    
+    # Add "Text Books:" subheading
+    textbooks_para = doc.add_paragraph()
+    textbooks_run = textbooks_para.add_run("Text Books:")
+    textbooks_run.bold = True
+    textbooks_run.font.size = Pt(12)
+    
+    # Add textbooks with checkmarks
+    if data.get('textBooks'):
+        for book in data['textBooks']:
+            para = doc.add_paragraph()
+            check = para.add_run("✓ ")
+            check.bold = True
+            check.font.size = Pt(12)
+            book_text = para.add_run(book)
+            book_text.font.size = Pt(12)
+    
+    doc.add_paragraph()  # Add spacing
+    
+    # Add "Reference Links:" subheading
+    ref_para = doc.add_paragraph()
+    ref_run = ref_para.add_run("Reference Links:")
+    ref_run.bold = True
+    ref_run.font.size = Pt(12)
+    
+    # Add reference links with manual bullet points
+    if data.get('referenceLinks'):
+        for link in data['referenceLinks']:
+            para = doc.add_paragraph()
+            # Add bullet point manually
+            bullet = para.add_run("• ")
+            bullet.font.size = Pt(12)
+            # Add link
+            link_run = para.add_run(link)
+            link_run.font.size = Pt(12)
+            link_run.font.color.rgb = RGBColor(0, 0, 255)  # Blue color for links
+            link_run.underline = True
+
+create_learning_resources_doc(data["Learning Resources"])
+
+############################################################################################################
+
+if data.get('weeklyTimetable'):
+    # Add a page break and heading for Weekly Timetable
+    doc.add_page_break()
+    timetable_heading = doc.add_heading(level=1)
+    timetable_run = timetable_heading.add_run('10. Weekly Timetable')
+    timetable_run.font.name = 'Carlito'
+    timetable_run.font.size = Pt(16)
+    timetable_run.font.color.rgb = RGBColor(28, 132, 196)
+    timetable_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
+
+    doc.add_paragraph()
+
+    # Extract the content for the timetable
+    timetable_content = data['weeklyTimetable']['content']
+
+    # Dynamically generate headers from the first dictionary in the content
+    headers = list(timetable_content[0].keys())
+
+    # Create a table with the number of columns based on headers
+    table = doc.add_table(rows=1, cols=len(headers))
+    table.alignment = WD_TABLE_ALIGNMENT.CENTER
+
+    # Populate header row
+    hdr_cells = table.rows[0].cells
+    for i, header in enumerate(headers):
+        hdr_cells[i].text = header
+        # Style header cells
+        paragraph = hdr_cells[i].paragraphs[0]
+        run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(header)
+        run.bold = True
+        run.font.size = Pt(10)
+        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    # Populate rows with timetable content
+    for entry in timetable_content:
+        row_cells = table.add_row().cells
+        for i, key in enumerate(headers):
+            row_cells[i].text = str(entry.get(key, ''))
+            # Style cells
+            for paragraph in row_cells[i].paragraphs:
+                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                for run in paragraph.runs:
+                    run.font.size = Pt(10)
+
+    # Set column widths (auto-adjustable based on the content)
+    column_widths = [Inches(2.0)] + [Inches(1.5)] * (len(headers) - 1)
+    for row in table.rows:
+        for idx, cell in enumerate(row.cells):
+            if idx < len(column_widths):
+                cell.width = column_widths[idx]
+
+    # Apply borders to cells
+    def set_cell_border(cell, border_type, border_size, border_color):
+        tc = cell._tc
+        tcPr = tc.get_or_add_tcPr()
+
+        border = OxmlElement(f'w:{border_type}')
+        border.set(qn('w:val'), 'single')
+        border.set(qn('w:sz'), str(border_size))
+        border.set(qn('w:color'), border_color)
+
+        element = tcPr.xpath(f"./w:{border_type}")
+        if element:
+            element[0].getparent().replace(element[0], border)
+        else:
+            tcPr.append(border)
+
+    # Apply borders to all cells
+    for row in table.rows:
+        for cell in row.cells:
+            set_cell_border(cell, 'top', 4, '000000')
+            set_cell_border(cell, 'bottom', 4, '000000')
+            set_cell_border(cell, 'left', 4, '000000')
+            set_cell_border(cell, 'right', 4, '000000')
+
+    # Prevent table rows from splitting across pages
+    for row in table.rows:
+        tr = row._tr
+        trPr = tr.get_or_add_trPr()
+        cantSplit = OxmlElement('w:cantSplit')
+        trPr.append(cantSplit)
+
+
+############################################################################################################
+
+if data.get('studentList'):
+    # Add a page break and heading for Weekly Timetable
+    doc.add_page_break()
+    timetable_heading = doc.add_heading(level=1)
+    timetable_run = timetable_heading.add_run('11. studentList')
+    timetable_run.font.name = 'Carlito'
+    timetable_run.font.size = Pt(16)
+    timetable_run.font.color.rgb = RGBColor(28, 132, 196)
+    timetable_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
+
+    doc.add_paragraph()
+
+    # Extract the content for the timetable
+    timetable_content = data['studentList']['content']
+
+    # Dynamically generate headers from the first dictionary in the content
+    headers = list(timetable_content[0].keys())
+
+    # Create a table with the number of columns based on headers
+    table = doc.add_table(rows=1, cols=len(headers))
+    table.alignment = WD_TABLE_ALIGNMENT.CENTER
+
+    # Populate header row
+    hdr_cells = table.rows[0].cells
+    for i, header in enumerate(headers):
+        hdr_cells[i].text = header
+        # Style header cells
+        paragraph = hdr_cells[i].paragraphs[0]
+        run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(header)
+        run.bold = True
+        run.font.size = Pt(10)
+        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    # Populate rows with timetable content
+    for entry in timetable_content:
+        row_cells = table.add_row().cells
+        for i, key in enumerate(headers):
+            row_cells[i].text = str(entry.get(key, ''))
+            # Style cells
+            for paragraph in row_cells[i].paragraphs:
+                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                for run in paragraph.runs:
+                    run.font.size = Pt(10)
+
+    # Set column widths (auto-adjustable based on the content)
+    column_widths = [Inches(2.0)] + [Inches(1.5)] * (len(headers) - 1)
+    for row in table.rows:
+        for idx, cell in enumerate(row.cells):
+            if idx < len(column_widths):
+                cell.width = column_widths[idx]
+
+    # Apply borders to cells
+    def set_cell_border(cell, border_type, border_size, border_color):
+        tc = cell._tc
+        tcPr = tc.get_or_add_tcPr()
+
+        border = OxmlElement(f'w:{border_type}')
+        border.set(qn('w:val'), 'single')
+        border.set(qn('w:sz'), str(border_size))
+        border.set(qn('w:color'), border_color)
+
+        element = tcPr.xpath(f"./w:{border_type}")
+        if element:
+            element[0].getparent().replace(element[0], border)
+        else:
+            tcPr.append(border)
+
+    # Apply borders to all cells
+    for row in table.rows:
+        for cell in row.cells:
+            set_cell_border(cell, 'top', 4, '000000')
+            set_cell_border(cell, 'bottom', 4, '000000')
+            set_cell_border(cell, 'left', 4, '000000')
+            set_cell_border(cell, 'right', 4, '000000')
+
+    # Prevent table rows from splitting across pages
+    for row in table.rows:
+        tr = row._tr
+        trPr = tr.get_or_add_trPr()
+        cantSplit = OxmlElement('w:cantSplit')
+        trPr.append(cantSplit)
+
+#############################################################################################################
+
+if data.get('internalAssessmentData') and data['internalAssessmentData'].get('components'):
+    # Add a page break and heading for Internal Assessment Data
+    doc.add_page_break()
+    assessment_heading = doc.add_heading(level=1)
+    assessment_run = assessment_heading.add_run('12. Internal Assessment Data')
+    assessment_run.font.name = 'Carlito'
+    assessment_run.font.size = Pt(16)
+    assessment_run.font.color.rgb = RGBColor(28, 132, 196)
+    assessment_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
+
+    doc.add_paragraph()
+
+    # Extract the components dictionary
+    components = data['internalAssessmentData']['components']
+
+    # Generate headers dynamically from the first component
+    headers = list(next(iter(components.values())).keys())
+
+    # Create a table with the number of columns based on headers
+    table = doc.add_table(rows=1, cols=len(headers))
+    table.alignment = WD_TABLE_ALIGNMENT.CENTER
+
+    # Populate header row
+    hdr_cells = table.rows[0].cells
+    for i, header in enumerate(headers):
+        hdr_cells[i].text = header.capitalize()  # Capitalize for better formatting
+        # Style header cells
+        paragraph = hdr_cells[i].paragraphs[0]
+        run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(header)
+        run.bold = True
+        run.font.size = Pt(10)
+        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    # Populate rows with component data
+    for component_id, component_data in components.items():
+        row_cells = table.add_row().cells
+        for i, key in enumerate(headers):
+            row_cells[i].text = str(component_data.get(key, ''))
+            # Style cells
+            for paragraph in row_cells[i].paragraphs:
+                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                for run in paragraph.runs:
+                    run.font.size = Pt(10)
+
+    # Set column widths (adjustable based on content)
+    column_widths = [Inches(1.5)] * len(headers)
+    for row in table.rows:
+        for idx, cell in enumerate(row.cells):
+            if idx < len(column_widths):
+                cell.width = column_widths[idx]
+
+    # Apply borders to cells
+    def set_cell_border(cell, border_type, border_size, border_color):
+        tc = cell._tc
+        tcPr = tc.get_or_add_tcPr()
+
+        border = OxmlElement(f'w:{border_type}')
+        border.set(qn('w:val'), 'single')
+        border.set(qn('w:sz'), str(border_size))
+        border.set(qn('w:color'), border_color)
+
+        element = tcPr.xpath(f"./w:{border_type}")
+        if element:
+            element[0].getparent().replace(element[0], border)
+        else:
+            tcPr.append(border)
+
+    # Apply borders to all cells
+    for row in table.rows:
+        for cell in row.cells:
+            set_cell_border(cell, 'top', 4, '000000')
+            set_cell_border(cell, 'bottom', 4, '000000')
+            set_cell_border(cell, 'left', 4, '000000')
+            set_cell_border(cell, 'right', 4, '000000')
+
+    # Prevent table rows from splitting across pages
+    for row in table.rows:
+        tr = row._tr
+        trPr = tr.get_or_add_trPr()
+        cantSplit = OxmlElement('w:cantSplit')
+        trPr.append(cantSplit)
+
+#############################################################################################################
+
+if data.get('weakstudent'):
+    # Add a page break and heading for Weekly Timetable
+    doc.add_page_break()
+    timetable_heading = doc.add_heading(level=1)
+    timetable_run = timetable_heading.add_run('13. weakstudent')
+    timetable_run.font.name = 'Carlito'
+    timetable_run.font.size = Pt(16)
+    timetable_run.font.color.rgb = RGBColor(28, 132, 196)
+    timetable_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
+
+    doc.add_paragraph()
+
+    # Extract the content for the timetable
+    timetable_content = data['weakstudent']['content']
+
+    # Dynamically generate headers from the first dictionary in the content
+    headers = list(timetable_content[0].keys())
+
+    # Create a table with the number of columns based on headers
+    table = doc.add_table(rows=1, cols=len(headers))
+    table.alignment = WD_TABLE_ALIGNMENT.CENTER
+
+    # Populate header row
+    hdr_cells = table.rows[0].cells
+    for i, header in enumerate(headers):
+        hdr_cells[i].text = header
+        # Style header cells
+        paragraph = hdr_cells[i].paragraphs[0]
+        run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(header)
+        run.bold = True
+        run.font.size = Pt(10)
+        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    # Populate rows with timetable content
+    for entry in timetable_content:
+        row_cells = table.add_row().cells
+        for i, key in enumerate(headers):
+            row_cells[i].text = str(entry.get(key, ''))
+            # Style cells
+            for paragraph in row_cells[i].paragraphs:
+                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                for run in paragraph.runs:
+                    run.font.size = Pt(10)
+
+    # Set column widths (auto-adjustable based on the content)
+    column_widths = [Inches(2.0)] + [Inches(1.5)] * (len(headers) - 1)
+    for row in table.rows:
+        for idx, cell in enumerate(row.cells):
+            if idx < len(column_widths):
+                cell.width = column_widths[idx]
+
+    # Apply borders to cells
+    def set_cell_border(cell, border_type, border_size, border_color):
+        tc = cell._tc
+        tcPr = tc.get_or_add_tcPr()
+
+        border = OxmlElement(f'w:{border_type}')
+        border.set(qn('w:val'), 'single')
+        border.set(qn('w:sz'), str(border_size))
+        border.set(qn('w:color'), border_color)
+
+        element = tcPr.xpath(f"./w:{border_type}")
+        if element:
+            element[0].getparent().replace(element[0], border)
+        else:
+            tcPr.append(border)
+
+    # Apply borders to all cells
+    for row in table.rows:
+        for cell in row.cells:
+            set_cell_border(cell, 'top', 4, '000000')
+            set_cell_border(cell, 'bottom', 4, '000000')
+            set_cell_border(cell, 'left', 4, '000000')
+            set_cell_border(cell, 'right', 4, '000000')
+
+    # Prevent table rows from splitting across pages
+    for row in table.rows:
+        tr = row._tr
+        trPr = tr.get_or_add_trPr()
+        cantSplit = OxmlElement('w:cantSplit')
+        trPr.append(cantSplit)
+
+#############################################################################################################
+
+def create_actions_doc(data):
+    # Add heading with bullet points
+    if data.get('actionsForWeakStudentsData'):
+        # Add the main heading
+        doc.add_page_break()
+        timetable_heading = doc.add_heading(level=1)
+        timetable_run = timetable_heading.add_run('14. Actions taken for weak students')
+        timetable_run.font.name = 'Carlito'
+        timetable_run.font.size = Pt(16)
+        timetable_run.font.color.rgb = RGBColor(28, 132, 196)
+        timetable_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        
+        # Add actions with bullet points
+        for action in data['actionsForWeakStudentsData']:
+            para = doc.add_paragraph()
+            # Add bullet point
+            bullet = para.add_run("• ")
+            bullet.font.size = Pt(12)
+            # Add action text
+            action_text = para.add_run(action)
+            action_text.font.size = Pt(12)
+
+create_actions_doc(data)
+
+#############################################################################################################
+
+if data.get('marksDetails'):
+    # Add a page break and heading for Weekly Timetable
+    doc.add_page_break()
+    timetable_heading = doc.add_heading(level=1)
+    timetable_run = timetable_heading.add_run('15. marksDetails')
+    timetable_run.font.name = 'Carlito'
+    timetable_run.font.size = Pt(16)
+    timetable_run.font.color.rgb = RGBColor(28, 132, 196)
+    timetable_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
+
+    doc.add_paragraph()
+
+    # Extract the content for the timetable
+    timetable_content = data['marksDetails']['content']
+
+    # Dynamically generate headers from the first dictionary in the content
+    headers = list(timetable_content[0].keys())
+
+    # Create a table with the number of columns based on headers
+    table = doc.add_table(rows=1, cols=len(headers))
+    table.alignment = WD_TABLE_ALIGNMENT.CENTER
+
+    # Populate header row
+    hdr_cells = table.rows[0].cells
+    for i, header in enumerate(headers):
+        hdr_cells[i].text = header
+        # Style header cells
+        paragraph = hdr_cells[i].paragraphs[0]
+        run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(header)
+        run.bold = True
+        run.font.size = Pt(10)
+        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    # Populate rows with timetable content
+    for entry in timetable_content:
+        row_cells = table.add_row().cells
+        for i, key in enumerate(headers):
+            row_cells[i].text = str(entry.get(key, ''))
+            # Style cells
+            for paragraph in row_cells[i].paragraphs:
+                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                for run in paragraph.runs:
+                    run.font.size = Pt(10)
+
+    # Set column widths (auto-adjustable based on the content)
+    column_widths = [Inches(2.0)] + [Inches(1.5)] * (len(headers) - 1)
+    for row in table.rows:
+        for idx, cell in enumerate(row.cells):
+            if idx < len(column_widths):
+                cell.width = column_widths[idx]
+
+    # Apply borders to cells
+    def set_cell_border(cell, border_type, border_size, border_color):
+        tc = cell._tc
+        tcPr = tc.get_or_add_tcPr()
+
+        border = OxmlElement(f'w:{border_type}')
+        border.set(qn('w:val'), 'single')
+        border.set(qn('w:sz'), str(border_size))
+        border.set(qn('w:color'), border_color)
+
+        element = tcPr.xpath(f"./w:{border_type}")
+        if element:
+            element[0].getparent().replace(element[0], border)
+        else:
+            tcPr.append(border)
+
+    # Apply borders to all cells
+    for row in table.rows:
+        for cell in row.cells:
+            set_cell_border(cell, 'top', 4, '000000')
+            set_cell_border(cell, 'bottom', 4, '000000')
+            set_cell_border(cell, 'left', 4, '000000')
+            set_cell_border(cell, 'right', 4, '000000')
+
+    # Prevent table rows from splitting across pages
+    for row in table.rows:
+        tr = row._tr
+        trPr = tr.get_or_add_trPr()
+        cantSplit = OxmlElement('w:cantSplit')
+        trPr.append(cantSplit)
+#############################################################################################################
+
+if data.get('assignmentsTaken'):
+    # Add a page break and heading for Weekly Timetable
+    doc.add_page_break()
+    timetable_heading = doc.add_heading(level=1)
+    timetable_run = timetable_heading.add_run('16. assignmentsTaken')
+    timetable_run.font.name = 'Carlito'
+    timetable_run.font.size = Pt(16)
+    timetable_run.font.color.rgb = RGBColor(28, 132, 196)
+    timetable_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
+
+    doc.add_paragraph()
+
+    # Extract the content for the timetable
+    timetable_content = data['assignmentsTaken']['content']
+
+    # Dynamically generate headers from the first dictionary in the content
+    headers = list(timetable_content[0].keys())
+
+    # Create a table with the number of columns based on headers
+    table = doc.add_table(rows=1, cols=len(headers))
+    table.alignment = WD_TABLE_ALIGNMENT.CENTER
+
+    # Populate header row
+    hdr_cells = table.rows[0].cells
+    for i, header in enumerate(headers):
+        hdr_cells[i].text = header
+        # Style header cells
+        paragraph = hdr_cells[i].paragraphs[0]
+        run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(header)
+        run.bold = True
+        run.font.size = Pt(10)
+        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    # Populate rows with timetable content
+    for entry in timetable_content:
+        row_cells = table.add_row().cells
+        for i, key in enumerate(headers):
+            row_cells[i].text = str(entry.get(key, ''))
+            # Style cells
+            for paragraph in row_cells[i].paragraphs:
+                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                for run in paragraph.runs:
+                    run.font.size = Pt(10)
+
+    # Set column widths (auto-adjustable based on the content)
+    column_widths = [Inches(2.0)] + [Inches(1.5)] * (len(headers) - 1)
+    for row in table.rows:
+        for idx, cell in enumerate(row.cells):
+            if idx < len(column_widths):
+                cell.width = column_widths[idx]
+
+    # Apply borders to cells
+    def set_cell_border(cell, border_type, border_size, border_color):
+        tc = cell._tc
+        tcPr = tc.get_or_add_tcPr()
+
+        border = OxmlElement(f'w:{border_type}')
+        border.set(qn('w:val'), 'single')
+        border.set(qn('w:sz'), str(border_size))
+        border.set(qn('w:color'), border_color)
+
+        element = tcPr.xpath(f"./w:{border_type}")
+        if element:
+            element[0].getparent().replace(element[0], border)
+        else:
+            tcPr.append(border)
+
+    # Apply borders to all cells
+    for row in table.rows:
+        for cell in row.cells:
+            set_cell_border(cell, 'top', 4, '000000')
+            set_cell_border(cell, 'bottom', 4, '000000')
+            set_cell_border(cell, 'left', 4, '000000')
+            set_cell_border(cell, 'right', 4, '000000')
+
+    # Prevent table rows from splitting across pages
+    for row in table.rows:
+        tr = row._tr
+        trPr = tr.get_or_add_trPr()
+        cantSplit = OxmlElement('w:cantSplit')
+        trPr.append(cantSplit)
+
+#############################################################################################################
+
+if data.get('attendanceReport'):
+    # Add a page break and heading for Weekly Timetable
+    doc.add_page_break()
+    timetable_heading = doc.add_heading(level=1)
+    timetable_run = timetable_heading.add_run('17. attendanceReport')
+    timetable_run.font.name = 'Carlito'
+    timetable_run.font.size = Pt(16)
+    timetable_run.font.color.rgb = RGBColor(28, 132, 196)
+    timetable_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
+
+    doc.add_paragraph()
+
+    # Extract the content for the timetable
+    timetable_content = data['attendanceReport']['content']
+
+    # Dynamically generate headers from the first dictionary in the content
+    headers = list(timetable_content[0].keys())
+
+    # Create a table with the number of columns based on headers
+    table = doc.add_table(rows=1, cols=len(headers))
+    table.alignment = WD_TABLE_ALIGNMENT.CENTER
+
+    # Populate header row
+    hdr_cells = table.rows[0].cells
+    for i, header in enumerate(headers):
+        hdr_cells[i].text = header
+        # Style header cells
+        paragraph = hdr_cells[i].paragraphs[0]
+        run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(header)
+        run.bold = True
+        run.font.size = Pt(10)
+        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    # Populate rows with timetable content
+    for entry in timetable_content:
+        row_cells = table.add_row().cells
+        for i, key in enumerate(headers):
+            row_cells[i].text = str(entry.get(key, ''))
+            # Style cells
+            for paragraph in row_cells[i].paragraphs:
+                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                for run in paragraph.runs:
+                    run.font.size = Pt(10)
+
+    # Set column widths (auto-adjustable based on the content)
+    column_widths = [Inches(2.0)] + [Inches(1.5)] * (len(headers) - 1)
+    for row in table.rows:
+        for idx, cell in enumerate(row.cells):
+            if idx < len(column_widths):
+                cell.width = column_widths[idx]
+
+    # Apply borders to cells
+    def set_cell_border(cell, border_type, border_size, border_color):
+        tc = cell._tc
+        tcPr = tc.get_or_add_tcPr()
+
+        border = OxmlElement(f'w:{border_type}')
+        border.set(qn('w:val'), 'single')
+        border.set(qn('w:sz'), str(border_size))
+        border.set(qn('w:color'), border_color)
+
+        element = tcPr.xpath(f"./w:{border_type}")
+        if element:
+            element[0].getparent().replace(element[0], border)
+        else:
+            tcPr.append(border)
+
+    # Apply borders to all cells
+    for row in table.rows:
+        for cell in row.cells:
+            set_cell_border(cell, 'top', 4, '000000')
+            set_cell_border(cell, 'bottom', 4, '000000')
+            set_cell_border(cell, 'left', 4, '000000')
+            set_cell_border(cell, 'right', 4, '000000')
+
+    # Prevent table rows from splitting across pages
+    for row in table.rows:
+        tr = row._tr
+        trPr = tr.get_or_add_trPr()
+        cantSplit = OxmlElement('w:cantSplit')
+        trPr.append(cantSplit)
+
 
 #SAVING
 doc.save('./download/'+data['filename'][:-4]+'.docx')
