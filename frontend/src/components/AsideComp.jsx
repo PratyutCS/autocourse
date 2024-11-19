@@ -5,7 +5,7 @@ import { HiMenuAlt3 } from "react-icons/hi";
 import constants from "../constants";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import PropTypes from "prop-types"; 
+import PropTypes from "prop-types";
 
 const AsideComp = ({ isCollapsed, setIsCollapsed }) => {
   const [userData, setUserData] = useState(null);
@@ -61,38 +61,38 @@ const AsideComp = ({ isCollapsed, setIsCollapsed }) => {
 
   if (isLoading) {
     return (
-      <aside className="w-[20vw] h-full bg-[#323439] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-300"></div>
+      <aside className="w-[20vw] h-full bg-gradient-to-b from-gray-800 to-gray-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-400"></div>
       </aside>
     );
   }
 
   return (
     <aside
-      className={`relative flex flex-col bg-[#323439] h-full transition-all duration-300 ease-in-out ${
+      className={`relative flex flex-col bg-gradient-to-b from-gray-800 to-gray-900 h-full transition-all duration-300 ease-in-out shadow-xl ${
         isCollapsed ? "w-[4vw]" : "w-[20vw]"
       }`}
     >
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute right-[-12px] top-6 bg-[#323439] rounded-full p-1 hover:bg-[#3a3c42] transition-colors z-10"
+        className="absolute right-[-12px] top-6 bg-gray-700 rounded-full p-1.5 hover:bg-gray-600 transition-colors z-10 shadow-lg hover:shadow-xl transform hover:scale-105 duration-200"
       >
         <HiMenuAlt3
           size={20}
-          className={`text-gray-300 transform transition-transform duration-300 ${
+          className={`text-gray-100 transform transition-transform duration-300 ${
             isCollapsed ? "rotate-180" : ""
           }`}
         />
       </button>
 
-      <div className="flex items-center  h-[20%] gap-4">
+      <div className="flex items-center h-[20%] gap-6 px-6 border-b border-gray-700/50">
         <img
           src="/customer-logo.png"
           alt="BMU Logo"
-          className="h-[7vh] w-auto"
+          className="h-[7vh] w-auto drop-shadow-lg"
         />
         <h1
-          className={`font-['Nunito'] font-light text-[#c3c3c3] text-[2vmin] transition-opacity duration-300 ${
+          className={`font-['Nunito'] font-medium text-gray-100 text-[2vmin] transition-opacity duration-300 ${
             isCollapsed ? "opacity-0" : "opacity-100"
           }`}
         >
@@ -100,12 +100,12 @@ const AsideComp = ({ isCollapsed, setIsCollapsed }) => {
         </h1>
       </div>
 
-      <div className="absolute bottom-4 left-3 w-[90%] text-[#c3c3c3] font-['Lato'] font-thin flex flex-col justify-evenly items-start gap-4">
+      <div className="absolute bottom-4 left-0 w-full px-4 text-gray-300 font-['Lato'] flex flex-col justify-evenly items-start gap-4">
         <button
           type="button"
-          className="flex items-center gap-4 text-[2vmin] hover:text-white transition-colors"
+          className="flex items-center gap-4 text-[2vmin] w-full p-2 rounded-lg hover:bg-gray-700/50 hover:text-blue-400 transition-all duration-200 group"
         >
-          <RxQuestionMarkCircled size={24} />
+          <RxQuestionMarkCircled size={24} className="group-hover:scale-110 transition-transform duration-200" />
           <span
             className={`transition-opacity duration-300 ${
               isCollapsed ? "opacity-0" : "opacity-100"
@@ -118,9 +118,9 @@ const AsideComp = ({ isCollapsed, setIsCollapsed }) => {
         <form onSubmit={handleLogout} className="w-full">
           <button
             type="submit"
-            className="flex items-center gap-4 text-[2vmin] hover:text-white transition-colors"
+            className="flex items-center gap-4 text-[2vmin] w-full p-2 rounded-lg hover:bg-gray-700/50 hover:text-red-400 transition-all duration-200 group"
           >
-            <TfiPowerOff size={24} />
+            <TfiPowerOff size={24} className="group-hover:scale-110 transition-transform duration-200" />
             <div
               className={`flex flex-col items-start transition-opacity duration-300 ${
                 isCollapsed ? "opacity-0" : "opacity-100"
@@ -128,7 +128,7 @@ const AsideComp = ({ isCollapsed, setIsCollapsed }) => {
             >
               <span>Logout</span>
               {userData && (
-                <p className="text-[1.75vmin] text-[#afafaf]">{userData.email}</p>
+                <p className="text-[1.75vmin] text-gray-400 font-light">{userData.email}</p>
               )}
             </div>
           </button>
