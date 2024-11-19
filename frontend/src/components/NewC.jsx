@@ -57,13 +57,13 @@ export default function NewC(props) {
   }
 
   return (
-    <div className="relative group bg-white rounded-xl border border-gray-200 hover:border-[#FFB255] transition-all duration-300 overflow-hidden">
-      <div className="p-6 flex flex-col items-center justify-center gap-4 h-full">
+    <div className="relative group h-full bg-white rounded-xl border border-gray-200 hover:border-[#FFB255] transition-all duration-300 overflow-hidden">
+      <div className="flex flex-col items-center justify-center gap-4 h-full">
         <div className="bg-orange-50 rounded-full p-4 group-hover:bg-orange-100 transition-colors">
           <FcDocument className="w-8 h-8" />
         </div>
         
-        <div className="text-center">
+        <div className="w-full px-7 text-center">
           <h3 className="text-lg font-semibold text-gray-800 mb-1" title={props.name}>
             {props.name}
           </h3>
@@ -77,17 +77,17 @@ export default function NewC(props) {
               <span>View</span>
             </button>
             
-            <div className="flex justify-center gap-2">
+            <div className="flex justify-between gap-2">
               <button
                 onClick={() => Delete(props.num)}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors duration-200"
+                className="inline-flex items-center justify-center gap-2 px-10 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors duration-200"
               >
                 <AiFillDelete className="w-5 h-5" />
               </button>
               
               <button
                 onClick={() => Download(props.num)}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-200"
+                className="inline-flex items-center justify-center gap-2 px-10 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-200"
               >
                 <IoMdDownload className="w-5 h-5" />
               </button>

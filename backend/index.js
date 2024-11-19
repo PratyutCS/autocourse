@@ -462,6 +462,7 @@ app.post("/form", auth, async (req, res) => {
       data[num]['Module/Semester'] = req.body.module || "";
       data[num]['Session'] = req.body.session || "";
       data[num]["course_description"] = req.body.EditableCourseDescriptionData || "";
+      data[num]['course_syllabus']= req.body.courseSyllabus || "",
       data[num]["Course Syllabus"] = req.body.courseSyllabus || "";
       data[num]["Learning Resources"] = req.body.learningResources || "";
       data[num]["copoMappingData"] = req.body.copoMappingData || "";

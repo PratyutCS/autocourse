@@ -21,7 +21,14 @@ const FeedbackForm = (props) => {
   const [coursecode, setCourseCode] = useState(props.coursecode || "");
   const [coursetitle, setCourseTitle] = useState(props.coursetitle || "");
   const [courseSyllabus, setCourseSyllabus] = useState(
-    props.courseSyllabus || ""
+    props.courseSyllabus || [
+      {
+        srNo: 1,
+        content: "",
+        co: "",
+        sessions: "",
+      },
+    ]
   );
   const [learningResources, setLearningResources] = useState({
     textBooks: props.learningResources?.textBooks || [],
@@ -41,15 +48,24 @@ const FeedbackForm = (props) => {
       mappingData: {},
     }
   );
+
   const [internalAssessmentData, setInternalAssessmentData] = useState(
     props.internalAssessmentData || {
       components: [],
     }
   );
   const [actionsForWeakStudentsData, setActionsForWeakStudentsData] = useState(
-    props.actionsForWeakStudentsData || ""
+    props.actionsForWeakStudentsData || []
   );
+  const handleWeakStudentsChange = (updatedData) => {
+    setActionsForWeakStudentsData(updatedData);
+  };
 
+  const handleCourseSyllabusChange = (data) => {
+    if (data) {
+      setCourseSyllabus(data);
+    }
+  };
   const EditableCourseDescriptionDataChange = (data) => {
     setEditableCourseDescriptionData(data);
   };
@@ -115,34 +131,78 @@ const FeedbackForm = (props) => {
   const [uploadedFiles, setUploadedFiles] = useState({
     weeklyTimetable: props.weeklyTimetable || null,
     studentList: props.studentList || null,
-    weakstudent:props.weakstudent ||null,
-    assignmentsTaken:props.assignmentsTaken || null,
-    marksDetails : props.marksDetails || null,
+    weakstudent: props.weakstudent || null,
+    assignmentsTaken: props.assignmentsTaken || null,
+    marksDetails: props.marksDetails || null,
     attendanceReport: props.attendanceReport || null,
   });
-  
-  const handleactionsForWeakStudentsDataChange = (data) => {
-    setActionsForWeakStudentsData(data);
-  };
+  useEffect(() => {
+    const loadSavedData = () => {
+      try {
+        // Try to load from props first
+        if (props.uploadedFiles) {
+          console.log("Loading from props:", props.uploadedFiles);
+          setUploadedFiles(props.uploadedFiles);
+          return;
+        }
+
+        // Then try to load from localStorage
+        const savedData = localStorage.getItem(`formData_${num}`);
+        if (savedData) {
+          const parsedData = JSON.parse(savedData);
+          console.log("Loading from localStorage:", parsedData);
+
+          if (parsedData.uploadedFiles) {
+            setUploadedFiles(parsedData.uploadedFiles);
+          }
+        }
+      } catch (error) {
+        console.error("Error loading saved data:", error);
+      }
+    };
+
+    loadSavedData();
+  }, [num, props.uploadedFiles]);
 
   const handleFileChange = (fileData, identifier) => {
-    console.log("Updating uploadedFiles:", identifier, fileData);
+    console.log("Handling file change:", identifier, fileData);
+
     setUploadedFiles((prev) => {
-      const updatedFiles = { ...prev, [identifier]: fileData };
-      console.log("Updated uploadedFiles:", updatedFiles);
+      const updatedFiles = {
+        ...prev,
+        [identifier]: {
+          content: fileData.content,
+          fileName: fileData.fileName,
+          type: fileData.type,
+          lastModified: fileData.lastModified,
+        },
+      };
+
+      // Save to localStorage immediately
+      const currentFormData = JSON.parse(
+        localStorage.getItem(`formData_${num}`) || "{}"
+      );
+      localStorage.setItem(
+        `formData_${num}`,
+        JSON.stringify({
+          ...currentFormData,
+          uploadedFiles: updatedFiles,
+        })
+      );
+
       return updatedFiles;
     });
   };
-  
 
   const postData = async () => {
     if (num !== undefined) {
       try {
+        console.log("Preparing to save uploadedFiles:", uploadedFiles);
         console.log("Sending data:", {
           internalAssessmentData,
           uploadedFiles, // Include the uploaded files data
         });
-        
+
         const response = await axios.post(
           constants.url + "/form",
           {
@@ -153,7 +213,7 @@ const FeedbackForm = (props) => {
             module,
             session,
             EditableCourseDescriptionData,
-            courseSyllabus,
+            courseSyllabus: courseSyllabus,
             learningResources,
             copoMappingData: {
               courseOutcomes: copoMappingData.courseOutcomes,
@@ -163,13 +223,13 @@ const FeedbackForm = (props) => {
               components: internalAssessmentData.components,
             },
             actionsForWeakStudentsData,
-            uploadedFiles,
+            uploadedFiles: uploadedFiles,
           },
           {
             headers: { "x-auth-token": token },
           }
         );
-        
+
         console.log("Server response:", response.data);
         alert("Data saved successfully!");
         window.location.reload();
@@ -179,12 +239,12 @@ const FeedbackForm = (props) => {
       }
     }
   };
-  
+
   return (
-    <div className="feedback-form1 bg-[#FFFEFD] min-h-screen">
-           <div className="mb-8 flex justify-between items-center bg-white rounded-xl shadow-md p-5">
-        <button 
-          onClick={() => window.history.back()} 
+    <div className="p-5 gap-[2rem] h-screen flex flex-col bg-[#FFFEFD]">
+     <div className="bg-white rounded-xl shadow-md p-5 flex justify-between items-center">
+        <button
+          onClick={() => window.history.back()}
           className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors px-4 py-2 rounded-lg hover:bg-gray-50"
         >
           <IoReturnUpBackSharp className="text-xl" />
@@ -197,10 +257,10 @@ const FeedbackForm = (props) => {
           Submit Form
         </button>
       </div>
-      <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-4">
-        {/* Program Section */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+      <div className="space-y-6 overflow-scroll">
+        <div className="grid grid-cols-2 gap-4">
+          {/* Program Section */}
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
                 1
@@ -215,13 +275,15 @@ const FeedbackForm = (props) => {
               rows="2"
             />
           </div>
-        {/* Course Code Section */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          {/* Course Code Section */}
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
                 2
               </div>
-              <h2 className="text-xl font-semibold text-gray-800">Course Code</h2>
+              <h2 className="text-xl font-semibold text-gray-800">
+                Course Code
+              </h2>
             </div>
             <textarea
               className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#FFB255] focus:border-transparent transition-all resize-none text-gray-700"
@@ -232,14 +294,15 @@ const FeedbackForm = (props) => {
             />
           </div>
 
-
-        {/* Course Title Section */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          {/* Course Title Section */}
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
                 3
               </div>
-              <h2 className="text-xl font-semibold text-gray-800">Course Title</h2>
+              <h2 className="text-xl font-semibold text-gray-800">
+                Course Title
+              </h2>
             </div>
             <textarea
               className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#FFB255] focus:border-transparent transition-all resize-none text-gray-700"
@@ -250,13 +313,15 @@ const FeedbackForm = (props) => {
             />
           </div>
 
-        {/* Module/Semester Section */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          {/* Module/Semester Section */}
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
                 4
               </div>
-              <h2 className="text-xl font-semibold text-gray-800">Module/Semester</h2>
+              <h2 className="text-xl font-semibold text-gray-800">
+                Module/Semester
+              </h2>
             </div>
             <textarea
               className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#FFB255] focus:border-transparent transition-all resize-none text-gray-700"
@@ -266,8 +331,8 @@ const FeedbackForm = (props) => {
               rows="2"
             />
           </div>
-        {/* Session Section */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          {/* Session Section */}
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
                 5
@@ -284,13 +349,15 @@ const FeedbackForm = (props) => {
           </div>
         </div>
 
-      {/* Course Description Section */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+        {/* Course Description Section */}
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
               6
             </div>
-            <h2 className="text-xl font-semibold text-gray-800">Course Description and its objectives</h2>
+            <h2 className="text-xl font-semibold text-gray-800">
+              Course Description and its objectives
+            </h2>
           </div>
           <EditableCourseDescription
             courseDescription={EditableCourseDescriptionData}
@@ -298,13 +365,15 @@ const FeedbackForm = (props) => {
           />
         </div>
 
-       {/* CO-PO Mapping Section */}
-       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+        {/* CO-PO Mapping Section */}
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
               7
             </div>
-            <h2 className="text-xl font-semibold text-gray-800">Course Outcomes and CO-PO Mapping</h2>
+            <h2 className="text-xl font-semibold text-gray-800">
+              Course Outcomes and CO-PO Mapping
+            </h2>
           </div>
           <COPOMapping
             onSave={handleCOPOMappingChange}
@@ -312,20 +381,24 @@ const FeedbackForm = (props) => {
           />
         </div>
 
-      <div className="form-section">
-        {/* Course Syllabus Section */}
-        <CourseSyllabus />
+        <div className="form-section">
+          {/* Course Syllabus Section */}
+          <CourseSyllabus
+            onSave={handleCourseSyllabusChange}
+            initialData={courseSyllabus}
+          />
 
+          {/* Learning Resources Section */}
+        </div>
         {/* Learning Resources Section */}
-      
-      </div>
-      {/* Learning Resources Section */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
               8
             </div>
-            <h2 className="text-xl font-semibold text-gray-800">Learning Resources</h2>
+            <h2 className="text-xl font-semibold text-gray-800">
+              Learning Resources
+            </h2>
           </div>
           <div className="space-y-6">
             <AddField
@@ -345,90 +418,156 @@ const FeedbackForm = (props) => {
           </div>
         </div>
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
-        <div className="flex items-center gap-4 mb-6">
+          <div className="flex items-center gap-4 mb-6">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
               9
             </div>
-            <h2 className="text-xl font-semibold text-gray-800">Weekly Time-Table</h2>
-        </div>
-        <div className=" p-4 rounded-lg">
-        <ExcelUploader 
-      title="Weekly Time-Table"
-      identifier="weeklyTimetable"
-      onFileChange={handleFileChange}
-      initialData={uploadedFiles.weeklyTimetable}
-    />
-        </div>
-      </div>
-
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            10
+            <h2 className="text-xl font-semibold text-gray-800">
+              Weekly Time-Table
+            </h2>
           </div>
-          <h2 className="section-title text-xl font-semibold">
-            Registered Student List
-          </h2>
-        </div>
-        <ExcelUploader 
-      title="Student List"
-      identifier="studentList"
-      onFileChange={handleFileChange}
-      initialData={uploadedFiles.studentList}
-    />
-      </div>
-
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            11
+          <div className=" p-4 rounded-lg">
+            <ExcelUploader
+              title="Weekly Timetable"
+              identifier="weeklyTimetable"
+              onFileChange={handleFileChange}
+              initialData={uploadedFiles.weeklyTimetable}
+            />
           </div>
-          <h2 className="section-title text-xl font-semibold">
-            Details of Internal Assessments; weightages, due dates
-          </h2>
         </div>
-        <InternalAssessmentTable
-          onSave={handleInternalAssessmentChange}
-          initialData={internalAssessmentData}
+
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+              10
+            </div>
+            <h2 className="section-title text-xl font-semibold">
+              Registered Student List
+            </h2>
+          </div>
+          <ExcelUploader
+            title="Student List"
+            identifier="studentList"
+            onFileChange={handleFileChange}
+            initialData={uploadedFiles.studentList}
+          />
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+              11
+            </div>
+            <h2 className="section-title text-xl font-semibold">
+              Details of Internal Assessments; weightages, due dates
+            </h2>
+          </div>
+          <InternalAssessmentTable
+            onSave={handleInternalAssessmentChange}
+            initialData={internalAssessmentData}
+          />
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+              12
+            </div>
+            <h2 className="section-title text-xl font-semibold">
+              Sample Evaluated Internal Submissions and Mid Semester Question
+              papers with sample solutions
+            </h2>
+          </div>
+          <PDFUploader />
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+              13
+            </div>
+            <h2 className="section-title text-xl font-semibold">
+              Identification of weak students
+            </h2>
+          </div>
+          <ExcelUploader
+            title="Weak Students"
+            identifier="weakstudent"
+            onFileChange={handleFileChange}
+            initialData={uploadedFiles.weakstudent}
+          />
+        </div>
+
+        <ActionsForWeakStudents
+          label="Actions Taken for Weak Students"
+          initialData={actionsForWeakStudentsData}
+          onSave={handleWeakStudentsChange}
         />
-      </div>
+        
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            12
+   
+
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+              15
+            </div>
+            <h2 className="section-title text-xl font-semibold">
+              Assignments/Quiz/Internal Components/ Projects taken throughout
+              semester
+            </h2>
           </div>
-          <h2 className="section-title text-xl font-semibold">
-            Sample Evaluated Internal Submissions and Mid Semester Question
-            papers with sample solutions
-          </h2>
+          <ExcelUploader
+            title="Assingments"
+            identifier="assignmentsTaken"
+            onFileChange={handleFileChange}
+            initialData={uploadedFiles.assignmentsTaken}
+          />
         </div>
-        <PDFUploader />
-      </div>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            13
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+              16
+            </div>
+            <h2 className="section-title text-xl font-semibold">
+              Detail of Marks in all components up to the End Semester
+            </h2>
           </div>
-          <h2 className="section-title text-xl font-semibold">
-            Identification of weak students
-          </h2>
+          <ExcelUploader
+            title="Marks Details"
+            identifier="marksDetails"
+            onFileChange={handleFileChange}
+            initialData={uploadedFiles.marksDetails}
+          />
         </div>
-        <ExcelUploader 
-      title="Weak Students"
-      identifier="weakstudent"
-      onFileChange={handleFileChange}
-      initialData={uploadedFiles.weakstudent}
-    />
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+              17
+            </div>
+            <h2 className="section-title text-xl font-semibold">
+              {" "}
+              Attendance Report
+            </h2>
+          </div>
+          <ExcelUploader
+            title="Attendance Report"
+            identifier="attendanceReport"
+            onFileChange={handleFileChange}
+            initialData={uploadedFiles.attendanceReport}
+          />
+        </div>
+        {/* Footer Section */}
       </div>
+    </div>
+  );
+};
 
-      <ActionsForWeakStudents
-        onSave={handleactionsForWeakStudentsDataChange}
-        initialData={actionsForWeakStudentsData}
-      />
+export default FeedbackForm;
 
-      {/* <div className="form-section">
+
+     {/* <div className="form-section">
         <div className="flex items-center mb-2">
           <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
             16
@@ -444,77 +583,3 @@ const FeedbackForm = (props) => {
           onChange={(e) => setReflections(e.target.value)}
         />
       </div> */}
-
-<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
-<div className="flex items-center gap-4 mb-6">
-          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            15
-          </div>
-          <h2 className="section-title text-xl font-semibold">
-            Assignments/Quiz/Internal Components/ Projects taken throughout
-            semester
-          </h2>
-        </div>
-        <ExcelUploader 
-      title="Assingments"
-      identifier="assignmentsTaken"
-      onFileChange={handleFileChange}
-      initialData={uploadedFiles.assignmentsTaken}
-    />
-      </div>
-
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            16
-          </div>
-          <h2 className="section-title text-xl font-semibold">
-            Detail of Marks in all components up to the End Semester
-          </h2>
-        </div>
-        <ExcelUploader 
-      title="Marks Details"
-      identifier="marksDetails"
-      onFileChange={handleFileChange}
-      initialData={uploadedFiles.marksDetails}
-    />
-      </div>
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            17
-          </div>
-          <h2 className="section-title text-xl font-semibold">
-            {" "}
-            Attendance Report
-          </h2>
-        </div>
-        <ExcelUploader 
-      title="Attendance Report"
-      identifier="attendanceReport"
-      onFileChange={handleFileChange}
-      initialData={uploadedFiles.attendanceReport}
-    />
-      </div>
-     {/* Footer Section */}
-     <div className="mt-8 flex justify-between items-center bg-white rounded-xl shadow-md p-5">
-          <button 
-            onClick={() => window.history.back()} 
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors px-4 py-2 rounded-lg hover:bg-gray-50"
-          >
-            <IoReturnUpBackSharp className="text-xl" />
-            <span className="font-medium">Back to Files</span>
-          </button>
-          <button
-            onClick={postData}
-            className="bg-[#FFB255] hover:bg-[#f5a543] transition-colors text-white font-semibold rounded-lg px-8 py-3 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
-          >
-            Submit Form
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default FeedbackForm;

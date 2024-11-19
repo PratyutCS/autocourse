@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { TfiPowerOff } from "react-icons/tfi";
 import { RxQuestionMarkCircled } from "react-icons/rx";
 import { HiMenuAlt3 } from "react-icons/hi";
 import constants from "../constants";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types"; 
 
 const AsideComp = ({ isCollapsed, setIsCollapsed }) => {
   const [userData, setUserData] = useState(null);
@@ -135,6 +136,11 @@ const AsideComp = ({ isCollapsed, setIsCollapsed }) => {
       </div>
     </aside>
   );
+};
+
+AsideComp.propTypes = {
+  isCollapsed: PropTypes.bool.isRequired,
+  setIsCollapsed: PropTypes.func.isRequired,
 };
 
 export default AsideComp;

@@ -26,7 +26,6 @@
 
 .box2 {
     height: 72%;
-    width: 90%;
     background-color: rgb(255, 255, 255);
     box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
     border: 1px solid rgba(0, 0, 0, 0.1);
@@ -35,7 +34,4 @@
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: space-evenly;
-    overflow-y: auto;
-    padding-top: 4vh;
-    padding-bottom: 2vh;
 }

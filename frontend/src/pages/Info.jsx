@@ -52,7 +52,7 @@ const Info = () => {
       <AsideComp isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed}/>
       <div className="right">
           
-        <div className="box23">
+        <div className="box23 w-full">
           {file && file.done === 1 ? (
             <FeedbackForm
               file={file.filename}

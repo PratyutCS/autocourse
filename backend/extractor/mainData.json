@@ -5,7 +5,7 @@
   "course_name": "",
   "Module/Semester": "",
   "course_description": "",
-  "Course Syllabus": "",
+  "courseSyllabus": "",
   "Learning Resources": "",
   "internalAssessmentData": {
     "components": {
@@ -49,6 +49,10 @@
   },
   "weeklyTimetable": "",
   "studentList":"",
+  "weakstudent":"",
+  "assignmentsTaken":"",
+  "marksDetails":"",
+  "attendanceReport":"",
   "actionsForWeakStudentsData": [
     {
       "id": "1",

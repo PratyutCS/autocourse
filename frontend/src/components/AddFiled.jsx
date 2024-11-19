@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-
+import React, { useState, useEffect } from "react";
+import { Trash2, Plus } from "lucide-react";
 const AddField = ({ label, onChange, initialData = [] }) => {
   const [fields, setFields] = useState(initialData);
 
   // Add a new empty field
   const addField = () => {
-    const newFields = [...fields, ''];
+    const newFields = [...fields, ""];
     setFields(newFields);
     onChange(newFields);
   };
@@ -35,14 +35,15 @@ const AddField = ({ label, onChange, initialData = [] }) => {
     <div className="mb-4">
       <div className="flex justify-between items-center mb-2">
         <p className="text-lg font-normal">{label}</p>
-        <button
-          onClick={addField}
-          className="px-3 py-1 bg-[#FFB255] text-white rounded hover:bg-blue-600"
-        >
-          Add Row
-        </button>
+        <button 
+        onClick={addField}
+        className="mt-4 px-4 py-2 bg-[#FFB255] text-white rounded hover:bg-[#FFB255]/90 transition-colors flex items-center gap-2"
+      >
+        <Plus size={16} />
+        Add Row
+      </button>
       </div>
-      
+
       <div className="space-y-2">
         {fields.map((field, index) => (
           <div key={index} className="flex items-center gap-2">
@@ -50,14 +51,19 @@ const AddField = ({ label, onChange, initialData = [] }) => {
               type="text"
               value={field}
               onChange={(e) => updateField(index, e.target.value)}
-              className="flex-1 p-2 border rounded focus:ring-2 focus:ring-blue-500"
-              placeholder={`Enter ${label.toLowerCase()} here...`}
+              className={`w-full p-2 border rounded bg-white transition-colors outline-none text-gray-700 ${
+                field.trim() === ""
+                  ? "border-red-200"
+                  : "border-gray-200 hover:border-gray-300"
+              }`}
+              placeholder={`Enter ${label.toLowerCase()}...`}
             />
             <button
               onClick={() => removeField(index)}
-              className="px-2 py-1 text-red-600 hover:text-red-800"
+              className="p-2 text-gray-400 hover:text-red-500 rounded-full hover:bg-red-50 transition-colors"
+              title="Remove row"
             >
-              Remove
+              <Trash2 size={18} />
             </button>
           </div>
         ))}

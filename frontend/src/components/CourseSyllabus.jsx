@@ -2,17 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Trash2 } from 'lucide-react';
 
 const CourseSyllabus = ({ onSave, initialData }) => {
-  const [syllabusData, setSyllabusData] = useState([
-    {
+  // Initialize with default row if no initial data
+  const [syllabusData, setSyllabusData] = useState(() => {
+    return initialData?.length > 0 ? initialData : [{
       srNo: 1,
       content: '',
       co: '',
       sessions: ''
-    }
-  ]);
+    }];
+  });
 
+  // Update local state when initialData changes from parent
   useEffect(() => {
-    if (initialData && initialData.length > 0) {
+    if (initialData?.length > 0) {
       setSyllabusData(initialData);
     }
   }, [initialData]);
@@ -20,12 +22,19 @@ const CourseSyllabus = ({ onSave, initialData }) => {
   const handleInputChange = (index, field, value) => {
     const newSyllabusData = syllabusData.map((item, i) => {
       if (i === index) {
+        // For sessions, ensure it's a valid number or empty string
+        if (field === 'sessions') {
+          const numValue = value === '' ? '' : parseInt(value, 10);
+          return { ...item, [field]: numValue >= 0 ? numValue : item[field] };
+        }
         return { ...item, [field]: value };
       }
       return item;
     });
     
     setSyllabusData(newSyllabusData);
+    
+    // Immediate save to parent
     if (onSave) {
       onSave(newSyllabusData);
     }
@@ -42,6 +51,7 @@ const CourseSyllabus = ({ onSave, initialData }) => {
     const newSyllabusData = [...syllabusData, newRow];
     setSyllabusData(newSyllabusData);
     
+    // Immediate save to parent
     if (onSave) {
       onSave(newSyllabusData);
     }
@@ -58,6 +68,7 @@ const CourseSyllabus = ({ onSave, initialData }) => {
       
       setSyllabusData(newSyllabusData);
       
+      // Immediate save to parent
       if (onSave) {
         onSave(newSyllabusData);
       }
@@ -65,8 +76,8 @@ const CourseSyllabus = ({ onSave, initialData }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
-        <div className="flex items-center gap-4 mb-6">
+    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+      <div className="flex items-center gap-4 mb-6">
         <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
           7
         </div>
@@ -114,6 +125,7 @@ const CourseSyllabus = ({ onSave, initialData }) => {
                     type="number"
                     value={row.sessions}
                     onChange={(e) => handleInputChange(index, 'sessions', e.target.value)}
+                    min="0"
                     className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-center text-gray-700"
                     placeholder="Sessions"
                   />
@@ -137,7 +149,7 @@ const CourseSyllabus = ({ onSave, initialData }) => {
 
       <button 
         onClick={addRow}
-        className="mt-4 px-4 py-2 bg-[#FFB255] text-white rounded hover:bg-[#FFB255] transition-colors"
+        className="mt-4 px-4 py-2 bg-[#FFB255] text-white rounded hover:bg-[#FFB255]/90 transition-colors"
       >
         Add Row
       </button>
