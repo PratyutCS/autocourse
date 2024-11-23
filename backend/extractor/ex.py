@@ -1,5 +1,5 @@
 import PyPDF2
-from langchain_ollama import OllamaLLM
+from groq import Groq
 import sys
 import json
 import os
@@ -7,7 +7,8 @@ import os
 fn = sys.argv[1]
 jfn = sys.argv[2]
 
-llm1 = OllamaLLM(model="gemma2")
+# Initialize Groq client with API key
+client = Groq(api_key="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")
 
 def extract(file):
     with open(file, 'rb') as pdf:
@@ -27,17 +28,27 @@ def ai(text):
     "course_code": null,
     "course_name": null,
     "Module/Semester": null,
-    "Program": null
+    "Program": null,
+    "course_description": null
 }}
 
-Here is the text: {text[:1000]}
+Here is the text: {text}
 
 Make sure there are no changes in the words or sequence; extract as it is. If you can't find anything, keep it as null.
 No explanation is needed.
 Output the result in JSON format only without any buffer text."""
     
-    response = llm1.invoke(prompt)
-    return response
+    response = client.chat.completions.create(
+        messages=[
+            {
+                "role": "user",
+                "content": prompt,
+            }
+        ],
+        model="llama3-8b-8192",
+        stream=False,
+    )
+    return response.choices[0].message.content
 
 if __name__ == '__main__':
     eData1 = extract(fn)
@@ -66,13 +77,15 @@ if __name__ == '__main__':
     print(fn)
     print(mainData)
 
-    try :
+    try:
         res = json.loads(response)
+        print(response)
         mainData["Session"] = res["Session"]
         mainData["course_code"] = res["course_code"]
         mainData["course_name"] = res["course_name"]
         mainData["Module/Semester"] = res["Module/Semester"]
         mainData["Program"] = res["Program"]
+        mainData["course_description"] = res["course_description"]
     except:
         print("------- error in parsing ai response ---------")
         print(response)
