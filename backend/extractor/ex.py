@@ -1,4 +1,4 @@
-import PyPDF2
+import pdfplumber
 from groq import Groq
 import sys
 import json
@@ -12,15 +12,36 @@ jfn = sys.argv[2]
 client = Groq(api_key="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")
 
 def extract(file):
-    with open(file, 'rb') as pdf:
-        reader = PyPDF2.PdfReader(pdf, strict=False)
-        eText = []
-
-        for page in reader.pages:
-            content = page.extract_text()
-            eText.append(content)
-
-        return eText
+    """
+    Extract text from PDF using pdfplumber with enhanced error handling and text processing
+    """
+    try:
+        with pdfplumber.open(file) as pdf:
+            eText = []
+            
+            for page in pdf.pages:
+                # Extract text with better handling of whitespace and formatting
+                text = page.extract_text(x_tolerance=3)  # Adjust tolerance for better word spacing
+                
+                # Clean extracted text
+                # if text:
+                #     # Remove multiple spaces and normalize newlines
+                #     text = re.sub(r'\s+', ' ', text)
+                #     # Remove unnecessary line breaks while preserving paragraph breaks
+                #     text = re.sub(r'(?<!\n)\n(?!\n)', ' ', text)
+                #     text = re.sub(r'\n{3,}', '\n\n', text)
+                #     text = text.strip()
+                    
+                #     eText.append(text)
+            
+            # Join all text with proper spacing between pages
+                eText.append(text)
+            print(eText)
+            return '\n\n'.join(filter(None, eText))
+            
+    except Exception as e:
+        print(f"Error extracting PDF: {str(e)}")
+        return ""
 
 def create_empty_template():
     return {
@@ -30,7 +51,7 @@ def create_empty_template():
         "course_name": "",
         "Module/Semester": "",
         "course_description": "",
-        "courseSyllabus": "",
+        "Course Syllabus": "",
         "Learning Resources": {
             "textBooks": [],
             "referenceLinks": []
@@ -78,8 +99,20 @@ def clean_json_response(response):
 
 def ai(text):
     initial_template = create_empty_template()
+
+    syllabus_format = json.dumps({
+        "courseSyllabus": [
+            {
+                "srNo": 1,
+                "content": "Topic Name with Details",
+                "co": "1",
+                "sessions": 1
+            }
+        ]
+    }, indent=2)
     
-    prompt = f"""You must respond with ONLY a valid JSON object matching this structure:
+    prompt = f"""
+You must respond with ONLY a valid JSON object matching this structure:
 {json.dumps(initial_template, indent=2)}
 
 Extract relevant information from this text and fill the template:
@@ -89,14 +122,22 @@ Requirements:
 -1. Response must be ONLY the JSON object, no other text
 -2. Keep field names exactly as shown
 -3. Keep empty fields as shown ("" for strings, [] for arrays)
--4. textBooks must have textbook related data
--5. referenceLinks must have referal link related data
+-4. textBooks objects must have: title, author, publisher, edition, year, isbn
+-5. referenceLinks objects must have: title, authors, journal, volume, year, doi
 -6. Preserve all existing template fields even if not mentioned in the text
 -7. course_description is the Course Overview and Context in the pdf. There can be more than 1 paragraphs inside it, so include all the paragraphs.
--8. In the internal component it should have Component, Duration(duration), Weightage(weightage), Evaluation_Week (evaluation_week) and Remarks(remarks)
-
+-8. In the internal component(component ) it should have component, Duration(duration), Weightage(weightage), Evaluation(evaluation) Week(week) and Remarks(remarks)
+-9. If there are paragraphs, add a break or start from a new line.
+-10. For The textBooks and referenceLinks, Each should be a simple string in the array and Do not include any additional fields or nested objects.
+-11. For the mappingData in copoMappingData, 
+      - Use the exact mapping values from the table.
+      - Maintain the complete structure.
+      - Preserve empty cells as empty strings. Keep it as 0.
+      - Ensure the mapping matches the table in the given document exactly
+-12. In courseSyllabus, the course content should come in this format:
+{syllabus_format}
 """
-    
+
     try:
         response = client.chat.completions.create(
             messages=[
@@ -122,13 +163,10 @@ Requirements:
 if __name__ == '__main__':
     try:
         # Extract text from PDF
-        eData1 = extract(fn)
-        q1 = ""
-        for data in eData1:
-            q1 += data
+        extracted_text = extract(fn)
         
         # Get AI response
-        response = ai(q1)
+        response = ai(extracted_text)
         
         # Load existing JSON data
         with open(jfn, 'r') as file:

@@ -335,221 +335,67 @@
     ]
   },
   {
-    "filename": "1732368230APznzaYE6XvNqPxDrdbFs3J4ZmaUp300yida0Cy1AbGqUfyZuVnXeJb-TmSB9NpwYroSYRnTIr3BT0of8-KGydgXuM_EFzkd4WKFvVhOLgv4Wy3PQYo7xAiNJrZzYXuVnGYhyonEZ3FE5q6nkTdS5Vc3IdDflMHwZZlSOYfKyDHQgrfrknfoGKNXVGMa-0tlfJc1i1X9H-xI0kHgJ7rDERcZj44QlSpXZcTRRkUKevPDg-tB.pdf",
+    "filename": "1732381681APznzaYE6XvNqPxDrdbFs3J4ZmaUp300yida0Cy1AbGqUfyZuVnXeJb-TmSB9NpwYroSYRnTIr3BT0of8-KGydgXuM_EFzkd4WKFvVhOLgv4Wy3PQYo7xAiNJrZzYXuVnGYhyonEZ3FE5q6nkTdS5Vc3IdDflMHwZZlSOYfKyDHQgrfrknfoGKNXVGMa-0tlfJc1i1X9H-xI0kHgJ7rDERcZj44QlSpXZcTRRkUKevPDg-tB.pdf",
     "done": 1,
+    "Program": "CSE",
+    "Session": "6th Sem",
     "course_code": "CSE3720",
     "course_name": "Generative AI and LLMs",
-    "Module/Semester": "6th Sem, CSE",
+    "Module/Semester": "Core/Elective",
     "course_description": "This course aims to provide students with a comprehensive understanding of generative artificial intelligence, focusing on large language models. Students will learn how to design, train, and deploy generative AI systems, with a particular emphasis on Large Language Models. They will explore the principles, applications, and ethical considerations surrounding these technologies. The course describes in detail the transformer architecture that powers LLMs, how they\u2019re trained, and how fine-tuning enables LLMs to be adapted to a variety of specific use cases.",
-    "Learning Resources": {
-      "textBooks": [
-        {
-          "title": "Generative Deep Learning: Teaching Machines to Paint, Write, Compose, and Play",
-          "author": "David Foster",
-          "publisher": "O'Reilly Media",
-          "edition": "Second edition",
-          "year": "2023",
-          "isbn": "978-1098134181"
-        },
-        {
-          "title": "Generative AI with LangChain: Build large language model (LLM) apps with Python, ChatGPT, and other LLMs",
-          "author": "Ben Auffarth",
-          "publisher": "Packt Publishing",
-          "edition": "First edition",
-          "year": "2023",
-          "isbn": "978-1835083468"
-        }
-      ],
-      "referenceLinks": [
-        {
-          "title": "Attention is all you need",
-          "authors": "Vaswani, Ashish, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, \u0141ukasz Kaiser, and Illia Polosukhin",
-          "journal": "Advances in neural information processing systems",
-          "volume": "30",
-          "year": "2017",
-          "doi": ""
-        },
-        {
-          "title": "Generative Pre-trained Transformer: A Comprehensive Review on Enabling Technologies, Potential Applications, Emerging Challenges, and Future Directions",
-          "authors": "Yenduri, Gokul, Gautam Srivastava, Praveen Kumar Reddy Maddikunta, Rutvij H. Jhaveri, Weizheng Wang, Athanasios V. Vasilakos, and Thippa Reddy Gadekallu",
-          "journal": "",
-          "volume": "",
-          "year": "2023",
-          "doi": "arXiv:2305.10435"
-        },
-        {
-          "title": "Trustworthy LLMs: a Survey and Guideline for Evaluating Large Language Models' Alignment",
-          "authors": "Liu, Yang, Yuanshun Yao, Jean-Francois Ton, Xiaoying Zhang, Ruocheng Guo Hao Cheng, Yegor Klochkov, Muhammad Faaiz Taufiq, and Hang Li",
-          "journal": "",
-          "volume": "",
-          "year": "2023",
-          "doi": "arXiv:2308.05374"
-        }
-      ]
-    },
-    "internalAssessmentData": {
-      "components": {
-        "Assignment": {
-          "duration": "2 weeks",
-          "weightage": "20%",
-          "evaluation": "Continuous",
-          "week": "",
-          "remarks": ""
-        },
-        "Continuous Participation + Viva Quiz": {
-          "duration": "",
-          "weightage": "20%",
-          "evaluation": "Continuous",
-          "week": "",
-          "remarks": ""
-        },
-        "Mid-Semester Project Evaluation": {
-          "duration": "",
-          "weightage": "20%",
-          "evaluation": "As per the University norms",
-          "week": "",
-          "remarks": ""
-        },
-        "Continuous Project Proposal, Literature Survey, Methodology, and Preliminary Results": {
-          "duration": "",
-          "weightage": "20%",
-          "evaluation": "Continuous",
-          "week": "",
-          "remarks": ""
-        },
-        "End Term Project Evaluation": {
-          "duration": "During the last two weeks of the course",
-          "weightage": "40%",
-          "evaluation": "As per the University norms",
-          "week": "",
-          "remarks": "Project-Based"
-        }
-      }
-    },
-    "copoMappingData": {
-      "courseOutcomes": {
-        "CO1": {
-          "description": "Develop a deep understanding of generative AI principles, encompassing various generative models and their practical applications for diverse real-world scenarios.",
-          "bullets": []
-        },
-        "CO2": {
-          "description": "Apply Generative Adversarial Networks (GANs), LLMs, and Sequence Models specifically Seq2Seq models and Variational Autoencoders (VA2Es), strategies for designing effective prompts.",
-          "bullets": []
-        },
-        "CO3": {
-          "description": "Evaluate frameworks that ensure the responsible deployment of generative models, fostering a commitment to ethical considerations.",
-          "bullets": []
-        }
-      },
-      "mappingData": {
-        "CO1": {
-          "PO1": "3",
-          "PO2": "3",
-          "PO3": "3",
-          "PO4": "2",
-          "PO5": "3",
-          "PO6": "3",
-          "PO7": "3",
-          "PO8": "3",
-          "PO9": "3",
-          "PO10": "3",
-          "PO11": "3",
-          "PO12": "3",
-          "PSO1": "",
-          "PSO2": "",
-          "PSO3": "",
-          "PSO4": ""
-        },
-        "CO2": {
-          "PO1": "2",
-          "PO2": "3",
-          "PO3": "3",
-          "PO4": "3",
-          "PO5": "2",
-          "PO6": "1",
-          "PO7": "3",
-          "PO8": "3",
-          "PO9": "3",
-          "PO10": "3",
-          "PO11": "3",
-          "PO12": "3",
-          "PSO1": "",
-          "PSO2": "",
-          "PSO3": "",
-          "PSO4": ""
-        },
-        "CO3": {
-          "PO1": "2",
-          "PO2": "3",
-          "PO3": "3",
-          "PO4": "2",
-          "PO5": "3",
-          "PO6": "3",
-          "PO7": "1",
-          "PO8": "3",
-          "PO9": "3",
-          "PO10": "3",
-          "PO11": "3",
-          "PO12": "3",
-          "PSO1": "1",
-          "PSO2": "1",
-          "PSO3": "",
-          "PSO4": ""
-        }
-      }
-    },
-    "actionsForWeakStudentsData": [
+    "Course Syllabus": [
       {
-        "id": "1",
-        "text": ""
+        "srNo": 1,
+        "content": "Generative AI: What is generative AI, Different types of generative AI models, Understand the principles and applications of Generative AI in creating new data instances, Understand the principles behind Generative AI: Get familiar with building and tweaking generative models for any real-world use case. Generative AI Project Lifecycle.",
+        "co": "1",
+        "sessions": 4
+      },
+      {
+        "srNo": 2,
+        "content": "Seq2Seq Models and Variational Autoencoders (VAEs): Sequence-to-Sequence models, Variational Autoencoders Text-to-Text generation, Image and text-based VAE applications.",
+        "co": "2",
+        "sessions": 3
+      },
+      {
+        "srNo": 3,
+        "content": "Generative Adversarial Networks (GANs): Understanding GAN architecture, GAN training process, GAN applications in image and video generation.",
+        "co": "2",
+        "sessions": 2
+      },
+      {
+        "srNo": 4,
+        "content": "Transformers: Learn about the architecture of Transformer models, including attention mechanisms, encoders, and decoders, Understand pre-training and fine-tuning strategies. Dive into popular Transformer models: BERT (encoder-only), GPT (decoder-only), and T5 (encoder-decoder) etc, Gain deeper insights into the capabilities and potential of Transformer technology.",
+        "co": "2",
+        "sessions": 5
+      },
+      {
+        "srNo": 5,
+        "content": "LLMs: Learn about Language Models (LLMs) and their role in understanding and generating human-like text, Different types of LLMs, Different training datasets for LLMs, Training methods for LLMs, Challenges in training LLMs, Different evaluation metrics for LLMs, Challenges in evaluating LLMs, Practical Implementation of LLMs, and how fine-tuning enables LLMs to be adapted to a variety of specific use cases.",
+        "co": "2",
+        "sessions": 6
+      },
+      {
+        "srNo": 6,
+        "content": "Prompts Module: Understanding the concept and significance of prompt engineering, strategies for designing effective prompts, Techniques for controlling model behavior and output quality, Introduction to LangChain and its objectives, Overview of the LangChain framework and its component.",
+        "co": "2",
+        "sessions": 5
+      },
+      {
+        "srNo": 7,
+        "content": "Ethical Considerations of Generative AI and LLMs: Potential biases in generative AI models, Misinformation and disinformation generated by LLMs and Other ethical concerns Addressing bias and fairness in generative AI systems Ensuring responsible use and deployment of generative models.",
+        "co": "3",
+        "sessions": 7
       }
-    ]
-  },
-  {
-    "filename": "1732369080APznzaYE6XvNqPxDrdbFs3J4ZmaUp300yida0Cy1AbGqUfyZuVnXeJb-TmSB9NpwYroSYRnTIr3BT0of8-KGydgXuM_EFzkd4WKFvVhOLgv4Wy3PQYo7xAiNJrZzYXuVnGYhyonEZ3FE5q6nkTdS5Vc3IdDflMHwZZlSOYfKyDHQgrfrknfoGKNXVGMa-0tlfJc1i1X9H-xI0kHgJ7rDERcZj44QlSpXZcTRRkUKevPDg-tB.pdf",
-    "done": 1,
-    "course_code": "CSE3720",
-    "course_name": "Generative AI and LLMs",
-    "Module/Semester": "6th Sem, CSE",
-    "course_description": "This course aims to provide students with a comprehensive understanding of generative artificial intelligence, focusing on large language models. Students will learn how to design, train, and deploy generative AI systems, with a particular emphasis on Large Language Models. They will explore the principles, applications, and ethical considerations surrounding these technologies. The course describes in detail the transformer architecture that powers LLMs, how they\u2019re trained, and how fine-tuning enables LLMs to be adapted to a variety of specific use cases.",
+    ],
     "Learning Resources": {
       "textBooks": [
-        {
-          "title": "Generative Deep Learning: Teaching Machines to Paint, Write, Compose, and Play",
-          "author": "David Foster",
-          "publisher": "O'Reilly Media",
-          "edition": "Second edition",
-          "year": "June 6, 2023",
-          "isbn": "978-1098134181"
-        },
-        {
-          "title": "Generative AI with LangChain: Build large language model (LLM) apps with Python, ChatGPT, and other LLMs",
-          "author": "Ben Auffarth",
-          "publisher": "Packt Publishing",
-          "edition": "first edition",
-          "year": "December 22, 2023",
-          "isbn": "978-1835083468"
-        }
+        "Generative Deep Learning: Teaching Machines to Paint, Write, Compose, and Play by David Foster, O'Reilly Media, Second edition: June 6, 2023 (ISBN: 978-1098134181)",
+        "Generative AI with LangChain: Build large language model (LLM) apps with Python, ChatGPT, and other LLMs by Ben Auffarth, Packt Publishing, first edition: December 22, 2023 (ISBN-13: 978-1835083468)"
       ],
       "referenceLinks": [
-        {
-          "title": "Attention is all you need",
-          "authors": "Vaswani, Ashish, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, \u0141ukasz Kaiser, and Illia Polosukhin",
-          "year": "2017",
-          "type": "Research Paper"
-        },
-        {
-          "title": "Generative Pre-trained Transformer: A Comprehensive Review on Enabling Technologies, Potential Applications, Emerging Challenges, and Future Directions",
-          "authors": "Yenduri, Gokul, Gautam Srivastava, Praveen Kumar Reddy Maddikunta, Rutvij H. Jhaveri, Weizheng Wang, Athanasios V. Vasilakos, and Thippa Reddy Gadekallu",
-          "year": "2023",
-          "type": "Research Paper"
-        },
-        {
-          "title": "Trustworthy LLMs: a Survey and Guideline for Evaluating Large Language Models' Alignment",
-          "authors": "Liu, Yang, Yuanshun Yao, Jean-Francois Ton, Xiaoying Zhang, Ruocheng Guo Hao Cheng, Yegor Klochkov, Muhammad Faaiz Taufiq, and Hang Li",
-          "year": "2023",
-          "type": "Research Paper"
-        }
+        "Vaswani, Ashish, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, \u0141ukasz Kaiser, and Illia Polosukhin. Attention is all you need. Advances in neural information processing systems 30 (2017)",
+        "Yenduri, Gokul, Gautam Srivastava, Praveen Kumar Reddy Maddikunta, Rutvij H. Jhaveri, Weizheng Wang, Athanasios V. Vasilakos, and Thippa Reddy Gadekallu. Generative Pre-trained Transformer: A Comprehensive Review on Enabling Technologies, Potential Applications, Emerging Challenges, and Future Directions. arXiv preprint arXiv:2305.10435 (2023)",
+        "Liu, Yang, Yuanshun Yao, Jean-Francois Ton, Xiaoying Zhang, Ruocheng Guo Hao Cheng, Yegor Klochkov, Muhammad Faaiz Taufiq, and Hang Li. Trustworthy LLMs: a Survey and Guideline for Evaluating Large Language Models' Alignment. arXiv preprint arXiv:2308.05374 (2023)"
       ]
     },
     "internalAssessmentData": {
@@ -557,32 +403,30 @@
         "Assignment": {
           "Duration": "2 Weeks",
           "Weightage": "20%",
-          "Evaluation_Week": "",
-          "Remarks": "Continuous Participation + Viva Quiz 20 mins"
+          "Evaluation": "Continuous",
+          "Week": "",
+          "Remarks": "Participation + Viva"
         },
-        "Mid-Semester": {
-          "Duration": "",
+        "Quiz": {
+          "Duration": "20 mins",
           "Weightage": "20%",
-          "Evaluation_Week": "",
-          "Remarks": "Assess understanding of theoretical concepts"
+          "Evaluation": "Continuous",
+          "Week": "",
+          "Remarks": "Understanding of theoretical concepts"
         },
-        "Mid-Semester Project Evaluation": {
+        "Project proposal, Literature survey, Methodology, and Preliminary Results": {
           "Duration": "",
-          "Weightage": "20%",
-          "Evaluation_Week": "",
-          "Remarks": "As per the University norms"
-        },
-        "Continuous Project Proposal, Literature Survey, Methodology, and Preliminary Results": {
-          "Duration": "",
-          "Weightage": "20%",
-          "Evaluation_Week": "",
-          "Remarks": ""
-        },
-        "End Term Project Evaluation": {
-          "Duration": "During the last two weeks of the course",
           "Weightage": "40%",
-          "Evaluation_Week": "",
-          "Remarks": "Project-Based"
+          "Evaluation": "Mid-Semester",
+          "Week": "",
+          "Remarks": "University norms"
+        },
+        "End Term Project": {
+          "Duration": "",
+          "Weightage": "40%",
+          "Evaluation": "End-Semester",
+          "Week": "",
+          "Remarks": "University norms"
         }
       }
     },
@@ -615,10 +459,10 @@
           "PO10": "3",
           "PO11": "3",
           "PO12": "3",
-          "PSO1": "3",
-          "PSO2": "3",
-          "PSO3": "3",
-          "PSO4": "3"
+          "PSO1": "0",
+          "PSO2": "0",
+          "PSO3": "0",
+          "PSO4": "0"
         },
         "CO2": {
           "PO1": "2",
@@ -633,10 +477,10 @@
           "PO10": "3",
           "PO11": "3",
           "PO12": "3",
-          "PSO1": "3",
-          "PSO2": "3",
-          "PSO3": "3",
-          "PSO4": "3"
+          "PSO1": "0",
+          "PSO2": "0",
+          "PSO3": "0",
+          "PSO4": "0"
         },
         "CO3": {
           "PO1": "2",
@@ -649,12 +493,12 @@
           "PO8": "3",
           "PO9": "3",
           "PO10": "3",
-          "PO11": "3",
-          "PO12": "3",
-          "PSO1": "3",
-          "PSO2": "3",
-          "PSO3": "3",
-          "PSO4": "3"
+          "PO11": "1",
+          "PO12": "1",
+          "PSO1": "0",
+          "PSO2": "0",
+          "PSO3": "0",
+          "PSO4": "0"
         }
       }
     },
