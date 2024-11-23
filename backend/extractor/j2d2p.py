@@ -383,7 +383,7 @@ if data.get('weeklyTimetableData'):
         for j, day in enumerate(days):
             is_available = data['weeklyTimetableData'][day][time_slot]
             cell = row_cells[j + 1]
-            cell.text = '✓' if is_available else ''
+            cell.text = data['course_name'] + " (" + data['course_code']+")" if is_available else ''
             
             # Style cells
             paragraph = cell.paragraphs[0]
