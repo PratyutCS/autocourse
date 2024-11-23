@@ -369,15 +369,11 @@ app.post("/form", auth, async (req, res) => {
           jsonData[num]["weeklyTimetableData"] = req.body.weeklyTimetableData;
         }
 
-        // Add new Excel/CSV data fields
-        if (req.body.uploadedFiles) {
-          const uploadedFiles = req.body.uploadedFiles;
-          jsonData[num]["studentList"] = uploadedFiles.studentList || null;
-          jsonData[num]["weakstudent"] = uploadedFiles.weakstudent || null;
-          jsonData[num]["assignmentsTaken"] = uploadedFiles.assignmentsTaken || null;
-          jsonData[num]["marksDetails"] = uploadedFiles.marksDetails || null;
-          jsonData[num]["attendanceReport"] = uploadedFiles.attendanceReport || null;
-        }
+        // Add new data fields
+        jsonData[num]["studentListData"] = req.body.studentListData || null;
+        jsonData[num]["weakStudentsData"] = req.body.weakStudentsData || null;
+        jsonData[num]["marksDetailsData"] = req.body.marksDetailsData || null;
+        jsonData[num]["attendanceReportData"] = req.body.attendanceReportData || null;
 
         fs.writeFileSync(directoryPath, JSON.stringify(jsonData));
         res.status(200).json({ message: "Form data saved successfully" });
@@ -391,7 +387,6 @@ app.post("/form", auth, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
 // Function to execute Python script
 async function dataext(number, jfn, fn) {
   try {

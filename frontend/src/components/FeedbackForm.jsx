@@ -1,7 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
-import { useDropzone } from "react-dropzone";
-import * as XLSX from "xlsx";
-import Papa from "papaparse";
+import { useState, useEffect } from "react";
 import constants from "../constants";
 import axios from "axios";
 import LoadingSpinner from "./LoadingSpinner";
@@ -9,64 +6,56 @@ import "../css/feedback.css";
 import { IoReturnUpBackSharp } from "react-icons/io5";
 import COPOMapping from "./COPOMapping";
 import InternalAssessmentTable from "./InternalAssessmentTable";
-import PDFUploader from "./PDFUploader";
 import ActionsForWeakStudents from "./ActionsForWeakStudents";
 import ExcelUploader from "./ExcelUploader";
 import EditableCourseDescription from "./EditableCourseDescription";
 import CourseSyllabus from "./CourseSyllabus";
 import AddField from "./AddFiled";
 import WeeklyTimetable from "./WeeklyTimetable";
-
+import PDFUploader from "./PDFUploader";
+import { Check, X } from 'lucide-react';
 const FeedbackForm = (props) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [weeklyTimetableData, setWeeklyTimetableData] = useState(
-    props.weeklyTimetableData || null
-
-  );
-
   const token = localStorage.getItem("token");
   let num = props.num;
-  const [coursecode, setCourseCode] = useState(props.coursecode || "");
-  const [coursetitle, setCourseTitle] = useState(props.coursetitle || "");
-  const [courseSyllabus, setCourseSyllabus] = useState(
-    props.courseSyllabus || [
-      {
-        srNo: 1,
-        content: "",
-        co: "",
-        sessions: "",
-      },
-    ]
-  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [coursecode, setCourseCode] = useState("");
+  const [coursetitle, setCourseTitle] = useState("");
+  const [module, setModule] = useState("");
+  const [session, setSession] = useState("");
+  const [program, setProgram] = useState("");
+
+  const [courseSyllabus, setCourseSyllabus] = useState([
+    {
+      srNo: 1,
+      content: "",
+      co: "",
+      sessions: "",
+    },
+  ]);
   const [learningResources, setLearningResources] = useState({
-    textBooks: props.learningResources?.textBooks || [],
-    referenceLinks: props.learningResources?.referenceLinks || [],
+    textBooks: [],
+    referenceLinks: [],
   });
-  useEffect(() => {
-  }, [learningResources.textBooks, learningResources.referenceLinks]);
 
-  const [module, setModule] = useState(props.module || "");
-  const [session, setSession] = useState(props.session || "");
-  const [program, setProgram] = useState(props.program || "");
-  const [file, setFile] = useState(null);
-  const [fileContent, setFileContent] = useState(null);
   const [EditableCourseDescriptionData, setEditableCourseDescriptionData] =
-    useState(props.courseDescription || "");
-  const [copoMappingData, setCopoMappingData] = useState(
-    props.copoMappingData || {
-      courseOutcomes: {},
-      mappingData: {},
-    }
-  );
+    useState("");
+  const [copoMappingData, setCopoMappingData] = useState({
+    courseOutcomes: {},
+    mappingData: {},
+  });
 
-  const [internalAssessmentData, setInternalAssessmentData] = useState(
-    props.internalAssessmentData || {
-      components: [],
-    }
-  );
+  const [studentListData, setStudentListData] = useState([]);
+  const [weakStudentsData, setWeakStudentsData] = useState([]);
+  const [marksDetailsData, setMarksDetailsData] = useState([]);
+  const [attendanceReportData, setAttendanceReportData] = useState([]);
+  const [internalAssessmentData, setInternalAssessmentData] = useState({
+    components: [],
+  });
   const [actionsForWeakStudentsData, setActionsForWeakStudentsData] = useState(
-    props.actionsForWeakStudentsData || []
+    []
   );
+  const [weeklyTimetableData, setWeeklyTimetableData] = useState(null);
+
   const handleWeakStudentsChange = (updatedData) => {
     setActionsForWeakStudentsData(updatedData);
   };
@@ -76,44 +65,10 @@ const FeedbackForm = (props) => {
       setCourseSyllabus(data);
     }
   };
+
   const EditableCourseDescriptionDataChange = (data) => {
     setEditableCourseDescriptionData(data);
   };
-
-  const onDrop = useCallback((acceptedFiles) => {
-    const file = acceptedFiles[0];
-    setFile(file);
-
-    if (file.type === "text/csv") {
-      Papa.parse(file, {
-        complete: (result) => {
-          setFileContent(result.data);
-        },
-        header: true,
-      });
-    } else {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: "array" });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const json = XLSX.utils.sheet_to_json(worksheet);
-        setFileContent(json);
-      };
-      reader.readAsArrayBuffer(file);
-    }
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      "text/csv": [".csv"],
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
-        ".xlsx",
-      ],
-    },
-  });
 
   const handleCOPOMappingChange = (data) => {
     if (data && data.courseOutcomes && data.mappingData) {
@@ -123,6 +78,15 @@ const FeedbackForm = (props) => {
       });
     }
   };
+  const handleStudentStatusChange = (uniqueId, newStatus) => {
+    setWeakStudentsData((prevData) =>
+      prevData.map((student) =>
+        student.uniqueId === uniqueId
+          ? { ...student, status: newStatus }
+          : student
+      )
+    );
+  };
 
   const handleInternalAssessmentChange = (data) => {
     if (data && data.components) {
@@ -131,13 +95,104 @@ const FeedbackForm = (props) => {
       });
     }
   };
+
   const handleLearningResourcesChange = (updatedFields, fieldType) => {
     setLearningResources((prevState) => ({
       ...prevState,
       [fieldType]: updatedFields,
     }));
   };
-  // here
+  /////////////////////////////////////////**Use Effect**//////////////////////////
+  useEffect(() => {
+    setCourseCode(props.coursecode || "");
+  }, [props.coursecode]);
+
+  useEffect(() => {
+    setCourseTitle(props.coursetitle || "");
+  }, [props.coursetitle]);
+
+  useEffect(() => {
+    setModule(props.module || "");
+  }, [props.module]);
+
+  useEffect(() => {
+    setSession(props.session || "");
+  }, [props.session]);
+
+  useEffect(() => {
+    setProgram(props.program || "");
+  }, [props.program]);
+
+  useEffect(() => {
+    setCourseSyllabus(
+      props.courseSyllabus || [
+        {
+          srNo: 1,
+          content: "",
+          co: "",
+          sessions: "",
+        },
+      ]
+    );
+  }, [props.courseSyllabus]);
+
+  useEffect(() => {
+    setLearningResources({
+      textBooks: props.learningResources?.textBooks || [],
+      referenceLinks: props.learningResources?.referenceLinks || [],
+    });
+  }, [props.learningResources]);
+
+  useEffect(() => {
+    setEditableCourseDescriptionData(props.courseDescription || "");
+  }, [props.courseDescription]);
+
+  useEffect(() => {
+    setCopoMappingData(
+      props.copoMappingData || {
+        courseOutcomes: {},
+        mappingData: {},
+      }
+    );
+  }, [props.copoMappingData]);
+
+  useEffect(() => {
+    setStudentListData(props.studentListData || []);
+  }, [props.studentListData]);
+
+  useEffect(() => {
+    const weakStudents =
+      props.weakStudentsData?.map((student) => ({
+        ...student,
+        status: student.status || "Pending", // Default status
+      })) || [];
+    setWeakStudentsData(weakStudents);
+  }, [props.weakStudentsData]);
+
+  useEffect(() => {
+    setMarksDetailsData(props.marksDetailsData || []);
+  }, [props.marksDetailsData]);
+
+  useEffect(() => {
+    setAttendanceReportData(props.attendanceReportData || []);
+  }, [props.attendanceReportData]);
+
+  useEffect(() => {
+    setInternalAssessmentData(
+      props.internalAssessmentData || {
+        components: [],
+      }
+    );
+  }, [props.internalAssessmentData]);
+
+  useEffect(() => {
+    setActionsForWeakStudentsData(props.actionsForWeakStudentsData || []);
+  }, [props.actionsForWeakStudentsData]);
+
+  useEffect(() => {
+    setWeeklyTimetableData(props.weeklyTimetableData || null);
+  }, [props.weeklyTimetableData]);
+
   const [uploadedFiles, setUploadedFiles] = useState({
     studentList: props.studentList || null,
     weakstudent: props.weakstudent || null,
@@ -172,31 +227,47 @@ const FeedbackForm = (props) => {
   const handleFileChange = (fileData, identifier) => {
     console.log("Handling file change:", identifier, fileData);
 
-    setUploadedFiles((prev) => {
-      const updatedFiles = {
-        ...prev,
-        [identifier]: {
-          content: fileData.content,
-          fileName: fileData.fileName,
-          type: fileData.type,
-          lastModified: fileData.lastModified,
-        },
-      };
+    const { content } = fileData;
 
-      // Save to localStorage immediately
-      const currentFormData = JSON.parse(
-        localStorage.getItem(`formData_${num}`) || "{}"
-      );
-      localStorage.setItem(
-        `formData_${num}`,
-        JSON.stringify({
-          ...currentFormData,
-          uploadedFiles: updatedFiles,
-        })
-      );
+    // Check if content is valid
+    if (!content || !Array.isArray(content)) {
+      console.error("Invalid file content");
+      return;
+    }
 
-      return updatedFiles;
-    });
+    // Common data extraction
+    const studentList = content.map((row) => ({
+      uniqueId: row["Unique Id"] || row["uniqueId"] || row["ID"],
+      studentName: row["Student Name"] || row["studentName"] || row["Name"],
+    }));
+
+    const marksDetails = content.map((row) => ({
+      uniqueId: row["Unique Id"],
+      studentName: row["Student Name"],
+      totalMarks: parseFloat(row["Total Marks"]),
+      grade: row["Grade"],
+      // Add other relevant fields
+    }));
+
+    const attendanceReport = content.map((row) => ({
+      uniqueId: row["Unique Id"],
+      studentName: row["Student Name"],
+      attendance: parseFloat(row["Attendance"]),
+    }));
+
+    // Identify weak students based on total marks less than a threshold (e.g., 50)
+    const weakStudents = marksDetails.filter(
+      (student) => student.totalMarks < 50
+    );
+
+    setStudentListData(studentList);
+    setMarksDetailsData(marksDetails);
+    setAttendanceReportData(attendanceReport);
+    setWeakStudentsData(weakStudents);
+    setUploadedFiles((prev) => ({
+      ...prev,
+      [identifier]: fileData,
+    }));
   };
 
   const postData = async () => {
@@ -224,7 +295,11 @@ const FeedbackForm = (props) => {
             internalAssessmentData,
             actionsForWeakStudentsData,
             uploadedFiles,
-            weeklyTimetableData, // Include the timetable data here
+            weeklyTimetableData,
+            studentListData,
+            weakStudentsData,
+            marksDetailsData,
+            attendanceReportData,
           },
           {
             headers: { "x-auth-token": token },
@@ -271,7 +346,7 @@ const FeedbackForm = (props) => {
               <h2 className="text-xl font-semibold text-gray-800">Program</h2>
             </div>
             <textarea
-              className="w-full p-3 border border-gray-200 rounded-md focus:none  transition-all resize-none text-gray-700"
+              className="w-full p-3 border border-gray-200 rounded-md transition-all resize-none text-gray-700"
               placeholder="Enter program details here..."
               value={program}
               onChange={(e) => setProgram(e.target.value)}
@@ -289,7 +364,7 @@ const FeedbackForm = (props) => {
               </h2>
             </div>
             <textarea
-              className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#FFB255] focus:border-transparent transition-all resize-none text-gray-700"
+              className="w-full p-3 border border-gray-200 rounded-md transition-all resize-none text-gray-700"
               placeholder="Enter course code here..."
               value={coursecode}
               onChange={(e) => setCourseCode(e.target.value)}
@@ -308,7 +383,7 @@ const FeedbackForm = (props) => {
               </h2>
             </div>
             <textarea
-              className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#FFB255] focus:border-transparent transition-all resize-none text-gray-700"
+              className="w-full p-3 border border-gray-200 rounded-md transition-all resize-none text-gray-700"
               placeholder="Enter course title here..."
               value={coursetitle}
               onChange={(e) => setCourseTitle(e.target.value)}
@@ -327,7 +402,7 @@ const FeedbackForm = (props) => {
               </h2>
             </div>
             <textarea
-              className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#FFB255] focus:border-transparent transition-all resize-none text-gray-700"
+              className="w-full p-3 border border-gray-200 rounded-md transition-all resize-none text-gray-700"
               placeholder="Enter module/semester here..."
               value={module}
               onChange={(e) => setModule(e.target.value)}
@@ -343,7 +418,7 @@ const FeedbackForm = (props) => {
               <h2 className="text-xl font-semibold text-gray-800">Session</h2>
             </div>
             <textarea
-              className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#FFB255] focus:border-transparent transition-all resize-none text-gray-700"
+              className="w-full p-3 border border-gray-200 rounded-md transition-all resize-none text-gray-700"
               placeholder="Enter session here..."
               value={session}
               onChange={(e) => setSession(e.target.value)}
@@ -384,15 +459,12 @@ const FeedbackForm = (props) => {
           />
         </div>
 
-        <div className="form-section">
-          {/* Course Syllabus Section */}
-          <CourseSyllabus
-            onSave={handleCourseSyllabusChange}
-            initialData={courseSyllabus}
-          />
+        {/* Course Syllabus Section */}
+        <CourseSyllabus
+          onSave={handleCourseSyllabusChange}
+          initialData={courseSyllabus}
+        />
 
-          {/* Learning Resources Section */}
-        </div>
         {/* Learning Resources Section */}
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
           <div className="flex items-center gap-3 mb-4">
@@ -420,16 +492,18 @@ const FeedbackForm = (props) => {
             />
           </div>
         </div>
+
+        {/* Weekly Time-Table */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
-            <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
+            <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
               9
             </div>
             <h2 className="text-xl font-semibold text-gray-800">
               Weekly Time-Table
             </h2>
           </div>
-          <div className=" p-4 rounded-lg">
+          <div className="p-4 rounded-lg">
             <WeeklyTimetable
               initialData={weeklyTimetableData}
               onChange={(newTimetable) => {
@@ -439,6 +513,7 @@ const FeedbackForm = (props) => {
           </div>
         </div>
 
+        {/* Registered Student List */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
@@ -452,10 +527,11 @@ const FeedbackForm = (props) => {
             title="Student List"
             identifier="studentList"
             onFileChange={handleFileChange}
-            initialData={uploadedFiles.studentList}
+            initialData={studentListData}
           />
         </div>
 
+        {/* Internal Assessments */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
@@ -471,42 +547,91 @@ const FeedbackForm = (props) => {
           />
         </div>
 
-        {/* <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              12
-            </div>
-            <h2 className="section-title text-xl font-semibold">
-              Sample Evaluated Internal Submissions and Mid Semester Question
-              papers with sample solutions
-            </h2>
-          </div>
-          <PDFUploader />
-        </div> */}
-
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              13
-            </div>
-            <h2 className="section-title text-xl font-semibold">
-              Identification of weak students
-            </h2>
-          </div>
-          <ExcelUploader
-            title="Weak Students"
-            identifier="weakstudent"
-            onFileChange={handleFileChange}
-            initialData={uploadedFiles.weakstudent}
-          />
+        {/* Identification of Weak Students */}
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+      {/* Header Section */}
+      <div className="flex items-center gap-3 mb-6">
+        <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold">
+          13
         </div>
+        <h2 className="text-xl font-semibold text-gray-800">
+          Identification of Weak Students
+        </h2>
+      </div>
 
+      {/* Students List */}
+      <div className="space-y-4">
+        {weakStudentsData.length === 0 ? (
+          <div className="text-center py-6">
+            <p className="text-gray-600">No students identified yet</p>
+          </div>
+        ) : (
+          weakStudentsData.map((student) => (
+            <div
+              key={student.uniqueId}
+              className="border border-gray-100 rounded-lg p-4 bg-gray-50"
+            >
+              <div className="flex items-center justify-between">
+                {/* Student Info */}
+                <div>
+                  <h3 className="text-gray-800 font-medium">
+                    {student.studentName}
+                  </h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-gray-500 text-sm">ID: {student.uniqueId}</span>
+                    <span className="text-gray-400">•</span>
+                    <span className={`text-sm ${
+                      student.status === 'Accepted' ? 'text-[#FFB255]' :
+                      student.status === 'Rejected' ? 'text-gray-600' :
+                      'text-gray-500'
+                    }`}>
+                      {student.status}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-3">
+                  <button
+                    className={`flex items-center px-4 py-2 rounded-lg ${
+                      student.status === 'Accepted'
+                        ? 'bg-[#FFB255] text-white cursor-not-allowed'
+                        : 'bg-white border border-[#FFB255] text-[#FFB255]'
+                    }`}
+                    disabled={student.status === 'Accepted'}
+                    onClick={() => handleStudentStatusChange(student.uniqueId, 'Accepted')}
+                  >
+                    <Check className="w-4 h-4 mr-2" />
+                    Accept
+                  </button>
+                  <button
+                    className={`flex items-center px-4 py-2 rounded-lg ${
+                      student.status === 'Rejected'
+                        ? 'bg-gray-600 text-white cursor-not-allowed'
+                        : 'bg-white border border-gray-400 text-gray-600'
+                    }`}
+                    disabled={student.status === 'Rejected'}
+                    onClick={() => handleStudentStatusChange(student.uniqueId, 'Rejected')}
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Reject
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+
+        {/* Actions for Weak Students */}
         <ActionsForWeakStudents
           label="Actions Taken for Weak Students"
           initialData={actionsForWeakStudentsData}
           onSave={handleWeakStudentsChange}
         />
 
+        {/* Assignments Taken */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
@@ -517,14 +642,10 @@ const FeedbackForm = (props) => {
               semester
             </h2>
           </div>
-          <ExcelUploader
-            title="Assingments"
-            identifier="assignmentsTaken"
-            onFileChange={handleFileChange}
-            initialData={uploadedFiles.assignmentsTaken}
-          />
+          <PDFUploader />
         </div>
 
+        {/* Marks Details */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
@@ -538,16 +659,17 @@ const FeedbackForm = (props) => {
             title="Marks Details"
             identifier="marksDetails"
             onFileChange={handleFileChange}
-            initialData={uploadedFiles.marksDetails}
+            initialData={marksDetailsData}
           />
         </div>
+
+        {/* Attendance Report */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
               17
             </div>
             <h2 className="section-title text-xl font-semibold">
-              {" "}
               Attendance Report
             </h2>
           </div>
@@ -555,11 +677,11 @@ const FeedbackForm = (props) => {
             title="Attendance Report"
             identifier="attendanceReport"
             onFileChange={handleFileChange}
-            initialData={uploadedFiles.attendanceReport}
+            initialData={attendanceReportData}
           />
         </div>
-        {/* Footer Section */}
 
+        {/* Loading Spinner */}
         {isLoading && <LoadingSpinner />}
       </div>
     </div>
@@ -567,22 +689,3 @@ const FeedbackForm = (props) => {
 };
 
 export default FeedbackForm;
-
-{
-  /* <div className="form-section">
-        <div className="flex items-center mb-2">
-          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            16
-          </div>
-          <h2 className="section-title text-xl font-semibold">
-            Reflections on Mid-term Feedback & Actions Taken
-          </h2>
-        </div>
-        <textarea
-          placeholder="Enter reflections on mid-term feedback, actions taken to improve student learning, and strategies to enhance teaching..."
-          className="reflection-textarea w-full h-32 p-2 border border-gray-300 rounded"
-          value={reflections}
-          onChange={(e) => setReflections(e.target.value)}
-        />
-      </div> */
-}

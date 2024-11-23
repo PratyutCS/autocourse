@@ -9,8 +9,7 @@ const InternalAssessmentTable = ({ onSave, initialData }) => {
         component: '',
         duration: '',
         weightage: '',
-        evaluation: '',
-        week: '',
+        evaluationWeek: '',
         remarks: ''
       }
     }
@@ -48,8 +47,7 @@ const InternalAssessmentTable = ({ onSave, initialData }) => {
         component: '',
         duration: '',
         weightage: '',
-        evaluation: '',
-        week: '',
+        evaluationWeek: '',
         remarks: ''
       }
     };
@@ -91,8 +89,7 @@ const InternalAssessmentTable = ({ onSave, initialData }) => {
               <th className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 text-left">Component</th>
               <th className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 text-left w-32">Duration</th>
               <th className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 text-left w-32">Weightage (%)</th>
-              <th className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 text-left w-40">Evaluation</th>
-              <th className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 text-left w-28">Week</th>
+              <th className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 text-left w-40">Evaluation Week</th>
               <th className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 text-left">Remarks</th>
               <th className="border-b border-gray-200 p-3 text-sm font-semibold text-gray-600 text-center w-24">Actions</th>
             </tr>
@@ -130,19 +127,10 @@ const InternalAssessmentTable = ({ onSave, initialData }) => {
                 <td className="border-b border-r border-gray-200 p-3">
                   <input
                     type="text"
-                    value={assessmentData.components[componentKey].evaluation}
+                    value={assessmentData.components[componentKey].evaluationWeek}
                     onChange={(e) => handleInputChange(componentKey, 'evaluation', e.target.value)}
                     className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-gray-700"
                     placeholder="Enter evaluation method"
-                  />
-                </td>
-                <td className="border-b border-r border-gray-200 p-3">
-                  <input
-                    type="text"
-                    value={assessmentData.components[componentKey].week}
-                    onChange={(e) => handleInputChange(componentKey, 'week', e.target.value)}
-                    className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-gray-700"
-                    placeholder="e.g. Week 5"
                   />
                 </td>
                 <td className="border-b border-r border-gray-200 p-3">

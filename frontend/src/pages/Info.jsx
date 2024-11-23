@@ -63,20 +63,24 @@ const Info = () => {
         <div className="box23 w-full">
           {file && file.done === 1 ? (
             <FeedbackForm
-              file={file.filename}
-              num={num}
-              courseDescription={file["course_description"] || ""}
-              coursecode={file['course_code'] || ""}
-              coursetitle={file['course_name'] || ""}
-              module={file['Module/Semester'] || ""}
-              session={file['Session'] || ""}
-              courseSyllabus={file["Course Syllabus"] || ""}
-              learningResources={file["Learning Resources"] || ""}
-              copoMappingData={file["copoMappingData"] || ""}
-              internalAssessmentData={file["internalAssessmentData"] }
-              actionsForWeakStudentsData={file["actionsForWeakStudentsData"] || ""}
-              program = {file["Program"] || ""}
-              weeklyTimetableData = {file["weeklyTimetableData"] || ""}
+            file={file.filename}
+            num={num}
+            courseDescription={file["course_description"] || ""}
+            coursecode={file['course_code'] || ""}
+            coursetitle={file['course_name'] || ""}
+            module={file['Module/Semester'] || ""}
+            session={file['Session'] || ""}
+            courseSyllabus={file["Course Syllabus"] || ""}
+            learningResources={file["Learning Resources"] || ""}
+            copoMappingData={file["copoMappingData"] || ""}
+            internalAssessmentData={file["internalAssessmentData"]}
+            actionsForWeakStudentsData={file["actionsForWeakStudentsData"] || ""}
+            program={file["Program"] || ""}
+            weeklyTimetableData={file["weeklyTimetableData"] || ""}
+            studentListData={file["studentListData"] || []}
+            weakStudentsData={file["weakStudentsData"] || []}
+            marksDetailsData={file["marksDetailsData"] || []}
+            attendanceReportData={file["attendanceReportData"] || []}
             />
           ) : (
             <LoadingSpinner />
