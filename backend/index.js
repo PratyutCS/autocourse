@@ -6,65 +6,36 @@ const authRouter = require("./routes/auth");
 const User = require("./models/user");
 const Session = require("./models/session");
 const upload = require("./storage");
-let path = require("path");
+const path = require("path");
 const fs = require("fs");
 const jwt = require("jsonwebtoken");
-const { spawn } = require('child_process');
-
-async function dataext(number, jfn, fn){
-  try{
-  const exec = path.join(
-    __dirname,
-    "/data/" + number + "/" + fn
-  );
-    let data = fs.readFileSync(jfn, "utf8");
-    data = JSON.parse(data);
-    const pythonProcess = spawn('python3', ['./extractor/ex.py', exec, jfn]);
-    let dat;
-    pythonProcess.stdout.on('data', (data) => {
-        dat = `${data}`;
-        console.log(`Python script output: ${data}`);
-    });
-  
-    pythonProcess.stderr.on('data', (data) => {
-        console.error(`Error in Python script: ${data}`);
-      });
-      pythonProcess.on('close', (code) => {
-        console.log(`Python script exited with code ${code}`);
-    });
-  }
-  catch{
-    console.error('Error running Python script:', error);
-  }
-}
+const { spawn } = require("child_process");
 
 const PORT = process.env.PORT || 3000;
 const app = express();
 
+// Middleware
 app.use(express.json());
 app.use(cors({
   origin: 'http://localhost:3001', // Your frontend URL
-  credentials: true
-}))
+  credentials: true,
+}));
 app.use(authRouter);
-// app.use(express.static(__dirname + "/public/assets"));
 
-const DB =
-  "mongodb+srv://AikataPratyut:qazwsxedc%400987654321@mscdb.0tplylu.mongodb.net/kkpr";
+// Database connection
+const DB = "mongodb+srv://AikataPratyut:qazwsxedc%400987654321@mscdb.0tplylu.mongodb.net/kkpr";
 
-mongoose
-  .connect(DB)
+mongoose.connect(DB)
   .then(() => {
-    console.log("Data-Base Connection Successful");
+    console.log("Database Connection Successful");
   })
   .catch((e) => {
-    console.log(e);
+    console.error("Database connection error:", e);
   });
 
+// Routes
 app.get("/works", (req, res) => {
-  return res.status(200).json({
-    message: "server works",
-  });
+  res.status(200).json({ message: "Server works" });
 });
 
 // Function to delete expired sessions
@@ -74,13 +45,13 @@ const deleteExpiredSessions = async () => {
     for (const session of sessions) {
       try {
         jwt.verify(session.session, "passwordKey");
-        // console.log("session still active");
+        // Session is still active
       } catch (err) {
         if (err.name === "TokenExpiredError") {
           await Session.deleteOne({ _id: session._id });
           console.log(`Deleted expired session with ID: ${session._id}`);
         } else {
-          console.log(`Failed to verify token for session with ID: ${session._id}. Error: ${err.message}`);
+          console.error(`Failed to verify token for session with ID: ${session._id}. Error: ${err.message}`);
         }
       }
     }
@@ -89,295 +60,263 @@ const deleteExpiredSessions = async () => {
   }
 };
 
+// Periodically clean up expired sessions every 5 minutes
 setInterval(() => {
   console.log("Running cleanup of expired sessions...");
   deleteExpiredSessions();
-}, 5*60*1000); // 5 minutes
+}, 5 * 60 * 1000); // 5 minutes
 
-//To logout securely
-authRouter.post("/api/signout",auth, async (req, res) => {
+// To logout securely
+authRouter.post("/api/signout", auth, async (req, res) => {
   const token = req.header("x-auth-token");
-  if (!token) 
+  if (!token) {
     return res.status(400).json({ msg: "Incorrect token." });
-
-  const verified = jwt.verify(token, "passwordKey");
-
-  if (!verified) 
-    return res.status(400).json({ msg: "Incorrect token." });
+  }
 
   try {
-    // Create a new User document
-    const newSession = new Session({
-      session:token,
-    });
+    const verified = jwt.verify(token, "passwordKey");
+    if (!verified) {
+      return res.status(400).json({ msg: "Incorrect token." });
+    }
 
-    // Save the user to the database
+    // Add the token to the session blacklist
+    const newSession = new Session({ session: token });
     await newSession.save();
 
-    res.status(201).json({ message: 'Session removed successfully!', session: newSession });
+    res.status(201).json({ message: 'Session invalidated successfully!', session: newSession });
   } catch (error) {
-    console.error('Error saving session:', error);
-    res.status(500).json({ error: 'Error adding session' });
+    console.error('Error during signout:', error);
+    res.status(500).json({ error: 'Error during signout' });
   }
 });
 
-//To read the files data
+// To read the files data
 app.get("/files", auth, async (req, res) => {
-  const user = await User.findById(req.user);
-  
-  const directoryPath = path.join(
-    __dirname,
-    "/json/" + user.number + ".json"
-  );
-  
-  fs.readFile(directoryPath, "utf8", (err, data) => {
-    if (err) {
-      console.log(err);
-      return res.status(400).json({
-        message: "Error in read /files",
-      });
-    } else {
+  try {
+    const user = await User.findById(req.user);
+    const directoryPath = path.join(__dirname, "/json/", `${user.number}.json`);
+
+    fs.readFile(directoryPath, "utf8", (err, data) => {
+      if (err) {
+        console.error("Error reading file:", err);
+        return res.status(500).json({ message: "Error reading user files" });
+      }
+
       try {
-        data = JSON.parse(data);
-        // let ren = [];
-        // for (let i = 0; i < data.length; i++) {
-        //   ren.push(data[i]);
-        // }
-        res.status(200).json(data);
+        const jsonData = JSON.parse(data);
+        res.status(200).json(jsonData);
       } catch (parseError) {
         console.error("Error parsing JSON:", parseError);
         res.status(500).json({ message: "Error parsing JSON data" });
       }
-    }
-  });
-});
-
-//To read the sheetdata
-app.post("/numdata", auth, async (req, res) => {
-  const user = await User.findById(req.user);
-  const num = req.body.num;
-  if(num === undefined){
-    console.log("error in reading num : "+num);
-    return res.status(400).json({
-      message: "Error in /numdata",
     });
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ message: "Server error" });
   }
-  console.log(num);
-  // console.log(user.number);
-  const directoryPath = path.join(
-    __dirname,
-    "/json/" + user.number + ".json"
-  );
-  fs.readFile(directoryPath, "utf8", (err, data) => {
-    if (err) {
-      console.log(err);
-      res.status(400).json({
-        message: "Error in read /files",
-      });
-    } else {
-      data = JSON.parse(data);
-      if(num >= data.length){
-        return res.status(400).json({
-          message: "Error in /numdata",
-        });
-      }
-      res.status(200).json(data[num]);
-    }
-  });
 });
 
-//uploading the file , entering file data in json
+// To read the sheet data
+app.post("/numdata", auth, async (req, res) => {
+  const num = req.body.num;
+
+  if (num === undefined) {
+    console.error("Error: 'num' is undefined.");
+    return res.status(400).json({ message: "Error: 'num' is required in request body." });
+  }
+
+  try {
+    const user = await User.findById(req.user);
+    const directoryPath = path.join(__dirname, "/json/", `${user.number}.json`);
+
+    fs.readFile(directoryPath, "utf8", (err, data) => {
+      if (err) {
+        console.error("Error reading JSON file:", err);
+        return res.status(500).json({ message: "Error reading user data." });
+      }
+
+      try {
+        const jsonData = JSON.parse(data);
+        if (num >= jsonData.length || num < 0) {
+          return res.status(400).json({ message: "Invalid 'num' parameter." });
+        }
+        res.status(200).json(jsonData[num]);
+      } catch (parseError) {
+        console.error("Error parsing JSON data:", parseError);
+        res.status(500).json({ message: "Error parsing user data." });
+      }
+    });
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Uploading the file, entering file data in json
 app.post("/upload", auth, (req, res) => {
-  upload.single("file")(req, res, (err) => {
+  upload.single("file")(req, res, async (err) => {
     if (err) {
       if (err.code === 'LIMIT_FILE_SIZE') {
-        console.log("File size exceeds the limit of 50MB.");
-        return res.status(400).json({
-          message: "File size exceeds the limit of 50MB.",
-        });
+        console.error("File size exceeds the limit of 50MB.");
+        return res.status(400).json({ message: "File size exceeds the limit of 50MB." });
       }
-      return res.status(400).json({
-        message: err.message,
-      });
+      console.error("File upload error:", err);
+      return res.status(400).json({ message: err.message });
     }
 
     const file = req.file;
     if (!file) {
-      return res.status(400).json({
-        message: "Failed to upload file",
-      });
+      return res.status(400).json({ message: "Failed to upload file" });
     }
 
-    User.findById(req.user).then((user) => {
+    try {
+      const user = await User.findById(req.user);
       if (!user) {
-        return res.status(404).json({
-          error: "User not found",
-        });
+        return res.status(404).json({ error: "User not found" });
       }
 
-      var entries = {
+      const entries = {
         filename: file.filename.toString(),
-        done:0
+        done: 0,
       };
 
-      const jsonfilename = path.join(
-        __dirname,
-        "/json/" + user.number + ".json"
-      );
+      const jsonFilename = path.join(__dirname, "/json/", `${user.number}.json`);
 
-      try {
-        let data = fs.readFileSync(jsonfilename, "utf8");
-        let jsonData = JSON.parse(data);
+      let data = fs.readFileSync(jsonFilename, "utf8");
+      let jsonData = JSON.parse(data);
 
-        jsonData.push(entries);
+      jsonData.push(entries);
+      fs.writeFileSync(jsonFilename, JSON.stringify(jsonData));
 
-        fs.writeFileSync(jsonfilename, JSON.stringify(jsonData));
+      console.log("File updated and uploaded successfully - " + file.filename.toString());
+      dataext(user.number, jsonFilename, file.filename.toString());
 
-        console.log("File updated and uploaded successfully - "+file.filename.toString());
-        dataext(user.number,jsonfilename,file.filename.toString());
-
-        res.status(200).json({
-          message: "File updated and uploaded successfully",
-          filename: file.filename.toString(),
-        });
-      } catch (err) {
-        console.log(err);
-        return res.status(400).json({
-          message: "File operation failed",
-        });
-      }
-    }).catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        message: "Error finding user",
+      res.status(200).json({
+        message: "File updated and uploaded successfully",
+        filename: file.filename.toString(),
       });
-    });
-  });
-});
-
-//To delete
-app.post("/delete", auth, async (req, res) => {
-  const user = await User.findById(req.user);
-  const num = req.body.num;
-  if(num === undefined){
-    console.log("error in reading num : "+num);
-    return res.status(400).json({
-      message: "Error in /delete",
-    });
-  }
-  // console.log("number is "+num);
-  // console.log(user.number);
-  const directoryPath = path.join(
-    __dirname,
-    "/json/" + user.number + ".json"
-  );
-  const filePath = path.join(
-    __dirname,
-    "/data/" + user.number + "/"
-  );
-  const dfilePath = path.join(
-    __dirname,
-    "/download/"
-  );
-  console.log(directoryPath);
-  fs.readFile(directoryPath, "utf8", (err, data) => {
-    if (err) {
-      console.log(err);
-      return res.status(400).json({
-        message: "Error in /delete",
-      });
-    } else {
-      data = JSON.parse(data);
-      // console.log(data[num]);
-      if(num >= data.length){
-        return res.status(400).json({
-          message: "Error in /delete",
-        });
-      }
-      try{
-        // console.log(filePath + data[num].filename);
-        if (fs.existsSync(filePath + data[num].filename)) {
-          console.log(`${filePath + data[num].filename} exists deleting.....`);
-          fs.unlinkSync(filePath + data[num].filename);
-        }
-        if (fs.existsSync(dfilePath + data[num].filename)) {
-          console.log(`${dfilePath + data[num].filename} exists deleting.....`);
-          fs.unlinkSync(dfilePath + data[num].filename);
-        }
-        if(num != (data.length-1)){
-          data[num] = data[data.length - 1];
-        }
-        data.pop();
-        fs.writeFileSync(directoryPath, JSON.stringify(data));
-      }
-      catch (err){
-        console.log(err);
-        return res.status(400).json({
-          message: "Error in /delete",
-        });
-      }
-      return res.status(200).json({
-        message: "kardiya ro mat",
-      });
+    } catch (error) {
+      console.error("Error during file upload:", error);
+      res.status(500).json({ message: "File operation failed" });
     }
   });
 });
 
-//To download
-app.post("/download", auth, async (req, res) => {
+// To delete
+app.post("/delete", auth, async (req, res) => {
+  const num = req.body.num;
+
+  if (num === undefined) {
+    console.error("Error: 'num' is undefined.");
+    return res.status(400).json({ message: "Error: 'num' is required in request body." });
+  }
+
   try {
     const user = await User.findById(req.user);
-    const num = req.body.num;
-    
-    if (num == undefined) {
-      console.error("Error: 'num' is missing in the request");
-      return res.status(400).json({ message: "Error in /download: Missing 'num'" });
+    const directoryPath = path.join(__dirname, "/json/", `${user.number}.json`);
+    const filePath = path.join(__dirname, "/data/", user.number, "/");
+    const downloadPath = path.join(__dirname, "/download/");
+
+    let data = fs.readFileSync(directoryPath, "utf8");
+    let jsonData = JSON.parse(data);
+
+    if (num >= jsonData.length || num < 0) {
+      return res.status(400).json({ message: "Invalid 'num' parameter." });
     }
-    
-    const directoryPath = path.join(__dirname, `/json/${user.number}.json`);
-    
+
+    const fileToDelete = jsonData[num].filename;
+
+    // Delete file from data directory
+    const fullFilePath = path.join(filePath, fileToDelete);
+    if (fs.existsSync(fullFilePath)) {
+      fs.unlinkSync(fullFilePath);
+      console.log(`Deleted file: ${fullFilePath}`);
+    }
+
+    // Delete file from download directory
+    const downloadFilePath = path.join(downloadPath, fileToDelete);
+    if (fs.existsSync(downloadFilePath)) {
+      fs.unlinkSync(downloadFilePath);
+      console.log(`Deleted file: ${downloadFilePath}`);
+    }
+
+    // Remove entry from JSON data
+    jsonData.splice(num, 1);
+    fs.writeFileSync(directoryPath, JSON.stringify(jsonData));
+
+    res.status(200).json({ message: "File deleted successfully" });
+  } catch (error) {
+    console.error("Error during file deletion:", error);
+    res.status(500).json({ message: "Error in /delete" });
+  }
+});
+
+// To download
+app.post("/download", auth, async (req, res) => {
+  const num = req.body.num;
+
+  if (num === undefined) {
+    console.error("Error: 'num' is missing in the request");
+    return res.status(400).json({ message: "Error in /download: Missing 'num'" });
+  }
+
+  try {
+    const user = await User.findById(req.user);
+    const directoryPath = path.join(__dirname, "/json/", `${user.number}.json`);
+
     if (!fs.existsSync(directoryPath)) {
       return res.status(400).json({ message: "File not found" });
     }
-    
+
     fs.readFile(directoryPath, "utf8", (err, data) => {
       if (err) {
         console.error("Error reading file:", err);
-        return res.status(500).json({ message: "Error in reading files" });
+        return res.status(500).json({ message: "Error reading files" });
       }
-      data = JSON.parse(data)[num];
-      const pythonProcess = spawn('python3', ['./extractor/j2d2p.py', JSON.stringify(data)]);
 
-      let pdfFileName = data['filename'];
-      pythonProcess.stdout.on('data', (data) => {
-        // pdfFileName = data.toString().trim();
-        console.log(`Python script output (filename): ${pdfFileName}`);
-      });
-
-      pythonProcess.stderr.on('data', (data) => {
-        console.error(`Python script error: ${data}`);
-      });
-
-      pythonProcess.on('close', (code) => {
-        if (code !== 0) {
-          console.error(`Python script exited with code ${code}`);
-          return res.status(500).json({ message: "Error in processing the file" });
+      try {
+        const jsonData = JSON.parse(data);
+        if (num >= jsonData.length || num < 0) {
+          return res.status(400).json({ message: "Invalid 'num' parameter." });
         }
 
-        const pdfFilePath = path.join(__dirname, "download", `${pdfFileName}`);
+        const fileData = jsonData[num];
+        const pythonProcess = spawn('python3', ['./extractor/j2d2p.py', JSON.stringify(fileData)]);
 
-        if (!fs.existsSync(pdfFilePath)) {
-          console.error("PDF file not found:", pdfFilePath);
-          return res.status(500).json({ message: "PDF file not found" });
-        }
+        let pdfFileName = fileData['filename'];
 
-        res.download(pdfFilePath, `${pdfFileName}`, (err) => {
-          if (err) {
-            console.error("Error occurred during file download:", err);
-            return res.status(500).json({ message: "Error in downloading the file" });
-          }
+        pythonProcess.stdout.on('data', (data) => {
+          console.log(`Python script output (filename): ${pdfFileName}`);
         });
-      });
+
+        pythonProcess.stderr.on('data', (data) => {
+          console.error(`Python script error: ${data}`);
+        });
+
+        pythonProcess.on('close', (code) => {
+          if (code !== 0) {
+            console.error(`Python script exited with code ${code}`);
+            return res.status(500).json({ message: "Error processing the file" });
+          }
+
+          const pdfFilePath = path.join(__dirname, "download", pdfFileName);
+
+          if (!fs.existsSync(pdfFilePath)) {
+            console.error("PDF file not found:", pdfFilePath);
+            return res.status(500).json({ message: "PDF file not found" });
+          }
+
+          res.download(pdfFilePath, pdfFileName, (err) => {
+            if (err) {
+              console.error("Error occurred during file download:", err);
+              return res.status(500).json({ message: "Error downloading the file" });
+            }
+          });
+        });
+      } catch (parseError) {
+        console.error("Error parsing JSON data:", parseError);
+        res.status(500).json({ message: "Error parsing JSON data" });
+      }
     });
   } catch (error) {
     console.error("Error in /download route:", error);
@@ -385,113 +324,96 @@ app.post("/download", auth, async (req, res) => {
   }
 });
 
-//To modify form parts
-// app.post("/form", auth, async (req, res) => {
-//   const user = await User.findById(req.user);
-//   const num = req.body.num;
-//   if(num === undefined || num === null){
-//     console.log("error in reading num : "+num);
-//     return res.status(400).json({
-//       message: "Error in /form",
-//     });
-//   }
-//   console.log("lmfoa is : "+num);
-//   const directoryPath = path.join(
-//     __dirname,
-//     "/json/" + user.number + ".json"
-//   );
-  
-//   fs.readFile(directoryPath, "utf8", (err, data) => {
-//     if (err) {
-//       console.log(err);
-//       res.status(400).json({
-//         message: "Error in read /form",
-//       });
-//     } else {
-//       try{
-//         data = JSON.parse(data);
-//         data[num]['course_code'] = req.body.coursecode || "";
-//         data[num]['course_name'] = req.body.coursetitle || "";
-//         data[num]['Module/Semester'] = req.body.module || "";
-//         data[num]['Session'] = req.body.session  || "";
-//         data[num]["course_description"] = req.body.EditableCourseDescriptionData || "";
-//         data[num]["Course Syllabus"] = req.body.courseSyllabus || "";
-//         data[num]["Learning Resources"] = req.body.learningResources || "";
-//         data[num]["copoMappingData"] = req.body.copoMappingData || "";
-//         data[num]["internalAssessmentData"] = req.body.internalAssessmentData || "";
-//         data[num]["actionsForWeakStudentsData"] = req.body.actionsForWeakStudentsData || "";
-//         data[num]["Program"] = req.body.program || "";
-//         // console.log(req.body.actionsForWeakStudentsData);
-//         fs.writeFileSync(directoryPath, JSON.stringify(data));
-//       }
-//       catch (error) {
-//         console.log(error);
-//         return res.status(400).json({
-//           message: "Error in /form",
-//         });
-//       }
-//       res.status(200).json("done scene hai apna /form");
-//     }
-//   });
-// });
-
-
+// To modify form parts
 app.post("/form", auth, async (req, res) => {
-  const user = await User.findById(req.user);
   const num = req.body.num;
-  
+
   if (num === undefined || num === null) {
-    console.log("error in reading num : " + num);
-    return res.status(400).json({ message: "Error in /form" });
+    console.error("Error: 'num' is missing in the request");
+    return res.status(400).json({ message: "Error in /form: 'num' is required" });
   }
 
-  const directoryPath = path.join(__dirname, "/json/" + user.number + ".json");
-  
-  fs.readFile(directoryPath, "utf8", (err, data) => {
-    if (err) {
-      console.log(err);
-      return res.status(400).json({ message: "Error in read /form" });
-    }
+  try {
+    const user = await User.findById(req.user);
+    const directoryPath = path.join(__dirname, "/json/", `${user.number}.json`);
 
-    try {
-      data = JSON.parse(data);
-      
-      // Update existing fields
-      data[num]['course_code'] = req.body.coursecode || "";
-      data[num]['course_name'] = req.body.coursetitle || "";
-      data[num]['Module/Semester'] = req.body.module || "";
-      data[num]['Session'] = req.body.session || "";
-      data[num]["course_description"] = req.body.EditableCourseDescriptionData || "";
-      data[num]['course_syllabus']= req.body.courseSyllabus || "",
-      data[num]["Course Syllabus"] = req.body.courseSyllabus || "";
-      data[num]["Learning Resources"] = req.body.learningResources || "";
-      data[num]["copoMappingData"] = req.body.copoMappingData || "";
-      data[num]["internalAssessmentData"] = req.body.internalAssessmentData || "";
-      data[num]["actionsForWeakStudentsData"] = req.body.actionsForWeakStudentsData || "";
-      data[num]["Program"] = req.body.program || "";
-      if (req.body.weeklyTimetableData) {
-        data[num]["weeklyTimetableData"] = req.body.weeklyTimetableData;
-      }
-      
-      // Add new Excel/CSV data fields
-      if (req.body.uploadedFiles) {
-        const uploadedFiles = req.body.uploadedFiles;
-        data[num]["studentList"] = uploadedFiles.studentList || null;
-        data[num]["weakstudent"] = uploadedFiles.weakstudent || null;
-        data[num]["assignmentsTaken"] = uploadedFiles.assignmentsTaken || null;
-        data[num]["marksDetails"] = uploadedFiles.marksDetails || null;
-        data[num]["attendanceReport"] = uploadedFiles.attendanceReport || null;
+    fs.readFile(directoryPath, "utf8", (err, data) => {
+      if (err) {
+        console.error("Error reading file:", err);
+        return res.status(500).json({ message: "Error reading user data" });
       }
 
-      fs.writeFileSync(directoryPath, JSON.stringify(data));
-      res.status(200).json({ message: "Form data saved successfully" });
-      
-    } catch (error) {
-      console.log(error);
-      return res.status(400).json({ message: "Error in /form" });
-    }
-  });
+      try {
+        const jsonData = JSON.parse(data);
+
+        if (num >= jsonData.length || num < 0) {
+          return res.status(400).json({ message: "Invalid 'num' parameter." });
+        }
+
+        // Update existing fields
+        jsonData[num]['course_code'] = req.body.coursecode || "";
+        jsonData[num]['course_name'] = req.body.coursetitle || "";
+        jsonData[num]['Module/Semester'] = req.body.module || "";
+        jsonData[num]['Session'] = req.body.session || "";
+        jsonData[num]["course_description"] = req.body.EditableCourseDescriptionData || "";
+        jsonData[num]['course_syllabus'] = req.body.courseSyllabus || "";
+        jsonData[num]["Course Syllabus"] = req.body.courseSyllabus || "";
+        jsonData[num]["Learning Resources"] = req.body.learningResources || "";
+        jsonData[num]["copoMappingData"] = req.body.copoMappingData || "";
+        jsonData[num]["internalAssessmentData"] = req.body.internalAssessmentData || "";
+        jsonData[num]["actionsForWeakStudentsData"] = req.body.actionsForWeakStudentsData || "";
+        jsonData[num]["Program"] = req.body.program || "";
+
+        // Include weeklyTimetableData
+        if (req.body.weeklyTimetableData) {
+          jsonData[num]["weeklyTimetableData"] = req.body.weeklyTimetableData;
+        }
+
+        // Add new Excel/CSV data fields
+        if (req.body.uploadedFiles) {
+          const uploadedFiles = req.body.uploadedFiles;
+          jsonData[num]["studentList"] = uploadedFiles.studentList || null;
+          jsonData[num]["weakstudent"] = uploadedFiles.weakstudent || null;
+          jsonData[num]["assignmentsTaken"] = uploadedFiles.assignmentsTaken || null;
+          jsonData[num]["marksDetails"] = uploadedFiles.marksDetails || null;
+          jsonData[num]["attendanceReport"] = uploadedFiles.attendanceReport || null;
+        }
+
+        fs.writeFileSync(directoryPath, JSON.stringify(jsonData));
+        res.status(200).json({ message: "Form data saved successfully" });
+      } catch (parseError) {
+        console.error("Error parsing JSON data:", parseError);
+        res.status(500).json({ message: "Error parsing JSON data" });
+      }
+    });
+  } catch (error) {
+    console.error("Error in /form route:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 });
+
+// Function to execute Python script
+async function dataext(number, jfn, fn) {
+  try {
+    const execPath = path.join(__dirname, "/data/", number, fn);
+    const pythonProcess = spawn('python3', ['./extractor/ex.py', execPath, jfn]);
+
+    pythonProcess.stdout.on('data', (data) => {
+      console.log(`Python script output: ${data}`);
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+      console.error(`Error in Python script: ${data}`);
+    });
+
+    pythonProcess.on('close', (code) => {
+      console.log(`Python script exited with code ${code}`);
+    });
+  } catch (error) {
+    console.error('Error running Python script:', error);
+  }
+}
+
 app.listen(PORT, () => {
-  console.log(`connected at port ${PORT}`);
+  console.log(`Server connected at port ${PORT}`);
 });

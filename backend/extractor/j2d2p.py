@@ -333,7 +333,7 @@ create_learning_resources_doc(data["Learning Resources"])
 
 ############################################################################################################
 
-if data.get('weeklyTimetable'):
+if data.get('weeklyTimetableData'):
     # Add a page break and heading for Weekly Timetable
     doc.add_page_break()
     timetable_heading = doc.add_heading(level=1)
@@ -345,40 +345,54 @@ if data.get('weeklyTimetable'):
 
     doc.add_paragraph()
 
-    # Extract the content for the timetable
-    timetable_content = data['weeklyTimetable']['content']
+    # Get time slots from any day (they're the same for all days)
+    time_slots = list(data['weeklyTimetableData']['Monday'].keys())
+    days = list(data['weeklyTimetableData'].keys())
 
-    # Dynamically generate headers from the first dictionary in the content
-    headers = list(timetable_content[0].keys())
-
-    # Create a table with the number of columns based on headers
-    table = doc.add_table(rows=1, cols=len(headers))
+    # Create a table with days as columns and time slots as rows
+    # Add 1 to rows for the header
+    table = doc.add_table(rows=len(time_slots) + 1, cols=len(days) + 1)
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
 
-    # Populate header row
-    hdr_cells = table.rows[0].cells
-    for i, header in enumerate(headers):
-        hdr_cells[i].text = header
+    # Add header row with days
+    header_cells = table.rows[0].cells
+    header_cells[0].text = 'Time'
+    for i, day in enumerate(days):
+        header_cells[i + 1].text = day
         # Style header cells
-        paragraph = hdr_cells[i].paragraphs[0]
-        run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(header)
+        paragraph = header_cells[i + 1].paragraphs[0]
+        run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(day)
         run.bold = True
         run.font.size = Pt(10)
         paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    # Populate rows with timetable content
-    for entry in timetable_content:
-        row_cells = table.add_row().cells
-        for i, key in enumerate(headers):
-            row_cells[i].text = str(entry.get(key, ''))
-            # Style cells
-            for paragraph in row_cells[i].paragraphs:
-                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                for run in paragraph.runs:
-                    run.font.size = Pt(10)
+    # Style the "Time" header cell
+    time_paragraph = header_cells[0].paragraphs[0]
+    time_run = time_paragraph.runs[0] if time_paragraph.runs else time_paragraph.add_run('Time')
+    time_run.bold = True
+    time_run.font.size = Pt(10)
+    time_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    # Set column widths (auto-adjustable based on the content)
-    column_widths = [Inches(2.0)] + [Inches(1.5)] * (len(headers) - 1)
+    # Populate time slots and availability
+    for i, time_slot in enumerate(time_slots):
+        row_cells = table.rows[i + 1].cells
+        # Add time slot
+        row_cells[0].text = time_slot
+        
+        # Add availability for each day
+        for j, day in enumerate(days):
+            is_available = data['weeklyTimetableData'][day][time_slot]
+            cell = row_cells[j + 1]
+            cell.text = '✓' if is_available else ''
+            
+            # Style cells
+            paragraph = cell.paragraphs[0]
+            paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            for run in paragraph.runs:
+                run.font.size = Pt(10)
+
+    # Set column widths
+    column_widths = [Inches(1.5)] + [Inches(1.2)] * len(days)
     for row in table.rows:
         for idx, cell in enumerate(row.cells):
             if idx < len(column_widths):
@@ -414,7 +428,6 @@ if data.get('weeklyTimetable'):
         trPr = tr.get_or_add_trPr()
         cantSplit = OxmlElement('w:cantSplit')
         trPr.append(cantSplit)
-
 
 ############################################################################################################
 
