@@ -21,7 +21,9 @@ const FeedbackForm = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [weeklyTimetableData, setWeeklyTimetableData] = useState(
     props.weeklyTimetableData || null
+
   );
+
   const token = localStorage.getItem("token");
   let num = props.num;
   const [coursecode, setCourseCode] = useState(props.coursecode || "");
@@ -40,18 +42,6 @@ const FeedbackForm = (props) => {
     textBooks: props.learningResources?.textBooks || [],
     referenceLinks: props.learningResources?.referenceLinks || [],
   });
-  useEffect(() => {
-    const currentFormData = JSON.parse(
-      localStorage.getItem(`formData_${num}`) || "{}"
-    );
-    localStorage.setItem(
-      `formData_${num}`,
-      JSON.stringify({
-        ...currentFormData,
-        weeklyTimetableData,
-      })
-    );
-  }, [weeklyTimetableData, num]);
 
   const [module, setModule] = useState(props.module || "");
   const [session, setSession] = useState(props.session || "");
@@ -153,7 +143,7 @@ const FeedbackForm = (props) => {
     marksDetails: props.marksDetails || null,
     attendanceReport: props.attendanceReport || null,
   });
-  
+
   useEffect(() => {
     const loadSavedData = () => {
       try {
@@ -215,7 +205,7 @@ const FeedbackForm = (props) => {
           weeklyTimetableData,
           // other data...
         });
-  
+
         const response = await axios.post(
           constants.url + "/form",
           {
@@ -238,7 +228,7 @@ const FeedbackForm = (props) => {
             headers: { "x-auth-token": token },
           }
         );
-  
+
         console.log("Server response:", response.data);
         alert("Data saved successfully!");
         window.location.reload();
@@ -438,12 +428,12 @@ const FeedbackForm = (props) => {
             </h2>
           </div>
           <div className=" p-4 rounded-lg">
-          <WeeklyTimetable
-  initialData={weeklyTimetableData}
-  onChange={(newTimetable) => {
-    setWeeklyTimetableData(newTimetable);
-  }}
-/>
+            <WeeklyTimetable
+              initialData={weeklyTimetableData}
+              onChange={(newTimetable) => {
+                setWeeklyTimetableData(newTimetable);
+              }}
+            />
           </div>
         </div>
 

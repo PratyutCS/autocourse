@@ -76,6 +76,7 @@ const Info = () => {
               internalAssessmentData={file["internalAssessmentData"] }
               actionsForWeakStudentsData={file["actionsForWeakStudentsData"] || ""}
               program = {file["Program"] || ""}
+              weeklyTimetableData = {file["weeklyTimetableData"] || ""}
             />
           ) : (
             <LoadingSpinner />
