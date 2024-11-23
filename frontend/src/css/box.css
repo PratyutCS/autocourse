@@ -5,23 +5,17 @@
     /* box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px; */
     /* border: 1px solid rgba(0, 0, 0, 0.1); */
     border-radius: 0.4rem;
-    padding-top: 4vh;
-    padding-bottom: 2vh;
+    padding-left: 2vw;
     overflow-y: auto;
     display: flex;
     flex-wrap: wrap;
-    gap: 5vw;
     align-items: center;
     justify-items: center;
+    gap: 2rem;
 }
 
-.box1.flex-display {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: flex-start;
-    padding: 2vh 2vw 2vw 2vw;
-}
+
+
 
 .box2 {
     height: 72%;

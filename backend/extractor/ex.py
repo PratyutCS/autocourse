@@ -89,11 +89,11 @@ Requirements:
 -1. Response must be ONLY the JSON object, no other text
 -2. Keep field names exactly as shown
 -3. Keep empty fields as shown ("" for strings, [] for arrays)
--4. textBooks objects must have: title, author, publisher, edition, year, isbn
--5. referenceLinks objects must have: title, authors, journal, volume, year, doi
+-4. textBooks must have textbook related data
+-5. referenceLinks must have referal link related data
 -6. Preserve all existing template fields even if not mentioned in the text
 -7. course_description is the Course Overview and Context in the pdf. There can be more than 1 paragraphs inside it, so include all the paragraphs.
--8. In the internal component(component ) it should have component, Duration(duration), Weightage(weightage), Evaluation(evaluation) Week(week) and Remarks(remarks)
+-8. In the internal component it should have Component, Duration(duration), Weightage(weightage), Evaluation_Week (evaluation_week) and Remarks(remarks)
 
 """
     
