@@ -13,7 +13,7 @@ import CourseSyllabus from "./CourseSyllabus";
 import AddField from "./AddFiled";
 import WeeklyTimetable from "./WeeklyTimetable";
 import PDFUploader from "./PDFUploader";
-import { Check, X } from 'lucide-react';
+import { Check, X,AlertCircle } from 'lucide-react';
 const FeedbackForm = (props) => {
   const token = localStorage.getItem("token");
   let num = props.num;
@@ -559,41 +559,48 @@ const FeedbackForm = (props) => {
         </h2>
       </div>
 
+      {/* File Upload Section */}
+      
+        <ExcelUploader
+            title="Weak Student List"
+            identifier="weakStudentsData"
+            onFileChange={handleFileChange}
+            initialData={weakStudentsData}
+          />
+
       {/* Students List */}
       <div className="space-y-4">
-        {weakStudentsData.length === 0 ? (
-          <div className="text-center py-6">
-            <p className="text-gray-600">No students identified yet</p>
+        {!weakStudentsData || weakStudentsData.length === 0 ? (
+          <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-100">
+            <AlertCircle className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+            <p className="text-gray-600 font-medium">No students identified yet</p>
+            <p className="text-sm text-gray-500">Upload data to view students</p>
           </div>
         ) : (
-          weakStudentsData.map((student) => (
-            <div
-              key={student.uniqueId}
-              className="border border-gray-100 rounded-lg p-4 bg-gray-50"
-            >
-              <div className="flex items-center justify-between">
-                {/* Student Info */}
-                <div>
-                  <h3 className="text-gray-800 font-medium">
-                    {student.studentName}
-                  </h3>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-gray-500 text-sm">ID: {student.uniqueId}</span>
-                    <span className="text-gray-400">•</span>
-                    <span className={`text-sm ${
-                      student.status === 'Accepted' ? 'text-[#FFB255]' :
-                      student.status === 'Rejected' ? 'text-gray-600' :
-                      'text-gray-500'
-                    }`}>
-                      {student.status}
-                    </span>
+          <>
+            {/* Table Header */}
+            <div className="grid grid-cols-3 gap-4 px-4 py-2 bg-gray-50 rounded-t-lg border border-gray-100 font-medium text-gray-600">
+              <div>Student ID</div>
+              <div>Name</div>
+              <div className="text-right">Actions</div>
+            </div>
+
+            {/* Student Rows */}
+            {weakStudentsData.map((student) => (
+              <div
+                key={student.uniqueId}
+                className="grid grid-cols-3 gap-4 px-4 py-3 border border-gray-100 rounded-lg bg-white items-center"
+              >
+                <div className="text-gray-600">{student.uniqueId}</div>
+                <div className="text-gray-800 font-medium">
+                  {student.studentName}
+                  <div className="text-sm text-gray-500">
+                    Status: {student.status}
                   </div>
                 </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-3">
+                <div className="flex justify-end gap-2">
                   <button
-                    className={`flex items-center px-4 py-2 rounded-lg ${
+                    className={`flex items-center px-3 py-1.5 rounded-lg text-sm ${
                       student.status === 'Accepted'
                         ? 'bg-[#FFB255] text-white cursor-not-allowed'
                         : 'bg-white border border-[#FFB255] text-[#FFB255]'
@@ -601,11 +608,11 @@ const FeedbackForm = (props) => {
                     disabled={student.status === 'Accepted'}
                     onClick={() => handleStudentStatusChange(student.uniqueId, 'Accepted')}
                   >
-                    <Check className="w-4 h-4 mr-2" />
+                    <Check className="w-4 h-4 mr-1" />
                     Accept
                   </button>
                   <button
-                    className={`flex items-center px-4 py-2 rounded-lg ${
+                    className={`flex items-center px-3 py-1.5 rounded-lg text-sm ${
                       student.status === 'Rejected'
                         ? 'bg-gray-600 text-white cursor-not-allowed'
                         : 'bg-white border border-gray-400 text-gray-600'
@@ -613,13 +620,13 @@ const FeedbackForm = (props) => {
                     disabled={student.status === 'Rejected'}
                     onClick={() => handleStudentStatusChange(student.uniqueId, 'Rejected')}
                   >
-                    <X className="w-4 h-4 mr-2" />
+                    <X className="w-4 h-4 mr-1" />
                     Reject
                   </button>
                 </div>
               </div>
-            </div>
-          ))
+            ))}
+          </>
         )}
       </div>
     </div>

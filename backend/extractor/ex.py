@@ -100,6 +100,18 @@ def clean_json_response(response):
 def ai(text):
     initial_template = create_empty_template()
 
+    assessment_format =json.dumps({
+        "components": {
+      "component1731776591362": {
+        "component": "",
+        "duration": "",
+        "weightage": "",
+        "evaluationWeek": "",
+        "remarks": ""
+      }
+    }
+        
+    })
     syllabus_format = json.dumps({
         "courseSyllabus": [
             {
@@ -126,7 +138,7 @@ Requirements:
 -5. referenceLinks objects must have: title, authors, journal, volume, year, doi
 -6. Preserve all existing template fields even if not mentioned in the text
 -7. course_description is the Course Overview and Context in the pdf. There can be more than 1 paragraphs inside it, so include all the paragraphs.
--8. In the internal component(component ) it should have component, Duration(duration), Weightage(weightage), Evaluation(evaluation) Week(week) and Remarks(remarks)
+-8. In the internal component(component ) it should have component, Duration(duration), Weightage(weightage), Evaluation(evaluation) Week(week) and Remarks(remarks) format:{assessment_format}.
 -9. If there are paragraphs, add a break or start from a new line.
 -10. For The textBooks and referenceLinks, Each should be a simple string in the array and Do not include any additional fields or nested objects.
 -11. For the mappingData in copoMappingData, 
