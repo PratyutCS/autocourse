@@ -8,9 +8,8 @@
     padding-top: 4vh;
     padding-bottom: 2vh;
     overflow-y: auto;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-auto-rows: minmax(min-content, max-content);
+    display: flex;
+    flex-wrap: nowrap;
     gap: 4vh;
     align-items: center;
     justify-items: center;

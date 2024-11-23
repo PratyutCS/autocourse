@@ -1,5 +1,5 @@
 const LoadingSpinner = () => (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center">
+    <div className="min-h-screen w-full bg-gray-50 flex flex-col items-center justify-center">
       {/* Simple, elegant spinner */}
       <div className="w-12 h-12 rounded-full animate-spin relative">
         <div 

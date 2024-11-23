@@ -57,8 +57,8 @@ export default function NewC(props) {
   }
 
   return (
-    <div className="relative group h-full bg-white rounded-xl border border-gray-200 hover:border-[#FFB255] transition-all duration-300 overflow-hidden">
-      <div className="flex h-[17rem] flex-col items-center justify-center gap-4 h-full">
+    <div className="relative group h-[17rem] w-[16rem] bg-white rounded-xl border border-gray-200 hover:border-[#FFB255] transition-all duration-300 overflow-hidden">
+      <div className="flex h-full w-full flex-col items-center justify-center gap-4 ">
         <div className="bg-orange-50 rounded-full p-4 group-hover:bg-orange-100 transition-colors">
           <FcDocument className="w-8 h-8" />
         </div>
