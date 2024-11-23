@@ -1,44 +1,55 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
 
-const ExcelUploader = ({ title, identifier, onFileChange, initialData }) => {
+const ExcelUploader = React.memo(({ title, identifier, onFileChange, initialData }) => {
   const [fileContent, setFileContent] = useState(null);
   const [fileName, setFileName] = useState('');
+  const [error, setError] = useState(null);
 
-  // Enhanced initialization with logging
+  const memoizedInitialData = useMemo(() => initialData, [initialData]);
+
   useEffect(() => {
-    console.log('Initial data received:', initialData);
-    if (initialData) {
+    if (memoizedInitialData) {
       try {
-        // If initialData is a string, try to parse it
-        const parsedData = typeof initialData === 'string' 
-          ? JSON.parse(initialData) 
-          : initialData;
+        // Reset error state
+        setError(null);
+        
+        // Handle different types of initial data
+        const parsedData = typeof memoizedInitialData === 'string' 
+          ? JSON.parse(memoizedInitialData) 
+          : memoizedInitialData;
         
         if (parsedData?.content) {
-          console.log('Setting file content:', parsedData.content);
           setFileContent(parsedData.content);
           setFileName(parsedData.fileName || '');
         } else if (Array.isArray(parsedData)) {
-          console.log('Setting array content:', parsedData);
           setFileContent(parsedData);
         }
       } catch (error) {
         console.error('Error parsing initial data:', error);
+        setError('Failed to load initial data');
       }
     }
-  }, [initialData]);
+  }, [memoizedInitialData]);
 
-  const processFile = (file) => {
+  const processFile = useCallback((file) => {
     setFileName(file.name);
+    setError(null);
 
     if (file.type === "text/csv") {
       Papa.parse(file, {
         complete: (result) => {
-          const content = result.data;
-          console.log('Parsed CSV content:', content);
+          if (result.errors.length > 0) {
+            setError('Error parsing CSV file');
+            return;
+          }
+          
+          const content = result.data.filter(row => 
+            Object.values(row).some(value => value !== '')
+          );
+          
           setFileContent(content);
           onFileChange({
             content,
@@ -48,9 +59,11 @@ const ExcelUploader = ({ title, identifier, onFileChange, initialData }) => {
           }, identifier);
         },
         header: true,
+        skipEmptyLines: true
       });
     } else {
       const reader = new FileReader();
+      
       reader.onload = (e) => {
         try {
           const data = new Uint8Array(e.target.result);
@@ -58,7 +71,7 @@ const ExcelUploader = ({ title, identifier, onFileChange, initialData }) => {
           const sheetName = workbook.SheetNames[0];
           const worksheet = workbook.Sheets[sheetName];
           const content = XLSX.utils.sheet_to_json(worksheet);
-          console.log('Parsed Excel content:', content);
+          
           setFileContent(content);
           onFileChange({
             content,
@@ -68,19 +81,24 @@ const ExcelUploader = ({ title, identifier, onFileChange, initialData }) => {
           }, identifier);
         } catch (error) {
           console.error('Error processing Excel file:', error);
-          alert('Error processing file. Please try again.');
+          setError('Error processing Excel file');
         }
       };
+
+      reader.onerror = () => {
+        setError('Error reading file');
+      };
+
       reader.readAsArrayBuffer(file);
     }
-  };
+  }, [identifier, onFileChange]);
 
   const onDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
     if (file) {
       processFile(file);
     }
-  }, [identifier, onFileChange]);
+  }, [processFile]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -88,11 +106,10 @@ const ExcelUploader = ({ title, identifier, onFileChange, initialData }) => {
       'text/csv': ['.csv'],
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
     },
+    multiple: false
   });
 
-  const renderFileContent = () => {
-    console.log('Rendering file content:', fileContent);
-    
+  const renderFileContent = useCallback(() => {
     if (!fileContent || !Array.isArray(fileContent) || fileContent.length === 0) {
       return null;
     }
@@ -116,7 +133,7 @@ const ExcelUploader = ({ title, identifier, onFileChange, initialData }) => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {fileContent.slice(0, 5).map((row, idx) => (
-              <tr key={idx}>
+              <tr key={idx} className="hover:bg-gray-50">
                 {headers.map((header) => (
                   <td
                     key={`${idx}-${header}`}
@@ -136,10 +153,13 @@ const ExcelUploader = ({ title, identifier, onFileChange, initialData }) => {
         )}
       </div>
     );
-  };
+  }, [fileContent]);
 
   return (
     <div className="space-y-4">
+      {title && (
+        <h3 className="text-lg font-medium text-gray-700">{title}</h3>
+      )}
       <div
         {...getRootProps()}
         className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors
@@ -148,8 +168,8 @@ const ExcelUploader = ({ title, identifier, onFileChange, initialData }) => {
         <input {...getInputProps()} />
         <p className="text-gray-600">
           {isDragActive
-            ? "Drop the files here..."
-            : "Drag 'n' drop Excel/CSV files here, or click to select"}
+            ? "Drop the file here..."
+            : "Drag 'n' drop Excel/CSV file here, or click to select"}
         </p>
         {fileName && (
           <p className="mt-2 text-sm text-gray-500">
@@ -157,9 +177,16 @@ const ExcelUploader = ({ title, identifier, onFileChange, initialData }) => {
           </p>
         )}
       </div>
+      {error && (
+        <div className="text-red-500 text-sm mt-2">
+          {error}
+        </div>
+      )}
       {renderFileContent()}
     </div>
   );
-};
+});
+
+ExcelUploader.displayName = 'ExcelUploader';
 
 export default ExcelUploader;

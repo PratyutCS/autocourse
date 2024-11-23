@@ -469,11 +469,13 @@ app.post("/form", auth, async (req, res) => {
       data[num]["internalAssessmentData"] = req.body.internalAssessmentData || "";
       data[num]["actionsForWeakStudentsData"] = req.body.actionsForWeakStudentsData || "";
       data[num]["Program"] = req.body.program || "";
+      if (req.body.weeklyTimetableData) {
+        data[num]["weeklyTimetableData"] = req.body.weeklyTimetableData;
+      }
       
       // Add new Excel/CSV data fields
       if (req.body.uploadedFiles) {
         const uploadedFiles = req.body.uploadedFiles;
-        data[num]["weeklyTimetable"] = uploadedFiles.weeklyTimetable || null;
         data[num]["studentList"] = uploadedFiles.studentList || null;
         data[num]["weakstudent"] = uploadedFiles.weakstudent || null;
         data[num]["assignmentsTaken"] = uploadedFiles.assignmentsTaken || null;

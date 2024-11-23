@@ -4,9 +4,8 @@ import * as XLSX from "xlsx";
 import Papa from "papaparse";
 import constants from "../constants";
 import axios from "axios";
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSpinner from "./LoadingSpinner";
 import "../css/feedback.css";
-
 import { IoReturnUpBackSharp } from "react-icons/io5";
 import COPOMapping from "./COPOMapping";
 import InternalAssessmentTable from "./InternalAssessmentTable";
@@ -16,10 +15,13 @@ import ExcelUploader from "./ExcelUploader";
 import EditableCourseDescription from "./EditableCourseDescription";
 import CourseSyllabus from "./CourseSyllabus";
 import AddField from "./AddFiled";
-
+import WeeklyTimetable from "./WeeklyTimetable";
 
 const FeedbackForm = (props) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [weeklyTimetableData, setWeeklyTimetableData] = useState(
+    props.weeklyTimetableData || null
+  );
   const token = localStorage.getItem("token");
   let num = props.num;
   const [coursecode, setCourseCode] = useState(props.coursecode || "");
@@ -38,6 +40,18 @@ const FeedbackForm = (props) => {
     textBooks: props.learningResources?.textBooks || [],
     referenceLinks: props.learningResources?.referenceLinks || [],
   });
+  useEffect(() => {
+    const currentFormData = JSON.parse(
+      localStorage.getItem(`formData_${num}`) || "{}"
+    );
+    localStorage.setItem(
+      `formData_${num}`,
+      JSON.stringify({
+        ...currentFormData,
+        weeklyTimetableData,
+      })
+    );
+  }, [weeklyTimetableData, num]);
 
   const [module, setModule] = useState(props.module || "");
   const [session, setSession] = useState(props.session || "");
@@ -133,31 +147,26 @@ const FeedbackForm = (props) => {
   };
   // here
   const [uploadedFiles, setUploadedFiles] = useState({
-    weeklyTimetable: props.weeklyTimetable || null,
     studentList: props.studentList || null,
     weakstudent: props.weakstudent || null,
     assignmentsTaken: props.assignmentsTaken || null,
     marksDetails: props.marksDetails || null,
     attendanceReport: props.attendanceReport || null,
   });
+  
   useEffect(() => {
     const loadSavedData = () => {
       try {
-        // Try to load from props first
-        if (props.uploadedFiles) {
-          console.log("Loading from props:", props.uploadedFiles);
-          setUploadedFiles(props.uploadedFiles);
+        if (props.weeklyTimetableData) {
+          setWeeklyTimetableData(props.weeklyTimetableData);
           return;
         }
 
-        // Then try to load from localStorage
         const savedData = localStorage.getItem(`formData_${num}`);
         if (savedData) {
           const parsedData = JSON.parse(savedData);
-          console.log("Loading from localStorage:", parsedData);
-
-          if (parsedData.uploadedFiles) {
-            setUploadedFiles(parsedData.uploadedFiles);
+          if (parsedData.weeklyTimetableData) {
+            setWeeklyTimetableData(parsedData.weeklyTimetableData);
           }
         }
       } catch (error) {
@@ -166,7 +175,7 @@ const FeedbackForm = (props) => {
     };
 
     loadSavedData();
-  }, [num, props.uploadedFiles]);
+  }, [num, props.weeklyTimetableData]);
 
   const handleFileChange = (fileData, identifier) => {
     console.log("Handling file change:", identifier, fileData);
@@ -201,13 +210,12 @@ const FeedbackForm = (props) => {
   const postData = async () => {
     if (num !== undefined) {
       try {
-        setIsLoading(true); 
-        console.log("Preparing to save uploadedFiles:", uploadedFiles);
-        console.log("Sending data:", {
-          internalAssessmentData,
-          uploadedFiles, // Include the uploaded files data
+        setIsLoading(true);
+        console.log("Preparing to save data:", {
+          weeklyTimetableData,
+          // other data...
         });
-
+  
         const response = await axios.post(
           constants.url + "/form",
           {
@@ -218,36 +226,34 @@ const FeedbackForm = (props) => {
             module,
             session,
             EditableCourseDescriptionData,
-            courseSyllabus: courseSyllabus,
+            courseSyllabus,
             learningResources,
-            copoMappingData: {
-              courseOutcomes: copoMappingData.courseOutcomes,
-              mappingData: copoMappingData.mappingData,
-            },
-            internalAssessmentData: {
-              components: internalAssessmentData.components,
-            },
+            copoMappingData,
+            internalAssessmentData,
             actionsForWeakStudentsData,
-            uploadedFiles: uploadedFiles,
+            uploadedFiles,
+            weeklyTimetableData, // Include the timetable data here
           },
           {
             headers: { "x-auth-token": token },
           }
         );
-
+  
         console.log("Server response:", response.data);
         alert("Data saved successfully!");
         window.location.reload();
       } catch (error) {
         console.error("Error submitting form data:", error);
         alert("Error saving data. Please check console for details.");
+      } finally {
+        setIsLoading(false);
       }
     }
   };
 
   return (
     <div className="p-5 gap-[2rem] h-screen flex flex-col bg-[#FFFEFD]">
-     <div className="bg-white rounded-xl shadow-md p-5 flex justify-between items-center">
+      <div className="bg-white rounded-xl shadow-md p-5 flex justify-between items-center">
         <button
           onClick={() => window.history.back()}
           className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors px-4 py-2 rounded-lg hover:bg-gray-50"
@@ -432,12 +438,12 @@ const FeedbackForm = (props) => {
             </h2>
           </div>
           <div className=" p-4 rounded-lg">
-            <ExcelUploader
-              title="Weekly Timetable"
-              identifier="weeklyTimetable"
-              onFileChange={handleFileChange}
-              initialData={uploadedFiles.weeklyTimetable}
-            />
+          <WeeklyTimetable
+  initialData={weeklyTimetableData}
+  onChange={(newTimetable) => {
+    setWeeklyTimetableData(newTimetable);
+  }}
+/>
           </div>
         </div>
 
@@ -508,9 +514,6 @@ const FeedbackForm = (props) => {
           initialData={actionsForWeakStudentsData}
           onSave={handleWeakStudentsChange}
         />
-        
-
-   
 
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
@@ -564,18 +567,17 @@ const FeedbackForm = (props) => {
           />
         </div>
         {/* Footer Section */}
-    
-    {isLoading && <LoadingSpinner />}
+
+        {isLoading && <LoadingSpinner />}
       </div>
-      
     </div>
   );
 };
 
 export default FeedbackForm;
 
-
-     {/* <div className="form-section">
+{
+  /* <div className="form-section">
         <div className="flex items-center mb-2">
           <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
             16
@@ -590,4 +592,5 @@ export default FeedbackForm;
           value={reflections}
           onChange={(e) => setReflections(e.target.value)}
         />
-      </div> */}
+      </div> */
+}
