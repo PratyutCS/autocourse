@@ -42,6 +42,8 @@ const FeedbackForm = (props) => {
     textBooks: props.learningResources?.textBooks || [],
     referenceLinks: props.learningResources?.referenceLinks || [],
   });
+  useEffect(() => {
+  }, [learningResources.textBooks, learningResources.referenceLinks]);
 
   const [module, setModule] = useState(props.module || "");
   const [session, setSession] = useState(props.session || "");

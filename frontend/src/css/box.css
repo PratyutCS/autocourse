@@ -1,6 +1,6 @@
 .box1 {
     height: 65%;
-    width: 90%;
+    width: 100%;
     background-color: rgb(255, 255, 255);
     /* box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px; */
     /* border: 1px solid rgba(0, 0, 0, 0.1); */
@@ -9,8 +9,8 @@
     padding-bottom: 2vh;
     overflow-y: auto;
     display: flex;
-    flex-wrap: nowrap;
-    gap: 4vh;
+    flex-wrap: wrap;
+    gap: 5vw;
     align-items: center;
     justify-items: center;
 }
