@@ -3,6 +3,7 @@ from groq import Groq
 import sys
 import json
 import os
+import re
 
 fn = sys.argv[1]
 jfn = sys.argv[2]
@@ -30,35 +31,71 @@ def create_empty_template():
         "Module/Semester": "",
         "course_description": "",
         "courseSyllabus": "",
-        
+        "Learning Resources": {
+            "textBooks": [],
+            "referenceLinks": []
+        },
+        "internalAssessmentData": {
+            "components": {}
+        },
+        "copoMappingData": {
+            "courseOutcomes": {
+                "CO1": {
+                    "description": "",
+                    "bullets": []
+                }
+            },
+            "mappingData": {
+                "CO1": {
+                    "PO1": "", "PO2": "", "PO3": "", "PO4": "", "PO5": "",
+                    "PO6": "", "PO7": "", "PO8": "", "PO9": "", "PO10": "",
+                    "PO11": "", "PO12": "", "PSO1": "", "PSO2": "", "PSO3": "", "PSO4": ""
+                }
+            }
+        },
+        "weeklyTimetableData": "",
+        "studentList": "",
+        "weakstudent": "",
+        "assignmentsTaken": "",
+        "marksDetails": "",
+        "attendanceReport": "",
+        "actionsForWeakStudentsData": [{"id": "1", "text": ""}]
     }
+
+def clean_json_response(response):
+    """Extract JSON from response, handling potential text before/after the JSON."""
+    try:
+        # Find the first { and last } to extract just the JSON part
+        start = response.find('{')
+        end = response.rstrip().rfind('}') + 1
+        if start != -1 and end != -1:
+            json_str = response[start:end]
+            # Parse to validate and return
+            return json.loads(json_str)
+    except:
+        pass
+    return None
 
 def ai(text):
-    # Create a minimal template for initial extraction
-    initial_template = {
-        "Session": "",
-        "course_code": "",
-        "course_name": "",
-        "Module/Semester": "",
-        "Program": "",
-        "course_description": "",
-        "courseSyllabus": "",
-    }
+    initial_template = create_empty_template()
     
-    prompt = f"""Extract the following course information from the document into this exact structure:
+    prompt = f"""You must respond with ONLY a valid JSON object matching this structure:
 {json.dumps(initial_template, indent=2)}
 
-Here is the text: {text}
+Extract relevant information from this text and fill the template:
+{text}
 
-Instructions:
-1. Extract all available information that matches the fields in the template
-2. Keep the exact field names as shown
-3. If information isn't found, leave the field as an empty string ("")
-4. Maintain the exact structure
-5. Extract text exactly as it appears in the document
-6. Output only valid JSON without any additional text or explanations
+Requirements:
+-1. Response must be ONLY the JSON object, no other text
+-2. Keep field names exactly as shown
+-3. Keep empty fields as shown ("" for strings, [] for arrays)
+-4. textBooks objects must have: title, author, publisher, edition, year, isbn
+-5. referenceLinks objects must have: title, authors, journal, volume, year, doi
+-6. Preserve all existing template fields even if not mentioned in the text
+-7. course_description is the Course Overview and Context in the pdf. There can be more than 1 paragraphs inside it, so include all the paragraphs.
+-8. In the internal component(component ) it should have component, Duration(duration), Weightage(weightage), Evaluation(evaluation) Week(week) and Remarks(remarks)
 
-Your response should be only the JSON object."""
+"""
     
     try:
         response = client.chat.completions.create(
@@ -68,33 +105,30 @@ Your response should be only the JSON object."""
                     "content": prompt,
                 }
             ],
-            model="llama3-8b-8192",
+            model="llama-3.1-70b-versatile",
             stream=False,
-            temperature=0.01  # Lower temperature for more consistent extraction
+            temperature=0.01
         )
-        return response.choices[0].message.content
+        
+        content = response.choices[0].message.content
+        cleaned_response = clean_json_response(content)
+        if cleaned_response:
+            return json.dumps(cleaned_response)
+        return json.dumps(initial_template)
     except Exception as e:
         print(f"Error in AI processing: {str(e)}")
         return json.dumps(initial_template)
 
 if __name__ == '__main__':
-    # Extract text from PDF
     try:
+        # Extract text from PDF
         eData1 = extract(fn)
         q1 = ""
         for data in eData1:
             q1 += data
         
-        # Load or create template
-        try:
-            with open('./extractor/mainData.json', 'r') as file:
-                mainData = json.load(file)
-        except FileNotFoundError:
-            mainData = create_empty_template()
-        
         # Get AI response
         response = ai(q1)
-        response = response.strip()
         
         # Load existing JSON data
         with open(jfn, 'r') as file:
@@ -113,27 +147,32 @@ if __name__ == '__main__':
             res = json.loads(response)
             print("AI Response:", json.dumps(res, indent=2))
             
-            # Update main data with AI response
-            for key in res:
-                if key in mainData and res[key]:  # Only update if value isn't empty
-                    mainData[key] = res[key]
-                    
+            if datnum is not None:
+                print(f"Updating entry {datnum}")
+                
+                # Update only non-empty values while preserving existing data
+                for key, value in res.items():
+                    if isinstance(value, dict):
+                        if key not in data[datnum]:
+                            data[datnum][key] = value
+                        elif isinstance(data[datnum][key], dict):
+                            data[datnum][key].update(value)
+                    elif value:  # Only update if value is non-empty
+                        data[datnum][key] = value
+                
+                data[datnum]['done'] = 1
+            else:
+                print(f"Filename {fn} not found in the JSON file.")
+
+            # Save updated data
+            with open(jfn, 'w') as f:
+                json.dump(data, f, indent=2)
+            
         except json.JSONDecodeError as e:
             print("------- Error in parsing AI response ---------")
             print("Response:", response)
             print("Error:", str(e))
-            print("Current template:", json.dumps(mainData, indent=2))
-
-        if datnum is not None:
-            print(f"Updating entry {datnum}")
-            data[datnum].update(mainData)
-            data[datnum]['done'] = 1
-        else:
-            print(f"Filename {fn} not found in the JSON file.")
-
-        # Save updated data
-        with open(jfn, 'w') as f:
-            json.dump(data, f, indent=2)
+            print("Current template:", json.dumps(create_empty_template(), indent=2))
             
     except Exception as e:
         print(f"Error in main execution: {str(e)}")
