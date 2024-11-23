@@ -3,14 +3,15 @@ import { useState, useEffect } from 'react';
 const WeeklyTimetable = ({ onChange, initialData }) => {
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   const timeSlots = [
-    '9:00-10:00', 
-    '10:00-11:00', 
-    '11:00-12:00', 
-    '12:00-13:00',
-    '13:00-14:00',
-    '14:00-15:00',
-    '15:00-16:00',
-    '16:00-17:00'
+    '9:15-10:10', 
+    '10:15-11:10', 
+    '11:15-12:10', 
+    '12:15-13:10',
+    '13:15-14:10',
+    '14:15-15:10',
+    '15:15-16:10',
+    '16:15-17:10',
+    '17:15-18:10'
   ];
 
   // Create an empty timetable structure
