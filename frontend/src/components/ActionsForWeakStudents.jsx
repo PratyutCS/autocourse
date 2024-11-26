@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import AddField from './AddFiled';
 
+
 const ActionsForWeakStudents = ({ onSave, initialData }) => {
-  const [actions, setActions] = useState(Array.isArray(initialData) ? initialData : []); 
+  const [actions, setActions] = useState([]); 
 
   useEffect(() => {
-    if (onSave) {
-      onSave(actions);
+    if (initialData && initialData.length > 0) {
+      setActions(initialData);
     }
-  }, [actions, onSave]);
+  }, [initialData]);
 
   const handleActionsChange = (updatedActions) => {
     setActions(updatedActions);
+    if (onSave) {
+      onSave(updatedActions);
+    }
   };
-
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
       <div className="flex items-center gap-4 mb-6">

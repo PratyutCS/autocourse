@@ -51,14 +51,13 @@ const FeedbackForm = (props) => {
   const [internalAssessmentData, setInternalAssessmentData] = useState({
     components: [],
   });
-  const [actionsForWeakStudentsData, setActionsForWeakStudentsData] = useState(
-    []
-  );
+  const [actionsForWeakStudentsData, setActionsForWeakStudentsData] = useState([]);
   const [weeklyTimetableData, setWeeklyTimetableData] = useState(null);
 
   const handleWeakStudentsChange = (updatedData) => {
     setActionsForWeakStudentsData(updatedData);
   };
+
 
   const handleCourseSyllabusChange = (data) => {
     if (data) {
@@ -102,6 +101,7 @@ const FeedbackForm = (props) => {
       [fieldType]: updatedFields,
     }));
   };
+
   /////////////////////////////////////////**Use Effect**//////////////////////////
   useEffect(() => {
     setCourseCode(props.coursecode || "");
@@ -164,7 +164,7 @@ const FeedbackForm = (props) => {
     const weakStudents =
       props.weakStudentsData?.map((student) => ({
         ...student,
-        status: student.status || "Pending", // Default status
+        status: student.status || "Pending",
       })) || [];
     setWeakStudentsData(weakStudents);
   }, [props.weakStudentsData]);
@@ -186,8 +186,11 @@ const FeedbackForm = (props) => {
   }, [props.internalAssessmentData]);
 
   useEffect(() => {
-    setActionsForWeakStudentsData(props.actionsForWeakStudentsData || []);
+    if (props.actionsForWeakStudentsData) {
+      setActionsForWeakStudentsData(props.actionsForWeakStudentsData);
+    }
   }, [props.actionsForWeakStudentsData]);
+
 
   useEffect(() => {
     setWeeklyTimetableData(props.weeklyTimetableData || null);

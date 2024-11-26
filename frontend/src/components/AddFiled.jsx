@@ -4,7 +4,6 @@ import { Trash2, Plus } from "lucide-react";
 const AddField = ({ label, onChange, initialData = [] }) => {
   const [fields, setFields] = useState([]);
 
-  // Effect to handle initialData changes
   useEffect(() => {
     if (initialData && initialData.length > 0) {
       setFields(
