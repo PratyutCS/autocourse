@@ -327,7 +327,7 @@ const FeedbackForm = (props) => {
     }));
 
     const weakStudents = marksDetails.filter(
-      (student) => student.totalMarks < 50
+      (student) => student.totalMarks < 90
     );
 
     setStudentListData(studentList);
@@ -682,7 +682,7 @@ const FeedbackForm = (props) => {
                   <div>Student ID</div>
                   <div>Name</div>
                   <div className="text-right">Actions</div>
-                </div>
+                  </div>
 
                 {/* Student Rows */}
                 {weakStudentsData.map((student) => (

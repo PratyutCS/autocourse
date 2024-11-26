@@ -7,7 +7,6 @@ const PDFUploader = () => {
 
   const uploadPDF = async (file) => {
     const formData = new FormData();
-    const token = localStorage.getItem("token");
     formData.append('file', file);
   
     try {
