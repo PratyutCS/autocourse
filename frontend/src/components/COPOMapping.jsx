@@ -12,6 +12,7 @@ import "react-image-crop/dist/ReactCrop.css";
 import { useRef } from "react";
 import ReactCrop, { centerCrop, makeAspectCrop } from "react-image-crop";
 
+
 function centerAspectCrop(mediaWidth, mediaHeight, aspect) {
   return centerCrop(
     makeAspectCrop(
@@ -32,6 +33,7 @@ const COPOMapping = ({ onSave, initialData }) => {
   const [tableMode, setTableMode] = useState("manual");
   const [uploadedImage, setUploadedImage] = useState(null);
   const [isCropping, setIsCropping] = useState(false);
+  
   const [crop, setCrop] = useState();
   const [completedCrop, setCompletedCrop] = useState(null);
   const [imgSrc, setImgSrc] = useState("");
@@ -42,6 +44,7 @@ const COPOMapping = ({ onSave, initialData }) => {
     const crop = centerAspectCrop(width, height, 16 / 9);
     setCrop(crop);
   };
+  
 
   const fileInputRef = useRef(null);
 
@@ -122,35 +125,59 @@ const COPOMapping = ({ onSave, initialData }) => {
     }
   }, [initialData]);
 
-  const handleImageUpload = (file) => {
-    if (file) {
-      if (!file.type.startsWith('image/')) {
-        alert('Please upload an image file');
-        return;
+  const handleImageUpload = async (file) => {
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Please upload an image file");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert("File size should be less than 5MB");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", file);
+    const reader = new FileReader();
+    reader.addEventListener('load', () => {
+      setImgSrc(reader.result.toString());
+      setIsCropping(true);
+    });
+    reader.readAsDataURL(file);
+
+    try {
+      const response = await fetch("http://localhost:3000/upload-image", {
+        method: "POST",
+        headers: {
+          "x-auth-token": localStorage.getItem("token"), // Ensure token is set
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        console.error("Error from server:", errorResponse);
+        throw new Error(errorResponse.message || "Error uploading the image");
       }
 
-      if (file.size > 5 * 1024 * 1024) {
-        alert('File size should be less than 5MB');
-        return;
-      }
+      const data = await response.json();
+      setUploadedImage(file);
+      setCroppedImageUrl(data.filePath); // Use filePath received from backend
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImgSrc(reader.result);
-        setUploadedImage(file);
-        setIsCropping(true);
-        if (onSave) {
-          onSave({
-            tableMode,
-            uploadedImage: file,
-            courseOutcomes,
-            mappingData,
-          });
-        }
-      };
-      reader.readAsDataURL(file);
+      if (onSave) {
+        onSave({
+          tableMode,
+          uploadedImage: file,
+          mappingData: { imagePath: data.filePath }, // Save image path in JSON
+        });
+      }
+    } catch (error) {
+      console.error("Image upload failed:", error);
+      alert(error.message);
     }
   };
+
   const handleDragOver = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -175,7 +202,7 @@ const COPOMapping = ({ onSave, initialData }) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragActive(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       handleImageUpload(e.dataTransfer.files[0]);
       e.dataTransfer.clearData();
@@ -275,6 +302,9 @@ const COPOMapping = ({ onSave, initialData }) => {
         });
       }
     }
+  };
+  const handleSelectFile = () => {
+    fileInputRef.current?.click();
   };
 
   const handleOutcomeChange = (co, field, value) => {
@@ -418,13 +448,16 @@ const COPOMapping = ({ onSave, initialData }) => {
   const [isDragActive, setIsDragActive] = useState(false);
   const handleTableModeChange = (selectedMode) => {
     setTableMode(selectedMode);
-    if (onSave) {
-      onSave({
-        tableMode: selectedMode,
-        uploadedImage,
-        courseOutcomes,
-        mappingData,
-      });
+    if (selectedMode === "image" && croppedImageUrl) {
+      // Save the image path in JSON
+      if (onSave) {
+        onSave({
+          tableMode: selectedMode,
+          mappingData: { imagePath: croppedImageUrl },
+        });
+      }
+    } else if (onSave) {
+      onSave({ tableMode: selectedMode });
     }
   };
 
@@ -568,43 +601,44 @@ const COPOMapping = ({ onSave, initialData }) => {
           </div>
         ) : (
           <div
-  className={`relative overflow-hidden rounded-xl border-2 border-dashed ${
-    isDragActive ? 'border-orange-400 bg-orange-50/50' : 'border-gray-200 bg-white'
-  } transition-all duration-200 hover:border-orange-200 hover:bg-orange-50/30`}
-  onDragOver={handleDragOver}
-  onDragEnter={handleDragEnter}
-  onDragLeave={handleDragLeave}
-  onDrop={handleDrop}
->
+            className={`relative overflow-hidden rounded-xl border-2 border-dashed ${
+              isDragActive
+                ? "border-orange-400 bg-orange-50/50"
+                : "border-gray-200 bg-white"
+            } transition-all duration-200 hover:border-orange-200 hover:bg-orange-50/30`}
+            onDragOver={handleDragOver}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
             {isCropping ? (
               <div className="flex flex-col items-center gap-6 p-8">
                 <div className="w-full max-w-4xl mx-auto rounded-xl overflow-hidden shadow-lg border-2 border-orange-100">
-                  <ReactCrop
-                    crop={crop}
-                    onChange={(_, percentCrop) => setCrop(percentCrop)}
-                    onComplete={(c) => setCompletedCrop(c)}
-                    aspect={undefined}
-                    className="bg-orange-50/30"
-                  >
-                    <img
-                      ref={imgRef}
-                      alt="Crop me"
-                      src={imgSrc}
-                      onLoad={onImageLoad}
-                      className="max-w-full h-auto"
-                    />
-                  </ReactCrop>
+                <ReactCrop
+  crop={crop}
+  onChange={(_, percentCrop) => setCrop(percentCrop)}
+  onComplete={(c) => setCompletedCrop(c)}
+  aspect={undefined}
+>
+  <img
+    ref={imgRef}
+    alt="Crop me"
+    src={imgSrc}
+    onLoad={onImageLoad}
+    style={{ maxWidth: '100%' }}
+  />
+</ReactCrop>
                 </div>
                 <div className="flex gap-4">
                   <button
                     onClick={saveCrop}
-                    className="px-6 py-2.5 bg-orange-500 text-white rounded-lg flex items-center gap-2 hover:bg-orange-600 transition-colors shadow-sm"
+                    className="px-6 py-2.5 bg-[#FFB255] text-white rounded-lg flex items-center gap-2 hover:bg-[#FF9617] transition-colors shadow-sm"
                   >
                     <Check size={18} /> Save Crop
                   </button>
                   <button
                     onClick={cancelCrop}
-                    className="px-6 py-2.5 bg-gray-500 text-white rounded-lg flex items-center gap-2 hover:bg-gray-600 transition-colors shadow-sm"
+                    className="px-6 py-2.5 border border-gray-500 text-gray-500 rounded-lg flex items-center gap-2 hover:bg-gray-600 hover:text-white transition-colors shadow-sm"
                   >
                     <XCircle size={18} /> Cancel
                   </button>
@@ -616,7 +650,7 @@ const COPOMapping = ({ onSave, initialData }) => {
                   type="file"
                   id="table-image-upload"
                   accept="image/*"
-                  onChange={handleImageUpload}
+                  onChange={(e) => handleImageUpload(e.target.files[0])}
                   ref={fileInputRef}
                   className="hidden"
                 />
@@ -645,7 +679,7 @@ const COPOMapping = ({ onSave, initialData }) => {
                       </div>
                       <button
                         className="px-6 py-2.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors shadow-sm"
-                        onClick={() => fileInputRef.current.click()}
+                        onClick={handleSelectFile}
                       >
                         Select File
                       </button>
@@ -701,7 +735,7 @@ const COPOMapping = ({ onSave, initialData }) => {
         {tableMode === "manual" && (
           <button
             onClick={addRow}
-            className="mt-4 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors shadow-sm flex items-center gap-2"
+            className="mt-4 px-4 py-2 bg-[#FFB255] hover:bg-[#f5a543] text-white rounded-lg  transition-colors shadow-sm flex items-center gap-2"
           >
             <Plus size={18} />
             Add Course Outcome

@@ -160,7 +160,7 @@ const InternalAssessmentTable = ({ onSave, initialData }) => {
       </div>
       <button 
         onClick={addRow}
-        className="mt-6 px-6 py-2.5 bg-orange-400 text-white rounded-lg hover:bg-orange-500 transition-colors font-medium shadow-sm flex items-center gap-2"
+        className="mt-6 px-6 py-2.5 bg-[#FFB255] hover:bg-[#f5a543] text-white rounded-lg transition-colors font-medium shadow-sm flex items-center gap-2"
       >
         <Plus size={18} />
         Add Component

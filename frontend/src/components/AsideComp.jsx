@@ -105,9 +105,9 @@ const AsideComp = ({ isCollapsed, setIsCollapsed }) => {
           type="button"
           className="flex items-center gap-4 text-[2vmin] hover:text-white transition-colors"
         >
-          <RxQuestionMarkCircled size={24} />
+          <RxQuestionMarkCircled size={24} className="hover:text-white" />
           <span
-            className={`transition-opacity duration-300 ${
+            className={`transition-opacity  font-light text-m duration-300 hover:text-white ${
               isCollapsed ? "opacity-0" : "opacity-100"
             }`}
           >
@@ -120,15 +120,15 @@ const AsideComp = ({ isCollapsed, setIsCollapsed }) => {
             type="submit"
             className="flex items-center gap-4 text-[2vmin] hover:text-white transition-colors"
           >
-            <TfiPowerOff size={24} />
+            <TfiPowerOff size={24} className="hover:text-white" />
             <div
               className={`flex flex-col items-start transition-opacity duration-300 ${
                 isCollapsed ? "opacity-0" : "opacity-100"
               }`}
             >
-              <span>Logout</span>
+              <span className="text-m font-light hover:text-white">Logout</span>
               {userData && (
-                <p className="text-[1.75vmin] text-[#afafaf]">{userData.email}</p>
+                <p className="font-light text-[#E4F3FF] opacity-[0.3] hover:text-white">{userData.email}</p>
               )}
             </div>
           </button>

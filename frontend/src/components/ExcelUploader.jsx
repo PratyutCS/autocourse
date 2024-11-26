@@ -7,16 +7,12 @@ const ExcelUploader = React.memo(({ title, identifier, onFileChange, initialData
   const [fileContent, setFileContent] = useState(null);
   const [fileName, setFileName] = useState('');
   const [error, setError] = useState(null);
-
   const memoizedInitialData = useMemo(() => initialData, [initialData]);
 
   useEffect(() => {
     if (memoizedInitialData) {
       try {
-        // Reset error state
         setError(null);
-        
-        // Handle different types of initial data
         const parsedData = typeof memoizedInitialData === 'string' 
           ? JSON.parse(memoizedInitialData) 
           : memoizedInitialData;

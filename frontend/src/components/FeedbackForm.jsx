@@ -13,7 +13,7 @@ import CourseSyllabus from "./CourseSyllabus";
 import AddField from "./AddFiled";
 import WeeklyTimetable from "./WeeklyTimetable";
 import PDFUploader from "./PDFUploader";
-import { Check, X,AlertCircle } from 'lucide-react';
+import { Check, X, AlertCircle } from "lucide-react";
 const FeedbackForm = (props) => {
   const token = localStorage.getItem("token");
   let num = props.num;
@@ -39,10 +39,13 @@ const FeedbackForm = (props) => {
 
   const [EditableCourseDescriptionData, setEditableCourseDescriptionData] =
     useState("");
-  const [copoMappingData, setCopoMappingData] = useState({
-    courseOutcomes: {},
-    mappingData: {},
-  });
+    const [copoMappingData, setCopoMappingData] = useState({
+      courseOutcomes: {},
+      mappingData: {},
+      tableMode: 'manual',
+      imagePath: null,
+      imageFileName: null
+    });
 
   const [studentListData, setStudentListData] = useState([]);
   const [weakStudentsData, setWeakStudentsData] = useState([]);
@@ -51,13 +54,14 @@ const FeedbackForm = (props) => {
   const [internalAssessmentData, setInternalAssessmentData] = useState({
     components: [],
   });
-  const [actionsForWeakStudentsData, setActionsForWeakStudentsData] = useState([]);
+  const [actionsForWeakStudentsData, setActionsForWeakStudentsData] = useState(
+    []
+  );
   const [weeklyTimetableData, setWeeklyTimetableData] = useState(null);
 
   const handleWeakStudentsChange = (updatedData) => {
     setActionsForWeakStudentsData(updatedData);
   };
-
 
   const handleCourseSyllabusChange = (data) => {
     if (data) {
@@ -68,16 +72,66 @@ const FeedbackForm = (props) => {
   const EditableCourseDescriptionDataChange = (data) => {
     setEditableCourseDescriptionData(data);
   };
+  // const saveToBackend = async (data) => {
+  //   try {
+  //     const response = await fetch('http://localhost:3000/upload-image', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'x-auth-token': localStorage.getItem('token')
+  //       },
+  //       body: JSON.stringify({
+  //         courseOutcomes: data.courseOutcomes,
+  //         mappingData: data.mappingData,
+  //         tableMode: data.tableMode,
+  //         imagePath: data.imagePath,
+  //         imageFileName: data.imageFileName
+  //       })
+  //     });
+  
+  //     if (!response.ok) {
+  //       throw new Error('Failed to save data');
+  //     }
+  
+  //     const result = await response.json();
+  //     console.log('Data saved successfully:', result);
+  //   } catch (error) {
+  //     console.error('Error saving data:', error);
+  //     // Handle error appropriately
+  //   }
+  // };
+  
 
   const handleCOPOMappingChange = (data) => {
-    if (data && data.courseOutcomes && data.mappingData) {
-      setCopoMappingData({
-        courseOutcomes: data.courseOutcomes,
-        mappingData: data.mappingData,
-      });
+    const newData = { ...copoMappingData };
+  
+    if (data.tableMode) {
+      newData.tableMode = data.tableMode;
     }
+  
+    if (data.courseOutcomes) {
+      newData.courseOutcomes = data.courseOutcomes;
+    }
+  
+    if (data.mappingData) {
+      if (data.tableMode === 'image' && data.mappingData.imagePath) {
+        newData.imagePath = data.mappingData.imagePath;
+        newData.imageFileName = data.mappingData.imageFileName;
+        // Clear manual mapping data when switching to image mode
+        newData.mappingData = {};
+      } else {
+        newData.mappingData = data.mappingData;
+      }
+    }
+  
+    setCopoMappingData(newData);
+  
+    // Save to backend
+    // saveToBackend(newData);
   };
-  const handleStudentStatusChange = (uniqueId, newStatus) => {
+  
+  const handleStudentStatusChange = async (uniqueId, newStatus) => {
+    // Update local state
     setWeakStudentsData((prevData) =>
       prevData.map((student) =>
         student.uniqueId === uniqueId
@@ -85,6 +139,21 @@ const FeedbackForm = (props) => {
           : student
       )
     );
+
+    // If status is Accepted, save to backend
+    if (newStatus === "Accepted") {
+      try {
+        const studentToSave = weakStudentsData.find(
+          (student) => student.uniqueId === uniqueId
+        );
+
+        // Make API call to save the student data
+        await saveWeakStudent(studentToSave);
+      } catch (error) {
+        console.error("Error saving student data:", error);
+        // Optionally add error handling UI feedback
+      }
+    }
   };
 
   const handleInternalAssessmentChange = (data) => {
@@ -191,7 +260,6 @@ const FeedbackForm = (props) => {
     }
   }, [props.actionsForWeakStudentsData]);
 
-
   useEffect(() => {
     setWeeklyTimetableData(props.weeklyTimetableData || null);
   }, [props.weeklyTimetableData]);
@@ -258,7 +326,6 @@ const FeedbackForm = (props) => {
       attendance: parseFloat(row["Attendance"]),
     }));
 
-    // Identify weak students based on total marks less than a threshold (e.g., 50)
     const weakStudents = marksDetails.filter(
       (student) => student.totalMarks < 50
     );
@@ -271,6 +338,26 @@ const FeedbackForm = (props) => {
       ...prev,
       [identifier]: fileData,
     }));
+  };
+  const saveWeakStudent = async (studentData) => {
+    const response = await fetch("/api/save-weak-student", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(studentData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to save student data");
+    }
+
+    return await response.json();
+  };
+  const removeRejectedStudents = () => {
+    setWeakStudentsData((prevData) =>
+      prevData.filter((student) => student.status !== "Rejected")
+    );
   };
 
   const postData = async () => {
@@ -310,7 +397,6 @@ const FeedbackForm = (props) => {
         );
 
         console.log("Server response:", response.data);
-        alert("Data saved successfully!");
         window.location.reload();
       } catch (error) {
         console.error("Error submitting form data:", error);
@@ -552,87 +638,107 @@ const FeedbackForm = (props) => {
 
         {/* Identification of Weak Students */}
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-      {/* Header Section */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold">
-          13
-        </div>
-        <h2 className="text-xl font-semibold text-gray-800">
-          Identification of Weak Students
-        </h2>
-      </div>
+          {/* Header Section */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold">
+              13
+            </div>
+            <h2 className="text-xl font-semibold text-gray-800">
+              Identification of Weak Students
+            </h2>
+          </div>
 
-      {/* File Upload Section */}
-      
-        <ExcelUploader
+          {/* File Upload Section */}
+
+          <ExcelUploader
             title="Weak Student List"
             identifier="weakStudentsData"
             onFileChange={handleFileChange}
             initialData={weakStudentsData}
           />
 
-      {/* Students List */}
-      <div className="space-y-4">
-        {!weakStudentsData || weakStudentsData.length === 0 ? (
-          <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-100">
-            <AlertCircle className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-            <p className="text-gray-600 font-medium">No students identified yet</p>
-            <p className="text-sm text-gray-500">Upload data to view students</p>
-          </div>
-        ) : (
-          <>
-            {/* Table Header */}
-            <div className="grid grid-cols-3 gap-4 px-4 py-2 bg-gray-50 rounded-t-lg border border-gray-100 font-medium text-gray-600">
-              <div>Student ID</div>
-              <div>Name</div>
-              <div className="text-right">Actions</div>
-            </div>
-
-            {/* Student Rows */}
-            {weakStudentsData.map((student) => (
-              <div
-                key={student.uniqueId}
-                className="grid grid-cols-3 gap-4 px-4 py-3 border border-gray-100 rounded-lg bg-white items-center"
-              >
-                <div className="text-gray-600">{student.uniqueId}</div>
-                <div className="text-gray-800 font-medium">
-                  {student.studentName}
-                  <div className="text-sm text-gray-500">
-                    Status: {student.status}
-                  </div>
-                </div>
-                <div className="flex justify-end gap-2">
-                  <button
-                    className={`flex items-center px-3 py-1.5 rounded-lg text-sm ${
-                      student.status === 'Accepted'
-                        ? 'bg-[#FFB255] text-white cursor-not-allowed'
-                        : 'bg-white border border-[#FFB255] text-[#FFB255]'
-                    }`}
-                    disabled={student.status === 'Accepted'}
-                    onClick={() => handleStudentStatusChange(student.uniqueId, 'Accepted')}
-                  >
-                    <Check className="w-4 h-4 mr-1" />
-                    Accept
-                  </button>
-                  <button
-                    className={`flex items-center px-3 py-1.5 rounded-lg text-sm ${
-                      student.status === 'Rejected'
-                        ? 'bg-gray-600 text-white cursor-not-allowed'
-                        : 'bg-white border border-gray-400 text-gray-600'
-                    }`}
-                    disabled={student.status === 'Rejected'}
-                    onClick={() => handleStudentStatusChange(student.uniqueId, 'Rejected')}
-                  >
-                    <X className="w-4 h-4 mr-1" />
-                    Reject
-                  </button>
-                </div>
+          {/* Students List */}
+          <div className="space-y-4">
+            {!weakStudentsData || weakStudentsData.length === 0 ? (
+              <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-100">
+                <AlertCircle className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                <p className="text-gray-600 font-medium">
+                  No students identified yet
+                </p>
+                <p className="text-sm text-gray-500">
+                  Upload data to view students
+                </p>
               </div>
-            ))}
-          </>
-        )}
-      </div>
-    </div>
+            ) : (
+              <>
+                <button
+                  className="bg-gray-200 text-gray-600 px-4 py-2 rounded-lg"
+                  onClick={removeRejectedStudents}
+                >
+                  Remove Rejected Students
+                </button>
+                {/* Table Header */}
+                <div className="grid grid-cols-3 gap-4 px-4 py-2 bg-gray-50 rounded-t-lg border border-gray-100 font-medium text-gray-600">
+                  <div>Student ID</div>
+                  <div>Name</div>
+                  <div className="text-right">Actions</div>
+                </div>
+
+                {/* Student Rows */}
+                {weakStudentsData.map((student) => (
+                  <div
+                    key={student.uniqueId}
+                    className="grid grid-cols-3 gap-4 px-4 py-3 border border-gray-100 rounded-lg bg-white items-center"
+                  >
+                    <div className="text-gray-600">{student.uniqueId}</div>
+                    <div className="text-gray-800 font-medium">
+                      {student.studentName}
+                      <div className="text-sm text-gray-500">
+                        Status: {student.status}
+                      </div>
+                    </div>
+                    <div className="flex justify-end gap-2">
+                      <button
+                        className={`flex items-center px-3 py-1.5 rounded-lg text-sm ${
+                          student.status === "Accepted"
+                            ? "bg-[#FFB255] text-white cursor-not-allowed"
+                            : "bg-white border border-[#FFB255] text-[#FFB255]"
+                        }`}
+                        disabled={student.status === "Accepted"}
+                        onClick={() =>
+                          handleStudentStatusChange(
+                            student.uniqueId,
+                            "Accepted"
+                          )
+                        }
+                      >
+                        <Check className="w-4 h-4 mr-1" />
+                        Accept
+                      </button>
+                      <button
+                        className={`flex items-center px-3 py-1.5 rounded-lg text-sm ${
+                          student.status === "Rejected"
+                            ? "bg-gray-600 text-white cursor-not-allowed"
+                            : "bg-white border border-gray-400 text-gray-600"
+                        }`}
+                        disabled={student.status === "Rejected"}
+                        onClick={() =>
+                          handleStudentStatusChange(
+                            student.uniqueId,
+                            "Rejected"
+                          )
+                        }
+                      >
+                        <X className="w-4 h-4 mr-1" />
+                        Reject
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
+        </div>
 
         {/* Actions for Weak Students */}
         <ActionsForWeakStudents
