@@ -10,6 +10,8 @@ const path = require("path");
 const fs = require("fs");
 const jwt = require("jsonwebtoken");
 const { spawn } = require("child_process");
+const multer = require('multer');
+// const imageUpload = require("./storage");
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -151,6 +153,62 @@ app.post("/numdata", auth, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+// Image upload endpoint
+
+app.post("/upload-image", auth, (req, res) => {
+  const imageUpload = multer({
+      limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB
+      fileFilter: (req, file, cb) => {
+          const allowedMimeTypes = ["image/jpeg", "image/png", "image/jpg"];
+          if (allowedMimeTypes.includes(file.mimetype)) {
+              cb(null, true); // Accept the file
+          } else {
+              cb(new Error("Invalid file type. Only images (JPEG, PNG) are allowed."), false); // Reject the file
+          }
+      },
+      storage: multer.diskStorage({
+          destination: (req, file, cb) => {
+              const folderName = path.join(__dirname, "/images/");
+              cb(null, folderName);
+          },
+          filename: (req, file, cb) => {
+              cb(null, `${Date.now()}-${file.originalname}`); // Save file with timestamp
+          },
+      }),
+  }).single("image"); 
+
+  imageUpload(req, res, async (err) => {
+      if (err) {
+          console.error("Image upload error:", err.message);
+          return res.status(400).json({ message: err.message });
+      }
+
+      const file = req.file;
+      if (!file) {
+          console.error("No file received in the request.");
+          return res.status(400).json({ message: "No image uploaded" });
+      }
+
+      try {
+          const user = await User.findById(req.user);
+          if (!user) {
+              return res.status(404).json({ error: "User not found" });
+          }
+
+          const filePath = `/images/${file.filename}`;
+          console.log("Image saved at:", filePath);
+
+          res.status(200).json({
+              message: "Image uploaded successfully",
+              filePath,
+          });
+      } catch (error) {
+          console.error("Error saving image data:", error.message);
+          res.status(500).json({ message: "Server error" });
+      }
+  });
+});
+
 
 // Uploading the file, entering file data in json
 app.post("/upload", auth, (req, res) => {
@@ -201,6 +259,7 @@ app.post("/upload", auth, (req, res) => {
     }
   });
 });
+
 
 // To delete
 app.post("/delete", auth, async (req, res) => {
