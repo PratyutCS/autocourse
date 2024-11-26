@@ -5,14 +5,51 @@ const PDFUploader = () => {
   const [pdfs, setPdfs] = useState([]);
   const [error, setError] = useState(null);
 
+  const uploadPDF = async (file) => {
+    const formData = new FormData();
+    const token = localStorage.getItem("token");
+    formData.append('file', file);
+  
+    try {
+      const response = await fetch('http://localhost:3000/upload-pdf', {
+        method: 'POST',
+        headers: {
+          "x-auth-token": localStorage.getItem("token"), // Ensure token is set
+        },
+        body: formData,
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        console.log('File uploaded successfully:', data);
+        alert('PDF uploaded successfully');
+      } else {
+        console.error('Upload failed:', data.message);
+        setError(data.message || 'Upload failed');
+      }
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      setError('Error uploading file');
+    }
+  };
+  
   const onDrop = useCallback((acceptedFiles) => {
     setError(null);
-    setPdfs(acceptedFiles.map((file, index) => ({
-      ...file,
-      preview: URL.createObjectURL(file),
-      id: `${file.name}-${index}`,
-    })));
+    const file = acceptedFiles[0];
+    if (file) {
+      uploadPDF(file);
+      setPdfs((prevPdfs) => [
+        ...prevPdfs,
+        {
+          ...file,
+          preview: URL.createObjectURL(file),
+          id: `${file.name}-${Date.now()}`,
+        },
+      ]);
+    }
   }, []);
+  
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

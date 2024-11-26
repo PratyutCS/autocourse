@@ -468,6 +468,52 @@ async function dataext(number, jfn, fn) {
   }
 }
 
+app.post('/upload-pdf', auth, (req, res) => {
+  upload.single('file')(req, res, async (err) => {
+    if (err) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ message: 'File size exceeds the limit of 50MB.' });
+      }
+      return res.status(400).json({ message: err.message });
+    }
+
+    const file = req.file;
+    if (!file) {
+      return res.status(400).json({ message: 'Failed to upload file' });
+    }
+
+    try {
+      const user = await User.findById(req.user);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const jsonFilePath = path.join(__dirname, 'pdfs.json');
+      let pdfData = [];
+
+      // Read existing data from the JSON file
+      if (fs.existsSync(jsonFilePath)) {
+        const data = fs.readFileSync(jsonFilePath, 'utf8');
+        pdfData = JSON.parse(data);
+      }
+
+      // Add the new file path
+      pdfData.push({ userId: user._id, filePath: file.path });
+
+      // Write updated data back to the JSON file
+      fs.writeFileSync(jsonFilePath, JSON.stringify(pdfData, null, 2));
+
+      res.status(200).json({
+        message: 'PDF uploaded successfully',
+        filePath: file.path,
+      });
+    } catch (error) {
+      console.error('Error during file upload:', error);
+      res.status(500).json({ message: 'File operation failed' });
+    }
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Server connected at port ${PORT}`);
 });
