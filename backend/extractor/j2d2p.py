@@ -116,8 +116,7 @@ if data.get('copoMappingData'):
         for co_key, co_value in data['copoMappingData']['courseOutcomes'].items():
             if isinstance(co_value, dict):
                 doc.add_paragraph()
-                paragraph = doc.add_paragraph(
-                    f'{co_key}: {co_value["description"]}')
+                paragraph = doc.add_paragraph(f'{co_key}: {co_value["description"]}')
                 paragraph.paragraph_format.left_indent = Inches(0.7)
                 paragraph.paragraph_format.right_indent = Inches(0.5)
 
@@ -131,72 +130,78 @@ if data.get('copoMappingData'):
                 paragraph = doc.add_paragraph(f'{co_key}: {co_value}')
                 paragraph.paragraph_format.left_indent = Inches(0.7)
                 paragraph.paragraph_format.right_indent = Inches(0.5)
-    
-    if data['copoMappingData'].get('mappingData'):
-        doc.add_paragraph()
-        course_outcomes_heading = doc.add_paragraph()
-        course_outcomes_run = course_outcomes_heading.add_run('CO/PO Mapping:')
-        course_outcomes_run.bold = True
-        course_outcomes_run.font.size = Pt(12)
-        course_outcomes_heading.paragraph_format.left_indent = Inches(0.7)
-        course_outcomes_heading.paragraph_format.right_indent = Inches(0.5)
-        course_outcomes_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
 
-        co_po_mapping = data['copoMappingData']['mappingData']
+    if data['copoMappingData'].get('tableMode') == 'image':
+        image_path = data['copoMappingData'].get('imagePath', '')
+        if image_path:
+            doc.add_paragraph()
+            doc.add_picture("."+image_path, width=Inches(6.0))  # Adjust width as needed
+    else:
+        if data['copoMappingData'].get('mappingData'):
+            doc.add_paragraph()
+            course_outcomes_heading = doc.add_paragraph()
+            course_outcomes_run = course_outcomes_heading.add_run('CO/PO Mapping:')
+            course_outcomes_run.bold = True
+            course_outcomes_run.font.size = Pt(12)
+            course_outcomes_heading.paragraph_format.left_indent = Inches(0.7)
+            course_outcomes_heading.paragraph_format.right_indent = Inches(0.5)
+            course_outcomes_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
 
-        doc.add_paragraph()
+            co_po_mapping = data['copoMappingData']['mappingData']
 
-        table = doc.add_table(rows=1, cols=len(
-            co_po_mapping[list(co_po_mapping.keys())[0]]) + 1)  # +1 for CO column
+            doc.add_paragraph()
 
-        hdr_cells = table.rows[0].cells
-        hdr_cells[0].text = 'Course Outcomes (CO)'
-        for i, po_key in enumerate(co_po_mapping[list(co_po_mapping.keys())[0]].keys()):
-            hdr_cells[i + 1].text = po_key
+            table = doc.add_table(rows=1, cols=len(
+                co_po_mapping[list(co_po_mapping.keys())[0]]) + 1)  # +1 for CO column
 
-        for co_key, po_values in co_po_mapping.items():
-            row_cells = table.add_row().cells
-            row_cells[0].text = co_key  # CO column
-            for i, value in enumerate(po_values.values()):
-                # Add values, convert int to str
-                row_cells[i + 1].text = str(value) if value != "" else ""
+            hdr_cells = table.rows[0].cells
+            hdr_cells[0].text = 'Course Outcomes (CO)'
+            for i, po_key in enumerate(co_po_mapping[list(co_po_mapping.keys())[0]].keys()):
+                hdr_cells[i + 1].text = po_key
 
-        for row in table.rows:
-            for cell in row.cells:
-                cell.width = Inches(1.0)
-                for paragraph in cell.paragraphs:
-                    for run in paragraph.runs:
-                        run.font.size = Pt(10)
+            for co_key, po_values in co_po_mapping.items():
+                row_cells = table.add_row().cells
+                row_cells[0].text = co_key  # CO column
+                for i, value in enumerate(po_values.values()):
+                    # Add values, convert int to str
+                    row_cells[i + 1].text = str(value) if value != "" else ""
 
-        def set_cell_border(cell, border_type, border_size, border_color):
-            tc = cell._tc
-            tcPr = tc.get_or_add_tcPr()
+            for row in table.rows:
+                for cell in row.cells:
+                    cell.width = Inches(1.0)
+                    for paragraph in cell.paragraphs:
+                        for run in paragraph.runs:
+                            run.font.size = Pt(10)
 
-            border = OxmlElement(f'w:{border_type}')
-            border.set(qn('w:val'), 'single')
-            border.set(qn('w:sz'), str(border_size))
-            border.set(qn('w:color'), border_color)
+            def set_cell_border(cell, border_type, border_size, border_color):
+                tc = cell._tc
+                tcPr = tc.get_or_add_tcPr()
 
-            element = tcPr.xpath(f"./w:{border_type}")
-            if element:
-                element[0].getparent().replace(element[0], border)
-            else:
-                tcPr.append(border)
+                border = OxmlElement(f'w:{border_type}')
+                border.set(qn('w:val'), 'single')
+                border.set(qn('w:sz'), str(border_size))
+                border.set(qn('w:color'), border_color)
 
-        for row in table.rows:
-            for cell in row.cells:
-                set_cell_border(cell, 'top', 4, '000000')
-                set_cell_border(cell, 'bottom', 4, '000000')
-                set_cell_border(cell, 'left', 4, '000000')
-                set_cell_border(cell, 'right', 4, '000000')
+                element = tcPr.xpath(f"./w:{border_type}")
+                if element:
+                    element[0].getparent().replace(element[0], border)
+                else:
+                    tcPr.append(border)
 
-        table.alignment = WD_TABLE_ALIGNMENT.CENTER
+            for row in table.rows:
+                for cell in row.cells:
+                    set_cell_border(cell, 'top', 4, '000000')
+                    set_cell_border(cell, 'bottom', 4, '000000')
+                    set_cell_border(cell, 'left', 4, '000000')
+                    set_cell_border(cell, 'right', 4, '000000')
 
-        for row in table.rows:
-            tr = row._tr
-            trPr = tr.get_or_add_trPr()
-            cantSplit = OxmlElement('w:cantSplit')
-            trPr.append(cantSplit)
+            table.alignment = WD_TABLE_ALIGNMENT.CENTER
+
+            for row in table.rows:
+                tr = row._tr
+                trPr = tr.get_or_add_trPr()
+                cantSplit = OxmlElement('w:cantSplit')
+                trPr.append(cantSplit)
 
 #################################################################################################################
 
