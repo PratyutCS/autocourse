@@ -431,23 +431,23 @@ if data.get('weeklyTimetableData'):
 
 ############################################################################################################
 
-if data.get('studentList'):
-    # Add a page break and heading for Weekly Timetable
+if data.get('studentListData'):
+    # Add a page break and heading for the Student List
     doc.add_page_break()
-    timetable_heading = doc.add_heading(level=1)
-    timetable_run = timetable_heading.add_run('11. studentList')
-    timetable_run.font.name = 'Carlito'
-    timetable_run.font.size = Pt(16)
-    timetable_run.font.color.rgb = RGBColor(28, 132, 196)
-    timetable_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    student_list_heading = doc.add_heading(level=1)
+    student_list_run = student_list_heading.add_run('11. Student List')
+    student_list_run.font.name = 'Carlito'
+    student_list_run.font.size = Pt(16)
+    student_list_run.font.color.rgb = RGBColor(28, 132, 196)
+    student_list_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
 
     doc.add_paragraph()
 
-    # Extract the content for the timetable
-    timetable_content = data['studentList']['content']
+    # Extract the content for the student list
+    student_list_content = data['studentListData']
 
     # Dynamically generate headers from the first dictionary in the content
-    headers = list(timetable_content[0].keys())
+    headers = list(student_list_content[0].keys())
 
     # Create a table with the number of columns based on headers
     table = doc.add_table(rows=1, cols=len(headers))
@@ -464,8 +464,8 @@ if data.get('studentList'):
         run.font.size = Pt(10)
         paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    # Populate rows with timetable content
-    for entry in timetable_content:
+    # Populate rows with student list content
+    for entry in student_list_content:
         row_cells = table.add_row().cells
         for i, key in enumerate(headers):
             row_cells[i].text = str(entry.get(key, ''))
@@ -475,7 +475,7 @@ if data.get('studentList'):
                 for run in paragraph.runs:
                     run.font.size = Pt(10)
 
-    # Set column widths (auto-adjustable based on the content)
+    # Set column widths (adjustable based on the content)
     column_widths = [Inches(2.0)] + [Inches(1.5)] * (len(headers) - 1)
     for row in table.rows:
         for idx, cell in enumerate(row.cells):
@@ -512,6 +512,7 @@ if data.get('studentList'):
         trPr = tr.get_or_add_trPr()
         cantSplit = OxmlElement('w:cantSplit')
         trPr.append(cantSplit)
+
 
 #############################################################################################################
 
@@ -599,23 +600,23 @@ if data.get('internalAssessmentData') and data['internalAssessmentData'].get('co
 
 #############################################################################################################
 
-if data.get('weakstudent'):
-    # Add a page break and heading for Weekly Timetable
+if data.get('weakStudentsData'):
+    # Add a page break and heading for Weak Students Data
     doc.add_page_break()
-    timetable_heading = doc.add_heading(level=1)
-    timetable_run = timetable_heading.add_run('13. weakstudent')
-    timetable_run.font.name = 'Carlito'
-    timetable_run.font.size = Pt(16)
-    timetable_run.font.color.rgb = RGBColor(28, 132, 196)
-    timetable_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    heading = doc.add_heading(level=1)
+    heading_run = heading.add_run('13. Weak Students Data')
+    heading_run.font.name = 'Carlito'
+    heading_run.font.size = Pt(16)
+    heading_run.font.color.rgb = RGBColor(28, 132, 196)
+    heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
 
     doc.add_paragraph()
 
-    # Extract the content for the timetable
-    timetable_content = data['weakstudent']['content']
+    # Extract and filter the content for weak students who are accepted
+    weak_students_data = [student for student in data['weakStudentsData'] if student['status'] == 'Accepted']
 
-    # Dynamically generate headers from the first dictionary in the content
-    headers = list(timetable_content[0].keys())
+    # Define the headers (excluding 'status')
+    headers = ['uniqueId', 'studentName', 'totalMarks', 'grade']
 
     # Create a table with the number of columns based on headers
     table = doc.add_table(rows=1, cols=len(headers))
@@ -632,8 +633,8 @@ if data.get('weakstudent'):
         run.font.size = Pt(10)
         paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    # Populate rows with timetable content
-    for entry in timetable_content:
+    # Populate rows with weak students data
+    for entry in weak_students_data:
         row_cells = table.add_row().cells
         for i, key in enumerate(headers):
             row_cells[i].text = str(entry.get(key, ''))
@@ -681,7 +682,7 @@ if data.get('weakstudent'):
         cantSplit = OxmlElement('w:cantSplit')
         trPr.append(cantSplit)
 
-#############################################################################################################
+############################################################################################################################################
 
 def create_actions_doc(data):
     # Add heading with bullet points
@@ -707,25 +708,26 @@ def create_actions_doc(data):
 
 create_actions_doc(data)
 
+
 #############################################################################################################
 
-if data.get('marksDetails'):
-    # Add a page break and heading for Weekly Timetable
+if data.get('marksDetailsData'):
+    # Add a page break and heading for Marks Details
     doc.add_page_break()
-    timetable_heading = doc.add_heading(level=1)
-    timetable_run = timetable_heading.add_run('15. marksDetails')
-    timetable_run.font.name = 'Carlito'
-    timetable_run.font.size = Pt(16)
-    timetable_run.font.color.rgb = RGBColor(28, 132, 196)
-    timetable_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    marks_heading = doc.add_heading(level=1)
+    marks_run = marks_heading.add_run('15. Marks Details')
+    marks_run.font.name = 'Carlito'
+    marks_run.font.size = Pt(16)
+    marks_run.font.color.rgb = RGBColor(28, 132, 196)
+    marks_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
 
     doc.add_paragraph()
 
-    # Extract the content for the timetable
-    timetable_content = data['marksDetails']['content']
+    # Extract the content for the marks details
+    marks_content = data['marksDetailsData']
 
     # Dynamically generate headers from the first dictionary in the content
-    headers = list(timetable_content[0].keys())
+    headers = list(marks_content[0].keys())
 
     # Create a table with the number of columns based on headers
     table = doc.add_table(rows=1, cols=len(headers))
@@ -742,8 +744,8 @@ if data.get('marksDetails'):
         run.font.size = Pt(10)
         paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    # Populate rows with timetable content
-    for entry in timetable_content:
+    # Populate rows with marks content
+    for entry in marks_content:
         row_cells = table.add_row().cells
         for i, key in enumerate(headers):
             row_cells[i].text = str(entry.get(key, ''))
@@ -790,6 +792,7 @@ if data.get('marksDetails'):
         trPr = tr.get_or_add_trPr()
         cantSplit = OxmlElement('w:cantSplit')
         trPr.append(cantSplit)
+
 #############################################################################################################
 
 if data.get('assignmentsTaken'):
@@ -876,11 +879,11 @@ if data.get('assignmentsTaken'):
 
 #############################################################################################################
 
-if data.get('attendanceReport'):
-    # Add a page break and heading for Weekly Timetable
+if data.get('attendanceReportData'):
+    # Add a page break and heading for Attendance Report
     doc.add_page_break()
     timetable_heading = doc.add_heading(level=1)
-    timetable_run = timetable_heading.add_run('17. attendanceReport')
+    timetable_run = timetable_heading.add_run('17. Attendance Report')
     timetable_run.font.name = 'Carlito'
     timetable_run.font.size = Pt(16)
     timetable_run.font.color.rgb = RGBColor(28, 132, 196)
@@ -888,11 +891,11 @@ if data.get('attendanceReport'):
 
     doc.add_paragraph()
 
-    # Extract the content for the timetable
-    timetable_content = data['attendanceReport']['content']
+    # Extract the content for the attendance report
+    attendance_content = data['attendanceReportData']
 
     # Dynamically generate headers from the first dictionary in the content
-    headers = list(timetable_content[0].keys())
+    headers = list(attendance_content[0].keys())
 
     # Create a table with the number of columns based on headers
     table = doc.add_table(rows=1, cols=len(headers))
@@ -909,8 +912,8 @@ if data.get('attendanceReport'):
         run.font.size = Pt(10)
         paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    # Populate rows with timetable content
-    for entry in timetable_content:
+    # Populate rows with attendance content
+    for entry in attendance_content:
         row_cells = table.add_row().cells
         for i, key in enumerate(headers):
             row_cells[i].text = str(entry.get(key, ''))
@@ -957,6 +960,11 @@ if data.get('attendanceReport'):
         trPr = tr.get_or_add_trPr()
         cantSplit = OxmlElement('w:cantSplit')
         trPr.append(cantSplit)
+
+
+###############################################################################################################################################
+
+
 
 
 #SAVING
