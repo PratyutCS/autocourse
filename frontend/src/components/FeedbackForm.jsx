@@ -304,6 +304,7 @@ const handleCheckboxChange = (e, program) => {
 
     loadSavedData();
   }, [num, props.weeklyTimetableData]);
+  const [selectedProgram, setSelectedProgram] = useState('');
 
   const handleFileChange = (fileData, identifier) => {
     console.log("Handling file change:", identifier, fileData);
@@ -452,44 +453,48 @@ const handleCheckboxChange = (e, program) => {
     rows="2"
   />
   <div>
-    <p className="mb-2 text-gray-700 font-medium">Select Program Options:</p>
+    <p className="mb-2 text-gray-700 font-medium">Select Program Option:</p>
     <div className="flex flex-col gap-2">
       <label className="flex items-center gap-2">
         <input
-          type="checkbox"
+          type="radio"
           value="CSE"
-          checked={selectedPrograms.includes("CSE")}
-          onChange={(e) => handleCheckboxChange(e, "CSE")}
+          name="program"
+          checked={selectedProgram === "CSE"}
+          onChange={(e) => setSelectedProgram(e.target.value)}
           className="w-4 h-4 border-gray-300 rounded"
         />
         <span className="text-gray-700">CSE</span>
       </label>
       <label className="flex items-center gap-2">
         <input
-          type="checkbox"
+          type="radio"
           value="ME"
-          checked={selectedPrograms.includes("ME")}
-          onChange={(e) => handleCheckboxChange(e, "ME")}
+          name="program"
+          checked={selectedProgram === "ME"}
+          onChange={(e) => setSelectedProgram(e.target.value)}
           className="w-4 h-4 border-gray-300 rounded"
         />
         <span className="text-gray-700">ME</span>
       </label>
       <label className="flex items-center gap-2">
         <input
-          type="checkbox"
+          type="radio"
           value="ECOM"
-          checked={selectedPrograms.includes("ECOM")}
-          onChange={(e) => handleCheckboxChange(e, "ECOM")}
+          name="program"
+          checked={selectedProgram === "ECOM"}
+          onChange={(e) => setSelectedProgram(e.target.value)}
           className="w-4 h-4 border-gray-300 rounded"
         />
         <span className="text-gray-700">ECOM</span>
       </label>
       <label className="flex items-center gap-2">
         <input
-          type="checkbox"
+          type="radio"
           value="ECT"
-          checked={selectedPrograms.includes("ECT")}
-          onChange={(e) => handleCheckboxChange(e, "ECT")}
+          name="program"
+          checked={selectedProgram === "ECT"}
+          onChange={(e) => setSelectedProgram(e.target.value)}
           className="w-4 h-4 border-gray-300 rounded"
         />
         <span className="text-gray-700">ECT</span>
