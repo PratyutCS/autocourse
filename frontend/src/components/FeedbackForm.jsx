@@ -16,6 +16,16 @@ import PDFUploader from "./PDFUploader";
 import { Check, X, AlertCircle } from "lucide-react";
 const FeedbackForm = (props) => {
   const token = localStorage.getItem("token");
+  const [selectedPrograms, setSelectedPrograms] = useState([]);
+
+const handleCheckboxChange = (e, program) => {
+  if (e.target.checked) {
+    setSelectedPrograms([...selectedPrograms, program]);
+  } else {
+    setSelectedPrograms(selectedPrograms.filter((item) => item !== program));
+  }
+};
+
   let num = props.num;
   const [isLoading, setIsLoading] = useState(false);
   const [coursecode, setCourseCode] = useState("");
@@ -428,20 +438,66 @@ const FeedbackForm = (props) => {
         <div className="grid grid-cols-2 gap-4">
           {/* Program Section */}
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
-                1
-              </div>
-              <h2 className="text-xl font-semibold text-gray-800">Program</h2>
-            </div>
-            <textarea
-              className="w-full p-3 border border-gray-200 rounded-md transition-all resize-none text-gray-700"
-              placeholder="Enter program details here..."
-              value={program}
-              onChange={(e) => setProgram(e.target.value)}
-              rows="2"
-            />
-          </div>
+  <div className="flex items-center gap-3 mb-4">
+    <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
+      1
+    </div>
+    <h2 className="text-xl font-semibold text-gray-800">Program</h2>
+  </div>
+  <textarea
+    className="w-full p-3 border border-gray-200 rounded-md transition-all resize-none text-gray-700 mb-4"
+    placeholder="Enter program details here..."
+    value={program}
+    onChange={(e) => setProgram(e.target.value)}
+    rows="2"
+  />
+  <div>
+    <p className="mb-2 text-gray-700 font-medium">Select Program Options:</p>
+    <div className="flex flex-col gap-2">
+      <label className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          value="CSE"
+          checked={selectedPrograms.includes("CSE")}
+          onChange={(e) => handleCheckboxChange(e, "CSE")}
+          className="w-4 h-4 border-gray-300 rounded"
+        />
+        <span className="text-gray-700">CSE</span>
+      </label>
+      <label className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          value="ME"
+          checked={selectedPrograms.includes("ME")}
+          onChange={(e) => handleCheckboxChange(e, "ME")}
+          className="w-4 h-4 border-gray-300 rounded"
+        />
+        <span className="text-gray-700">ME</span>
+      </label>
+      <label className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          value="ECOM"
+          checked={selectedPrograms.includes("ECOM")}
+          onChange={(e) => handleCheckboxChange(e, "ECOM")}
+          className="w-4 h-4 border-gray-300 rounded"
+        />
+        <span className="text-gray-700">ECOM</span>
+      </label>
+      <label className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          value="ECT"
+          checked={selectedPrograms.includes("ECT")}
+          onChange={(e) => handleCheckboxChange(e, "ECT")}
+          className="w-4 h-4 border-gray-300 rounded"
+        />
+        <span className="text-gray-700">ECT</span>
+      </label>
+    </div>
+  </div>
+</div>
+
           {/* Course Code Section */}
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
             <div className="flex items-center gap-3 mb-4">

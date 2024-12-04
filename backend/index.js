@@ -472,8 +472,10 @@ app.post('/upload-pdf', auth, (req, res) => {
   upload.single('file')(req, res, async (err) => {
     if (err) {
       if (err.code === 'LIMIT_FILE_SIZE') {
+        console.error('File size exceeds the limit of 50MB.');
         return res.status(400).json({ message: 'File size exceeds the limit of 50MB.' });
       }
+      console.error('File upload error:', err);
       return res.status(400).json({ message: err.message });
     }
 
@@ -488,31 +490,68 @@ app.post('/upload-pdf', auth, (req, res) => {
         return res.status(404).json({ error: 'User not found' });
       }
 
-      const jsonFilePath = path.join(__dirname, 'pdfs.json');
-      let pdfData = [];
+      const jsonFilename = path.join(__dirname, '/json/', `${user.number}.json`);
+      
+      // Add debugging logs
+      console.log('Looking for file in:', jsonFilename);
+      console.log('Original filename from request:', req.body.originalFilename);
 
-      // Read existing data from the JSON file
-      if (fs.existsSync(jsonFilePath)) {
-        const data = fs.readFileSync(jsonFilePath, 'utf8');
-        pdfData = JSON.parse(data);
+      // Read existing JSON data
+      let jsonData = [];
+      if (fs.existsSync(jsonFilename)) {
+        const data = fs.readFileSync(jsonFilename, 'utf8');
+        jsonData = JSON.parse(data);
+        console.log('Existing JSON data:', jsonData); // Debug log
+      } else {
+        console.log('JSON file does not exist');
+        return res.status(404).json({ message: 'JSON file not found' });
       }
 
-      // Add the new file path
-      pdfData.push({ userId: user._id, filePath: file.path });
-
-      // Write updated data back to the JSON file
-      fs.writeFileSync(jsonFilePath, JSON.stringify(pdfData, null, 2));
-
-      res.status(200).json({
-        message: 'PDF uploaded successfully',
-        filePath: file.path,
+      // Find the existing object
+      const originalFilename = req.body.originalFilename;
+      console.log('Searching for filename:', originalFilename);
+      
+      const existingFileIndex = jsonData.findIndex(item => {
+        console.log('Comparing with:', item.filename);
+        return item.filename === originalFilename;
       });
+
+      console.log('Found at index:', existingFileIndex);
+
+      if (existingFileIndex !== -1) {
+        // Update the existing object with the new file path
+        jsonData[existingFileIndex] = {
+          ...jsonData[existingFileIndex],
+          filePath: file.path,
+          userId: req.user
+        };
+
+        // Save the updated data
+        fs.writeFileSync(jsonFilename, JSON.stringify(jsonData, null, 2));
+
+        console.log('Updated entry:', jsonData[existingFileIndex]);
+        
+        res.status(200).json({
+          message: 'PDF uploaded and entry updated successfully',
+          updatedEntry: jsonData[existingFileIndex]
+        });
+      } else {
+        console.log('Available filenames:', jsonData.map(item => item.filename));
+        return res.status(404).json({ 
+          message: 'Original file entry not found',
+          availableFiles: jsonData.map(item => item.filename),
+          searchedFor: originalFilename
+        });
+      }
     } catch (error) {
       console.error('Error during file upload:', error);
-      res.status(500).json({ message: 'File operation failed' });
+      res.status(500).json({ message: 'File operation failed', error: error.message });
     }
   });
 });
+
+
+
 
 app.listen(PORT, () => {
   console.log(`Server connected at port ${PORT}`);

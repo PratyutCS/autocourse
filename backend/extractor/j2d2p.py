@@ -134,6 +134,8 @@ if data.get('copoMappingData'):
     if data['copoMappingData'].get('tableMode') == 'image':
         image_path = data['copoMappingData'].get('imagePath', '')
         if image_path:
+            print(image_path)
+        
             doc.add_paragraph()
             doc.add_picture("."+image_path, width=Inches(6.0))  # Adjust width as needed
     else:
