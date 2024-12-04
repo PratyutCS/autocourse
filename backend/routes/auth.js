@@ -67,6 +67,65 @@ authRouter.post("/tokenIsValid", async (req, res) => {
   }
 });
 
+function check(q) {
+  for (let i = 0; i < q.length; i++) {
+    let ue = q.charCodeAt(i);
+    if (!((ue >= 64 && ue <= 90) || (ue >= 97 && ue <= 122) || (ue >= 48 && ue <= 57) || (ue == 64) || (ue == 46))) {
+      return true;
+    }
+  }
+  return false;
+}
+
+authRouter.post("/api/signup", async (req, res) => {
+  try {
+    let { email, password } = req.body;
+
+    // Input validation
+    if (!email || !password) {
+      return res.status(400).json({ msg: "All fields are required." });
+    }
+
+    // Trim and sanitize input
+    email = email.toString().substr(0, 40).trim();
+    password = password.toString().substr(0, 16).trim();
+
+    // Check for invalid characters
+    if (check(email) || check(password)) {
+      return res.status(400).json({ msg: "Invalid input format." });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ msg: "User with this email already exists." });
+    }
+
+    // Get the current count of documents in the User collection
+    const userCount = await User.countDocuments();
+
+    // Automatically set the number field to userCount + 1
+    const number = (userCount + 1).toString();
+
+    // Hash the password
+    const hashedPassword = await bcryptjs.hash(password, 8);
+
+    // Create a new user
+    const user = new User({
+      email,
+      password: hashedPassword,
+      number,
+    });
+
+    // Save user to MongoDB
+    await user.save();
+
+    res.status(201).json({ msg: "User registered successfully!", user });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // get user data
 authRouter.get("/", auth, async (req, res) => {
   const user = await User.findById(req.user);
