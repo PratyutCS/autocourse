@@ -35,7 +35,7 @@ mongoose.connect(DB)
     console.error("Database connection error:", e);
   });
 
-// Routes
+// To check if the server is working or not
 app.get("/works", (req, res) => {
   res.status(200).json({ message: "Server works" });
 });
