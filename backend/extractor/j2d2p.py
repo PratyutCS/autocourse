@@ -10,6 +10,7 @@ from docx.oxml.ns import qn
 from docx2pdf import convert
 import sys
 import os
+from PyPDF2 import PdfMerger
 
 
 doc = Document('./extractor/sample.docx')
@@ -975,9 +976,25 @@ if data.get('attendanceReportData'):
 
 
 #SAVING
-doc.save('./download/'+data['filename'][:-4]+'.docx')
+doc.save('./download/'+data['filename'][:-4]+'_del'+'.docx')
 
 print("Document updated and saved.")
 
-convert('./download/'+data['filename'][:-4]+'.docx')
-os.remove('./download/'+data['filename'][:-4]+'.docx')
+convert('./download/'+data['filename'][:-4]+'_del'+'.docx')
+os.remove('./download/'+data['filename'][:-4]+'_del'+'.docx')
+
+pdf_list = ['./download/'+data['filename'][:-4]+'_del'+'.pdf', data['mergePDF']]
+
+## merge
+
+merger = PdfMerger()
+
+for pdf in pdf_list:
+    print(pdf)
+    merger.append(pdf)
+
+
+# os.remove('./download/'+data['filename'][:-4]+'_del'+'.pdf')
+
+merger.write("./download/"+data['filename'])
+merger.close()
