@@ -819,7 +819,7 @@ const handleCheckboxChange = (e, program) => {
               semester
             </h2>
           </div>
-          <PDFUploader />
+          <PDFUploader num={num} />
         </div>
 
         {/* Marks Details */}

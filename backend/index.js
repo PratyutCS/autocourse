@@ -19,7 +19,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: 'http://localhost:3001', // Your frontend URL
+  origin: 'http://localhost:3001', 
   credentials: true,
 }));
 app.use(authRouter);
@@ -479,6 +479,9 @@ app.post('/upload-pdf', auth, (req, res) => {
       return res.status(400).json({ message: err.message });
     }
 
+    const num = parseInt(req.headers.num); // Ensure 'num' is a number
+    console.log("num is: "+num);
+
     const file = req.file;
     if (!file) {
       return res.status(400).json({ message: 'Failed to upload file' });
@@ -489,66 +492,35 @@ app.post('/upload-pdf', auth, (req, res) => {
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
       }
-
       const jsonFilename = path.join(__dirname, '/json/', `${user.number}.json`);
-      
-      // Add debugging logs
-      console.log('Looking for file in:', jsonFilename);
-      console.log('Original filename from request:', req.body.originalFilename);
-
-      // Read existing JSON data
       let jsonData = [];
       if (fs.existsSync(jsonFilename)) {
         const data = fs.readFileSync(jsonFilename, 'utf8');
         jsonData = JSON.parse(data);
-        console.log('Existing JSON data:', jsonData); // Debug log
-      } else {
-        console.log('JSON file does not exist');
-        return res.status(404).json({ message: 'JSON file not found' });
       }
 
-      // Find the existing object
-      const originalFilename = req.body.originalFilename;
-      console.log('Searching for filename:', originalFilename);
+      // Ensure that jsonData is an array and is large enough
+      while (jsonData.length <= num) {
+        jsonData.push({});
+      }
+
+      // Now safely set the 'mergePDF' property
+      jsonData[num]["mergePDF"] = file.filename.toString();
+      fs.writeFileSync(jsonFilename, JSON.stringify(jsonData, null, 2));
+
+      console.log('Your PDF has been uploaded: ' + file.filename.toString());
       
-      const existingFileIndex = jsonData.findIndex(item => {
-        console.log('Comparing with:', item.filename);
-        return item.filename === originalFilename;
+      res.status(200).json({
+        message: 'PDF uploaded and JSON updated successfully',
+        filename: file.filename.toString(),
       });
-
-      console.log('Found at index:', existingFileIndex);
-
-      if (existingFileIndex !== -1) {
-        // Update the existing object with the new file path
-        jsonData[existingFileIndex] = {
-          ...jsonData[existingFileIndex],
-          filePath: file.path,
-          userId: req.user
-        };
-
-        // Save the updated data
-        fs.writeFileSync(jsonFilename, JSON.stringify(jsonData, null, 2));
-
-        console.log('Updated entry:', jsonData[existingFileIndex]);
-        
-        res.status(200).json({
-          message: 'PDF uploaded and entry updated successfully',
-          updatedEntry: jsonData[existingFileIndex]
-        });
-      } else {
-        console.log('Available filenames:', jsonData.map(item => item.filename));
-        return res.status(404).json({ 
-          message: 'Original file entry not found',
-          availableFiles: jsonData.map(item => item.filename),
-          searchedFor: originalFilename
-        });
-      }
     } catch (error) {
       console.error('Error during file upload:', error);
-      res.status(500).json({ message: 'File operation failed', error: error.message });
+      res.status(500).json({ message: 'File operation failed' });
     }
   });
 });
+
 
 
 

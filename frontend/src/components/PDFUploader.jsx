@@ -1,22 +1,21 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 
-const PDFUploader = ({ originalFilename }) => {
+const PDFUploader = ({num}) => {
+  console.log(num);
   const [pdfs, setPdfs] = useState([]);
   const [error, setError] = useState(null);
 
-  const uploadPDF = async (event) => {
-    const file = event.target.files[0];
-    formData.append('file', file);
+  const uploadPDF = async (file) => {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('originalFilename', originalFilename)
   
     try {
       const response = await fetch('http://localhost:3000/upload-pdf', {
         method: 'POST',
         headers: {
-          "x-auth-token": localStorage.getItem("token"), 
+          "x-auth-token": localStorage.getItem("token"),
+          "num" : num // Ensure token is set
         },
         body: formData,
       });
