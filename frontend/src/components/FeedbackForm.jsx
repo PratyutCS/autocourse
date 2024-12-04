@@ -369,7 +369,9 @@ const handleCheckboxChange = (e, program) => {
     setWeakStudentsData((prevData) =>
       prevData.filter((student) => student.status !== "Rejected")
     );
+
   };
+  const programOptions = ['CSE', 'ME', 'ECOM', 'ECT'];
 
   const postData = async () => {
     if (num !== undefined) {
@@ -445,6 +447,7 @@ const handleCheckboxChange = (e, program) => {
     </div>
     <h2 className="text-xl font-semibold text-gray-800">Program</h2>
   </div>
+  {/* Textarea for Program Details */}
   <textarea
     className="w-full p-3 border border-gray-200 rounded-md transition-all resize-none text-gray-700 mb-4"
     placeholder="Enter program details here..."
@@ -452,55 +455,22 @@ const handleCheckboxChange = (e, program) => {
     onChange={(e) => setProgram(e.target.value)}
     rows="2"
   />
+  {/* Radio Button Section */}
   <div>
-    <p className="mb-2 text-gray-700 font-medium">Select Program Option:</p>
-    <div className="flex flex-col gap-2">
-      <label className="flex items-center gap-2">
-        <input
-          type="radio"
-          value="CSE"
-          name="program"
-          checked={selectedProgram === "CSE"}
-          onChange={(e) => setSelectedProgram(e.target.value)}
-          className="w-4 h-4 border-gray-300 rounded"
-        />
-        <span className="text-gray-700">CSE</span>
-      </label>
-      <label className="flex items-center gap-2">
-        <input
-          type="radio"
-          value="ME"
-          name="program"
-          checked={selectedProgram === "ME"}
-          onChange={(e) => setSelectedProgram(e.target.value)}
-          className="w-4 h-4 border-gray-300 rounded"
-        />
-        <span className="text-gray-700">ME</span>
-      </label>
-      <label className="flex items-center gap-2">
-        <input
-          type="radio"
-          value="ECOM"
-          name="program"
-          checked={selectedProgram === "ECOM"}
-          onChange={(e) => setSelectedProgram(e.target.value)}
-          className="w-4 h-4 border-gray-300 rounded"
-        />
-        <span className="text-gray-700">ECOM</span>
-      </label>
-      <label className="flex items-center gap-2">
-        <input
-          type="radio"
-          value="ECT"
-          name="program"
-          checked={selectedProgram === "ECT"}
-          onChange={(e) => setSelectedProgram(e.target.value)}
-          className="w-4 h-4 border-gray-300 rounded"
-        />
-        <span className="text-gray-700">ECT</span>
-      </label>
-    </div>
-  </div>
+        <p className="mb-2 text-gray-700 font-medium">Select Program Option:</p>
+        <select
+          value={program}
+          onChange={(e) => setProgram(e.target.value)}
+          className="w-full p-2 border rounded-md"
+        >
+          <option value="" disabled>Select a program</option>
+          {programOptions.map((programOption) => (
+            <option key={programOption} value={programOption}>
+              {programOption}
+            </option>
+          ))}
+        </select>
+      </div>
 </div>
 
           {/* Course Code Section */}
