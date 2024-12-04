@@ -31,6 +31,9 @@ def rep(doc, key):
         if placeholder in paragraph.text:
                 value = data.get(key, "")
                 paragraph.text = paragraph.text.replace(placeholder, value)
+                
+                # paragraph.paragraph_format.left_indent = Inches(0.2)
+
 
 if data.get('Program'):
     rep(doc,"Program")
@@ -61,14 +64,14 @@ first_page_header = section.first_page_header
 first_page_paragraph = first_page_header.paragraphs[0] if first_page_header.paragraphs else first_page_header.add_paragraph()
 first_page_paragraph.text = header
 first_page_paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT  # Right-aligned header for the first page
-first_page_paragraph.paragraph_format.right_indent = Inches(0.5)  # 0.5-inch margin from the right
+first_page_paragraph.paragraph_format.right_indent = Inches(0.2)  # 0.5-inch margin from the right
 
 # Header for the rest of the pages
 default_header = section.header
 default_paragraph = default_header.paragraphs[0] if default_header.paragraphs else default_header.add_paragraph()
 default_paragraph.text = header
 default_paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT  # Right-aligned header for other pages
-default_paragraph.paragraph_format.right_indent = Inches(0.5)  # 0.5-inch margin from the right
+default_paragraph.paragraph_format.right_indent = Inches(0.2)  # 0.5-inch margin from the right
 
 ########################################################################################################################
 
@@ -79,6 +82,7 @@ if data.get('course_description'):
         doc.add_page_break()
 
     course_heading = doc.add_heading(level=1)
+    course_heading.paragraph_format.left_indent = Inches(0.5)
     course_run = course_heading.add_run(
         '6. Course Description and its objectives')
     course_run.font.name = 'Carlito'
@@ -133,12 +137,15 @@ if data.get('copoMappingData'):
                 paragraph.paragraph_format.right_indent = Inches(0.5)
 
     if data['copoMappingData'].get('tableMode') == 'image':
+        doc.add_paragraph()
         image_path = data['copoMappingData'].get('imagePath', '')
         if image_path:
             print(image_path)
-        
-            doc.add_paragraph()
-            doc.add_picture("."+image_path, width=Inches(6.0))  # Adjust width as needed
+            paragraph = doc.add_paragraph()
+            paragraph_format = paragraph.paragraph_format
+            paragraph_format.left_indent = Inches(0.7)
+            run = paragraph.add_run()
+            run.add_picture("." + image_path, width=Inches(6.0))  # Adjust width as needed
     else:
         if data['copoMappingData'].get('mappingData'):
             doc.add_paragraph()
@@ -205,7 +212,6 @@ if data.get('copoMappingData'):
                 trPr = tr.get_or_add_trPr()
                 cantSplit = OxmlElement('w:cantSplit')
                 trPr.append(cantSplit)
-
 #################################################################################################################
 
 # Course Syllabus Table
@@ -301,26 +307,29 @@ def create_learning_resources_doc(data):
     timetable_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
     
     # Add "Text Books:" subheading
-    textbooks_para = doc.add_paragraph()
-    textbooks_run = textbooks_para.add_run("Text Books:")
+    textbooks_heading = doc.add_heading('Text Books:', level=2)
+    textbooks_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    textbooks_run = textbooks_heading.runs[0]
     textbooks_run.bold = True
     textbooks_run.font.size = Pt(12)
+
     
     # Add textbooks with checkmarks
     if data.get('textBooks'):
         for book in data['textBooks']:
             para = doc.add_paragraph()
-            check = para.add_run("✓ ")
-            check.bold = True
-            check.font.size = Pt(12)
-            book_text = para.add_run(book)
-            book_text.font.size = Pt(12)
-    
+            para.paragraph_format.left_indent = Inches(1)
+            bullet = para.add_run("✓ ") # Manually add bullet
+            bullet.font.size = Pt(12)
+            text = para.add_run(book)
+            text.font.size = Pt(12)
+
     doc.add_paragraph()  # Add spacing
     
     # Add "Reference Links:" subheading
-    ref_para = doc.add_paragraph()
-    ref_run = ref_para.add_run("Reference Links:")
+    ref_heading = doc.add_heading('Reference Links:', level=2)
+    ref_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    ref_run = ref_heading.runs[0]
     ref_run.bold = True
     ref_run.font.size = Pt(12)
     
@@ -328,14 +337,14 @@ def create_learning_resources_doc(data):
     if data.get('referenceLinks'):
         for link in data['referenceLinks']:
             para = doc.add_paragraph()
-            # Add bullet point manually
-            bullet = para.add_run("• ")
+            para.paragraph_format.left_indent = Inches(1)
+            bullet = para.add_run("• ")  # Manually add bullet
             bullet.font.size = Pt(12)
-            # Add link
             link_run = para.add_run(link)
             link_run.font.size = Pt(12)
             link_run.font.color.rgb = RGBColor(0, 0, 255)  # Blue color for links
             link_run.underline = True
+
 
 create_learning_resources_doc(data["Learning Resources"])
 
@@ -400,7 +409,7 @@ if data.get('weeklyTimetableData'):
                 run.font.size = Pt(10)
 
     # Set column widths
-    column_widths = [Inches(1.5)] + [Inches(1.2)] * len(days)
+    column_widths = [Inches(1.1)] + [Inches(1)] * len(days)
     for row in table.rows:
         for idx, cell in enumerate(row.cells):
             if idx < len(column_widths):
@@ -569,7 +578,7 @@ if data.get('internalAssessmentData') and data['internalAssessmentData'].get('co
                     run.font.size = Pt(10)
 
     # Set column widths (adjustable based on content)
-    column_widths = [Inches(1.5)] * len(headers)
+    column_widths = [Inches(1)] * len(headers)
     for row in table.rows:
         for idx, cell in enumerate(row.cells):
             if idx < len(column_widths):

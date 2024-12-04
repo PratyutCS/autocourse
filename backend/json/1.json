@@ -1,1 +1,272 @@
-[{"filename":"1733308642New.pdf","done":1,"Program":"Cyber Forensics","Session":"2021","course_code":"CSE4708","course_name":"Cyber Forensics","Module/Semester":"7th Sem","course_description":"Cyber Forensics is a core elective course in computer science and engineering and computer science undergraduate program. This course focuses on understanding Computer Forensics, Computing Investigations, and Enforcement Agency Investigations. It provides an overview of types of computer forensics, data recovery, electronic evidence, threats, and surveillance.","Course Syllabus":[{"srNo":1,"content":"1111","co":"111","sessions":111},{"srNo":2,"content":"1111","co":"111","sessions":111}],"Learning Resources":{"textBooks":["John R. Vacca, 2004, Computer Forensics, Firewall Media, 2004"],"referenceLinks":["Chad Steel, Windows Forensics, Wiley India, 2006","Majid Yar, Cybercrime and Society, Sage Publications, 2006","Robert M Slade, Software Forensics, Tata McGraw Hill, 2004"]},"internalAssessmentData":{"components":{"component1731776591362":{"component":"1111","duration":"1111","weightage":"1","evaluationWeek":"","remarks":"11111","evaluation":"1"},"component1733306985046":{"component":"111","duration":"1111","weightage":"1","evaluationWeek":"","remarks":"11111","evaluation":"1"}}},"copoMappingData":{"courseOutcomes":{"CO1":{"description":"Understand a brief overview of Computer Forensics Fundamentals.","bullets":[]},"CO2":{"description":"Identify the features of Data Recovery.","bullets":[]},"CO3":{"description":"Understanding of Reconstructing Past Events.","bullets":[]},"CO4":{"description":"Work with cyber forensics tools.","bullets":[]}},"mappingData":{"CO1":{"PO1":"1","PO2":"","PO3":"","PO4":"","PO5":"1","PO6":"","PO7":"","PO8":"","PO9":"1","PO10":"","PO11":"","PO12":"","PSO1":"1","PSO2":"","PSO3":"","PSO4":""},"CO2":{"PO1":"","PO2":"1","PO3":"","PO4":"","PO5":"","PO6":"1","PO7":"","PO8":"","PO9":"","PO10":"1","PO11":"","PO12":"","PSO1":"","PSO2":"1","PSO3":"","PSO4":""},"CO3":{"PO1":"","PO2":"","PO3":"1","PO4":"","PO5":"","PO6":"","PO7":"1","PO8":"","PO9":"","PO10":"","PO11":"1","PO12":"","PSO1":"","PSO2":"","PSO3":"1","PSO4":""},"CO4":{"PO1":"","PO2":"","PO3":"","PO4":"1","PO5":"","PO6":"","PO7":"","PO8":"1","PO9":"","PO10":"","PO11":"","PO12":"1","PSO1":"","PSO2":"","PSO3":"","PSO4":"1"}}},"actionsForWeakStudentsData":["lmfoa mc"],"mergePDF":"/Users/ankurkaushal/Desktop/Gitrepos/autocourse/backend/data/1/1733308864Xai.pdf","course_syllabus":[{"srNo":1,"content":"1111","co":"111","sessions":111},{"srNo":2,"content":"1111","co":"111","sessions":111}],"weeklyTimetableData":{"Monday":{"9:15-10:10":true,"10:15-11:10":false,"11:15-12:10":false,"12:15-13:10":false,"13:15-14:10":false,"14:15-15:10":true,"15:15-16:10":false,"16:15-17:10":false,"17:15-18:10":false},"Tuesday":{"9:15-10:10":false,"10:15-11:10":true,"11:15-12:10":false,"12:15-13:10":false,"13:15-14:10":false,"14:15-15:10":false,"15:15-16:10":true,"16:15-17:10":false,"17:15-18:10":false},"Wednesday":{"9:15-10:10":false,"10:15-11:10":false,"11:15-12:10":true,"12:15-13:10":false,"13:15-14:10":false,"14:15-15:10":false,"15:15-16:10":false,"16:15-17:10":true,"17:15-18:10":false},"Thursday":{"9:15-10:10":false,"10:15-11:10":false,"11:15-12:10":false,"12:15-13:10":true,"13:15-14:10":false,"14:15-15:10":false,"15:15-16:10":false,"16:15-17:10":false,"17:15-18:10":true},"Friday":{"9:15-10:10":false,"10:15-11:10":false,"11:15-12:10":false,"12:15-13:10":false,"13:15-14:10":true,"14:15-15:10":false,"15:15-16:10":false,"16:15-17:10":false,"17:15-18:10":false}},"studentListData":[{"uniqueId":"210C2030002","studentName":"Aayush Dubey"},{"uniqueId":"210C2030004","studentName":"PelletiSujith Reddy"},{"uniqueId":"210C2030007","studentName":"Malladi Sai Prabhas"},{"uniqueId":"210C2030010","studentName":"SubhranshBehura"},{"uniqueId":"210C2030014","studentName":"Abhimanyu Gulati"}],"weakStudentsData":[{"uniqueId":"210C2030002","studentName":"Aayush Dubey","totalMarks":83,"grade":"A+","status":"Accepted"},{"uniqueId":"210C2030004","studentName":"PelletiSujith Reddy","totalMarks":78.5,"grade":"B","status":"Accepted"},{"uniqueId":"210C2030007","studentName":"Malladi Sai Prabhas","totalMarks":81.5,"grade":"B+","status":"Accepted"},{"uniqueId":"210C2030010","studentName":"SubhranshBehura","totalMarks":87,"grade":"A+","status":"Accepted"},{"uniqueId":"210C2030014","studentName":"Abhimanyu Gulati","totalMarks":47,"grade":"R","status":"Accepted"}],"marksDetailsData":[{"uniqueId":"210C2030002","studentName":"Aayush Dubey","totalMarks":83,"grade":"A+"},{"uniqueId":"210C2030004","studentName":"PelletiSujith Reddy","totalMarks":78.5,"grade":"B"},{"uniqueId":"210C2030007","studentName":"Malladi Sai Prabhas","totalMarks":81.5,"grade":"B+"},{"uniqueId":"210C2030010","studentName":"SubhranshBehura","totalMarks":87,"grade":"A+"},{"uniqueId":"210C2030014","studentName":"Abhimanyu Gulati","totalMarks":47,"grade":"R"}],"attendanceReportData":[{"uniqueId":"210C2030002","studentName":"Aayush Dubey","attendance":88},{"uniqueId":"210C2030004","studentName":"PelletiSujith Reddy","attendance":90},{"uniqueId":"210C2030007","studentName":"Malladi Sai Prabhas","attendance":78},{"uniqueId":"210C2030010","studentName":"SubhranshBehura","attendance":82},{"uniqueId":"210C2030014","studentName":"Abhimanyu Gulati","attendance":68}]}]
+[
+  {
+    "filename": "1733308642New.pdf",
+    "done": 1,
+    "Program": "Cyber Forensics",
+    "Session": "2021",
+    "course_code": "CSE4708",
+    "course_name": "Cyber Forensics",
+    "Module/Semester": "7th Sem",
+    "course_description": "Cyber Forensics is a core elective course in computer science and engineering and computer science undergraduate program. This course focuses on understanding Computer Forensics, Computing Investigations, and Enforcement Agency Investigations. It provides an overview of types of computer forensics, data recovery, electronic evidence, threats, and surveillance.",
+    "Course Syllabus": [
+      {
+        "srNo": 1,
+        "content": "1111",
+        "co": "111",
+        "sessions": 111
+      },
+      {
+        "srNo": 2,
+        "content": "1111",
+        "co": "111",
+        "sessions": 111
+      }
+    ],
+    "Learning Resources": {
+      "textBooks": [
+        "John R. Vacca, 2004, Computer Forensics, Firewall Media, 2004"
+      ],
+      "referenceLinks": [
+        "Chad Steel, Windows Forensics, Wiley India, 2006",
+        "Majid Yar, Cybercrime and Society, Sage Publications, 2006",
+        "Robert M Slade, Software Forensics, Tata McGraw Hill, 2004"
+      ]
+    },
+    "internalAssessmentData": {
+      "components": {
+        "component1731776591362": {
+          "component": "1111",
+          "duration": "1111",
+          "weightage": "1",
+          "evaluationWeek": "",
+          "remarks": "11111",
+          "evaluation": "1"
+        },
+        "component1733306985046": {
+          "component": "111",
+          "duration": "1111",
+          "weightage": "1",
+          "evaluationWeek": "",
+          "remarks": "11111",
+          "evaluation": "1"
+        }
+      }
+    },
+    "copoMappingData": {
+      "courseOutcomes": {
+        "CO1": {
+          "description": "Understand a brief overview of Computer Forensics Fundamentals.",
+          "bullets": []
+        },
+        "CO2": {
+          "description": "Identify the features of Data Recovery.",
+          "bullets": []
+        },
+        "CO3": {
+          "description": "Understanding of Reconstructing Past Events.",
+          "bullets": []
+        },
+        "CO4": {
+          "description": "Work with cyber forensics tools.",
+          "bullets": []
+        }
+      },
+      "mappingData": {},
+      "tableMode": "image",
+      "imagePath": "/images/1732695346924-Screenshot 2024-11-27 at 1.45.23â¯PM.png"
+    },
+    "actionsForWeakStudentsData": [
+      "lmfoa mc"
+    ],
+    "mergePDF": "/Users/ankurkaushal/Desktop/Gitrepos/autocourse/backend/data/1/1733315100file (20).pdf",
+    "course_syllabus": [
+      {
+        "srNo": 1,
+        "content": "1111",
+        "co": "111",
+        "sessions": 111
+      },
+      {
+        "srNo": 2,
+        "content": "1111",
+        "co": "111",
+        "sessions": 111
+      }
+    ],
+    "weeklyTimetableData": {
+      "Monday": {
+        "9:15-10:10": true,
+        "10:15-11:10": false,
+        "11:15-12:10": false,
+        "12:15-13:10": false,
+        "13:15-14:10": false,
+        "14:15-15:10": true,
+        "15:15-16:10": false,
+        "16:15-17:10": false,
+        "17:15-18:10": false
+      },
+      "Tuesday": {
+        "9:15-10:10": false,
+        "10:15-11:10": true,
+        "11:15-12:10": false,
+        "12:15-13:10": false,
+        "13:15-14:10": false,
+        "14:15-15:10": false,
+        "15:15-16:10": true,
+        "16:15-17:10": false,
+        "17:15-18:10": false
+      },
+      "Wednesday": {
+        "9:15-10:10": false,
+        "10:15-11:10": false,
+        "11:15-12:10": true,
+        "12:15-13:10": false,
+        "13:15-14:10": false,
+        "14:15-15:10": false,
+        "15:15-16:10": false,
+        "16:15-17:10": true,
+        "17:15-18:10": false
+      },
+      "Thursday": {
+        "9:15-10:10": false,
+        "10:15-11:10": false,
+        "11:15-12:10": false,
+        "12:15-13:10": true,
+        "13:15-14:10": false,
+        "14:15-15:10": false,
+        "15:15-16:10": false,
+        "16:15-17:10": false,
+        "17:15-18:10": true
+      },
+      "Friday": {
+        "9:15-10:10": false,
+        "10:15-11:10": false,
+        "11:15-12:10": false,
+        "12:15-13:10": false,
+        "13:15-14:10": true,
+        "14:15-15:10": false,
+        "15:15-16:10": false,
+        "16:15-17:10": false,
+        "17:15-18:10": false
+      }
+    },
+    "studentListData": [
+      {
+        "uniqueId": "210C2030002",
+        "studentName": "Aayush Dubey"
+      },
+      {
+        "uniqueId": "210C2030004",
+        "studentName": "PelletiSujith Reddy"
+      },
+      {
+        "uniqueId": "210C2030007",
+        "studentName": "Malladi Sai Prabhas"
+      },
+      {
+        "uniqueId": "210C2030010",
+        "studentName": "SubhranshBehura"
+      },
+      {
+        "uniqueId": "210C2030014",
+        "studentName": "Abhimanyu Gulati"
+      }
+    ],
+    "weakStudentsData": [
+      {
+        "uniqueId": "210C2030002",
+        "studentName": "Aayush Dubey",
+        "totalMarks": 83,
+        "grade": "A+",
+        "status": "Accepted"
+      },
+      {
+        "uniqueId": "210C2030004",
+        "studentName": "PelletiSujith Reddy",
+        "totalMarks": 78.5,
+        "grade": "B",
+        "status": "Accepted"
+      },
+      {
+        "uniqueId": "210C2030007",
+        "studentName": "Malladi Sai Prabhas",
+        "totalMarks": 81.5,
+        "grade": "B+",
+        "status": "Accepted"
+      },
+      {
+        "uniqueId": "210C2030010",
+        "studentName": "SubhranshBehura",
+        "totalMarks": 87,
+        "grade": "A+",
+        "status": "Accepted"
+      },
+      {
+        "uniqueId": "210C2030014",
+        "studentName": "Abhimanyu Gulati",
+        "totalMarks": 47,
+        "grade": "R",
+        "status": "Accepted"
+      }
+    ],
+    "marksDetailsData": [
+      {
+        "uniqueId": "210C2030002",
+        "studentName": "Aayush Dubey",
+        "totalMarks": 83,
+        "grade": "A+"
+      },
+      {
+        "uniqueId": "210C2030004",
+        "studentName": "PelletiSujith Reddy",
+        "totalMarks": 78.5,
+        "grade": "B"
+      },
+      {
+        "uniqueId": "210C2030007",
+        "studentName": "Malladi Sai Prabhas",
+        "totalMarks": 81.5,
+        "grade": "B+"
+      },
+      {
+        "uniqueId": "210C2030010",
+        "studentName": "SubhranshBehura",
+        "totalMarks": 87,
+        "grade": "A+"
+      },
+      {
+        "uniqueId": "210C2030014",
+        "studentName": "Abhimanyu Gulati",
+        "totalMarks": 47,
+        "grade": "R"
+      }
+    ],
+    "attendanceReportData": [
+      {
+        "uniqueId": "210C2030002",
+        "studentName": "Aayush Dubey",
+        "attendance": 88
+      },
+      {
+        "uniqueId": "210C2030004",
+        "studentName": "PelletiSujith Reddy",
+        "attendance": 90
+      },
+      {
+        "uniqueId": "210C2030007",
+        "studentName": "Malladi Sai Prabhas",
+        "attendance": 78
+      },
+      {
+        "uniqueId": "210C2030010",
+        "studentName": "SubhranshBehura",
+        "attendance": 82
+      },
+      {
+        "uniqueId": "210C2030014",
+        "studentName": "Abhimanyu Gulati",
+        "attendance": 68
+      }
+    ]
+  }
+]

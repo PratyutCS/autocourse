@@ -671,13 +671,13 @@ const handleCheckboxChange = (e, program) => {
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
           {/* Header Section */}
           <div className="flex items-center gap-3 mb-6">
-            <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold">
-              13
-            </div>
-            <h2 className="text-xl font-semibold text-gray-800">
-              Identification of Weak Students
-            </h2>
-          </div>
+        <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold">
+          13
+        </div>
+        <h2 className="text-xl font-semibold text-gray-800">
+          Identification of Weak Students
+        </h2>
+      </div>
 
           {/* File Upload Section */}
 
@@ -690,46 +690,58 @@ const handleCheckboxChange = (e, program) => {
 
           {/* Students List */}
           <div className="space-y-4">
-            {!weakStudentsData || weakStudentsData.length === 0 ? (
-              <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-100">
-                <AlertCircle className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-600 font-medium">
-                  No students identified yet
-                </p>
-                <p className="text-sm text-gray-500">
-                  Upload data to view students
-                </p>
-              </div>
-            ) : (
-              <>
-                <button
-                  className="bg-gray-200 text-gray-600 px-4 py-2 rounded-lg"
-                  onClick={removeRejectedStudents}
-                >
-                  Remove Rejected Students
-                </button>
-                {/* Table Header */}
-                <div className="grid grid-cols-3 gap-4 px-4 py-2 bg-gray-50 rounded-t-lg border border-gray-100 font-medium text-gray-600">
-                  <div>Student ID</div>
-                  <div>Name</div>
-                  <div className="text-right">Actions</div>
-                  </div>
+          {!weakStudentsData || weakStudentsData.length === 0 ? (
+        <div className="text-center py-10 bg-gray-50 rounded-lg border border-gray-100">
+          <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <p className="text-gray-600 font-semibold text-lg">
+            No students identified yet
+          </p>
+          <p className="text-sm text-gray-500 mt-2">
+            Upload an Excel file to view and manage students
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-gray-700">
+              Student List
+            </h3>
+            
+          </div>
 
-                {/* Student Rows */}
-                {weakStudentsData.map((student) => (
-                  <div
-                    key={student.uniqueId}
-                    className="grid grid-cols-3 gap-4 px-4 py-3 border border-gray-100 rounded-lg bg-white items-center"
-                  >
-                    <div className="text-gray-600">{student.uniqueId}</div>
-                    <div className="text-gray-800 font-medium">
-                      {student.studentName}
-                      <div className="text-sm text-gray-500">
-                        Status: {student.status}
-                      </div>
-                    </div>
-                    <div className="flex justify-end gap-2">
-                      <button
+          <div className="overflow-hidden rounded-lg border border-gray-200">
+            {/* Table Header */}
+            <div className="grid grid-cols-3 gap-4 px-4 py-3 bg-gray-50 font-medium text-gray-600 border-b">
+              <div>Student ID</div>
+              <div>Name</div>
+              <div className="text-right">Actions</div>
+            </div>
+
+            {/* Student Rows */}
+            {weakStudentsData.map((student) => (
+              <div
+                key={student.uniqueId}
+                className="grid grid-cols-3 gap-4 px-4 py-3 border-b last:border-b-0 hover:bg-gray-50 transition-colors"
+              >
+                <div className="text-gray-600 self-center">
+                  {student.uniqueId}
+                </div>
+                <div>
+                  <div className="text-gray-800 font-medium">
+                    {student.studentName}
+                  </div>
+                  <div className={`text-sm font-medium ${
+                    student.status === 'Accepted' 
+                      ? 'text-green-600' 
+                      : student.status === 'Rejected' 
+                      ? 'text-red-600' 
+                      : 'text-gray-500'
+                  }`}>
+                    Status: {student.status}
+                  </div>
+                </div>
+                <div className="flex justify-end space-x-2">
+                <button
                         className={`flex items-center px-3 py-1.5 rounded-lg text-sm ${
                           student.status === "Accepted"
                             ? "bg-[#FFB255] text-white cursor-not-allowed"
@@ -763,11 +775,19 @@ const handleCheckboxChange = (e, program) => {
                         <X className="w-4 h-4 mr-1" />
                         Reject
                       </button>
-                    </div>
-                  </div>
-                ))}
-              </>
-            )}
+                </div>
+              </div>
+            ))}
+            
+          </div>
+          <button
+              className="px-4 py-2 bg-white border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors"
+              onClick={removeRejectedStudents}
+            >
+              Remove Rejected Students
+            </button>
+        </div>
+      )}
           </div>
         </div>
 
