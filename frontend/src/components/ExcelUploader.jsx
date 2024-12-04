@@ -2,8 +2,15 @@ import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
+import { File, X, FileSpreadsheet } from 'lucide-react';
 
-const ExcelUploader = React.memo(({ title, identifier, onFileChange, initialData }) => {
+const ExcelUploader = React.memo(({ 
+  title, 
+  identifier, 
+  onFileChange, 
+  initialData,
+  hideUploaderAfterFileUpload = true 
+}) => {
   const [fileContent, setFileContent] = useState(null);
   const [fileName, setFileName] = useState('');
   const [error, setError] = useState(null);
@@ -105,6 +112,13 @@ const ExcelUploader = React.memo(({ title, identifier, onFileChange, initialData
     multiple: false
   });
 
+  const handleRemoveFile = useCallback(() => {
+    setFileContent(null);
+    setFileName('');
+    setError(null);
+    onFileChange(null, identifier);
+  }, [identifier, onFileChange]);
+
   const renderFileContent = useCallback(() => {
     if (!fileContent || !Array.isArray(fileContent) || fileContent.length === 0) {
       return null;
@@ -113,72 +127,104 @@ const ExcelUploader = React.memo(({ title, identifier, onFileChange, initialData
     const headers = Object.keys(fileContent[0]);
     
     return (
-      <div className="mt-4 overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              {headers.map((header) => (
-                <th
-                  key={header}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  {header}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {fileContent.slice(0, 5).map((row, idx) => (
-              <tr key={idx} className="hover:bg-gray-50">
+      <div className="mt-4 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <FileSpreadsheet className="w-5 h-5 text-gray-500" />
+            <span className="font-medium text-gray-700">
+              {fileName}
+            </span>
+            <span className="text-sm text-gray-500">
+              ({fileContent.length} rows)
+            </span>
+          </div>
+          <button 
+            onClick={handleRemoveFile}
+            className="text-red-500 hover:text-red-700 flex items-center space-x-1"
+          >
+            <X className="w-4 h-4" />
+            <span>Remove</span>
+          </button>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
                 {headers.map((header) => (
-                  <td
-                    key={`${idx}-${header}`}
-                    className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                  <th
+                    key={header}
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    {row[header]?.toString() || ''}
-                  </td>
+                    {header}
+                  </th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
-        {fileContent.length > 5 && (
-          <p className="mt-2 text-sm text-gray-500 text-center">
-            Showing first 5 rows of {fileContent.length} total rows
-          </p>
-        )}
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {fileContent.slice(0, 5).map((row, idx) => (
+                <tr key={idx} className="hover:bg-gray-50">
+                  {headers.map((header) => (
+                    <td
+                      key={`${idx}-${header}`}
+                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    >
+                      {row[header]?.toString() || ''}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {fileContent.length > 5 && (
+            <p className="mt-2 text-sm text-gray-500 text-center">
+              Showing first 5 rows of {fileContent.length} total rows
+            </p>
+          )}
+        </div>
       </div>
     );
-  }, [fileContent]);
+  }, [fileContent, fileName, handleRemoveFile]);
+
+  // If file is uploaded and hideUploaderAfterFileUpload is true, don't render uploader
+  if (fileContent && hideUploaderAfterFileUpload) {
+    return renderFileContent();
+  }
 
   return (
     <div className="space-y-4">
       {title && (
         <h3 className="text-lg font-medium text-gray-700">{title}</h3>
       )}
-      <div
-        {...getRootProps()}
-        className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors
-          ${isDragActive ? 'border-[#FFB255] bg-orange-50' : 'border-gray-300 hover:border-[#FFB255]'}`}
-      >
-        <input {...getInputProps()} />
-        <p className="text-gray-600">
-          {isDragActive
-            ? "Drop the file here..."
-            : "Drag 'n' drop Excel/CSV file here, or click to select"}
-        </p>
-        {fileName && (
-          <p className="mt-2 text-sm text-gray-500">
-            Current file: {fileName}
-          </p>
-        )}
-      </div>
-      {error && (
-        <div className="text-red-500 text-sm mt-2">
-          {error}
+      
+      {fileContent ? (
+        renderFileContent()
+      ) : (
+        <div
+          {...getRootProps()}
+          className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors
+            ${isDragActive ? 'border-[#FFB255] bg-orange-50' : 'border-gray-300 hover:border-[#FFB255]'}`}
+        >
+          <input {...getInputProps()} />
+          <div className="flex flex-col items-center space-y-3">
+            <File className="w-10 h-10 text-gray-400" />
+            <p className="text-gray-600">
+              {isDragActive
+                ? "Drop the file here..."
+                : "Drag 'n' drop Excel/CSV file here, or click to select"}
+            </p>
+            <p className="text-xs text-gray-500">
+              Supported formats: .xlsx, .csv
+            </p>
+          </div>
         </div>
       )}
-      {renderFileContent()}
+
+      {error && (
+        <div className="text-red-500 text-sm mt-2 flex items-center space-x-2">
+          <X className="w-4 h-4" />
+          <span>{error}</span>
+        </div>
+      )}
     </div>
   );
 });

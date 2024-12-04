@@ -1,10 +1,11 @@
 .box1 {
-    height: 65%;
+    height: 70%;
     width: 100%;
     background-color: rgb(255, 255, 255);
     /* box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px; */
     /* border: 1px solid rgba(0, 0, 0, 0.1); */
     border-radius: 0.4rem;
+    margin-top: 2rem;
     padding-left: 2vw;
     overflow-y: auto;
     display: flex;

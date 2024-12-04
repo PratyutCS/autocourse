@@ -488,6 +488,7 @@ app.post('/upload-pdf', auth, (req, res) => {
     }
 
     try {
+      console.log(file);
       const user = await User.findById(req.user);
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
@@ -505,7 +506,7 @@ app.post('/upload-pdf', auth, (req, res) => {
       }
 
       // Now safely set the 'mergePDF' property
-      jsonData[num]["mergePDF"] = file.filename.toString();
+      jsonData[num]["mergePDF"] = file.path.toString();
       fs.writeFileSync(jsonFilename, JSON.stringify(jsonData, null, 2));
 
       console.log('Your PDF has been uploaded: ' + file.filename.toString());
