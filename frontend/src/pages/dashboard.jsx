@@ -58,6 +58,7 @@ const Dashboard = () => {
   }, [navigate]);
 
   useEffect(() => {
+    console.log(userData);
     const fetchFilesData = async () => {
       if (userData) {
         const token = localStorage.getItem("token");
@@ -90,7 +91,7 @@ const Dashboard = () => {
           <div className="max-w-6xl mx-auto space-y-6">
             {/* Welcome Section */}
             {/* Welcome Section */}
-            <WelcomeCard userName={userData?.displayName} />
+            <WelcomeCard userName={userData["name"]} />
 
             {/* File Cards Section */}
             <div className="bg-white rounded-lg shadow-md p-6 border border-gray-100 transform hover:shadow-lg transition-all duration-300">

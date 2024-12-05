@@ -67,6 +67,84 @@ authRouter.post("/tokenIsValid", async (req, res) => {
   }
 });
 
+// Helper function for input validation
+function check(q) {
+  for (let i = 0; i < q.length; i++) {
+    let ue = q.charCodeAt(i);
+    if (
+      !(
+        (ue >= 64 && ue <= 90) ||
+        (ue >= 97 && ue <= 122) ||
+        (ue >= 48 && ue <= 57) ||
+        (ue != 64) ||
+        (ue != 46)
+      )
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Sign Up
+authRouter.post("/api/signup", async (req, res) => {
+  try {
+    let { name, email, password } = req.body;
+
+    // Validate input
+    if (!name || !email || !password) {
+      return res.status(400).json({ msg: "All fields are required." });
+    }
+
+    // Sanitize and trim inputs
+    name = name.toString().trim();
+    email = email.toString().trim();
+    password = password.toString().trim();
+
+    if (name.length > 50 || email.length > 40 || password.length > 16) {
+      return res.status(400).json({ msg: "Invalid input length." });
+    }
+
+    if (check(name) || check(email) || check(password)) {
+      return res.status(400).json({ msg: "Invalid input characters." });
+    }
+
+    // Check if email already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ msg: "User with this email already exists." });
+    }
+
+    // Hash the password
+    const hashedPassword = await bcryptjs.hash(password, 10);
+
+    // Calculate `number` as the size of the collection + 1
+    const userCount = await User.countDocuments();
+    const number = userCount + 1;
+
+    // Create new user
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+      number,
+    });
+
+    // Save user to database
+    await newUser.save();
+
+    // Generate JWT token
+    const token = jwt.sign({ id: newUser._id }, "passwordKey", {
+      expiresIn: "12h",
+    });
+
+    // Return the created user (excluding password)
+    return res.status(201).json({ token, ...newUser._doc, password: undefined });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // get user data
 authRouter.get("/", auth, async (req, res) => {
   const user = await User.findById(req.user);

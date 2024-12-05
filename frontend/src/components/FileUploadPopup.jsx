@@ -126,7 +126,7 @@ const FileUploadPopup = ({ isOpen, onClose }) => {
                         Drag and drop file here, or{' '}
                         <span className="text-blue-600 hover:text-blue-700">browse</span>
                       </p>
-                      <p className="text-sm text-gray-500 mt-1">Supports: PDF, DOC, DOCX</p>
+                      <p className="text-sm text-gray-500 mt-1">Supports: PDF</p>
                     </div>
                   )}
                 </label>

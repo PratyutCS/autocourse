@@ -178,7 +178,7 @@ if data.get('copoMappingData'):
 
             for row in table.rows:
                 for cell in row.cells:
-                    cell.width = Inches(1.0)
+                    cell.width = Inches(0.5)
                     for paragraph in cell.paragraphs:
                         for run in paragraph.runs:
                             run.font.size = Pt(10)
