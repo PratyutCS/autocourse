@@ -20,27 +20,30 @@ def extract(file):
             eText = []
             
             for page in pdf.pages:
-                # Extract text with better handling of whitespace and formatting
-                text = page.extract_text(x_tolerance=3)  # Adjust tolerance for better word spacing
-                
-                # Clean extracted text
-                # if text:
-                #     # Remove multiple spaces and normalize newlines
-                #     text = re.sub(r'\s+', ' ', text)
-                #     # Remove unnecessary line breaks while preserving paragraph breaks
-                #     text = re.sub(r'(?<!\n)\n(?!\n)', ' ', text)
-                #     text = re.sub(r'\n{3,}', '\n\n', text)
-                #     text = text.strip()
+                try:
+                    # More permissive text extraction
+                    text = page.extract_text(x_tolerance=3, y_tolerance=3)
+                    if text:
+                        # Clean up common PDF extraction issues
+                        text = re.sub(r'\s+', ' ', text)  # Replace multiple spaces
+                        text = text.replace('\x0c', '\n')  # Replace form feeds
+                        text = text.strip()
+                        if text:
+                            eText.append(text)
+                except Exception as e:
+                    print(f"Error extracting page: {str(e)}")
+                    continue
                     
-                #     eText.append(text)
-            
-            # Join all text with proper spacing between pages
-                eText.append(text)
-            print(eText)
-            return '\n\n'.join(filter(None, eText))
+            if not eText:
+                print("Warning: No text extracted from PDF")
+                return ""
+                
+            full_text = '\n\n'.join(eText)
+            print(f"Extracted text length: {len(full_text)}")
+            return full_text
             
     except Exception as e:
-        print(f"Error extracting PDF: {str(e)}")
+        print(f"Error opening PDF: {str(e)}")
         return ""
 
 def create_empty_template():
@@ -84,21 +87,67 @@ def create_empty_template():
     }
 
 def clean_json_response(response):
-    """Extract JSON from response, handling potential text before/after the JSON."""
+    """Clean and validate JSON response with proper string handling."""
     try:
-        # Find the first { and last } to extract just the JSON part
+        # Remove code blocks if present
+        if response.startswith('```') and response.endswith('```'):
+            response = response.strip('`')
+        if response.startswith('```json'):
+            response = response.replace('```json', '', 1)
+            if response.endswith('```'):
+                response = response[:-3]
+        
+        # Clean up the response and handle control characters
+        response = response.strip()
+        
+        # Find the JSON object boundaries
         start = response.find('{')
         end = response.rstrip().rfind('}') + 1
+        
         if start != -1 and end != -1:
             json_str = response[start:end]
-            # Parse to validate and return
-            return json.loads(json_str)
-    except:
-        pass
-    return None
-
+            
+            # Clean and escape string values
+            json_str = re.sub(r'[\x00-\x1F\x7F-\x9F]', '', json_str)  # Remove control chars
+            
+            # Parse and re-serialize to ensure valid JSON
+            try:
+                parsed = json.loads(json_str)
+                
+                # Properly escape all string values
+                def clean_strings(obj):
+                    if isinstance(obj, dict):
+                        return {k: clean_strings(v) for k, v in obj.items()}
+                    elif isinstance(obj, list):
+                        return [clean_strings(i) for i in obj]
+                    elif isinstance(obj, str):
+                        # Escape special characters and ensure valid JSON string
+                        return obj.encode('unicode_escape').decode('utf-8').replace('"', '\\"')
+                    return obj
+                
+                cleaned = clean_strings(parsed)
+                return cleaned
+                
+            except json.JSONDecodeError as e:
+                print(f"Error parsing cleaned JSON: {str(e)}")
+                print("Cleaned JSON string:", json_str[:500])
+                return None
+                
+        print("No valid JSON object found in response")
+        return None
+        
+    except Exception as e:
+        print(f"Error cleaning JSON response: {str(e)}")
+        print("Original response:", response[:500])
+        return None
 def ai(text):
+    if not text.strip():
+        print("Warning: Empty text provided to AI function")
+        return json.dumps(create_empty_template())
+        
     initial_template = create_empty_template()
+    print(f"Processing text of length: {len(text)}")
+    print("First 500 characters of text:", text[:500])
 
     assessment_format =json.dumps({
         "components": {
@@ -124,11 +173,14 @@ def ai(text):
     }, indent=2)
     
     prompt = f"""
-You must respond with ONLY a valid JSON object matching this structure:
+You must respond with ONLY a raw JSON object - no markdown, no code blocks, no other text.
+All string values must be properly escaped and valid JSON.
+The response must exactly match this structure, with no truncation:
 {json.dumps(initial_template, indent=2)}
 
 Extract relevant information from this text and fill the template:
 {text}
+
 
 Requirements:
 -1. Response must be ONLY the JSON object, no other text
@@ -158,15 +210,20 @@ Requirements:
                     "content": prompt,
                 }
             ],
-            model="llama-3.1-70b-versatile",
-            stream=False,
-            temperature=0.01
+            model="llama-3.3-70b-specdec",
+            temperature=0.01,
+            max_tokens=4096,
+            top_p=1,
+            stream=False
         )
         
         content = response.choices[0].message.content
+        print("Raw AI response:", content[:500])
         cleaned_response = clean_json_response(content)
         if cleaned_response:
             return json.dumps(cleaned_response)
+            
+        print("Warning: Could not parse AI response as JSON")
         return json.dumps(initial_template)
     except Exception as e:
         print(f"Error in AI processing: {str(e)}")
@@ -176,9 +233,13 @@ if __name__ == '__main__':
     try:
         # Extract text from PDF
         extracted_text = extract(fn)
-        
+        if not extracted_text:
+            print("Error: No text extracted from PDF")
+            sys.exit(1)
         # Get AI response
         response = ai(extracted_text)
+        if response == json.dumps(create_empty_template()):
+            print("Warning: AI returned empty template")
         
         # Load existing JSON data
         with open(jfn, 'r') as file:

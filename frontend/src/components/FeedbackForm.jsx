@@ -16,15 +16,8 @@ import PDFUploader from "./PDFUploader";
 import { Check, X, AlertCircle } from "lucide-react";
 const FeedbackForm = (props) => {
   const token = localStorage.getItem("token");
-  const [selectedPrograms, setSelectedPrograms] = useState([]);
 
-const handleCheckboxChange = (e, program) => {
-  if (e.target.checked) {
-    setSelectedPrograms([...selectedPrograms, program]);
-  } else {
-    setSelectedPrograms(selectedPrograms.filter((item) => item !== program));
-  }
-};
+
 
   let num = props.num;
   const [isLoading, setIsLoading] = useState(false);
