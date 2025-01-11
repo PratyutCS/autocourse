@@ -48,7 +48,7 @@ def extract(file):
 
 def create_empty_template():
     return {
-        "Program": "",
+        "Program": "CSE or ME or ECOM or ECT",
         "Session": "",
         "course_code": "",
         "course_name": "",
@@ -83,7 +83,7 @@ def create_empty_template():
         "assignmentsTaken": "",
         "marksDetails": "",
         "attendanceReport": "",
-        "actionsForWeakStudentsData": [{"id": "1", "text": ""}]
+        "actionsForWeakStudentsData": [""]
     }
 
 def clean_json_response(response):
@@ -353,7 +353,7 @@ if __name__ == '__main__':
 #         "assignmentsTaken": "",
 #         "marksDetails": "",
 #         "attendanceReport": "",
-#         "actionsForWeakStudentsData": [{"id": "1", "text": ""}]
+#         "actionsForWeakStudentsData": [""]
 #     }
 
 # def clean_json_response(response):
