@@ -3,7 +3,7 @@ const bcryptjs = require("bcryptjs");
 const User = require("../models/user");
 const authRouter = express.Router();
 const jwt = require("jsonwebtoken");
-const auth = require("../middleware/auth");
+const auth = require("../middleware/auth.js");
 // const multer = require('multer');
 
 function check(q){

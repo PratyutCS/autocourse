@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const auth = require("./middleware/auth");
+const auth = require("./middleware/auth.js");
 const authRouter = require("./routes/auth");
 const User = require("./models/user");
 const Session = require("./models/session");
@@ -332,6 +332,16 @@ app.post("/delete", auth, async (req, res) => {
     if (fs.existsSync(downloadFilePath)) {
       fs.unlinkSync(downloadFilePath);
       console.log(`Deleted file: ${downloadFilePath}`);
+    }
+
+    if(jsonData[num]["copoMappingData"]["imagePath"] && jsonData[num]["copoMappingData"]["imagePath"] != ""){
+      if (fs.existsSync("."+jsonData[num]["copoMappingData"]["imagePath"])) {
+        fs.unlinkSync("."+jsonData[num]["copoMappingData"]["imagePath"]);
+        console.log(`Deleted file: ${"."+jsonData[num]["copoMappingData"]["imagePath"]}`);
+      }
+    }
+    else{
+      console.log("[DELETE] image does not exist");
     }
 
     // Remove entry from JSON data
