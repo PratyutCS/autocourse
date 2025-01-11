@@ -318,7 +318,7 @@ app.post("/delete", auth, async (req, res) => {
       return res.status(400).json({ message: "Invalid 'num' parameter." });
     }
 
-    const fileToDelete = jsonData[num].filename;
+    let fileToDelete = jsonData[num].filename;
 
     // Delete file from data directory
     const fullFilePath = path.join(filePath, fileToDelete);
@@ -328,7 +328,14 @@ app.post("/delete", auth, async (req, res) => {
     }
 
     // Delete file from download directory
-    const downloadFilePath = path.join(downloadPath, fileToDelete);
+    let downloadFilePath = path.join(downloadPath, fileToDelete);
+    if (fs.existsSync(downloadFilePath)) {
+      fs.unlinkSync(downloadFilePath);
+      console.log(`Deleted file: ${downloadFilePath}`);
+    }
+    fileToDelete = jsonData[num].filename.split(".")[0]+"_del."+jsonData[num].filename.split(".")[1];
+    // console.log("[DELETE] filetodelete is : ",fileToDelete);
+    downloadFilePath = path.join(downloadPath, fileToDelete);
     if (fs.existsSync(downloadFilePath)) {
       fs.unlinkSync(downloadFilePath);
       console.log(`Deleted file: ${downloadFilePath}`);

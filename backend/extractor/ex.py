@@ -48,7 +48,7 @@ def extract(file):
 
 def create_empty_template():
     return {
-        "Program": "CSE or ME or ECOM or ECT",
+        "Program": "",
         "Session": "",
         "course_code": "",
         "course_name": "",
@@ -183,6 +183,7 @@ Extract relevant information from this text and fill the template:
 
 
 Requirements:
+-0. CSE or ME or ECOM or ECT choose among ony these as the program
 -1. Response must be ONLY the JSON object, no other text
 -2. Keep field names exactly as shown
 -3. Keep empty fields as shown ("" for strings, [] for arrays)
