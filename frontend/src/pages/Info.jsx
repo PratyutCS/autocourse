@@ -81,6 +81,7 @@ const Info = () => {
             weakStudentsData={file["weakStudentsData"] || []}
             marksDetailsData={file["marksDetailsData"] || []}
             attendanceReportData={file["attendanceReportData"] || []}
+            aqis={file["mergePDF"] || {}}
             />
           ) : (
             <LoadingSpinner />

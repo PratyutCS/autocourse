@@ -520,7 +520,7 @@ app.post('/upload-pdf', auth, (req, res) => {
       }
 
       // Now safely set the 'mergePDF' property
-      jsonData[num]["mergePDF"] = file.path.toString();
+      jsonData[num]["mergePDF"] = file.filename.toString();
       fs.writeFileSync(jsonFilename, JSON.stringify(jsonData, null, 2));
 
       console.log('Your PDF has been uploaded: ' + file.filename.toString());

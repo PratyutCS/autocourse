@@ -75,7 +75,6 @@ default_paragraph.paragraph_format.right_indent = Inches(0.2)  # 0.5-inch margin
 
 ########################################################################################################################
 
-# Course Description and its objectives
 if data.get('course_description'):
     # Add page break only if the document is not empty or already on a new page
     if doc.paragraphs and doc.paragraphs[-1].text.strip():
@@ -95,7 +94,8 @@ if data.get('course_description'):
         data['course_description'])
     course_description_paragraph.paragraph_format.left_indent = Inches(0.7)
     course_description_paragraph.paragraph_format.right_indent = Inches(0.5)
-    course_description_paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    course_description_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+
 
 ##################################################################################################################
 
@@ -992,7 +992,7 @@ print("Document updated and saved.")
 convert('./download/'+data['filename'][:-4]+'_del'+'.docx')
 os.remove('./download/'+data['filename'][:-4]+'_del'+'.docx')
 
-pdf_list = ['./download/'+data['filename'][:-4]+'_del'+'.pdf', data['mergePDF']]
+pdf_list = ['./download/'+data['filename'][:-4]+'_del'+'.pdf', "./data/1/"+data['mergePDF']]
 
 ## merge
 
