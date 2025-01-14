@@ -1,10 +1,14 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { FileUp, FileText, Eye, Trash2, AlertTriangle } from 'lucide-react';
 
-const PDFUploader = ({num}) => {
+const PDFUploader = (props) => {
   const [pdfs, setPdfs] = useState([]);
   const [error, setError] = useState(null);
+  
+  useEffect(() => {
+    console.log("aqis is : ", props.aqis);
+  }, [props.aqis]);
 
   const uploadPDF = async (file) => {
     const formData = new FormData();
@@ -15,7 +19,7 @@ const PDFUploader = ({num}) => {
         method: 'POST',
         headers: {
           "x-auth-token": localStorage.getItem("token"),
-          "num" : num
+          "num" : props.num
         },
         body: formData,
       });

@@ -17,7 +17,13 @@ import { Check, X, AlertCircle } from "lucide-react";
 const FeedbackForm = (props) => {
   const token = localStorage.getItem("token");
 
+  const [aqis, setaqis] = useState(props.aqis || "")
 
+
+  useEffect(() => {
+    setaqis(props.aqis || "");
+    console.log("aqis lol",aqis);
+  }, [props.aqis]);
 
   let num = props.num;
   const [isLoading, setIsLoading] = useState(false);
@@ -802,7 +808,7 @@ const FeedbackForm = (props) => {
               semester
             </h2>
           </div>
-          <PDFUploader num={num} />
+          <PDFUploader num={num} aqis={aqis} />
         </div>
 
         {/* Marks Details */}
