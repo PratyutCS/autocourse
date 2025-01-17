@@ -33,7 +33,7 @@ const COPOMapping = ({ onSave, initialData }) => {
   const [tableMode, setTableMode] = useState("manual");
   const [uploadedImage, setUploadedImage] = useState(null);
   const [isCropping, setIsCropping] = useState(false);
-  
+
   const [crop, setCrop] = useState();
   const [completedCrop, setCompletedCrop] = useState(null);
   const [imgSrc, setImgSrc] = useState("");
@@ -44,74 +44,15 @@ const COPOMapping = ({ onSave, initialData }) => {
     const crop = centerAspectCrop(width, height, 16 / 9);
     setCrop(crop);
   };
-  
+
 
   const fileInputRef = useRef(null);
 
   // Initialize state for CO descriptions
-  const [courseOutcomes, setCourseOutcomes] = useState({
-    CO1: { description: "", bullets: [] },
-    CO2: { description: "", bullets: [] },
-    CO3: { description: "", bullets: [] },
-  });
+  const [courseOutcomes, setCourseOutcomes] = useState({});
 
   // Initialize mapping data with empty values
-  const [mappingData, setMappingData] = useState({
-    CO1: {
-      PO1: "",
-      PO2: "",
-      PO3: "",
-      PO4: "",
-      PO5: "",
-      PO6: "",
-      PO7: "",
-      PO8: "",
-      PO9: "",
-      PO10: "",
-      PO11: "",
-      PO12: "",
-      PSO1: "",
-      PSO2: "",
-      PSO3: "",
-      PSO4: "",
-    },
-    CO2: {
-      PO1: "",
-      PO2: "",
-      PO3: "",
-      PO4: "",
-      PO5: "",
-      PO6: "",
-      PO7: "",
-      PO8: "",
-      PO9: "",
-      PO10: "",
-      PO11: "",
-      PO12: "",
-      PSO1: "",
-      PSO2: "",
-      PSO3: "",
-      PSO4: "",
-    },
-    CO3: {
-      PO1: "",
-      PO2: "",
-      PO3: "",
-      PO4: "",
-      PO5: "",
-      PO6: "",
-      PO7: "",
-      PO8: "",
-      PO9: "",
-      PO10: "",
-      PO11: "",
-      PO12: "",
-      PSO1: "",
-      PSO2: "",
-      PSO3: "",
-      PSO4: "",
-    },
-  });
+  const [mappingData, setMappingData] = useState({});
 
   // Effect to initialize with any provided data
   useEffect(() => {
@@ -532,21 +473,19 @@ const COPOMapping = ({ onSave, initialData }) => {
           <div className="flex items-center gap-2">
             <button
               onClick={() => handleTableModeChange("manual")}
-              className={`px-4 py-2 rounded ${
-                tableMode === "manual"
+              className={`px-4 py-2 rounded ${tableMode === "manual"
                   ? "bg-[#FFB255] text-white"
                   : "bg-gray-200 text-gray-700"
-              }`}
+                }`}
             >
               Manual Input
             </button>
             <button
               onClick={() => handleTableModeChange("image")}
-              className={`px-4 py-2 rounded ${
-                tableMode === "image"
+              className={`px-4 py-2 rounded ${tableMode === "image"
                   ? "bg-[#FFB255] text-white"
                   : "bg-gray-200 text-gray-700"
-              }`}
+                }`}
             >
               Upload Image
             </button>
@@ -601,11 +540,10 @@ const COPOMapping = ({ onSave, initialData }) => {
           </div>
         ) : (
           <div
-            className={`relative overflow-hidden rounded-xl border-2 border-dashed ${
-              isDragActive
+            className={`relative overflow-hidden rounded-xl border-2 border-dashed ${isDragActive
                 ? "border-orange-400 bg-orange-50/50"
                 : "border-gray-200 bg-white"
-            } transition-all duration-200 hover:border-orange-200 hover:bg-orange-50/30`}
+              } transition-all duration-200 hover:border-orange-200 hover:bg-orange-50/30`}
             onDragOver={handleDragOver}
             onDragEnter={handleDragEnter}
             onDragLeave={handleDragLeave}
@@ -614,20 +552,20 @@ const COPOMapping = ({ onSave, initialData }) => {
             {isCropping ? (
               <div className="flex flex-col items-center gap-6 p-8">
                 <div className="w-full max-w-4xl mx-auto rounded-xl overflow-hidden shadow-lg border-2 border-orange-100">
-                <ReactCrop
-  crop={crop}
-  onChange={(_, percentCrop) => setCrop(percentCrop)}
-  onComplete={(c) => setCompletedCrop(c)}
-  aspect={undefined}
->
-  <img
-    ref={imgRef}
-    alt="Crop me"
-    src={imgSrc}
-    onLoad={onImageLoad}
-    style={{ maxWidth: '100%' }}
-  />
-</ReactCrop>
+                  <ReactCrop
+                    crop={crop}
+                    onChange={(_, percentCrop) => setCrop(percentCrop)}
+                    onComplete={(c) => setCompletedCrop(c)}
+                    aspect={undefined}
+                  >
+                    <img
+                      ref={imgRef}
+                      alt="Crop me"
+                      src={imgSrc}
+                      onLoad={onImageLoad}
+                      style={{ maxWidth: '100%' }}
+                    />
+                  </ReactCrop>
                 </div>
                 <div className="flex gap-4">
                   <button

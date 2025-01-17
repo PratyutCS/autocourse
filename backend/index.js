@@ -341,8 +341,10 @@ app.post("/delete", auth, async (req, res) => {
       console.log(`Deleted file: ${downloadFilePath}`);
     }
 
-    if(jsonData[num]["copoMappingData"]["imagePath"] && jsonData[num]["copoMappingData"]["imagePath"] != ""){
+    if(jsonData[num]["copoMappingData"] && jsonData[num]["copoMappingData"]["imagePath"] && jsonData[num]["copoMappingData"]["imagePath"] != ""){
+      console.log("reached here 1");
       if (fs.existsSync("."+jsonData[num]["copoMappingData"]["imagePath"])) {
+        console.log("reached here");
         fs.unlinkSync("."+jsonData[num]["copoMappingData"]["imagePath"]);
         console.log(`Deleted file: ${"."+jsonData[num]["copoMappingData"]["imagePath"]}`);
       }
