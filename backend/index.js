@@ -212,7 +212,6 @@ app.post("/upload-image", auth, (req, res) => {
 
 // Function to execute Python script
 async function dataext(number, jfn, fn) {
-  let cod = -1;
   try {
     const execPath = path.join(__dirname, "/data/", number, fn);
     const pythonProcess = spawn('python3', ['./extractor/ex.py', execPath, jfn]);
@@ -226,13 +225,11 @@ async function dataext(number, jfn, fn) {
     });
 
     pythonProcess.on('close', (code) => {
-      cod = code;
       console.log(`Python script exited with code ${code}`);
     });
   } catch (error) {
     console.error('Error running Python script:', error);
   }
-  return cod;
 }
 
 
@@ -273,17 +270,7 @@ app.post("/upload", auth, (req, res) => {
       fs.writeFileSync(jsonFilename, JSON.stringify(jsonData));
 
       console.log("File updated and uploaded successfully - " + file.filename.toString());
-      let code = await dataext(user.number, jsonFilename, file.filename.toString());
-
-      if(code == 1){
-        console.log("[UPLOAD] code ran into a problem exited with code 1");
-      }
-      else if(code == -1){
-        console.log("[UPLAOD] code ran into an error didn't exited code -1");
-      }
-      else{
-        console.log("[UPLOAD] code ran successfully exited with code 0");
-      }
+      await dataext(user.number, jsonFilename, file.filename.toString());
       res.status(200).json({
         message: "File updated and uploaded successfully",
         filename: file.filename.toString(),
