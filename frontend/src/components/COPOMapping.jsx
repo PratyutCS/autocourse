@@ -110,7 +110,8 @@ const COPOMapping = ({ onSave, initialData }) => {
         onSave({
           tableMode,
           uploadedImage: file,
-          mappingData: { imagePath: data.filePath }, // Save image path in JSON
+          mappingData,
+          imagePath: data.filePath,
         });
       }
     } catch (error) {
@@ -387,6 +388,7 @@ const COPOMapping = ({ onSave, initialData }) => {
     }
   };
   const [isDragActive, setIsDragActive] = useState(false);
+  
   const handleTableModeChange = (selectedMode) => {
     setTableMode(selectedMode);
     if (selectedMode === "image" && croppedImageUrl) {
@@ -652,6 +654,7 @@ const COPOMapping = ({ onSave, initialData }) => {
                                   uploadedImage: null,
                                   courseOutcomes,
                                   mappingData,
+                                  "lund":"mera",
                                 });
                               }
                             }}

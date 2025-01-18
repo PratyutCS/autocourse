@@ -46,15 +46,15 @@ const FeedbackForm = (props) => {
     referenceLinks: [],
   });
 
-  const [EditableCourseDescriptionData, setEditableCourseDescriptionData] =
-    useState("");
-    const [copoMappingData, setCopoMappingData] = useState({
-      courseOutcomes: {},
-      mappingData: {},
-      tableMode: 'manual',
-      imagePath: null,
-      imageFileName: null
-    });
+  const [EditableCourseDescriptionData, setEditableCourseDescriptionData] = useState("");
+
+  const [copoMappingData, setCopoMappingData] = useState({
+    courseOutcomes: {},
+    mappingData: {},
+    tableMode: 'manual',
+    imagePath: null,
+    imageFileName: null
+  });
 
   const [studentListData, setStudentListData] = useState([]);
   const [weakStudentsData, setWeakStudentsData] = useState([]);
@@ -113,6 +113,7 @@ const FeedbackForm = (props) => {
 
   const handleCOPOMappingChange = (data) => {
     const newData = { ...copoMappingData };
+    console.log("copomapping data is : qwerty  :  ",newData);
   
     if (data.tableMode) {
       newData.tableMode = data.tableMode;
