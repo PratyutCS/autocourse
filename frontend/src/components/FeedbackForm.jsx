@@ -46,15 +46,15 @@ const FeedbackForm = (props) => {
     referenceLinks: [],
   });
 
-  const [EditableCourseDescriptionData, setEditableCourseDescriptionData] = useState("");
-
-  const [copoMappingData, setCopoMappingData] = useState({
-    courseOutcomes: {},
-    mappingData: {},
-    tableMode: 'manual',
-    imagePath: null,
-    imageFileName: null
-  });
+  const [EditableCourseDescriptionData, setEditableCourseDescriptionData] =
+    useState("");
+    const [copoMappingData, setCopoMappingData] = useState({
+      courseOutcomes: {},
+      mappingData: {},
+      tableMode: 'manual',
+      imagePath: null,
+      imageFileName: null
+    });
 
   const [studentListData, setStudentListData] = useState([]);
   const [weakStudentsData, setWeakStudentsData] = useState([]);
@@ -113,7 +113,6 @@ const FeedbackForm = (props) => {
 
   const handleCOPOMappingChange = (data) => {
     const newData = { ...copoMappingData };
-    console.log("copomapping data is : qwerty  :  ",newData);
   
     if (data.tableMode) {
       newData.tableMode = data.tableMode;
@@ -812,6 +811,8 @@ const FeedbackForm = (props) => {
           <PDFUploader num={num} aqis={aqis} />
         </div>
 
+       
+
         {/* Marks Details */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
@@ -846,6 +847,56 @@ const FeedbackForm = (props) => {
             onFileChange={handleFileChange}
             initialData={attendanceReportData}
           />
+        </div>
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+        <div className="flex items-center gap-4 mb-6">
+           <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+              24
+            </div>
+          
+            <h2 className="section-title text-xl font-semibold">
+              Feedback (class committee or otherwise) and
+          corrective actions (if any)</h2>
+
+          </div>
+          <div className="w-full flex flex-row gap-6 items-center">
+          <label htmlFor="">Quantitative feedback:</label>
+          <textarea
+              className="w-20 p-3 border border-gray-200 rounded-md transition-all resize-none text-gray-700"
+              placeholder="Rating..."
+              value={undefined}
+              rows="1"
+            />
+          </div>
+          <textarea
+              className="mt-4 w-full p-3 border border-gray-200 rounded-md transition-all resize-none text-gray-700"
+              placeholder="Enter the feeback here...."
+              value={undefined}
+              rows="2"
+            />
+
+
+
+        </div>
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8" >
+        <div className="flex items-center gap-4 mb-6">
+            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+              25
+            </div>
+            <h2 className="section-title text-xl font-semibold">
+            Faculty Course Review
+            </h2>
+           
+
+          </div>
+          <textarea
+              className="w-full p-3 border border-gray-200 rounded-md transition-all resize-none text-gray-700"
+              placeholder="Enter course review here...."
+              value={undefined}
+              rows="2"
+            />
+
+
         </div>
 
         {/* Loading Spinner */}
