@@ -488,6 +488,7 @@ app.post("/form", auth, async (req, res) => {
   }
 });
 
+//to upload mergePDF
 app.post('/upload-pdf', auth, (req, res) => {
   upload.single('file')(req, res, async (err) => {
     if (err) {
@@ -525,7 +526,13 @@ app.post('/upload-pdf', auth, (req, res) => {
         jsonData.push({});
       }
 
-      // Now safely set the 'mergePDF' property
+      if(jsonData[num]["mergePDF"] && jsonData[num]["mergePDF"] != ""){
+        if (fs.existsSync("./data/1/"+jsonData[num]["mergePDF"])) {
+          fs.unlinkSync("./data/1/"+jsonData[num]["mergePDF"]);
+          console.log(`Deleted file: ${"./data/1/"+jsonData[num]["mergePDF"]}`);
+        }
+      }
+
       jsonData[num]["mergePDF"] = file.filename.toString();
       fs.writeFileSync(jsonFilename, JSON.stringify(jsonData, null, 2));
 
@@ -599,6 +606,47 @@ app.post("/download-img", auth, async (req, res) => {
   }
 });
 
+// to delete merge pdf
+app.post("/merge-delete", auth, async (req, res) => {
+
+  const num = req.body.num;
+
+  if (num === undefined) {
+    console.error("Error: 'num' is undefined.");
+    return res.status(400).json({ message: "Error: 'num' is required in request body." });
+  }
+
+  try {
+    const user = await User.findById(req.user);
+    const directoryPath = path.join(__dirname, "/json/", `${user.number}.json`);
+
+    let data = fs.readFileSync(directoryPath, "utf8");
+    let jsonData = JSON.parse(data);
+
+    if (num >= jsonData.length || num < 0) {
+      return res.status(400).json({ message: "Invalid 'num' parameter." });
+    }
+
+    if(jsonData[num]["mergePDF"] && jsonData[num]["mergePDF"] != ""){
+      if (fs.existsSync("./data/1/"+jsonData[num]["mergePDF"])) {
+        fs.unlinkSync("./data/1/"+jsonData[num]["mergePDF"]);
+        console.log(`Deleted file: ${"./data/1/"+jsonData[num]["mergePDF"]}`);
+      }
+    }
+    else{
+      console.log("[MERGE-DELETE] file does not exist");
+    }
+
+    // Remove entry from JSON data
+    jsonData[num]["mergePDF"] = "";
+    fs.writeFileSync(directoryPath, JSON.stringify(jsonData));
+
+    res.status(200).json({ message: "File deleted successfully" });
+  } catch (error) {
+    console.error("Error during file deletion:", error);
+    res.status(500).json({ message: "Error in /delete" });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server connected at port ${PORT}`);
