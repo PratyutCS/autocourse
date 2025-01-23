@@ -42,7 +42,7 @@ const COPOMapping = ({ onSave, initialData }) => {
   const [imgSrc, setImgSrc] = useState("");
   const imgRef = useRef(null);
   const [croppedImageUrl, setCroppedImageUrl] = useState(null);
-  console.log(croppedImageUrl, "cropped image");
+  
   console.log(uploadedImage, "Uploaded image");
   const onImageLoad = (e) => {
     const { width, height } = e.currentTarget;
@@ -124,7 +124,7 @@ const COPOMapping = ({ onSave, initialData }) => {
       alert(error.message);
     }
   };
-  
+
 
   const handleDragOver = (e) => {
     e.preventDefault();

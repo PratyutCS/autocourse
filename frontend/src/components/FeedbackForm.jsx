@@ -14,6 +14,7 @@ import AddField from "./AddFiled";
 import WeeklyTimetable from "./WeeklyTimetable";
 import PDFUploader from "./PDFUploader";
 import { Check, X, AlertCircle } from "lucide-react";
+import COAttainmentAnalysis from "./COAttainmentAnalysis";
 const FeedbackForm = (props) => {
   const token = localStorage.getItem("token");
 
@@ -890,56 +891,52 @@ const FeedbackForm = (props) => {
             initialData={attendanceReportData}
           />
         </div>
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+        <COAttainmentAnalysis/>
+        <div className="bg-white p-7 rounded-2xl  border border-gray-100 mt-8  transition-all duration-300">
         <div className="flex items-center gap-4 mb-6">
-           <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+           <div className="section-number bg-[#FFB255] text-white rounded-full w-9 h-9 flex items-center justify-center mr-2 shadow-sm transform hover:scale-105 transition-transform duration-200">
               24
             </div>
           
-            <h2 className="section-title text-xl font-semibold">
+            <h2 className="section-title text-xl font-semibold text-gray-800">
               Feedback (class committee or otherwise) and
-          corrective actions (if any)</h2>
+              corrective actions (if any)
+            </h2>
+        </div>
 
-          </div>
-          <div className="w-full flex flex-row gap-6 items-center">
-          <label htmlFor="">Quantitative feedback:</label>
+        <div className="w-full flex flex-row gap-6 items-center">
+          <label className="text-gray-700 font-medium">Quantitative feedback:</label>
           <textarea
-              className="w-20 p-3 border border-gray-200 rounded-md transition-all resize-none text-gray-700"
+              className="w-20 p-3 border border-gray-200 rounded-lg transition-all resize-none text-gray-700 focus:ring-2 focus:ring-[#FFB255]/20 focus:border-[#FFB255] outline-none"
               placeholder="Rating..."
               value={undefined}
               rows="1"
             />
-          </div>
-          <textarea
-              className="mt-4 w-full p-3 border border-gray-200 rounded-md transition-all resize-none text-gray-700"
-              placeholder="Enter the feeback here...."
-              value={undefined}
-              rows="2"
-            />
-
-
-
         </div>
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8" >
+
+        <textarea
+            className="mt-4 w-full p-4 border border-gray-200 rounded-lg transition-all duration-200 resize-none text-gray-700 focus:ring-2 focus:ring-[#FFB255]/20 focus:border-[#FFB255] outline-none"
+            placeholder="Enter the feedback here..."
+            value={undefined}
+            rows="2"
+          />
+</div>
+        <div className="bg-white p-7 rounded-2xl shadow-md border border-gray-100 mt-8 hover:shadow-lg transition-all duration-300" >
         <div className="flex items-center gap-4 mb-6">
-            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+            <div className="section-number bg-[#FFB255] text-white rounded-full w-9 h-9 flex items-center justify-center mr-2 shadow-sm transform hover:scale-105 transition-transform duration-200">
               25
             </div>
-            <h2 className="section-title text-xl font-semibold">
-            Faculty Course Review
+            <h2 className="section-title text-xl font-semibold text-gray-800">
+              Faculty Course Review
             </h2>
-           
-
-          </div>
-          <textarea
-              className="w-full p-3 border border-gray-200 rounded-md transition-all resize-none text-gray-700"
-              placeholder="Enter course review here...."
-              value={undefined}
-              rows="2"
-            />
-
-
         </div>
+        <textarea
+            className="w-full p-4 border border-gray-200 rounded-lg transition-all duration-200 resize-none text-gray-700 focus:ring-2 focus:ring-[#FFB255]/20 focus:border-[#FFB255] outline-none"
+            placeholder="Enter course review here...."
+            value={undefined}
+            rows="2"
+        />
+</div>
 
         {/* Loading Spinner */}
         {isLoading && <LoadingSpinner />}
