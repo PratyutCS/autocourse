@@ -5,6 +5,8 @@ import { FileUp, FileText, Eye, Trash2, AlertTriangle } from 'lucide-react';
 const PDFUploader = (props) => {
   const [pdfs, setPdfs] = useState([]);
   const [error, setError] = useState(null);
+
+  console.log("PDFS is: ",pdfs);
   
   useEffect(() => {
     console.log("aqis is : ", props.aqis);
@@ -49,7 +51,7 @@ const PDFUploader = (props) => {
         {
           ...file,
           preview: URL.createObjectURL(file),
-          id: `${file.name}-${Date.now()}`,
+          id: `${Date.now()}${file.name}`,
         },
       ]);
     }
@@ -133,7 +135,7 @@ const PDFUploader = (props) => {
                       {file.name}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {(file.size / 1024 / 1024).toFixed(2)} MB
+                      {pdfs[0].path}
                     </p>
                   </div>
                 </div>
