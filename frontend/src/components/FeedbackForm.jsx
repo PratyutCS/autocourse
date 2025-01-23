@@ -55,6 +55,7 @@ const FeedbackForm = (props) => {
       imagePath: null,
       imageFileName: null
     });
+    
 
   const [studentListData, setStudentListData] = useState([]);
   const [weakStudentsData, setWeakStudentsData] = useState([]);
@@ -123,11 +124,12 @@ const FeedbackForm = (props) => {
     }
   
     if (data.mappingData) {
-      if (data.tableMode === 'image' && data.mappingData.imagePath) {
-        newData.imagePath = data.mappingData.imagePath;
-        newData.imageFileName = data.mappingData.imageFileName;
+      if (data.tableMode === 'image' && data.imagePath) {
+        newData.imagePath = data.imagePath;
+        newData.imageFileName = data.imageFileName;
+        newData.mappingData = data.mappingData;
         // Clear manual mapping data when switching to image mode
-        newData.mappingData = {};
+        // newData.mappingData = {};
       } else {
         newData.mappingData = data.mappingData;
       }
@@ -436,7 +438,47 @@ const FeedbackForm = (props) => {
           Submit Form
         </button>
       </div>
+      
+      
+
+
       <div className="space-y-6 overflow-scroll">
+        <div className="bg-white rounded-xl shadow-md p-6 border-t border-r border-b border-l-4 border-[#FFB255] ">
+        <div className="flex items-start space-x-4">
+          <div className="flex-shrink-0">
+            <AlertCircle className="h-6 w-6 text-[#FFB255]" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+              Important Instructions
+            </h3>
+            <div className="space-y-2 text-gray-600">
+              <p className="flex items-center">
+                <span className="w-2 h-2 bg-[#FFB255] rounded-full mr-2"></span>
+                All fields in this form are editable and can be modified as needed.
+              </p>
+              <p className="flex items-center">
+                <span className="w-2 h-2 bg-[#FFB255] rounded-full mr-2"></span>
+                The initial data has been automatically extracted from your course handout using AI.
+              </p>
+              <p className="flex items-center">
+                <span className="w-2 h-2 bg-[#FFB255] rounded-full mr-2"></span>
+                Please review all information carefully as AI-extracted data may not be 100% accurate.
+              </p>
+              <p className="flex items-center">
+                <span className="w-2 h-2 bg-[#FFB255] rounded-full mr-2"></span>
+                You can save your progress at any time using the Submit Form button.
+              </p>
+            </div>
+            <div className="mt-4 p-3 bg-orange-50 rounded-lg border border-orange-100">
+              <p className="text-sm text-orange-700">
+                <span className="font-semibold">Pro Tip:</span> Take your time to verify each section, especially numerical data and dates, before final submission.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
         <div className="grid grid-cols-2 gap-4">
           {/* Program Section */}
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">

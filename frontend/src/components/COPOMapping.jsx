@@ -30,8 +30,11 @@ function centerAspectCrop(mediaWidth, mediaHeight, aspect) {
 }
 
 const COPOMapping = ({ onSave, initialData }) => {
+
+  console.log("initial data: ", initialData);
   const [tableMode, setTableMode] = useState("manual");
   const [uploadedImage, setUploadedImage] = useState(null);
+  
   const [isCropping, setIsCropping] = useState(false);
 
   const [crop, setCrop] = useState();
@@ -39,6 +42,8 @@ const COPOMapping = ({ onSave, initialData }) => {
   const [imgSrc, setImgSrc] = useState("");
   const imgRef = useRef(null);
   const [croppedImageUrl, setCroppedImageUrl] = useState(null);
+  console.log(croppedImageUrl, "cropped image");
+  console.log(uploadedImage, "Uploaded image");
   const onImageLoad = (e) => {
     const { width, height } = e.currentTarget;
     const crop = centerAspectCrop(width, height, 16 / 9);
@@ -110,8 +115,8 @@ const COPOMapping = ({ onSave, initialData }) => {
         onSave({
           tableMode,
           uploadedImage: file,
-          mappingData,
-          imagePath: data.filePath,
+          mappingData:mappingData,
+          imagePath:data.filePath,
         });
       }
     } catch (error) {
@@ -119,6 +124,7 @@ const COPOMapping = ({ onSave, initialData }) => {
       alert(error.message);
     }
   };
+  
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -205,6 +211,11 @@ const COPOMapping = ({ onSave, initialData }) => {
       }
     }, "image/jpeg");
   };
+  console.log(croppedImageUrl)
+  
+ 
+ 
+
 
   const headers = [
     "CO/PO",
@@ -396,7 +407,8 @@ const COPOMapping = ({ onSave, initialData }) => {
       if (onSave) {
         onSave({
           tableMode: selectedMode,
-          mappingData: { imagePath: croppedImageUrl },
+          mappingData: mappingData,
+          imagePath: croppedImageUrl
         });
       }
     } else if (onSave) {
@@ -627,7 +639,7 @@ const COPOMapping = ({ onSave, initialData }) => {
                   </label>
                 ) : (
                   <div className="w-full space-y-6">
-                    <div className="relative rounded-xl overflow-hidden shadow-lg">
+                    <div className="relative rounded-xl flex items-center justify-center overflow-hidden ">
                       <img
                         src={
                           croppedImageUrl || URL.createObjectURL(uploadedImage)
