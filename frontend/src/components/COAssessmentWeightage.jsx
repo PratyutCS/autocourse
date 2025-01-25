@@ -29,21 +29,12 @@ const COAssessmentWeightage = ({
   const validateWeightages = () => {
     const errors = [];
     const courseOutcomes = getCourseOutcomes();
-    const assessments = getAssessmentComponents();
 
     // Check row totals (CO totals)
     courseOutcomes.forEach(co => {
       const total = getRowTotal(co);
       if (total !== 100) {
         errors.push(`${co} weightages sum to ${total}% (should be 100%)`);
-      }
-    });
-
-    // Check column totals (Assessment totals)
-    assessments.forEach(assessment => {
-      const total = getColumnTotal(assessment.name);
-      if (total !== 100) {
-        errors.push(`${assessment.name} weightages sum to ${total}% (should be 100%)`);
       }
     });
 
@@ -212,20 +203,6 @@ const COAssessmentWeightage = ({
                 </td>
               </tr>
             ))}
-
-            <tr className="bg-gray-50">
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                Total
-              </td>
-              {assessments.map((assessment) => (
-                <td key={`total_${assessment.name}`} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {getColumnTotal(assessment.name)}%
-                </td>
-              ))}
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {courseOutcomes.reduce((total, co) => total + getRowTotal(co), 0)}%
-              </td>
-            </tr>
           </tbody>
         </table>
       </div>
@@ -238,7 +215,7 @@ const COAssessmentWeightage = ({
             {error}
           </p>
         ))}
-        {courseOutcomes.map((co) => {
+        {/* {courseOutcomes.map((co) => {
           const total = getRowTotal(co);
           if (total !== 100) {
             return (
@@ -248,18 +225,7 @@ const COAssessmentWeightage = ({
             );
           }
           return null;
-        })}
-        {assessments.map((assessment) => {
-          const total = getColumnTotal(assessment.name);
-          if (total !== 100) {
-            return (
-              <p key={assessment.id} className="text-sm text-amber-600">
-                Warning: {assessment.name} weightages sum to {total}% (should be 100%)
-              </p>
-            );
-          }
-          return null;
-        })}
+        })} */}
       </div>
 
       {/* Current State */}

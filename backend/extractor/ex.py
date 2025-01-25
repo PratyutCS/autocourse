@@ -84,16 +84,7 @@ def create_empty_template():
         "marksDetails": "",
         "attendanceReport": "",
         "actionsForWeakStudentsData": [""],
-        "coWeightages":{
-            "CO1": {
-                "coursename1": "",
-                "coursename2": ""
-            },
-            "CO2": {
-                "coursename1": "",
-                "coursename2": ""
-            }
-        }
+        "coWeightages":{}
     }
 
 def clean_json_response(response):
