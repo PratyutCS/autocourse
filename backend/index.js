@@ -463,6 +463,7 @@ app.post("/form", auth, async (req, res) => {
         jsonData[num]["internalAssessmentData"] = req.body.internalAssessmentData || "";
         jsonData[num]["actionsForWeakStudentsData"] = req.body.actionsForWeakStudentsData || "";
         jsonData[num]["Program"] = req.body.program || "";
+        jsonData[num]["coWeightages"] = req.body.coWeightages || "";
 
         // Include weeklyTimetableData
         if (req.body.weeklyTimetableData) {

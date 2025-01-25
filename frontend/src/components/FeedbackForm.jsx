@@ -15,6 +15,7 @@ import WeeklyTimetable from "./WeeklyTimetable";
 import PDFUploader from "./PDFUploader";
 import { Check, X, AlertCircle } from "lucide-react";
 import COAttainmentAnalysis from "./COAttainmentAnalysis";
+import COAssessmentWeightage from "./COAssessmentWeightage";
 const FeedbackForm = (props) => {
   const token = localStorage.getItem("token");
 
@@ -23,7 +24,7 @@ const FeedbackForm = (props) => {
 
   useEffect(() => {
     setaqis(props.aqis || "");
-    console.log("aqis lol",aqis);
+    console.log("aqis lol", aqis);
   }, [props.aqis]);
 
   let num = props.num;
@@ -49,14 +50,14 @@ const FeedbackForm = (props) => {
 
   const [EditableCourseDescriptionData, setEditableCourseDescriptionData] =
     useState("");
-    const [copoMappingData, setCopoMappingData] = useState({
-      courseOutcomes: {},
-      mappingData: {},
-      tableMode: 'manual',
-      imagePath: null,
-      imageFileName: null
-    });
-    
+  const [copoMappingData, setCopoMappingData] = useState({
+    courseOutcomes: {},
+    mappingData: {},
+    tableMode: 'manual',
+    imagePath: null,
+    imageFileName: null
+  });
+
 
   const [studentListData, setStudentListData] = useState([]);
   const [weakStudentsData, setWeakStudentsData] = useState([]);
@@ -99,11 +100,11 @@ const FeedbackForm = (props) => {
   //         imageFileName: data.imageFileName
   //       })
   //     });
-  
+
   //     if (!response.ok) {
   //       throw new Error('Failed to save data');
   //     }
-  
+
   //     const result = await response.json();
   //     console.log('Data saved successfully:', result);
   //   } catch (error) {
@@ -111,19 +112,19 @@ const FeedbackForm = (props) => {
   //     // Handle error appropriately
   //   }
   // };
-  
+
 
   const handleCOPOMappingChange = (data) => {
     const newData = { ...copoMappingData };
-  
+
     if (data.tableMode) {
       newData.tableMode = data.tableMode;
     }
-  
+
     if (data.courseOutcomes) {
       newData.courseOutcomes = data.courseOutcomes;
     }
-  
+
     if (data.mappingData) {
       if (data.tableMode === 'image' && data.imagePath) {
         newData.imagePath = data.imagePath;
@@ -135,13 +136,13 @@ const FeedbackForm = (props) => {
         newData.mappingData = data.mappingData;
       }
     }
-  
+
     setCopoMappingData(newData);
-  
+
     // Save to backend
     // saveToBackend(newData);
   };
-  
+
   const handleStudentStatusChange = async (uniqueId, newStatus) => {
     // Update local state
     setWeakStudentsData((prevData) =>
@@ -183,10 +184,20 @@ const FeedbackForm = (props) => {
     }));
   };
 
+  const [coWeightages, setCoWeightages] = useState(props.coWeightages || {});
+  const [isWeightageValid, setIsWeightageValid] = useState(false);
+
+
+
   /////////////////////////////////////////**Use Effect**//////////////////////////
   useEffect(() => {
     setCourseCode(props.coursecode || "");
   }, [props.coursecode]);
+
+  
+  useEffect(() => {
+    setCoWeightages(props.coWeightages || {});
+  }, [props.coWeightages]);
 
   useEffect(() => {
     setCourseTitle(props.coursetitle || "");
@@ -376,6 +387,10 @@ const FeedbackForm = (props) => {
   const programOptions = ['CSE', 'ME', 'ECOM', 'ECT'];
 
   const postData = async () => {
+    if (!isWeightageValid) {
+      alert("Please ensure all CO Assessment weightages add up to 100% before submitting.");
+      return;
+    }
     if (num !== undefined) {
       try {
         setIsLoading(true);
@@ -405,6 +420,7 @@ const FeedbackForm = (props) => {
             weakStudentsData,
             marksDetailsData,
             attendanceReportData,
+            coWeightages,
           },
           {
             headers: { "x-auth-token": token },
@@ -432,88 +448,100 @@ const FeedbackForm = (props) => {
           <IoReturnUpBackSharp className="text-xl" />
           <span className="font-medium">Back to Files</span>
         </button>
-        <button
-          onClick={postData}
-          className="bg-[#FFB255] hover:bg-[#f5a543] transition-colors text-white font-semibold rounded-lg px-8 py-3 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
-        >
-          Submit Form
-        </button>
+        <div className="flex items-center gap-4">
+          {!isWeightageValid && (
+            <span className="text-red-600 text-sm flex items-center">
+              <AlertCircle className="w-4 h-4 mr-1" />
+              CO Assessment weightages must add up to 100%
+            </span>
+          )}
+          <button
+            onClick={postData}
+            className={`${
+              isWeightageValid 
+                ? "bg-[#FFB255] hover:bg-[#f5a543]" 
+                : "bg-gray-400 cursor-not-allowed"
+            } transition-colors text-white font-semibold rounded-lg px-8 py-3 shadow-sm hover:shadow-md transform hover:-translate-y-0.5`}
+          >
+            Submit Form
+          </button>
+        </div>
       </div>
-      
-      
+
+
 
 
       <div className="space-y-6 overflow-scroll">
         <div className="bg-white rounded-xl shadow-md p-6 border-t border-r border-b border-l-4 border-[#FFB255] ">
-        <div className="flex items-start space-x-4">
-          <div className="flex-shrink-0">
-            <AlertCircle className="h-6 w-6 text-[#FFB255]" />
-          </div>
-          <div className="flex-1">
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              Important Instructions
-            </h3>
-            <div className="space-y-2 text-gray-600">
-              <p className="flex items-center">
-                <span className="w-2 h-2 bg-[#FFB255] rounded-full mr-2"></span>
-                All fields in this form are editable and can be modified as needed.
-              </p>
-              <p className="flex items-center">
-                <span className="w-2 h-2 bg-[#FFB255] rounded-full mr-2"></span>
-                The initial data has been automatically extracted from your course handout using AI.
-              </p>
-              <p className="flex items-center">
-                <span className="w-2 h-2 bg-[#FFB255] rounded-full mr-2"></span>
-                Please review all information carefully as AI-extracted data may not be 100% accurate.
-              </p>
-              <p className="flex items-center">
-                <span className="w-2 h-2 bg-[#FFB255] rounded-full mr-2"></span>
-                You can save your progress at any time using the Submit Form button.
-              </p>
+          <div className="flex items-start space-x-4">
+            <div className="flex-shrink-0">
+              <AlertCircle className="h-6 w-6 text-[#FFB255]" />
             </div>
-            <div className="mt-4 p-3 bg-orange-50 rounded-lg border border-orange-100">
-              <p className="text-sm text-orange-700">
-                <span className="font-semibold">Pro Tip:</span> Take your time to verify each section, especially numerical data and dates, before final submission.
-              </p>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                Important Instructions
+              </h3>
+              <div className="space-y-2 text-gray-600">
+                <p className="flex items-center">
+                  <span className="w-2 h-2 bg-[#FFB255] rounded-full mr-2"></span>
+                  All fields in this form are editable and can be modified as needed.
+                </p>
+                <p className="flex items-center">
+                  <span className="w-2 h-2 bg-[#FFB255] rounded-full mr-2"></span>
+                  The initial data has been automatically extracted from your course handout using AI.
+                </p>
+                <p className="flex items-center">
+                  <span className="w-2 h-2 bg-[#FFB255] rounded-full mr-2"></span>
+                  Please review all information carefully as AI-extracted data may not be 100% accurate.
+                </p>
+                <p className="flex items-center">
+                  <span className="w-2 h-2 bg-[#FFB255] rounded-full mr-2"></span>
+                  You can save your progress at any time using the Submit Form button.
+                </p>
+              </div>
+              <div className="mt-4 p-3 bg-orange-50 rounded-lg border border-orange-100">
+                <p className="text-sm text-orange-700">
+                  <span className="font-semibold">Pro Tip:</span> Take your time to verify each section, especially numerical data and dates, before final submission.
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
         <div className="grid grid-cols-2 gap-4">
           {/* Program Section */}
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-  <div className="flex items-center gap-3 mb-4">
-    <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
-      1
-    </div>
-    <h2 className="text-xl font-semibold text-gray-800">Program</h2>
-  </div>
-  {/* Textarea for Program Details */}
-  <textarea
-    className="w-full p-3 border border-gray-200 rounded-md transition-all resize-none text-gray-700 mb-4"
-    placeholder="Enter program details here..."
-    value={program}
-    onChange={(e) => setProgram(e.target.value)}
-    rows="2"
-  />
-  {/* Radio Button Section */}
-  <div>
-        <p className="mb-2 text-gray-700 font-medium">Select Program Option:</p>
-        <select
-          value={program}
-          onChange={(e) => setProgram(e.target.value)}
-          className="w-full p-2 border rounded-md"
-        >
-          <option value="" disabled>Select a program</option>
-          {programOptions.map((programOption) => (
-            <option key={programOption} value={programOption}>
-              {programOption}
-            </option>
-          ))}
-        </select>
-      </div>
-</div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
+                1
+              </div>
+              <h2 className="text-xl font-semibold text-gray-800">Program</h2>
+            </div>
+            {/* Textarea for Program Details */}
+            <textarea
+              className="w-full p-3 border border-gray-200 rounded-md transition-all resize-none text-gray-700 mb-4"
+              placeholder="Enter program details here..."
+              value={program}
+              onChange={(e) => setProgram(e.target.value)}
+              rows="2"
+            />
+            {/* Radio Button Section */}
+            <div>
+              <p className="mb-2 text-gray-700 font-medium">Select Program Option:</p>
+              <select
+                value={program}
+                onChange={(e) => setProgram(e.target.value)}
+                className="w-full p-2 border rounded-md"
+              >
+                <option value="" disabled>Select a program</option>
+                {programOptions.map((programOption) => (
+                  <option key={programOption} value={programOption}>
+                    {programOption}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
 
           {/* Course Code Section */}
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
@@ -621,6 +649,35 @@ const FeedbackForm = (props) => {
           />
         </div>
 
+        {/* Internal Assessments */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+              8
+            </div>
+            <h2 className="section-title text-xl font-semibold">
+              Details of all Assessments; weightages, due dates
+            </h2>
+          </div>
+          <InternalAssessmentTable
+            onSave={handleInternalAssessmentChange}
+            initialData={internalAssessmentData}
+          />
+        </div>
+
+        {/* CO Assessment weightage Section */}
+        <COAssessmentWeightage
+          copoMappingData={copoMappingData}
+          internalAssessmentData={internalAssessmentData}
+          initialWeightages={coWeightages}
+          onChange={(weightages) => {
+            setCoWeightages(weightages);
+            console.log('Updated weightages:', weightages);
+          }}
+          onValidationChange={(isValid) => setIsWeightageValid(isValid)}
+        />
+
+
         {/* Course Syllabus Section */}
         <CourseSyllabus
           onSave={handleCourseSyllabusChange}
@@ -631,7 +688,7 @@ const FeedbackForm = (props) => {
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
-              8
+              9
             </div>
             <h2 className="text-xl font-semibold text-gray-800">
               Learning Resources
@@ -659,7 +716,7 @@ const FeedbackForm = (props) => {
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              9
+              10
             </div>
             <h2 className="text-xl font-semibold text-gray-800">
               Weekly Time-Table
@@ -679,7 +736,7 @@ const FeedbackForm = (props) => {
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              10
+              11
             </div>
             <h2 className="section-title text-xl font-semibold">
               Registered Student List
@@ -693,33 +750,17 @@ const FeedbackForm = (props) => {
           />
         </div>
 
-        {/* Internal Assessments */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              11
-            </div>
-            <h2 className="section-title text-xl font-semibold">
-              Details of Internal Assessments; weightages, due dates
-            </h2>
-          </div>
-          <InternalAssessmentTable
-            onSave={handleInternalAssessmentChange}
-            initialData={internalAssessmentData}
-          />
-        </div>
-
         {/* Identification of Weak Students */}
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
           {/* Header Section */}
           <div className="flex items-center gap-3 mb-6">
-        <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold">
-          13
-        </div>
-        <h2 className="text-xl font-semibold text-gray-800">
-          Identification of Weak Students
-        </h2>
-      </div>
+            <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold">
+              12
+            </div>
+            <h2 className="text-xl font-semibold text-gray-800">
+              Identification of Weak Students
+            </h2>
+          </div>
 
           {/* File Upload Section */}
 
@@ -732,104 +773,101 @@ const FeedbackForm = (props) => {
 
           {/* Students List */}
           <div className="space-y-4">
-          {!weakStudentsData || weakStudentsData.length === 0 ? (
-        <div className="text-center py-10 bg-gray-50 rounded-lg border border-gray-100">
-          <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600 font-semibold text-lg">
-            No students identified yet
-          </p>
-          <p className="text-sm text-gray-500 mt-2">
-            Upload an Excel file to view and manage students
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold text-gray-700">
-              Student List
-            </h3>
-            
-          </div>
+            {!weakStudentsData || weakStudentsData.length === 0 ? (
+              <div className="text-center py-10 bg-gray-50 rounded-lg border border-gray-100">
+                <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-600 font-semibold text-lg">
+                  No students identified yet
+                </p>
+                <p className="text-sm text-gray-500 mt-2">
+                  Upload an Excel file to view and manage students
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold text-gray-700">
+                    Student List
+                  </h3>
 
-          <div className="overflow-hidden rounded-lg border border-gray-200">
-            {/* Table Header */}
-            <div className="grid grid-cols-3 gap-4 px-4 py-3 bg-gray-50 font-medium text-gray-600 border-b">
-              <div>Student ID</div>
-              <div>Name</div>
-              <div className="text-right">Actions</div>
-            </div>
+                </div>
 
-            {/* Student Rows */}
-            {weakStudentsData.map((student) => (
-              <div
-                key={student.uniqueId}
-                className="grid grid-cols-3 gap-4 px-4 py-3 border-b last:border-b-0 hover:bg-gray-50 transition-colors"
-              >
-                <div className="text-gray-600 self-center">
-                  {student.uniqueId}
-                </div>
-                <div>
-                  <div className="text-gray-800 font-medium">
-                    {student.studentName}
+                <div className="overflow-hidden rounded-lg border border-gray-200">
+                  {/* Table Header */}
+                  <div className="grid grid-cols-3 gap-4 px-4 py-3 bg-gray-50 font-medium text-gray-600 border-b">
+                    <div>Student ID</div>
+                    <div>Name</div>
+                    <div className="text-right">Actions</div>
                   </div>
-                  <div className={`text-sm font-medium ${
-                    student.status === 'Accepted' 
-                      ? 'text-green-600' 
-                      : student.status === 'Rejected' 
-                      ? 'text-red-600' 
-                      : 'text-gray-500'
-                  }`}>
-                    Status: {student.status}
-                  </div>
-                </div>
-                <div className="flex justify-end space-x-2">
-                <button
-                        className={`flex items-center px-3 py-1.5 rounded-lg text-sm ${
-                          student.status === "Accepted"
+
+                  {/* Student Rows */}
+                  {weakStudentsData.map((student) => (
+                    <div
+                      key={student.uniqueId}
+                      className="grid grid-cols-3 gap-4 px-4 py-3 border-b last:border-b-0 hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="text-gray-600 self-center">
+                        {student.uniqueId}
+                      </div>
+                      <div>
+                        <div className="text-gray-800 font-medium">
+                          {student.studentName}
+                        </div>
+                        <div className={`text-sm font-medium ${student.status === 'Accepted'
+                          ? 'text-green-600'
+                          : student.status === 'Rejected'
+                            ? 'text-red-600'
+                            : 'text-gray-500'
+                          }`}>
+                          Status: {student.status}
+                        </div>
+                      </div>
+                      <div className="flex justify-end space-x-2">
+                        <button
+                          className={`flex items-center px-3 py-1.5 rounded-lg text-sm ${student.status === "Accepted"
                             ? "bg-[#FFB255] text-white cursor-not-allowed"
                             : "bg-white border border-[#FFB255] text-[#FFB255]"
-                        }`}
-                        disabled={student.status === "Accepted"}
-                        onClick={() =>
-                          handleStudentStatusChange(
-                            student.uniqueId,
-                            "Accepted"
-                          )
-                        }
-                      >
-                        <Check className="w-4 h-4 mr-1" />
-                        Accept
-                      </button>
-                      <button
-                        className={`flex items-center px-3 py-1.5 rounded-lg text-sm ${
-                          student.status === "Rejected"
+                            }`}
+                          disabled={student.status === "Accepted"}
+                          onClick={() =>
+                            handleStudentStatusChange(
+                              student.uniqueId,
+                              "Accepted"
+                            )
+                          }
+                        >
+                          <Check className="w-4 h-4 mr-1" />
+                          Accept
+                        </button>
+                        <button
+                          className={`flex items-center px-3 py-1.5 rounded-lg text-sm ${student.status === "Rejected"
                             ? "bg-gray-600 text-white cursor-not-allowed"
                             : "bg-white border border-gray-400 text-gray-600"
-                        }`}
-                        disabled={student.status === "Rejected"}
-                        onClick={() =>
-                          handleStudentStatusChange(
-                            student.uniqueId,
-                            "Rejected"
-                          )
-                        }
-                      >
-                        <X className="w-4 h-4 mr-1" />
-                        Reject
-                      </button>
+                            }`}
+                          disabled={student.status === "Rejected"}
+                          onClick={() =>
+                            handleStudentStatusChange(
+                              student.uniqueId,
+                              "Rejected"
+                            )
+                          }
+                        >
+                          <X className="w-4 h-4 mr-1" />
+                          Reject
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+
                 </div>
+                <button
+                  className="px-4 py-2 bg-white border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors"
+                  onClick={removeRejectedStudents}
+                >
+                  Remove Rejected Students
+                </button>
               </div>
-            ))}
-            
-          </div>
-          <button
-              className="px-4 py-2 bg-white border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors"
-              onClick={removeRejectedStudents}
-            >
-              Remove Rejected Students
-            </button>
-        </div>
-      )}
+            )}
           </div>
         </div>
 
@@ -854,7 +892,7 @@ const FeedbackForm = (props) => {
           <PDFUploader num={num} aqis={aqis} />
         </div>
 
-       
+
 
         {/* Marks Details */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
@@ -891,52 +929,52 @@ const FeedbackForm = (props) => {
             initialData={attendanceReportData}
           />
         </div>
-        <COAttainmentAnalysis/>
+        <COAttainmentAnalysis />
         <div className="bg-white p-7 rounded-2xl  border border-gray-100 mt-8  transition-all duration-300">
-        <div className="flex items-center gap-4 mb-6">
-           <div className="section-number bg-[#FFB255] text-white rounded-full w-9 h-9 flex items-center justify-center mr-2 shadow-sm transform hover:scale-105 transition-transform duration-200">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="section-number bg-[#FFB255] text-white rounded-full w-9 h-9 flex items-center justify-center mr-2 shadow-sm transform hover:scale-105 transition-transform duration-200">
               24
             </div>
-          
+
             <h2 className="section-title text-xl font-semibold text-gray-800">
               Feedback (class committee or otherwise) and
               corrective actions (if any)
             </h2>
-        </div>
+          </div>
 
-        <div className="w-full flex flex-row gap-6 items-center">
-          <label className="text-gray-700 font-medium">Quantitative feedback:</label>
-          <textarea
+          <div className="w-full flex flex-row gap-6 items-center">
+            <label className="text-gray-700 font-medium">Quantitative feedback:</label>
+            <textarea
               className="w-20 p-3 border border-gray-200 rounded-lg transition-all resize-none text-gray-700 focus:ring-2 focus:ring-[#FFB255]/20 focus:border-[#FFB255] outline-none"
               placeholder="Rating..."
               value={undefined}
               rows="1"
             />
-        </div>
+          </div>
 
-        <textarea
+          <textarea
             className="mt-4 w-full p-4 border border-gray-200 rounded-lg transition-all duration-200 resize-none text-gray-700 focus:ring-2 focus:ring-[#FFB255]/20 focus:border-[#FFB255] outline-none"
             placeholder="Enter the feedback here..."
             value={undefined}
             rows="2"
           />
-</div>
+        </div>
         <div className="bg-white p-7 rounded-2xl shadow-md border border-gray-100 mt-8 hover:shadow-lg transition-all duration-300" >
-        <div className="flex items-center gap-4 mb-6">
+          <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-9 h-9 flex items-center justify-center mr-2 shadow-sm transform hover:scale-105 transition-transform duration-200">
               25
             </div>
             <h2 className="section-title text-xl font-semibold text-gray-800">
               Faculty Course Review
             </h2>
-        </div>
-        <textarea
+          </div>
+          <textarea
             className="w-full p-4 border border-gray-200 rounded-lg transition-all duration-200 resize-none text-gray-700 focus:ring-2 focus:ring-[#FFB255]/20 focus:border-[#FFB255] outline-none"
             placeholder="Enter course review here...."
             value={undefined}
             rows="2"
-        />
-</div>
+          />
+        </div>
 
         {/* Loading Spinner */}
         {isLoading && <LoadingSpinner />}
