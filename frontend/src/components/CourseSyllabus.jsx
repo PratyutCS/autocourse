@@ -79,7 +79,7 @@ const CourseSyllabus = ({ onSave, initialData }) => {
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
       <div className="flex items-center gap-4 mb-6">
         <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-          7
+        11
         </div>
         <h2 className="text-2xl font-semibold text-gray-800">
           Course Syllabus

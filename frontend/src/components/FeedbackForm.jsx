@@ -16,6 +16,7 @@ import PDFUploader from "./PDFUploader";
 import { Check, X, AlertCircle } from "lucide-react";
 import COAttainmentAnalysis from "./COAttainmentAnalysis";
 import COAssessmentWeightage from "./COAssessmentWeightage";
+import COAttainmentCriteria from './COAttainmentCriteria';
 const FeedbackForm = (props) => {
   const token = localStorage.getItem("token");
 
@@ -189,12 +190,22 @@ const FeedbackForm = (props) => {
 
 
 
+  const [coAttainmentCriteria, setCoAttainmentCriteria] = useState({});
+
+  const handleCoAttainmentCriteriaSave = (criteria) => {
+    setCoAttainmentCriteria(criteria);
+  };
   /////////////////////////////////////////**Use Effect**//////////////////////////
+
+  useEffect(() => {
+    setCoAttainmentCriteria(props.coAttainmentCriteria || "");
+  }, [props.coAttainmentCriteria]);
+
   useEffect(() => {
     setCourseCode(props.coursecode || "");
   }, [props.coursecode]);
 
-  
+
   useEffect(() => {
     setCoWeightages(props.coWeightages || {});
   }, [props.coWeightages]);
@@ -386,9 +397,20 @@ const FeedbackForm = (props) => {
   };
   const programOptions = ['CSE', 'ME', 'ECOM', 'ECT'];
 
+  const validateCriteria = () => {
+    return Object.keys(coAttainmentCriteria).every(co => {
+      const { full, partial } = coAttainmentCriteria[co];
+      return parseFloat(full) > parseFloat(partial);
+    });
+  };
+
   const postData = async () => {
     if (!isWeightageValid) {
       alert("Please ensure all CO Assessment weightages add up to 100% before submitting.");
+      return;
+    }
+    if (!validateCriteria()) {
+      alert("Please ensure that the 'Min. % marks (fully attained)' are greater than or equal to 'Min. % marks (partially attained)' for all COs.");
       return;
     }
     if (num !== undefined) {
@@ -421,6 +443,7 @@ const FeedbackForm = (props) => {
             marksDetailsData,
             attendanceReportData,
             coWeightages,
+            coAttainmentCriteria,
           },
           {
             headers: { "x-auth-token": token },
@@ -455,13 +478,19 @@ const FeedbackForm = (props) => {
               CO Assessment weightages must add up to 100%
             </span>
           )}
+          {!validateCriteria() && (
+            <span className="text-red-600 text-sm flex items-center">
+              <AlertCircle className="w-4 h-4 mr-1" />
+              CO Attainment Criteria fully attained must be greater than partially attained
+            </span>
+          )}
           <button
             onClick={postData}
-            className={`${
-              isWeightageValid 
-                ? "bg-[#FFB255] hover:bg-[#f5a543]" 
-                : "bg-gray-400 cursor-not-allowed"
-            } transition-colors text-white font-semibold rounded-lg px-8 py-3 shadow-sm hover:shadow-md transform hover:-translate-y-0.5`}
+            className={`${isWeightageValid && validateCriteria()
+              ? "bg-[#FFB255] hover:bg-[#f5a543]"
+              : "bg-gray-400 cursor-not-allowed"
+              } transition-colors text-white font-semibold rounded-lg px-8 py-3 shadow-sm hover:shadow-md transform hover:-translate-y-0.5`}
+            disabled={!isWeightageValid || !validateCriteria()}
           >
             Submit Form
           </button>
@@ -677,6 +706,11 @@ const FeedbackForm = (props) => {
           onValidationChange={(isValid) => setIsWeightageValid(isValid)}
         />
 
+        <COAttainmentCriteria
+          copoMappingData={copoMappingData}
+          initialCriteria={coAttainmentCriteria}
+          onSave={handleCoAttainmentCriteriaSave}
+        />
 
         {/* Course Syllabus Section */}
         <CourseSyllabus
@@ -688,7 +722,7 @@ const FeedbackForm = (props) => {
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
-              9
+              12
             </div>
             <h2 className="text-xl font-semibold text-gray-800">
               Learning Resources
@@ -716,7 +750,7 @@ const FeedbackForm = (props) => {
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              10
+              13
             </div>
             <h2 className="text-xl font-semibold text-gray-800">
               Weekly Time-Table
@@ -736,7 +770,7 @@ const FeedbackForm = (props) => {
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              11
+              14
             </div>
             <h2 className="section-title text-xl font-semibold">
               Registered Student List
@@ -755,7 +789,7 @@ const FeedbackForm = (props) => {
           {/* Header Section */}
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold">
-              12
+              15
             </div>
             <h2 className="text-xl font-semibold text-gray-800">
               Identification of Weak Students
@@ -882,7 +916,7 @@ const FeedbackForm = (props) => {
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              15
+              17
             </div>
             <h2 className="section-title text-xl font-semibold">
               Assignments/Quiz/Internal Components/ Projects taken throughout
@@ -898,7 +932,7 @@ const FeedbackForm = (props) => {
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              16
+              18
             </div>
             <h2 className="section-title text-xl font-semibold">
               Detail of Marks in all components up to the End Semester
@@ -916,7 +950,7 @@ const FeedbackForm = (props) => {
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              17
+              19
             </div>
             <h2 className="section-title text-xl font-semibold">
               Attendance Report
@@ -933,7 +967,7 @@ const FeedbackForm = (props) => {
         <div className="bg-white p-7 rounded-2xl  border border-gray-100 mt-8  transition-all duration-300">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-9 h-9 flex items-center justify-center mr-2 shadow-sm transform hover:scale-105 transition-transform duration-200">
-              24
+              20
             </div>
 
             <h2 className="section-title text-xl font-semibold text-gray-800">
@@ -962,7 +996,7 @@ const FeedbackForm = (props) => {
         <div className="bg-white p-7 rounded-2xl shadow-md border border-gray-100 mt-8 hover:shadow-lg transition-all duration-300" >
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-9 h-9 flex items-center justify-center mr-2 shadow-sm transform hover:scale-105 transition-transform duration-200">
-              25
+              21
             </div>
             <h2 className="section-title text-xl font-semibold text-gray-800">
               Faculty Course Review

@@ -143,7 +143,7 @@ const COAssessmentWeightage = ({
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
       <div className="flex items-center gap-3 mb-6">
         <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold">
-          13
+          9
         </div>
         <h2 className="text-xl font-semibold text-gray-800">
           CO Assessment Weightage Matrix

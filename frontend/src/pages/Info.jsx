@@ -83,6 +83,7 @@ const Info = () => {
             attendanceReportData={file["attendanceReportData"] || []}
             aqis={file["mergePDF"] || {}}
             coWeightages={file["coWeightages"] || {}}
+            coAttainmentCriteria={file["coAttainmentCriteria"] || {}}
             />
           ) : (
             <LoadingSpinner />
