@@ -43,14 +43,7 @@ const COAttainmentCriteria = ({ copoMappingData, initialCriteria, onSave }) => {
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
-      <div className="flex items-center gap-4 mb-6">
-        <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-          10
-        </div>
-        <h2 className="section-title text-xl font-semibold">
-          CO Attainment Criteria
-        </h2>
-      </div>
+      
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200">
           <thead>
