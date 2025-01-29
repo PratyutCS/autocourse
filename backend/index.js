@@ -11,6 +11,7 @@ const fs = require("fs");
 const jwt = require("jsonwebtoken");
 const { spawn } = require("child_process");
 const multer = require('multer');
+const File= require('./models/File');
 // const imageUpload = require("./storage");
 
 const PORT = process.env.PORT || 3000;
@@ -18,6 +19,8 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+const router = express.Router();
+app.use(router);
 app.use(cors({
   origin: 'http://localhost:3001', 
   credentials: true,
@@ -649,6 +652,57 @@ app.post("/merge-delete", auth, async (req, res) => {
     res.status(500).json({ message: "Error in /delete" });
   }
 });
+// Change from POST to GET and use query parameters
+app.get("/get-pdfs", auth, async (req, res) => {
+  const num = req.query.num;
+
+  if (!num) {
+    return res.status(400).json({ message: "Missing 'num' parameter" });
+  }
+
+  try {
+    const user = await User.findById(req.user);
+    const directoryPath = path.join(__dirname, "/json/", `${user.number}.json`);
+
+    if (!fs.existsSync(directoryPath)) {
+      return res.status(400).json({ message: "File not found" });
+    }
+
+    const data = await fs.promises.readFile(directoryPath, "utf8");
+    const jsonData = JSON.parse(data);
+    
+    if (num >= jsonData.length || num < 0) {
+      return res.status(400).json({ message: "Invalid 'num' parameter." });
+    }
+
+    const fileData = jsonData[num];
+    
+    if (!fileData.mergePDF) {
+      return res.json({ pdf: null });
+    }
+
+    const pdfPath = path.join(__dirname, "data", user.number, fileData.mergePDF);
+
+    if (!fs.existsSync(pdfPath)) {
+      return res.json({ pdf: null });
+    }
+
+    // Return the PDF file path relative to the server root
+    res.json({
+      pdf: {
+        filename: fileData.mergePDF,
+        path: `/data/${user.number}/${fileData.mergePDF}`,
+        uploadDate: fileData.uploadDate || new Date().toISOString()
+      }
+    });
+
+  } catch (error) {
+    console.error("Error fetching PDFs:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Add a new route to serve PDF files
 
 app.listen(PORT, () => {
   console.log(`Server connected at port ${PORT}`);

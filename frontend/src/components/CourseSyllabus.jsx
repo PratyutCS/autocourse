@@ -77,16 +77,7 @@ const CourseSyllabus = ({ onSave, initialData }) => {
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-      <div className="flex items-center gap-4 mb-6">
-        <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-        11
-        </div>
-        <h2 className="text-2xl font-semibold text-gray-800">
-          Course Syllabus
-        </h2>
-      </div>
-
-      <div className="overflow-x-auto rounded-lg border border-gray-200">
+      
         <table className="w-full border-collapse mb-4">
           <thead>
             <tr className="bg-gray-50">
@@ -145,7 +136,6 @@ const CourseSyllabus = ({ onSave, initialData }) => {
             ))}
           </tbody>
         </table>
-      </div>
 
       <button 
         onClick={addRow}

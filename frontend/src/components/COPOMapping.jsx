@@ -30,8 +30,6 @@ function centerAspectCrop(mediaWidth, mediaHeight, aspect) {
 }
 
 const COPOMapping = ({ onSave, initialData }) => {
-
-  console.log("initial data: ", initialData);
   const [tableMode, setTableMode] = useState("manual");
   const [uploadedImage, setUploadedImage] = useState(null);
   
@@ -73,7 +71,7 @@ const COPOMapping = ({ onSave, initialData }) => {
 
   const handleImageUpload = async (file) => {
     if (!file) return;
-
+  
     if (!file.type.startsWith("image/")) {
       alert("Please upload an image file");
       return;
@@ -82,49 +80,14 @@ const COPOMapping = ({ onSave, initialData }) => {
       alert("File size should be less than 5MB");
       return;
     }
-
-    const formData = new FormData();
-    formData.append("image", file);
+  
     const reader = new FileReader();
     reader.addEventListener('load', () => {
       setImgSrc(reader.result.toString());
       setIsCropping(true);
     });
     reader.readAsDataURL(file);
-
-    try {
-      const response = await fetch("http://localhost:3000/upload-image", {
-        method: "POST",
-        headers: {
-          "x-auth-token": localStorage.getItem("token"), // Ensure token is set
-        },
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorResponse = await response.json();
-        console.error("Error from server:", errorResponse);
-        throw new Error(errorResponse.message || "Error uploading the image");
-      }
-
-      const data = await response.json();
-      setUploadedImage(file);
-      setCroppedImageUrl(data.filePath); // Use filePath received from backend
-
-      if (onSave) {
-        onSave({
-          tableMode,
-          uploadedImage: file,
-          mappingData:mappingData,
-          imagePath:data.filePath,
-        });
-      }
-    } catch (error) {
-      console.error("Image upload failed:", error);
-      alert(error.message);
-    }
   };
-
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -165,17 +128,17 @@ const COPOMapping = ({ onSave, initialData }) => {
   };
   const saveCrop = async () => {
     if (!completedCrop || !imgRef.current) return;
-
+  
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     const image = imgRef.current;
-
+  
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
-
+  
     canvas.width = completedCrop.width;
     canvas.height = completedCrop.height;
-
+  
     ctx.drawImage(
       image,
       completedCrop.x * scaleX,
@@ -187,31 +150,51 @@ const COPOMapping = ({ onSave, initialData }) => {
       completedCrop.width,
       completedCrop.height
     );
-
-    // Convert the canvas to blob
-    canvas.toBlob((blob) => {
+  
+    canvas.toBlob(async (blob) => {
       if (!blob) return;
-
-      // Create a new file from the blob
+  
       const croppedFile = new File([blob], "cropped-image.jpg", {
         type: "image/jpeg",
       });
-
-      setUploadedImage(croppedFile);
-      setCroppedImageUrl(URL.createObjectURL(croppedFile));
-      setIsCropping(false);
-
-      if (onSave) {
-        onSave({
-          tableMode,
-          uploadedImage: croppedFile,
-          courseOutcomes,
-          mappingData,
+  
+      try {
+        const formData = new FormData();
+        formData.append("image", croppedFile);
+  
+        const response = await fetch("http://localhost:3000/upload-image", {
+          method: "POST",
+          headers: {
+            "x-auth-token": localStorage.getItem("token"),
+          },
+          body: formData,
         });
+  
+        if (!response.ok) {
+          const errorResponse = await response.json();
+          throw new Error(errorResponse.message || "Error uploading the image");
+        }
+  
+        const data = await response.json();
+        setUploadedImage(croppedFile);
+        setCroppedImageUrl(data.filePath);
+        setIsCropping(false);
+  
+        if (onSave) {
+          onSave({
+            tableMode,
+            uploadedImage: croppedFile,
+            courseOutcomes,
+            mappingData,
+            imagePath: data.filePath,
+          });
+        }
+      } catch (error) {
+        console.error("Image upload failed:", error);
+        alert(error.message);
       }
     }, "image/jpeg");
   };
-  console.log(croppedImageUrl)
   
  
  
@@ -259,6 +242,14 @@ const COPOMapping = ({ onSave, initialData }) => {
   const handleSelectFile = () => {
     fileInputRef.current?.click();
   };
+  useEffect(() => {
+    if (initialData) {
+      if (initialData.tableMode) setTableMode(initialData.tableMode);
+      if (initialData.imagePath) setCroppedImageUrl(initialData.imagePath);
+      if (initialData.courseOutcomes) setCourseOutcomes(initialData.courseOutcomes);
+      if (initialData.mappingData) setMappingData(initialData.mappingData);
+    }
+  }, [initialData]);
 
   const handleOutcomeChange = (co, field, value) => {
     const newCourseOutcomes = {
@@ -402,20 +393,13 @@ const COPOMapping = ({ onSave, initialData }) => {
   
   const handleTableModeChange = (selectedMode) => {
     setTableMode(selectedMode);
-    if (selectedMode === "image" && croppedImageUrl) {
-      // Save the image path in JSON
-      if (onSave) {
-        onSave({
-          tableMode: selectedMode,
-          mappingData: mappingData,
-          imagePath: croppedImageUrl
-        });
-      }
-    } else if (onSave) {
-      onSave({ tableMode: selectedMode });
+    if (onSave) {
+      onSave({
+        tableMode: selectedMode,
+        ...(selectedMode === "image" && croppedImageUrl && { imagePath: croppedImageUrl })
+      });
     }
   };
-
   return (
     <div className="w-full">
       <div className="space-y-4 mb-8">
@@ -640,13 +624,11 @@ const COPOMapping = ({ onSave, initialData }) => {
                 ) : (
                   <div className="w-full space-y-6">
                     <div className="relative rounded-xl flex items-center justify-center overflow-hidden ">
-                      <img
-                        src={
-                          croppedImageUrl || URL.createObjectURL(uploadedImage)
-                        }
-                        alt="CO-PO Mapping Table"
-                        className="max-w-full h-auto"
-                      />
+                    <img
+  src={croppedImageUrl}
+  alt="CO-PO Mapping Table"
+  className="max-w-full h-auto"
+/>
                       <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity">
                         <div className="absolute inset-0 flex items-center justify-center gap-4">
                           <label
@@ -666,7 +648,6 @@ const COPOMapping = ({ onSave, initialData }) => {
                                   uploadedImage: null,
                                   courseOutcomes,
                                   mappingData,
-                                  "lund":"mera",
                                 });
                               }
                             }}

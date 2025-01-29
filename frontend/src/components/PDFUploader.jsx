@@ -6,11 +6,37 @@ const PDFUploader = (props) => {
   const [pdfs, setPdfs] = useState([]);
   const [error, setError] = useState(null);
 
-  console.log("PDFS is: ",pdfs);
-  
+  // Fetch previously uploaded PDFs when the component loads
   useEffect(() => {
-    console.log("aqis is : ", props.aqis);
-  }, [props.aqis]);
+    const fetchPdfs = async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/get-pdfs?num=${props.num}`, {
+          method: 'GET',
+          headers: {
+            "x-auth-token": localStorage.getItem("token"),
+          },
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.pdf) {
+          setPdfs([{
+            name: data.pdf.filename,
+            // path: data.pdf.path,
+            uploadDate: data.pdf.uploadDate,
+            id: `${Date.now()}${data.pdf.filename}`,
+          }]);
+        } else {
+          setError(data.message || 'Failed to fetch uploaded PDFs');
+        }
+      } catch (error) {
+        console.error('Error fetching PDFs:', error);
+        setError('Error fetching PDFs');
+      }
+    };
+
+    fetchPdfs();
+  }, [props.num]);
 
   const uploadPDF = async (file) => {
     const formData = new FormData();
@@ -30,6 +56,15 @@ const PDFUploader = (props) => {
   
       if (response.ok) {
         console.log('File uploaded successfully:', data);
+        setPdfs((prevPdfs) => [
+          ...prevPdfs,
+          {
+            name: data.filename,
+            path: `/data/${props.num}/${data.filename}`,
+            uploadDate: new Date().toISOString(),
+            id: `${Date.now()}${data.filename}`,
+          },
+        ]);
         alert('PDF uploaded successfully');
       } else {
         console.error('Upload failed:', data.message);
@@ -40,22 +75,14 @@ const PDFUploader = (props) => {
       setError('Error uploading file');
     }
   };
-  
+
   const onDrop = useCallback((acceptedFiles) => {
     setError(null);
     const file = acceptedFiles[0];
     if (file) {
       uploadPDF(file);
-      setPdfs((prevPdfs) => [
-        ...prevPdfs,
-        {
-          ...file,
-          preview: URL.createObjectURL(file),
-          id: `${Date.now()}${file.name}`,
-        },
-      ]);
     }
-  }, []);
+  }, [props.num]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -67,7 +94,6 @@ const PDFUploader = (props) => {
 
   const removeFile = (fileId) => {
     setPdfs(pdfs.filter(pdf => pdf.id !== fileId));
-    URL.revokeObjectURL(pdfs.find(pdf => pdf.id === fileId)?.preview);
   };
 
   return (
@@ -135,13 +161,13 @@ const PDFUploader = (props) => {
                       {file.name}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {pdfs[0].path}
+                      {file.path}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
                   <button
-                    onClick={() => window.open(file.preview, '_blank')}
+                    onClick={() => window.open(file.path, '_blank')}
                     className="
                       p-2 rounded-full 
                       hover:bg-blue-50 

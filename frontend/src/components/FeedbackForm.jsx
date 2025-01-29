@@ -89,33 +89,21 @@ const FeedbackForm = (props) => {
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
+  
   const handleCOPOMappingChange = (data) => {
-    const newData = { ...copoMappingData };
-
-    if (data.tableMode) {
-      newData.tableMode = data.tableMode;
-    }
-
-    if (data.courseOutcomes) {
-      newData.courseOutcomes = data.courseOutcomes;
-    }
-
-    if (data.mappingData) {
-      if (data.tableMode === 'image' && data.imagePath) {
-        newData.imagePath = data.imagePath;
-        newData.imageFileName = data.imageFileName;
-        newData.mappingData = data.mappingData;
-        // Clear manual mapping data when switching to image mode
-        // newData.mappingData = {};
-      } else {
-        newData.mappingData = data.mappingData;
+    setFormData(prev => ({
+      ...prev,
+      copoMappingData: {
+        ...prev.copoMappingData,
+        ...data,
+        // Ensure nested objects are merged properly
+        courseOutcomes: data.courseOutcomes || prev.copoMappingData.courseOutcomes,
+        mappingData: data.mappingData || prev.copoMappingData.mappingData,
+        tableMode: data.tableMode || prev.copoMappingData.tableMode,
+        imagePath: data.imagePath || prev.copoMappingData.imagePath,
+        imageFileName: data.imageFileName || prev.copoMappingData.imageFileName
       }
-    }
-
-    setCopoMappingData(newData);
-
-    // Save to backend
-    // saveToBackend(newData);
+    }));
   };
 
   const handleFileChange = (fileData, identifier) => {
