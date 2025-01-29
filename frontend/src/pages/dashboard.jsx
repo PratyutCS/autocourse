@@ -116,15 +116,18 @@ const Dashboard = () => {
     try {
       if (!feedbackFormRef.current) return;
       
-      const isValid = await feedbackFormRef.current.validateForm();
+      // Get validation result
+      const { isValid, message } = feedbackFormRef.current.validateForm();
+      
       if (!isValid) {
-        setFormValidation({
-          isValid: false,
-          message: "Please fix all validation errors before submitting."
-        });
+        setFormValidation({ isValid, message });
         return;
       }
-
+  
+      // Clear any previous error
+      setFormValidation({ isValid: true, message: "" });
+      
+      // Proceed with submission
       setIsLoading(true);
       await feedbackFormRef.current.submitForm();
       window.location.reload();
@@ -180,14 +183,15 @@ const Dashboard = () => {
                 </button>
 
                 <div className="flex items-center gap-4">
-                  {!formValidation.isValid && (
-                    <div className="flex items-center gap-2 bg-red-50 px-4 py-2 rounded-lg border border-red-100">
-                      <AlertCircle className="w-5 h-5 text-red-600" />
-                      <span className="text-red-600 text-sm">
-                        {formValidation.message}
-                      </span>
-                    </div>
-                  )}
+                  {/* In Dashboard's render */}
+{!formValidation.isValid && (
+  <div className="flex items-center gap-2 bg-red-50 px-4 py-2 rounded-lg border border-red-100">
+    <AlertCircle className="w-5 h-5 text-red-600" />
+    <span className="text-red-600 text-sm">
+      {formValidation.message}
+    </span>
+  </div>
+)}
                   <button
                     onClick={handleSubmit}
                     disabled={isLoading}
@@ -204,6 +208,7 @@ const Dashboard = () => {
               {selectedFileData && selectedFileData.done === 1 ? (
                 <FeedbackForm
                   ref={feedbackFormRef}
+                  onValidationChange={setFormValidation}
                   file={selectedFileData.filename}
                   num={selectedFileIndex}
                   courseDescription={selectedFileData["course_description"] || ""}

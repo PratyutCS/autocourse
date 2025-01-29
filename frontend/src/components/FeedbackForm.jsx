@@ -81,20 +81,7 @@ const FeedbackForm  = forwardRef((props, ref) => {
 
   const [isWeightageValid, setIsWeightageValid] = useState(false);
   const programOptions = ['CSE', 'ME', 'ECOM', 'ECT'];
-  useImperativeHandle(ref, () => ({
-    validateForm: () => {
-      const isValid = isWeightageValid && validateCriteria();
-      props.onValidationChange({
-        isValid,
-        message: !isWeightageValid 
-          ? "CO weightages must total 100%" 
-          : "CO criteria needs adjustment"
-      });
-      return isValid;
-    },
-    submitForm: handleSubmit
-  }));
-
+  
   useEffect(() => {
     setAqis(props.aqis || "");
   }, [props.aqis]);
@@ -102,6 +89,36 @@ const FeedbackForm  = forwardRef((props, ref) => {
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
+  // Add useEffect to track validation changes
+useEffect(() => {
+  const validate = () => {
+    const isValid = isWeightageValid && validateCriteria();
+    const message = isValid ? "" : (
+      !isWeightageValid 
+        ? "CO weightages must total 100%" 
+        : "CO criteria needs adjustment"
+    );
+    props.onValidationChange({ isValid, message });
+    return { isValid, message };
+  };
+  validate();
+}, [isWeightageValid, formData.coAttainmentCriteria]);
+useImperativeHandle(ref, () => ({
+  validateForm: () => {
+    const isValid = isWeightageValid && validateCriteria();
+    const message = isValid ? "" : (
+      !isWeightageValid 
+        ? "CO weightages must total 100%" 
+        : "CO criteria needs adjustment"
+    );
+    props.onValidationChange({ isValid, message });
+    return { isValid, message };
+  },
+  submitForm: handleSubmit
+}));
+
+// Update validateForm method
+
   
   const handleCOPOMappingChange = (data) => {
     setFormData(prev => ({
@@ -491,7 +508,13 @@ const FeedbackForm  = forwardRef((props, ref) => {
           />
         </SectionWrapper>
 
-        <COAttainmentAnalysis />
+        <COAttainmentAnalysis
+  coWeightages={formData.coWeightages}
+  coAttainmentCriteria={formData.coAttainmentCriteria}
+  copoMappingData={formData.copoMappingData}
+  marksDetailsData={formData.marksDetailsData}
+  studentListData={formData.studentListData}
+/>
         <div className="bg-white p-7 rounded-2xl  border border-gray-100 mt-8  transition-all duration-300">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-9 h-9 flex items-center justify-center mr-2 shadow-sm transform hover:scale-105 transition-transform duration-200">
