@@ -1,5 +1,4 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { FaRegFilePdf } from "react-icons/fa6";
 import { AiFillDelete } from "react-icons/ai";
 import { IoMdDownload } from "react-icons/io";
@@ -7,13 +6,7 @@ import { FcDocument } from "react-icons/fc";
 import axios from 'axios';
 import constants from "../constants";
 
-export default function NewC(props) {
-  const navigate = useNavigate();
-
-  const form = (num) => {
-    navigate('/form', { state: { num: num } });
-  }
-
+export default function NewC({ name, num, onView }) {
   const Delete = async (num) => {
     const token = localStorage.getItem('token');
     try {
@@ -63,15 +56,15 @@ export default function NewC(props) {
           </div>
           
           <div className="w-full text-center">
-            <h3 className="text-lg font-medium text-gray-900 mb-1 truncate px-2" title={props.name}>
-              {props.name}
+            <h3 className="text-lg font-medium text-gray-900 mb-1 truncate px-2" title={name}>
+              {name}
             </h3>
           </div>
         </div>
 
         <div className="w-full flex flex-col gap-3 mt-4">
           <button
-            onClick={() => form(props.num)}
+            onClick={() => onView(num)}
             className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FFB255] hover:bg-[#ffa133] text-white rounded-md transition-all duration-200 font-medium shadow-sm hover:shadow"
           >
             <FaRegFilePdf className="w-4 h-4" />
@@ -80,7 +73,7 @@ export default function NewC(props) {
           
           <div className="flex justify-between gap-2">
             <button
-              onClick={() => Delete(props.num)}
+              onClick={() => Delete(num)}
               className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white hover:bg-red-50 text-red-500 rounded-md transition-all duration-200 border border-red-200 hover:border-red-300 font-medium"
               title="Delete"
             >
@@ -88,7 +81,7 @@ export default function NewC(props) {
             </button>
             
             <button
-              onClick={() => Download(props.num)}
+              onClick={() => Download(num)}
               className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white hover:bg-blue-50 text-blue-500 rounded-md transition-all duration-200 border border-blue-200 hover:border-blue-300 font-medium"
               title="Download"
             >

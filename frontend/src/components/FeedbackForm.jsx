@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import axios from "axios";
 import { IoReturnUpBackSharp } from "react-icons/io5";
 import { Check, X, AlertCircle } from "lucide-react";
@@ -30,7 +30,7 @@ const SectionWrapper = ({ number, title, children, className = "" }) => (
   </div>
 );
 
-const FeedbackForm = (props) => {
+const FeedbackForm  = forwardRef((props, ref) => {
   const token = localStorage.getItem("token");
   const [aqis, setAqis] = useState(props.aqis || "");
   const [isLoading, setIsLoading] = useState(false);
@@ -81,6 +81,19 @@ const FeedbackForm = (props) => {
 
   const [isWeightageValid, setIsWeightageValid] = useState(false);
   const programOptions = ['CSE', 'ME', 'ECOM', 'ECT'];
+  useImperativeHandle(ref, () => ({
+    validateForm: () => {
+      const isValid = isWeightageValid && validateCriteria();
+      props.onValidationChange({
+        isValid,
+        message: !isWeightageValid 
+          ? "CO weightages must total 100%" 
+          : "CO criteria needs adjustment"
+      });
+      return isValid;
+    },
+    submitForm: handleSubmit
+  }));
 
   useEffect(() => {
     setAqis(props.aqis || "");
@@ -96,12 +109,10 @@ const FeedbackForm = (props) => {
       copoMappingData: {
         ...prev.copoMappingData,
         ...data,
-        // Ensure nested objects are merged properly
         courseOutcomes: data.courseOutcomes || prev.copoMappingData.courseOutcomes,
         mappingData: data.mappingData || prev.copoMappingData.mappingData,
         tableMode: data.tableMode || prev.copoMappingData.tableMode,
-        imagePath: data.imagePath || prev.copoMappingData.imagePath,
-        imageFileName: data.imageFileName || prev.copoMappingData.imageFileName
+        imagePath: data.imagePath || prev.copoMappingData.imagePath
       }
     }));
   };
@@ -193,41 +204,8 @@ const FeedbackForm = (props) => {
   };
 
   return (
-    <div className="p-5 gap-6 h-screen flex flex-col bg-[#FFFEFD] overflow-hidden">
-      {/* Header Section */}
+    <div className="p-5 gap-6 h-fit w-full flex flex-col bg-[#FFFEFD] overflow-hidden">
       
-      <div className="bg-white rounded-xl shadow-md p-5 flex justify-between items-center sticky top-0 z-10">
-        <button
-          onClick={() => window.history.back()}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors px-4 py-2 rounded-lg hover:bg-gray-50"
-        >
-          <IoReturnUpBackSharp className="text-xl" />
-          <span className="font-medium">Back to Files</span>
-        </button>
-
-        <div className="flex items-center gap-4">
-          {(!isWeightageValid || !validateCriteria()) && (
-            <div className="flex items-center gap-2 bg-red-50 px-4 py-2 rounded-lg border border-red-100">
-              <AlertCircle className="w-5 h-5 text-red-600" />
-              <span className="text-red-600 text-sm">
-                {!isWeightageValid && "CO weightages must total 100%"}
-                {!validateCriteria() && "CO criteria needs adjustment"}
-              </span>
-            </div>
-          )}
-          <button
-            onClick={handleSubmit}
-            disabled={!isWeightageValid || !validateCriteria()}
-            className={`px-8 py-3 font-semibold rounded-lg shadow-sm transition-all ${
-              isWeightageValid && validateCriteria()
-                ? "bg-[#FFB255] hover:bg-[#FFA042] text-white"
-                : "bg-gray-200 text-gray-500 cursor-not-allowed"
-            }`}
-          >
-            {isLoading ? <LoadingSpinner size="small" /> : "Submit Form"}
-          </button>
-        </div>
-      </div>
       
 
       {/* Form Sections */}
@@ -565,6 +543,6 @@ const FeedbackForm = (props) => {
       </div>
     </div>
   );
-};
+});
 
 export default FeedbackForm;

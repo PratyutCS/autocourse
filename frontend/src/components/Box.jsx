@@ -1,25 +1,26 @@
 import React from 'react'
 import '../css/box.css'
 import Cards from "./Cards";
-import NewC from  "./NewC";
+import NewC from "./NewC";
 
-export default function Box(props) {
-  if(props.files != null){
-    console.log("files is : "+props.files);
-    console.log("files length is : "+props.files.length);
-    console.log(props.files[0]);
+export default function Box({ files, onFileSelect }) {
+  if(files != null){
+    console.log("files is : "+files);
+    console.log("files length is : "+files.length);
+    console.log(files[0]);
   }
 
   return (
-    <div className ="box1">
+    <div className="box1">
       <Cards/>
 
-      {props.files && props.files.length > 0 ? (
-        props.files.map((file, index) => (
+      {files && files.length > 0 ? (
+        files.map((file, index) => (
           <div key={index} className="file-card">
             <NewC 
               name={(file["course_name"]) || file.filename || "Unknown Course"} 
-              num={index} 
+              num={index}
+              onView={() => onFileSelect(index)}
             /> 
           </div>
         ))

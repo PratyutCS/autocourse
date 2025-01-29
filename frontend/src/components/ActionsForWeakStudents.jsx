@@ -18,23 +18,11 @@ const ActionsForWeakStudents = ({ onSave, initialData }) => {
     }
   };
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
-      <div className="flex items-center gap-4 mb-6">
-        <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-          16
-        </div>
-        <h2 className="text-xl font-semibold">
-          Actions Taken for Weak Students
-        </h2>
-      </div>
-      <div className="mt-4">
         <AddField
           label="Action Taken for Weak Students"
           initialData={actions}
           onChange={handleActionsChange}
         />
-      </div>
-    </div>
   );
 };
 
