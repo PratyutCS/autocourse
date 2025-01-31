@@ -92,9 +92,9 @@ const Dashboard = () => {
         const token = localStorage.getItem("token");
         try {
           const response = await axios.post(
-            constants.url + '/numdata', 
+            constants.url + '/numdata',
             { num: selectedFileIndex },
-            { headers: { 'x-auth-token': token }}
+            { headers: { 'x-auth-token': token } }
           );
           setSelectedFileData(response.data);
         } catch (error) {
@@ -115,18 +115,18 @@ const Dashboard = () => {
   const handleSubmit = async () => {
     try {
       if (!feedbackFormRef.current) return;
-      
+
       // Get validation result
       const { isValid, message } = feedbackFormRef.current.validateForm();
-      
+
       if (!isValid) {
         setFormValidation({ isValid, message });
         return;
       }
-  
+
       // Clear any previous error
       setFormValidation({ isValid: true, message: "" });
-      
+
       // Proceed with submission
       setIsLoading(true);
       await feedbackFormRef.current.submitForm();
@@ -165,15 +165,15 @@ const Dashboard = () => {
                     Your Files
                   </h2>
                 </div>
-                <Box 
-                  files={file} 
+                <Box
+                  files={file}
                   onFileSelect={(index) => setSelectedFileIndex(index)}
                 />
               </div>
             </div>
           ) : (
-            <div className="max-w-6xl mx-auto w-full">
-               <div className="bg-white rounded-xl shadow-md p-5 flex justify-between items-center sticky top-0 z-10 mb-6">
+            <div className=" w-full mx-auto w-full">
+              <div className="bg-white rounded-xl shadow-md p-5 flex justify-between items-center sticky top-0 z-10 mb-6">
                 <button
                   onClick={handleBackToFiles}
                   className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors px-4 py-2 rounded-lg hover:bg-gray-50"
@@ -184,22 +184,21 @@ const Dashboard = () => {
 
                 <div className="flex items-center gap-4">
                   {/* In Dashboard's render */}
-{!formValidation.isValid && (
-  <div className="flex items-center gap-2 bg-red-50 px-4 py-2 rounded-lg border border-red-100">
-    <AlertCircle className="w-5 h-5 text-red-600" />
-    <span className="text-red-600 text-sm">
-      {formValidation.message}
-    </span>
-  </div>
-)}
+                  {!formValidation.isValid && (
+                    <div className="flex items-center gap-2 bg-red-50 px-4 py-2 rounded-lg border border-red-100">
+                      <AlertCircle className="w-5 h-5 text-red-600" />
+                      <span className="text-red-600 text-sm">
+                        {formValidation.message}
+                      </span>
+                    </div>
+                  )}
                   <button
                     onClick={handleSubmit}
                     disabled={isLoading}
-                    className={`px-8 py-3 font-semibold rounded-lg shadow-sm transition-all ${
-                      isLoading
+                    className={`px-8 py-3 font-semibold rounded-lg shadow-sm transition-all ${isLoading
                         ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                         : "bg-[#FFB255] hover:bg-[#FFA042] text-white"
-                    }`}
+                      }`}
                   >
                     {isLoading ? <LoadingSpinner size="small" /> : "Submit Form"}
                   </button>
@@ -230,6 +229,7 @@ const Dashboard = () => {
                   aqis={selectedFileData["mergePDF"] || {}}
                   coWeightages={selectedFileData["coWeightages"] || {}}
                   coAttainmentCriteria={selectedFileData["coAttainmentCriteria"] || {}}
+                  targetAttainments={selectedFileData["targetAttainmentData"] || {}}
                 />
               ) : (
                 <LoadingSpinner />

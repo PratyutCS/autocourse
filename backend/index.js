@@ -384,7 +384,7 @@ app.post("/download", auth, async (req, res) => {
         }
 
         const fileData = jsonData[num];
-        const pythonProcess = spawn('python3', ['./extractor/j2d2p.py', JSON.stringify(fileData)]);
+        const pythonProcess = spawn('python', ['./extractor/j2d2p.py', JSON.stringify(fileData)]);
 
         let pdfFileName = fileData['filename'];
 
@@ -479,6 +479,7 @@ app.post("/form", auth, async (req, res) => {
         jsonData[num]["weakStudentsData"] = req.body.weakStudentsData || null;
         jsonData[num]["marksDetailsData"] = req.body.marksDetailsData || null;
         jsonData[num]["attendanceReportData"] = req.body.attendanceReportData || null;
+        jsonData[num]["targetAttainmentData"] = req.body.targetAttainments || null;
 
         fs.writeFileSync(directoryPath, JSON.stringify(jsonData));
         res.status(200).json({ message: "Form data saved successfully" });

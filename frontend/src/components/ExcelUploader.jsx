@@ -30,64 +30,81 @@ const ExcelUploader = React.memo(({ title, identifier, onFileChange, initialData
     }
   }, [memoizedInitialData]);
 
-  const processFile = useCallback((file) => {
-    setFileName(file.name);
-    setError(null);
+  // In ExcelUploader.jsx (updated processFile function)
+const processFile = useCallback((file) => {
+  setFileName(file.name);
+  setError(null);
 
-    if (file.type === "text/csv") {
-      Papa.parse(file, {
-        complete: (result) => {
-          if (result.errors.length > 0) {
-            setError('Error parsing CSV file');
-            return;
-          }
-          
-          const content = result.data.filter(row => 
-            Object.values(row).some(value => value !== '')
-          );
-          
-          setFileContent(content);
-          onFileChange({
-            content,
-            fileName: file.name,
-            type: file.type,
-            lastModified: file.lastModified
-          }, identifier);
-        },
-        header: true,
-        skipEmptyLines: true
-      });
-    } else {
-      const reader = new FileReader();
-      
-      reader.onload = (e) => {
-        try {
-          const data = new Uint8Array(e.target.result);
-          const workbook = XLSX.read(data, { type: "array" });
-          const sheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[sheetName];
-          const content = XLSX.utils.sheet_to_json(worksheet);
-          
-          setFileContent(content);
-          onFileChange({
-            content,
-            fileName: file.name,
-            type: file.type,
-            lastModified: file.lastModified
-          }, identifier);
-        } catch (error) {
-          console.error('Error processing Excel file:', error);
-          setError('Error processing Excel file');
+  const extractComponentsFromHeaders = (headers) => {
+    return headers.map(header => {
+      const match = header.match(/^(.*?)\s*\(Max\s*(\d+(\.\d+)?)\)$/i);
+      return match ? {
+        component: match[1].trim(),
+        maxMarks: parseFloat(match[2])
+      } : null;
+    }).filter(Boolean);
+  };
+
+  if (file.type === "text/csv") {
+    Papa.parse(file, {
+      complete: (result) => {
+        if (result.errors.length > 0) {
+          setError('Error parsing CSV file');
+          return;
         }
-      };
+        
+        const content = result.data.filter(row => 
+          Object.values(row).some(value => value !== '')
+        );
+        
+        const components = extractComponentsFromHeaders(result.meta.fields || []);
+        
+        setFileContent(content);
+        onFileChange({
+          content,
+          components,
+          fileName: file.name,
+          type: file.type,
+          lastModified: file.lastModified
+        }, identifier);
+      },
+      header: true,
+      skipEmptyLines: true
+    });
+  } else {
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const content = XLSX.utils.sheet_to_json(worksheet);
+        const headers = Object.keys(content[0] || {});
+        const components = extractComponentsFromHeaders(headers);
+        
+        setFileContent(content);
+        onFileChange({
+          content,
+          components,
+          fileName: file.name,
+          type: file.type,
+          lastModified: file.lastModified
+        }, identifier);
+      } catch (error) {
+        console.error('Error processing Excel file:', error);
+        setError('Error processing Excel file');
+      }
+    };
 
-      reader.onerror = () => {
-        setError('Error reading file');
-      };
+    reader.onerror = () => {
+      setError('Error reading file');
+    };
 
-      reader.readAsArrayBuffer(file);
-    }
-  }, [identifier, onFileChange]);
+    reader.readAsArrayBuffer(file);
+  }
+}, [identifier, onFileChange]);
 
   const onDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];

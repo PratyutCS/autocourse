@@ -3,41 +3,54 @@ import { Plus, Trash2 } from 'lucide-react';
 
 
 const InternalAssessmentTable = ({ onSave, initialData }) => {
-  const [assessmentData, setAssessmentData] = useState({
-    components: initialData?.components || {
-      component1: {
-        component: '',
-        duration: '',
-        weightage: '',
-        evaluationWeek: '',
-        remarks: ''
+  const sanitizeInitialData = (data) => {
+    if (!data?.components) return data;
+    
+    const sanitizedComponents = Object.entries(data.components).reduce((acc, [key, value]) => {
+      acc[key] = {
+        ...value,
+        // Ensure component field is always a string
+        component: typeof value.component === 'string' ? value.component : JSON.stringify(value.component)
+      };
+      return acc;
+    }, {});
+
+    return { ...data, components: sanitizedComponents };
+  };
+
+  const [assessmentData, setAssessmentData] = useState(() => 
+    sanitizeInitialData(initialData || {
+      components: {
+        component1: {
+          component: '',
+          duration: '',
+          weightage: '',
+          evaluationWeek: '',
+          remarks: ''
+        }
       }
-    }
-  });
+    })
+  );
 
   useEffect(() => {
     if (initialData) {
-      setAssessmentData(initialData);
+      setAssessmentData(sanitizeInitialData(initialData));
     }
   }, [initialData]);
+
 
   const handleInputChange = (componentKey, field, value) => {
     const newComponents = {
       ...assessmentData.components,
       [componentKey]: {
         ...assessmentData.components[componentKey],
-        [field]: value
+        [field]: field === 'component' ? String(value) : value
       }
     };
-    const newData = {
-      ...assessmentData,
-      components: newComponents
-    };
-
+    
+    const newData = { ...assessmentData, components: newComponents };
     setAssessmentData(newData);
-    if (onSave) {
-      onSave(newData);
-    }
+    onSave?.(newData);
   };
   const addRow = () => {
     const newKey = `component${Date.now()}`;
@@ -87,34 +100,33 @@ const InternalAssessmentTable = ({ onSave, initialData }) => {
           <thead>
             <tr className="bg-gray-50">
               <th className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 text-left">Component</th>
-              <th className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 text-left w-32">Duration</th>
               <th className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 text-left w-32">Weightage (%)</th>
               <th className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 text-left w-40">Evaluation Week</th>
               <th className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 text-left">Remarks</th>
               <th className="border-b border-gray-200 p-3 text-sm font-semibold text-gray-600 text-center w-24">Actions</th>
             </tr>
           </thead>
+          
           <tbody>
-            {Object.keys(assessmentData.components).map((componentKey) => (
-              <tr key={componentKey} className="hover:bg-gray-50 transition-colors">
-                <td className="border-b border-r border-gray-200 p-3">
-                  <input
-                    type="text"
-                    value={assessmentData.components[componentKey].component}
-                    onChange={(e) => handleInputChange(componentKey, 'component', e.target.value)}
-                    className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-gray-700"
-                    placeholder="Enter component"
-                  />
-                </td>
-                <td className="border-b border-r border-gray-200 p-3">
-                  <input
-                    type="text"
-                    value={assessmentData.components[componentKey].duration}
-                    onChange={(e) => handleInputChange(componentKey, 'duration', e.target.value)}
-                    className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-gray-700"
-                    placeholder="e.g. 2 hrs"
-                  />
-                </td>
+            {Object.keys(assessmentData.components).map((componentKey) => {
+              const componentValue = assessmentData.components[componentKey].component;
+              
+              // Add additional sanitization for rendering
+              const displayComponent = typeof componentValue === 'string' 
+                ? componentValue 
+                : JSON.stringify(componentValue);
+
+              return (
+                <tr key={componentKey} className="hover:bg-gray-50 transition-colors">
+                  <td className="border-b border-r border-gray-200 p-3">
+                    <input
+                      type="text"
+                      value={displayComponent}
+                      onChange={(e) => handleInputChange(componentKey, 'component', e.target.value)}
+                      className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-gray-700"
+                      placeholder="Enter component"
+                    />
+                  </td>
                 <td className="border-b border-r border-gray-200 p-3">
                   <input
                     type="text"
@@ -154,7 +166,8 @@ const InternalAssessmentTable = ({ onSave, initialData }) => {
                   )}
                 </td>
               </tr>
-            ))}
+            );
+          })}
           </tbody>
         </table>
       </div>

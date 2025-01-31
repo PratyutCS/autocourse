@@ -1,4 +1,5 @@
-import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
+import { useState, useEffect, forwardRef, useImperativeHandle, useCallback } from "react";
+import { useMemo } from "react";
 import axios from "axios";
 import { IoReturnUpBackSharp } from "react-icons/io5";
 import { Check, X, AlertCircle } from "lucide-react";
@@ -12,10 +13,11 @@ import CourseSyllabus from "./CourseSyllabus";
 import AddField from "./AddFiled";
 import WeeklyTimetable from "./WeeklyTimetable";
 import PDFUploader from "./PDFUploader";
-import COAttainmentAnalysis from "./COAttainmentAnalysis";
 import COAssessmentWeightage from "./COAssessmentWeightage";
 import COAttainmentCriteria from './COAttainmentCriteria';
 import constants from "../constants";
+import COAttainmentTable from './COAttainmentTable';
+import TargetAttainmentTable from "./TargetAttainmentTable";
 import "../css/feedback.css";
 
 const SectionWrapper = ({ number, title, children, className = "" }) => (
@@ -30,7 +32,7 @@ const SectionWrapper = ({ number, title, children, className = "" }) => (
   </div>
 );
 
-const FeedbackForm  = forwardRef((props, ref) => {
+const FeedbackForm = forwardRef((props, ref) => {
   const token = localStorage.getItem("token");
   const [aqis, setAqis] = useState(props.aqis || "");
   const [isLoading, setIsLoading] = useState(false);
@@ -77,11 +79,21 @@ const FeedbackForm  = forwardRef((props, ref) => {
     },
     coWeightages: props.coWeightages || {},
     coAttainmentCriteria: props.coAttainmentCriteria || {},
+    targetAttainments: props.targetAttainments || null,
+  });
+  const [internalAssessmentData, setInternalAssessmentData] = useState({
+    components: {
+      quiz1: { component: "Quiz 1", weightage: 20, maxMarks: 20 },
+      caseStudy: { component: "Case Study", weightage: 30 },
+      project: { weightage: 50 } // Missing component name
+    }
   });
 
   const [isWeightageValid, setIsWeightageValid] = useState(false);
   const programOptions = ['CSE', 'ME', 'ECOM', 'ECT'];
-  
+  const [processedStudents, setProcessedStudents] = useState([]);
+  const [targetLevels, setTargetLevels] = useState([]);
+
   useEffect(() => {
     setAqis(props.aqis || "");
   }, [props.aqis]);
@@ -90,36 +102,38 @@ const FeedbackForm  = forwardRef((props, ref) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
   // Add useEffect to track validation changes
-useEffect(() => {
-  const validate = () => {
-    const isValid = isWeightageValid && validateCriteria();
-    const message = isValid ? "" : (
-      !isWeightageValid 
-        ? "CO weightages must total 100%" 
-        : "CO criteria needs adjustment"
-    );
-    props.onValidationChange({ isValid, message });
-    return { isValid, message };
-  };
-  validate();
-}, [isWeightageValid, formData.coAttainmentCriteria]);
-useImperativeHandle(ref, () => ({
-  validateForm: () => {
-    const isValid = isWeightageValid && validateCriteria();
-    const message = isValid ? "" : (
-      !isWeightageValid 
-        ? "CO weightages must total 100%" 
-        : "CO criteria needs adjustment"
-    );
-    props.onValidationChange({ isValid, message });
-    return { isValid, message };
-  },
-  submitForm: handleSubmit
-}));
+  useEffect(() => {
+    const validate = () => {
+      const isValid = isWeightageValid && validateCriteria();
+      const message = isValid ? "" : (
+        !isWeightageValid
+          ? "CO weightages must total 100%"
+          : "CO criteria needs adjustment"
+      );
+      props.onValidationChange({ isValid, message });
+      return { isValid, message };
+    };
+    validate();
+  }, [isWeightageValid, formData.coAttainmentCriteria]);
+  useImperativeHandle(ref, () => ({
+    validateForm: () => {
+      const isValid = isWeightageValid && validateCriteria();
+      const message = isValid ? "" : (
+        !isWeightageValid
+          ? "CO weightages must total 100%"
+          : "CO criteria needs adjustment"
+      );
+      props.onValidationChange({ isValid, message });
+      return { isValid, message };
+    },
+    submitForm: handleSubmit
+  }));
+  // In FeedbackForm.jsx
+  // Add similar effects for other props if needed
 
-// Update validateForm method
+  // Update validateForm method
 
-  
+
   const handleCOPOMappingChange = (data) => {
     setFormData(prev => ({
       ...prev,
@@ -133,6 +147,14 @@ useImperativeHandle(ref, () => ({
       }
     }));
   };
+
+  const totalCOWeights = useMemo(() => {
+    const totals = {};
+    Object.entries(formData.coWeightages).forEach(([co, assessments]) => {
+      totals[co] = Object.values(assessments).reduce((sum, weight) => sum + Number(weight), 0);
+    });
+    return totals;
+  }, [formData.coWeightages]);
 
   const handleFileChange = (fileData, identifier) => {
     const { content } = fileData;
@@ -186,6 +208,10 @@ useImperativeHandle(ref, () => ({
       }
     }
   };
+  const handleTargetSave = useCallback((targets) => {
+    setFormData(prev => ({ ...prev, targetAttainments: targets }));
+  }, []);
+
 
   const removeRejectedStudents = () => {
     setFormData(prev => ({
@@ -219,15 +245,24 @@ useImperativeHandle(ref, () => ({
       setIsLoading(false);
     }
   };
+  const getAssessmentComponents = (internalAssessmentData) => {
+    if (!internalAssessmentData?.components) return [];
+
+    return Object.values(internalAssessmentData.components).map(component => ({
+      name: component.component?.trim() || 'Unnamed Assessment',
+      weightage: component.weightage,
+      maxMarks: component.maxMarks || 100 // Default to 100 if maxMarks is not specified
+    }));
+  };
 
   return (
     <div className="p-5 gap-6 h-fit w-full flex flex-col bg-[#FFFEFD] overflow-hidden">
-      
-      
+
+
 
       {/* Form Sections */}
       <div className="space-y-6 overflow-y-auto pb-8">
-      <div className="bg-white rounded-xl shadow-md p-6 border-t border-r border-b border-l-4 border-[#FFB255] ">
+        <div className="bg-white rounded-xl shadow-md p-6 border-t border-r border-b border-l-4 border-[#FFB255] ">
           <div className="flex items-start space-x-4">
             <div className="flex-shrink-0">
               <AlertCircle className="h-6 w-6 text-[#FFB255]" />
@@ -332,6 +367,17 @@ useImperativeHandle(ref, () => ({
             onSave={(data) => handleInputChange('coAttainmentCriteria', data)}
           />
         </SectionWrapper>
+        <SectionWrapper number="11" title="Target Attainment Table">
+          <TargetAttainmentTable
+            initialData={formData.targetAttainments}
+            onSave={(targets) => {
+              setTargetLevels(targets);
+              handleInputChange('targetAttainments', targets);
+            }}
+          />
+        </SectionWrapper>
+
+
 
         <SectionWrapper number="11" title="Course Syllabus">
           <CourseSyllabus
@@ -339,6 +385,15 @@ useImperativeHandle(ref, () => ({
             initialData={formData.courseSyllabus}
           />
         </SectionWrapper>
+        {/* <SectionWrapper number="X" title="CO Attainment Calculation">
+          <COAttainmentTable
+            coWeightages={totalCOWeights}
+            studentMarks={formData.marksDetailsData}
+            onTargetAttainmentChange={(targets) =>
+              setFormData(prev => ({ ...prev, targetAttainments: targets }))
+            }
+          />
+        </SectionWrapper> */}
 
         <SectionWrapper number="12" title="Learning Resources">
           <div className="space-y-6">
@@ -508,13 +563,7 @@ useImperativeHandle(ref, () => ({
           />
         </SectionWrapper>
 
-        <COAttainmentAnalysis
-  coWeightages={formData.coWeightages}
-  coAttainmentCriteria={formData.coAttainmentCriteria}
-  copoMappingData={formData.copoMappingData}
-  marksDetailsData={formData.marksDetailsData}
-  studentListData={formData.studentListData}
-/>
+
         <div className="bg-white p-7 rounded-2xl  border border-gray-100 mt-8  transition-all duration-300">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-9 h-9 flex items-center justify-center mr-2 shadow-sm transform hover:scale-105 transition-transform duration-200">
