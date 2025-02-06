@@ -111,6 +111,7 @@ const AsideComp = ({ isCollapsed, setIsCollapsed,files }) => {
         ${isCollapsed ? "w-[4.5vw]" : "w-[20vw]"} 
         bg-gradient-to-b from-[#2d2e33] to-[#25262a] shadow-2xl`}
     >
+      {/* Collapse Button */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
         className="absolute -right-3 top-6 bg-[#3a3b40] rounded-full p-2 hover:bg-[#FFB255] 
@@ -125,7 +126,7 @@ const AsideComp = ({ isCollapsed, setIsCollapsed,files }) => {
       </button>
 
       {/* Logo Section */}
-      <div className="flex items-center h-[18%] px-4 py-6 border-b border-[#3a3b40]">
+      <div className="flex-shrink-0 flex items-center h-[18%] px-4 py-6 border-b border-[#3a3b40]">
         <div className="flex items-center gap-3 w-full">
           <img
             src="/customer-logo.png"
@@ -144,7 +145,7 @@ const AsideComp = ({ isCollapsed, setIsCollapsed,files }) => {
       </div>
 
       {/* User Profile Section */}
-      <div className="px-4 py-6 border-b border-[#3a3b40]">
+      <div className="flex-shrink-0 px-4 py-6 border-b border-[#3a3b40]">
         <div className="flex items-center gap-3 group">
           <div className="flex items-center justify-center h-10 w-10 rounded-full 
             bg-[#FFB255] text-white font-semibold text-sm shrink-0">
@@ -164,102 +165,100 @@ const AsideComp = ({ isCollapsed, setIsCollapsed,files }) => {
           </div>
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto px-2 py-4">
-    <h3 className={`text-[#909096] text-sm font-medium mb-3 px-2 transition-opacity ${
-      isCollapsed ? "opacity-0" : "opacity-100"
-    }`}>
-      Course Handouts
-    </h3>
-    
-    {files && files.length > 0 ? (
-      files.map((file, index) => (
-        <div key={index} className="group flex items-center justify-between p-2 rounded-lg hover:bg-[#3a3b40] transition-colors">
-          <span className={`text-[#f5f5f5] text-sm truncate transition-opacity ${
+
+      {/* Files Section - Now with proper spacing for footer */}
+      <div className="flex-grow overflow-y-auto px-2 py-4 mb-[120px]">
+        <h3 className={`text-[#909096] text-sm font-medium mb-3 px-2 transition-opacity ${
+          isCollapsed ? "opacity-0" : "opacity-100"
+        }`}>
+          Course Handouts
+        </h3>
+        
+        {files && files.length > 0 ? (
+          files.map((file, index) => (
+            <div key={index} className="group flex items-center justify-between p-2 rounded-lg hover:bg-[#3a3b40] transition-colors">
+              <span className={`text-[#f5f5f5] text-sm truncate transition-opacity ${
+                isCollapsed ? "opacity-0" : "opacity-100"
+              }`}>
+                {file.course_name || file.filename}
+              </span>
+              
+              <div className={`flex gap-2 ${isCollapsed ? "opacity-0" : "opacity-100"}`}>
+                <button
+                  onClick={() => handleFileDownload(index)}
+                  className="p-1.5 hover:bg-[#4a4b50] rounded-md transition-colors"
+                  title="Download"
+                >
+                  <IoMdDownload className="w-4 h-4 text-[#909096] hover:text-[#FFB255]" />
+                </button>
+                <button
+                  onClick={() => handleFileDelete(index)}
+                  className="p-1.5 hover:bg-[#4a4b50] rounded-md transition-colors"
+                  title="Delete"
+                >
+                  <AiFillDelete className="w-4 h-4 text-[#909096] hover:text-red-500" />
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className={`text-[#909096] text-sm px-2 transition-opacity ${
             isCollapsed ? "opacity-0" : "opacity-100"
           }`}>
-            {file.course_name || file.filename}
-          </span>
-          
-          <div className={`flex gap-2 ${isCollapsed ? "opacity-0" : "opacity-100"}`}>
-            <button
-              onClick={() => handleFileDownload(index)}
-              className="p-1.5 hover:bg-[#4a4b50] rounded-md transition-colors"
-              title="Download"
-            >
-              <IoMdDownload className="w-4 h-4 text-[#909096] hover:text-[#FFB255]" />
-            </button>
-            <button
-              onClick={() => handleFileDelete(index)}
-              className="p-1.5 hover:bg-[#4a4b50] rounded-md transition-colors"
-              title="Delete"
-            >
-              <AiFillDelete className="w-4 h-4 text-[#909096] hover:text-red-500" />
-            </button>
-          </div>
-        </div>
-      ))
-    ) : (
-      <p className={`text-[#909096] text-sm px-2 transition-opacity ${
-        isCollapsed ? "opacity-0" : "opacity-100"
-      }`}>
-        No handouts uploaded
-      </p>
-    )}
-  </div>
+            No handouts uploaded
+          </p>
+        )}
+      </div>
 
-      {/* Navigation Controls */}
-      <div className="flex-1 flex flex-col justify-between py-6 fixed bottom-0">
-        {/* Logout Section */}
-        <div className="px-2 w-full">
-          <form onSubmit={handleLogout} className="w-full">
-            <button
-              type="submit"
-              className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all
-                hover:bg-[#3a3b40] group relative ${
-                  isCollapsed ? "justify-center" : ""
-                }`}
-            >
-              <TfiPowerOff className="text-[#909096] group-hover:text-[#FFB255] text-xl" />
-              <div
-                className={`flex flex-col items-start transition-opacity duration-300 ${
-                  isCollapsed ? "opacity-0" : "opacity-100"
-                }`}
-              >
-                <span className="text-[#f5f5f5] text-sm">Logout</span>
-              </div>
-              {isCollapsed && (
-                <span className="absolute left-full ml-3 px-2 py-1 bg-[#3a3b40] text-white 
-                  text-sm rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                  Logout
-                </span>
-              )}
-            </button>
-            
-          </form>
+      {/* Navigation Controls - Now properly fixed at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 bg-[#25262a] py-6 border-t border-[#3a3b40]">
+        <form onSubmit={handleLogout} className="w-full">
           <button
+            type="submit"
             className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all
               hover:bg-[#3a3b40] group relative ${
                 isCollapsed ? "justify-center" : ""
               }`}
           >
-            <RxQuestionMarkCircled
-              className="text-[#909096] group-hover:text-[#FFB255] text-xl"
-            />
-            <span
-              className={`text-[#f5f5f5] text-sm transition-opacity duration-300 ${
+            <TfiPowerOff className="text-[#909096] group-hover:text-[#FFB255] text-xl" />
+            <div
+              className={`flex flex-col items-start transition-opacity duration-300 ${
                 isCollapsed ? "opacity-0" : "opacity-100"
               }`}
             >
-              Support
-            </span>
+              <span className="text-[#f5f5f5] text-sm">Logout</span>
+            </div>
             {isCollapsed && (
               <span className="absolute left-full ml-3 px-2 py-1 bg-[#3a3b40] text-white 
                 text-sm rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                Support
+                Logout
               </span>
             )}
           </button>
-        </div>
+        </form>
+        <button
+          className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all
+            hover:bg-[#3a3b40] group relative ${
+              isCollapsed ? "justify-center" : ""
+            }`}
+        >
+          <RxQuestionMarkCircled
+            className="text-[#909096] group-hover:text-[#FFB255] text-xl"
+          />
+          <span
+            className={`text-[#f5f5f5] text-sm transition-opacity duration-300 ${
+              isCollapsed ? "opacity-0" : "opacity-100"
+            }`}
+          >
+            Support
+          </span>
+          {isCollapsed && (
+            <span className="absolute left-full ml-3 px-2 py-1 bg-[#3a3b40] text-white 
+              text-sm rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+              Support
+            </span>
+          )}
+        </button>
       </div>
     </aside>
   );
@@ -270,4 +269,5 @@ AsideComp.propTypes = {
   setIsCollapsed: PropTypes.func.isRequired,
   files: PropTypes.array,
 };
+
 export default AsideComp;

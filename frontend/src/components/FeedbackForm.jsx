@@ -1,7 +1,12 @@
-import { useState, useEffect, forwardRef, useImperativeHandle, useCallback } from "react";
+import {
+  useState,
+  useEffect,
+  forwardRef,
+  useImperativeHandle,
+  useCallback,
+} from "react";
 import { useMemo } from "react";
 import axios from "axios";
-import { IoReturnUpBackSharp } from "react-icons/io5";
 import { Check, X, AlertCircle } from "lucide-react";
 import LoadingSpinner from "./LoadingSpinner";
 import COPOMapping from "./COPOMapping";
@@ -14,14 +19,15 @@ import AddField from "./AddFiled";
 import WeeklyTimetable from "./WeeklyTimetable";
 import PDFUploader from "./PDFUploader";
 import COAssessmentWeightage from "./COAssessmentWeightage";
-import COAttainmentCriteria from './COAttainmentCriteria';
+import COAttainmentCriteria from "./COAttainmentCriteria";
 import constants from "../constants";
-import COAttainmentTable from './COAttainmentTable';
 import TargetAttainmentTable from "./TargetAttainmentTable";
 import "../css/feedback.css";
 
 const SectionWrapper = ({ number, title, children, className = "" }) => (
-  <div className={`bg-white p-6 rounded-xl shadow-sm border border-gray-100 ${className}`}>
+  <div
+    className={`bg-white p-6 rounded-xl shadow-sm border border-gray-100 ${className}`}
+  >
     <div className="flex items-center gap-4 mb-6">
       <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold">
         {number}
@@ -42,12 +48,14 @@ const FeedbackForm = forwardRef((props, ref) => {
     module: props.module || "",
     session: props.session || "",
     program: props.program || "",
-    courseSyllabus: props.courseSyllabus || [{
-      srNo: 1,
-      content: "",
-      co: "",
-      sessions: "",
-    }],
+    courseSyllabus: props.courseSyllabus || [
+      {
+        srNo: 1,
+        content: "",
+        co: "",
+        sessions: "",
+      },
+    ],
     learningResources: {
       textBooks: props.learningResources?.textBooks || [],
       referenceLinks: props.learningResources?.referenceLinks || [],
@@ -56,15 +64,16 @@ const FeedbackForm = forwardRef((props, ref) => {
     copoMappingData: props.copoMappingData || {
       courseOutcomes: {},
       mappingData: {},
-      tableMode: 'manual',
+      tableMode: "manual",
       imagePath: null,
-      imageFileName: null
+      imageFileName: null,
     },
     studentListData: props.studentListData || [],
-    weakStudentsData: props.weakStudentsData?.map(student => ({
-      ...student,
-      status: student.status || "Pending"
-    })) || [],
+    weakStudentsData:
+      props.weakStudentsData?.map((student) => ({
+        ...student,
+        status: student.status || "Pending",
+      })) || [],
     marksDetailsData: props.marksDetailsData || [],
     attendanceReportData: props.attendanceReportData || [],
     internalAssessmentData: props.internalAssessmentData || { components: [] },
@@ -85,12 +94,12 @@ const FeedbackForm = forwardRef((props, ref) => {
     components: {
       quiz1: { component: "Quiz 1", weightage: 20, maxMarks: 20 },
       caseStudy: { component: "Case Study", weightage: 30 },
-      project: { weightage: 50 } // Missing component name
-    }
+      project: { weightage: 50 }, // Missing component name
+    },
   });
 
   const [isWeightageValid, setIsWeightageValid] = useState(false);
-  const programOptions = ['CSE', 'ME', 'ECOM', 'ECT'];
+  const programOptions = ["CSE", "ME", "ECOM", "ECT"];
   const [processedStudents, setProcessedStudents] = useState([]);
   const [targetLevels, setTargetLevels] = useState([]);
 
@@ -99,17 +108,17 @@ const FeedbackForm = forwardRef((props, ref) => {
   }, [props.aqis]);
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
   // Add useEffect to track validation changes
   useEffect(() => {
     const validate = () => {
       const isValid = isWeightageValid && validateCriteria();
-      const message = isValid ? "" : (
-        !isWeightageValid
-          ? "CO weightages must total 100%"
-          : "CO criteria needs adjustment"
-      );
+      const message = isValid
+        ? ""
+        : !isWeightageValid
+        ? "CO weightages must total 100%"
+        : "CO criteria needs adjustment";
       props.onValidationChange({ isValid, message });
       return { isValid, message };
     };
@@ -118,40 +127,43 @@ const FeedbackForm = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     validateForm: () => {
       const isValid = isWeightageValid && validateCriteria();
-      const message = isValid ? "" : (
-        !isWeightageValid
-          ? "CO weightages must total 100%"
-          : "CO criteria needs adjustment"
-      );
+      const message = isValid
+        ? ""
+        : !isWeightageValid
+        ? "CO weightages must total 100%"
+        : "CO criteria needs adjustment";
       props.onValidationChange({ isValid, message });
       return { isValid, message };
     },
-    submitForm: handleSubmit
+    submitForm: handleSubmit,
   }));
   // In FeedbackForm.jsx
   // Add similar effects for other props if needed
 
   // Update validateForm method
 
-
   const handleCOPOMappingChange = (data) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       copoMappingData: {
         ...prev.copoMappingData,
         ...data,
-        courseOutcomes: data.courseOutcomes || prev.copoMappingData.courseOutcomes,
+        courseOutcomes:
+          data.courseOutcomes || prev.copoMappingData.courseOutcomes,
         mappingData: data.mappingData || prev.copoMappingData.mappingData,
         tableMode: data.tableMode || prev.copoMappingData.tableMode,
-        imagePath: data.imagePath || prev.copoMappingData.imagePath
-      }
+        imagePath: data.imagePath || prev.copoMappingData.imagePath,
+      },
     }));
   };
 
   const totalCOWeights = useMemo(() => {
     const totals = {};
     Object.entries(formData.coWeightages).forEach(([co, assessments]) => {
-      totals[co] = Object.values(assessments).reduce((sum, weight) => sum + Number(weight), 0);
+      totals[co] = Object.values(assessments).reduce(
+        (sum, weight) => sum + Number(weight),
+        0
+      );
     });
     return totals;
   }, [formData.coWeightages]);
@@ -159,27 +171,45 @@ const FeedbackForm = forwardRef((props, ref) => {
   const handleFileChange = (fileData, identifier) => {
     const { content } = fileData;
     if (!content || !Array.isArray(content)) return;
-
+  
     const studentList = content.map(row => ({
-      uniqueId: row["Unique Id"] || row["uniqueId"] || row["ID"],
+      uniqueId: row["Unique Id."] || row["Unique Id"] || row["ID"],
       studentName: row["Student Name"] || row["studentName"] || row["Name"],
     }));
-
-    const marksDetails = content.map(row => ({
-      uniqueId: row["Unique Id"],
-      studentName: row["Student Name"],
-      totalMarks: parseFloat(row["Total Marks"]),
-      grade: row["Grade"],
-    }));
-
+  
+    const marksDetails = content.map(row => {
+      const componentMarks = {
+        assignment: row["Assignment(10)"],
+        endTerm: row["End term examination(40)"],
+        presentation: row["Group Presentation(10)"],
+        participation: row["Individual Class Participation(10)"],
+        midTerm: row["Mid Term Exam(20)"],
+        rolePlay: row["Role Play(10)"]
+      };
+      
+      return {
+        uniqueId: row["Unique Id."],
+        studentName: row["Student Name"],
+        ...componentMarks,
+        totalMarks: parseFloat(row["Total Marks(100.0)"]),
+        grade: row["Grading"],
+        attendance: parseFloat(row["Attendance"])
+      };
+    });
+  
     const attendanceReport = content.map(row => ({
-      uniqueId: row["Unique Id"],
+      uniqueId: row["Unique Id."],
       studentName: row["Student Name"],
       attendance: parseFloat(row["Attendance"]),
     }));
-
-    const weakStudents = marksDetails.filter(student => student.totalMarks < 90);
-
+  
+    const weakStudents = marksDetails
+      .filter(student => student.totalMarks < 90)
+      .map(student => ({
+        ...student,
+        status: student.status || "Pending"
+      }));
+  
     setFormData(prev => ({
       ...prev,
       studentListData: studentList,
@@ -191,17 +221,21 @@ const FeedbackForm = forwardRef((props, ref) => {
   };
 
   const handleStudentStatusChange = async (uniqueId, newStatus) => {
-    const updatedStudents = formData.weakStudentsData.map(student =>
-      student.uniqueId === uniqueId ? { ...student, status: newStatus } : student
+    const updatedStudents = formData.weakStudentsData.map((student) =>
+      student.uniqueId === uniqueId
+        ? { ...student, status: newStatus }
+        : student
     );
 
-    setFormData(prev => ({ ...prev, weakStudentsData: updatedStudents }));
+    setFormData((prev) => ({ ...prev, weakStudentsData: updatedStudents }));
 
     if (newStatus === "Accepted") {
       try {
-        const studentToSave = updatedStudents.find(s => s.uniqueId === uniqueId);
+        const studentToSave = updatedStudents.find(
+          (s) => s.uniqueId === uniqueId
+        );
         await axios.post("/api/save-weak-student", studentToSave, {
-          headers: { "x-auth-token": token }
+          headers: { "x-auth-token": token },
         });
       } catch (error) {
         console.error("Error saving student data:", error);
@@ -209,22 +243,28 @@ const FeedbackForm = forwardRef((props, ref) => {
     }
   };
   const handleTargetSave = useCallback((targets) => {
-    setFormData(prev => ({ ...prev, targetAttainments: targets }));
+    setFormData((prev) => ({ ...prev, targetAttainments: targets }));
   }, []);
 
-
   const removeRejectedStudents = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      weakStudentsData: prev.weakStudentsData.filter(s => s.status !== "Rejected")
+      weakStudentsData: prev.weakStudentsData.filter(
+        (s) => s.status !== "Rejected"
+      ),
     }));
   };
 
   const validateCriteria = () => {
-    return Object.values(formData.coAttainmentCriteria).every(({ full, partial }) =>
-      parseFloat(full) >= parseFloat(partial)
+    return Object.values(formData.coAttainmentCriteria).every(
+      ({ full, partial }) => parseFloat(full) >= parseFloat(partial)
     );
   };
+  useEffect(() => {
+    if (formData.studentListData.length > 0) {
+      setProcessedStudents(formData.studentListData);
+    }
+  }, [formData.studentListData]);
 
   const handleSubmit = async () => {
     if (!isWeightageValid || !validateCriteria()) {
@@ -234,9 +274,13 @@ const FeedbackForm = forwardRef((props, ref) => {
 
     try {
       setIsLoading(true);
-      await axios.post(`${constants.url}/form`, { ...formData, num: props.num }, {
-        headers: { "x-auth-token": token }
-      });
+      await axios.post(
+        `${constants.url}/form`,
+        { ...formData, num: props.num },
+        {
+          headers: { "x-auth-token": token },
+        }
+      );
       window.location.reload();
     } catch (error) {
       console.error("Submission error:", error);
@@ -248,18 +292,17 @@ const FeedbackForm = forwardRef((props, ref) => {
   const getAssessmentComponents = (internalAssessmentData) => {
     if (!internalAssessmentData?.components) return [];
 
-    return Object.values(internalAssessmentData.components).map(component => ({
-      name: component.component?.trim() || 'Unnamed Assessment',
-      weightage: component.weightage,
-      maxMarks: component.maxMarks || 100 // Default to 100 if maxMarks is not specified
-    }));
+    return Object.values(internalAssessmentData.components).map(
+      (component) => ({
+        name: component.component?.trim() || "Unnamed Assessment",
+        weightage: component.weightage,
+        maxMarks: component.maxMarks || 100, // Default to 100 if maxMarks is not specified
+      })
+    );
   };
 
   return (
     <div className="p-5 gap-6 h-fit w-full flex flex-col bg-[#FFFEFD] overflow-hidden">
-
-
-
       {/* Form Sections */}
       <div className="space-y-6 overflow-y-auto pb-8">
         <div className="bg-white rounded-xl shadow-md p-6 border-t border-r border-b border-l-4 border-[#FFB255] ">
@@ -274,24 +317,30 @@ const FeedbackForm = forwardRef((props, ref) => {
               <div className="space-y-2 text-gray-600">
                 <p className="flex items-center">
                   <span className="w-2 h-2 bg-[#FFB255] rounded-full mr-2"></span>
-                  All fields in this form are editable and can be modified as needed.
+                  All fields in this form are editable and can be modified as
+                  needed.
                 </p>
                 <p className="flex items-center">
                   <span className="w-2 h-2 bg-[#FFB255] rounded-full mr-2"></span>
-                  The initial data has been automatically extracted from your course handout using AI.
+                  The initial data has been automatically extracted from your
+                  course handout using AI.
                 </p>
                 <p className="flex items-center">
                   <span className="w-2 h-2 bg-[#FFB255] rounded-full mr-2"></span>
-                  Please review all information carefully as AI-extracted data may not be 100% accurate.
+                  Please review all information carefully as AI-extracted data
+                  may not be 100% accurate.
                 </p>
                 <p className="flex items-center">
                   <span className="w-2 h-2 bg-[#FFB255] rounded-full mr-2"></span>
-                  You can save your progress at any time using the Submit Form button.
+                  You can save your progress at any time using the Submit Form
+                  button.
                 </p>
               </div>
               <div className="mt-4 p-3 bg-orange-50 rounded-lg border border-orange-100">
                 <p className="text-sm text-orange-700">
-                  <span className="font-semibold">Pro Tip:</span> Take your time to verify each section, especially numerical data and dates, before final submission.
+                  <span className="font-semibold">Pro Tip:</span> Take your time
+                  to verify each section, especially numerical data and dates,
+                  before final submission.
                 </p>
               </div>
             </div>
@@ -300,39 +349,49 @@ const FeedbackForm = forwardRef((props, ref) => {
         <SectionWrapper number="1-5" title="Course Information">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">Program</label>
+              <label className="text-sm font-medium text-gray-700">
+                Program
+              </label>
               <select
                 value={formData.program}
-                onChange={(e) => handleInputChange('program', e.target.value)}
+                onChange={(e) => handleInputChange("program", e.target.value)}
                 className="w-full p-2 border rounded-md focus:ring-2 focus:ring-[#FFB255]"
               >
                 <option value="">Select Program</option>
-                {programOptions.map(opt => (
-                  <option key={opt} value={opt}>{opt}</option>
+                {programOptions.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
                 ))}
               </select>
             </div>
 
-            {['coursecode', 'coursetitle', 'module', 'session'].map((field, idx) => (
-              <div key={field} className="space-y-1">
-                <label className="text-sm font-medium text-gray-700">
-                  {field.charAt(0).toUpperCase() + field.slice(1)}
-                </label>
-                <input
-                  value={formData[field]}
-                  onChange={(e) => handleInputChange(field, e.target.value)}
-                  className="w-full p-2 border rounded-md focus:ring-2 focus:ring-[#FFB255]"
-                  placeholder={`Enter ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`}
-                />
-              </div>
-            ))}
+            {["coursecode", "coursetitle", "module", "session"].map(
+              (field, idx) => (
+                <div key={field} className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">
+                    {field.charAt(0).toUpperCase() + field.slice(1)}
+                  </label>
+                  <input
+                    value={formData[field]}
+                    onChange={(e) => handleInputChange(field, e.target.value)}
+                    className="w-full p-2 border rounded-md focus:ring-2 focus:ring-[#FFB255]"
+                    placeholder={`Enter ${field
+                      .replace(/([A-Z])/g, " $1")
+                      .toLowerCase()}`}
+                  />
+                </div>
+              )
+            )}
           </div>
         </SectionWrapper>
 
         <SectionWrapper number="6" title="Course Description and Objectives">
           <EditableCourseDescription
             courseDescription={formData.EditableCourseDescriptionData}
-            onChange={(data) => handleInputChange('EditableCourseDescriptionData', data)}
+            onChange={(data) =>
+              handleInputChange("EditableCourseDescriptionData", data)
+            }
           />
         </SectionWrapper>
 
@@ -345,7 +404,7 @@ const FeedbackForm = forwardRef((props, ref) => {
 
         <SectionWrapper number="8" title="Internal Assessments">
           <InternalAssessmentTable
-            onSave={(data) => handleInputChange('internalAssessmentData', data)}
+            onSave={(data) => handleInputChange("internalAssessmentData", data)}
             initialData={formData.internalAssessmentData}
           />
         </SectionWrapper>
@@ -355,7 +414,7 @@ const FeedbackForm = forwardRef((props, ref) => {
             copoMappingData={formData.copoMappingData}
             internalAssessmentData={formData.internalAssessmentData}
             initialWeightages={formData.coWeightages}
-            onChange={(data) => handleInputChange('coWeightages', data)}
+            onChange={(data) => handleInputChange("coWeightages", data)}
             onValidationChange={setIsWeightageValid}
           />
         </SectionWrapper>
@@ -364,7 +423,7 @@ const FeedbackForm = forwardRef((props, ref) => {
           <COAttainmentCriteria
             copoMappingData={formData.copoMappingData}
             initialCriteria={formData.coAttainmentCriteria}
-            onSave={(data) => handleInputChange('coAttainmentCriteria', data)}
+            onSave={(data) => handleInputChange("coAttainmentCriteria", data)}
           />
         </SectionWrapper>
         <SectionWrapper number="11" title="Target Attainment Table">
@@ -372,16 +431,14 @@ const FeedbackForm = forwardRef((props, ref) => {
             initialData={formData.targetAttainments}
             onSave={(targets) => {
               setTargetLevels(targets);
-              handleInputChange('targetAttainments', targets);
+              handleInputChange("targetAttainments", targets);
             }}
           />
         </SectionWrapper>
 
-
-
         <SectionWrapper number="11" title="Course Syllabus">
           <CourseSyllabus
-            onSave={(data) => handleInputChange('courseSyllabus', data)}
+            onSave={(data) => handleInputChange("courseSyllabus", data)}
             initialData={formData.courseSyllabus}
           />
         </SectionWrapper>
@@ -400,18 +457,22 @@ const FeedbackForm = forwardRef((props, ref) => {
             <AddField
               label="Text Book"
               initialData={formData.learningResources.textBooks}
-              onChange={(data) => handleInputChange('learningResources', {
-                ...formData.learningResources,
-                textBooks: data
-              })}
+              onChange={(data) =>
+                handleInputChange("learningResources", {
+                  ...formData.learningResources,
+                  textBooks: data,
+                })
+              }
             />
             <AddField
               label="Reference Link"
               initialData={formData.learningResources.referenceLinks}
-              onChange={(data) => handleInputChange('learningResources', {
-                ...formData.learningResources,
-                referenceLinks: data
-              })}
+              onChange={(data) =>
+                handleInputChange("learningResources", {
+                  ...formData.learningResources,
+                  referenceLinks: data,
+                })
+              }
             />
           </div>
         </SectionWrapper>
@@ -419,7 +480,9 @@ const FeedbackForm = forwardRef((props, ref) => {
         <SectionWrapper number="13" title="Weekly Time-Table">
           <WeeklyTimetable
             initialData={formData.weeklyTimetableData}
-            onChange={(newTimetable) => handleInputChange('weeklyTimetableData', newTimetable)}
+            onChange={(newTimetable) =>
+              handleInputChange("weeklyTimetableData", newTimetable)
+            }
           />
         </SectionWrapper>
 
@@ -440,7 +503,8 @@ const FeedbackForm = forwardRef((props, ref) => {
             initialData={formData.weakStudentsData}
           />
           <div className="space-y-4">
-            {!formData.weakStudentsData || formData.weakStudentsData.length === 0 ? (
+            {!formData.weakStudentsData ||
+            formData.weakStudentsData.length === 0 ? (
               <div className="text-center py-10 bg-gray-50 rounded-lg border border-gray-100">
                 <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-600 font-semibold text-lg">
@@ -477,21 +541,25 @@ const FeedbackForm = forwardRef((props, ref) => {
                         <div className="text-gray-800 font-medium">
                           {student.studentName}
                         </div>
-                        <div className={`text-sm font-medium ${student.status === 'Accepted'
-                          ? 'text-green-600'
-                          : student.status === 'Rejected'
-                            ? 'text-red-600'
-                            : 'text-gray-500'
-                          }`}>
+                        <div
+                          className={`text-sm font-medium ${
+                            student.status === "Accepted"
+                              ? "text-green-600"
+                              : student.status === "Rejected"
+                              ? "text-red-600"
+                              : "text-gray-500"
+                          }`}
+                        >
                           Status: {student.status}
                         </div>
                       </div>
                       <div className="flex justify-end space-x-2">
                         <button
-                          className={`flex items-center px-3 py-1.5 rounded-lg text-sm ${student.status === "Accepted"
-                            ? "bg-[#FFB255] text-white cursor-not-allowed"
-                            : "bg-white border border-[#FFB255] text-[#FFB255]"
-                            }`}
+                          className={`flex items-center px-3 py-1.5 rounded-lg text-sm ${
+                            student.status === "Accepted"
+                              ? "bg-[#FFB255] text-white cursor-not-allowed"
+                              : "bg-white border border-[#FFB255] text-[#FFB255]"
+                          }`}
                           disabled={student.status === "Accepted"}
                           onClick={() =>
                             handleStudentStatusChange(
@@ -504,10 +572,11 @@ const FeedbackForm = forwardRef((props, ref) => {
                           Accept
                         </button>
                         <button
-                          className={`flex items-center px-3 py-1.5 rounded-lg text-sm ${student.status === "Rejected"
-                            ? "bg-gray-600 text-white cursor-not-allowed"
-                            : "bg-white border border-gray-400 text-gray-600"
-                            }`}
+                          className={`flex items-center px-3 py-1.5 rounded-lg text-sm ${
+                            student.status === "Rejected"
+                              ? "bg-gray-600 text-white cursor-not-allowed"
+                              : "bg-white border border-gray-400 text-gray-600"
+                          }`}
                           disabled={student.status === "Rejected"}
                           onClick={() =>
                             handleStudentStatusChange(
@@ -537,15 +606,23 @@ const FeedbackForm = forwardRef((props, ref) => {
         <SectionWrapper number="16" title="Actions Taken for Weak Students">
           <ActionsForWeakStudents
             initialData={formData.actionsForWeakStudentsData}
-            onSave={(updatedData) => handleInputChange('actionsForWeakStudentsData', updatedData)}
+            onSave={(updatedData) =>
+              handleInputChange("actionsForWeakStudentsData", updatedData)
+            }
           />
         </SectionWrapper>
 
-        <SectionWrapper number="17" title="Assignments/Quiz/Internal Components/Projects Taken Throughout Semester">
+        <SectionWrapper
+          number="17"
+          title="Assignments/Quiz/Internal Components/Projects Taken Throughout Semester"
+        >
           <PDFUploader num={props.num} aqis={aqis} />
         </SectionWrapper>
 
-        <SectionWrapper number="18" title="Detail of Marks in all Components up to the End Semester">
+        <SectionWrapper
+          number="18"
+          title="Detail of Marks in all Components up to the End Semester"
+        >
           <ExcelUploader
             title="Marks Details"
             identifier="marksDetails"
@@ -563,7 +640,6 @@ const FeedbackForm = forwardRef((props, ref) => {
           />
         </SectionWrapper>
 
-
         <div className="bg-white p-7 rounded-2xl  border border-gray-100 mt-8  transition-all duration-300">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-9 h-9 flex items-center justify-center mr-2 shadow-sm transform hover:scale-105 transition-transform duration-200">
@@ -571,13 +647,15 @@ const FeedbackForm = forwardRef((props, ref) => {
             </div>
 
             <h2 className="section-title text-xl font-semibold text-gray-800">
-              Feedback (class committee or otherwise) and
-              corrective actions (if any)
+              Feedback (class committee or otherwise) and corrective actions (if
+              any)
             </h2>
           </div>
 
           <div className="w-full flex flex-row gap-6 items-center">
-            <label className="text-gray-700 font-medium">Quantitative feedback:</label>
+            <label className="text-gray-700 font-medium">
+              Quantitative feedback:
+            </label>
             <textarea
               className="w-20 p-3 border border-gray-200 rounded-lg transition-all resize-none text-gray-700 focus:ring-2 focus:ring-[#FFB255]/20 focus:border-[#FFB255] outline-none"
               placeholder="Rating..."
@@ -593,7 +671,7 @@ const FeedbackForm = forwardRef((props, ref) => {
             rows="2"
           />
         </div>
-        <div className="bg-white p-7 rounded-2xl shadow-md border border-gray-100 mt-8 hover:shadow-lg transition-all duration-300" >
+        <div className="bg-white p-7 rounded-2xl shadow-md border border-gray-100 mt-8 hover:shadow-lg transition-all duration-300">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-9 h-9 flex items-center justify-center mr-2 shadow-sm transform hover:scale-105 transition-transform duration-200">
               21
