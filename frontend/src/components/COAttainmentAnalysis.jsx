@@ -35,7 +35,7 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria 
 
       studentData.data.forEach((student, index) => {
         const studentResult = {
-          id: index + 1,
+          id: student["Unique Id."],
           rollNumber: student["Student Name"] || `Student ${index + 1}`,
           coScores: {}
         };
