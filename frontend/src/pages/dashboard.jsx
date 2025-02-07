@@ -10,9 +10,7 @@ import FeedbackForm from '../components/FeedbackForm';
 import { IoReturnUpBackSharp } from "react-icons/io5";
 import { AlertCircle } from "lucide-react";
 
-
 const Dashboard = () => {
-  
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const [file, setFileData] = useState(null);
@@ -24,7 +22,7 @@ const Dashboard = () => {
     isValid: true,
     message: ""
   });
-  
+  const [isFetchingFileDetails, setIsFetchingFileDetails] = useState(false);
 
   useEffect(() => {
     const checkTokenValidity = async () => {
@@ -67,6 +65,7 @@ const Dashboard = () => {
 
     checkTokenValidity();
   }, [navigate]);
+
   const handleFileSelection = (index) => {
     setSelectedFileIndex(index);
     setSelectedFileData(null); // Reset the file data before fetching new data
@@ -93,31 +92,44 @@ const Dashboard = () => {
   }, [userData]);
 
   useEffect(() => {
+    let pollingInterval = null;
+
     const fetchFileDetails = async () => {
       if (selectedFileIndex !== null) {
         const token = localStorage.getItem("token");
         try {
+          setIsFetchingFileDetails(true);
           const response = await axios.post(
             constants.url + '/numdata',
             { num: selectedFileIndex },
             { headers: { 'x-auth-token': token } }
           );
           setSelectedFileData(response.data);
+
+          if (response.data.done === 1) {
+            clearInterval(pollingInterval);
+            setIsFetchingFileDetails(false);
+          }
         } catch (error) {
           console.error("Error fetching file details:", error);
+          setIsFetchingFileDetails(false);
         }
       }
     };
 
     if (selectedFileIndex !== null) {
       fetchFileDetails();
+      pollingInterval = setInterval(fetchFileDetails, 1000);
     }
+
+    return () => clearInterval(pollingInterval);
   }, [selectedFileIndex]);
 
   const handleBackToFiles = () => {
     setSelectedFileIndex(null);
     setSelectedFileData(null);
   };
+
   const feedbackFormRef = useRef();
   const handleSubmit = async () => {
     try {
@@ -191,7 +203,6 @@ const Dashboard = () => {
                 </button>
 
                 <div className="flex items-center gap-4">
-                  {/* In Dashboard's render */}
                   {!formValidation.isValid && (
                     <div className="flex items-center gap-2 bg-red-50 px-4 py-2 rounded-lg border border-red-100">
                       <AlertCircle className="w-5 h-5 text-red-600" />

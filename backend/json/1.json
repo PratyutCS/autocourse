@@ -558,5 +558,204 @@
       ""
     ],
     "coWeightages": {}
+  },
+  {
+    "filename": "1738947412C Programming Course Handout for Batch 2024-28.pdf",
+    "done": 1,
+    "Program": "CSE",
+    "Session": "2022",
+    "course_code": "CSE101",
+    "course_name": "Introduction to Computer Science",
+    "Module/Semester": "1st Semester",
+    "course_description": "This course provides an overview of computer science and its relevance in today's world. It covers fundamental concepts such as programming, data structures, algorithms, and software development methodologies.",
+    "Course Syllabus": {
+      "courseSyllabus": [
+        {
+          "srNo": 1,
+          "content": "Introduction to Computer Science",
+          "co": "CO1",
+          "sessions": 3
+        },
+        {
+          "srNo": 2,
+          "content": "Programming Basics",
+          "co": "CO1",
+          "sessions": 2
+        }
+      ]
+    },
+    "Learning Resources": {
+      "textBooks": [
+        "Introduction to Algorithms by Thomas H. Cormen",
+        "Computer Systems: A Programmer's Perspective by Randal E. Bryant"
+      ],
+      "referenceLinks": [
+        "Computer Science: The Hardware, Software, and Heart of It by H. C. Lauer",
+        "Data Structures and Algorithms by A. Aho"
+      ]
+    },
+    "internalAssessmentData": {
+      "components": {
+        "component1731776591362": {
+          "component": "Assignment",
+          "duration": "2 weeks",
+          "weightage": "10%",
+          "evaluationWeek": "Week 5",
+          "remarks": "Individual work required"
+        }
+      }
+    },
+    "copoMappingData": {
+      "courseOutcomes": {
+        "CO1": {
+          "description": "Understand the basic concepts of computer science",
+          "bullets": []
+        }
+      },
+      "mappingData": {
+        "CO1": {
+          "PO1": "0",
+          "PO2": "0",
+          "PO3": "0",
+          "PO4": "0",
+          "PO5": "0",
+          "PO6": "",
+          "PO7": "",
+          "PO8": "",
+          "PO9": "",
+          "PO10": "",
+          "PO11": "",
+          "PO12": "",
+          "PSO1": "",
+          "PSO2": "",
+          "PSO3": "",
+          "PSO4": ""
+        }
+      }
+    },
+    "actionsForWeakStudentsData": [
+      ""
+    ],
+    "coWeightages": {}
+  },
+  {
+    "filename": "1738948231C Programming Course Handout for Batch 2024-28.pdf",
+    "done": 1,
+    "Program": "CSE",
+    "Course Syllabus": {
+      "courseSyllabus": [
+        {
+          "srNo": 1,
+          "content": "Topic Name with Details",
+          "co": "1",
+          "sessions": 1
+        }
+      ]
+    },
+    "Learning Resources": {
+      "textBooks": [],
+      "referenceLinks": []
+    },
+    "internalAssessmentData": {
+      "components": {}
+    },
+    "copoMappingData": {
+      "courseOutcomes": {
+        "CO1": {
+          "description": "",
+          "bullets": []
+        }
+      },
+      "mappingData": {
+        "CO1": {
+          "PO1": "0",
+          "PO2": "0",
+          "PO3": "0",
+          "PO4": "0",
+          "PO5": "0",
+          "PO6": "0",
+          "PO7": "0",
+          "PO8": "0",
+          "PO9": "0",
+          "PO10": "0",
+          "PO11": "0",
+          "PO12": "0",
+          "PSO1": "0",
+          "PSO2": "0",
+          "PSO3": "0",
+          "PSO4": "0"
+        }
+      }
+    },
+    "actionsForWeakStudentsData": [
+      ""
+    ],
+    "coWeightages": {}
+  },
+  {
+    "filename": "1738948550C Programming Course Handout for Batch 2024-28.pdf",
+    "done": 1,
+    "Program": "CSE",
+    "Course Syllabus": {
+      "courseSyllabus": [
+        {
+          "srNo": 1,
+          "content": "Topic Name with Details",
+          "co": "1",
+          "sessions": 1
+        }
+      ]
+    },
+    "Learning Resources": {
+      "textBooks": [
+        "title, author, publisher, edition, year, isbn"
+      ],
+      "referenceLinks": [
+        "title, authors, journal, volume, year, doi"
+      ]
+    },
+    "internalAssessmentData": {
+      "components": {
+        "component1731776591362": {
+          "component": "",
+          "duration": "",
+          "weightage": "",
+          "evaluationWeek": "",
+          "remarks": ""
+        }
+      }
+    },
+    "copoMappingData": {
+      "courseOutcomes": {
+        "CO1": {
+          "description": "",
+          "bullets": []
+        }
+      },
+      "mappingData": {
+        "CO1": {
+          "PO1": "0",
+          "PO2": "0",
+          "PO3": "0",
+          "PO4": "0",
+          "PO5": "0",
+          "PO6": "0",
+          "PO7": "0",
+          "PO8": "0",
+          "PO9": "0",
+          "PO10": "0",
+          "PO11": "0",
+          "PO12": "0",
+          "PSO1": "0",
+          "PSO2": "0",
+          "PSO3": "0",
+          "PSO4": "0"
+        }
+      }
+    },
+    "actionsForWeakStudentsData": [
+      ""
+    ],
+    "coWeightages": {}
   }
 ]
