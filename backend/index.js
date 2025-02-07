@@ -552,67 +552,10 @@ app.post('/upload-pdf', auth, (req, res) => {
   });
 });
 
-
-// get image
-app.post("/download-img", auth, async (req, res) => {
-  const num = req.body.num;
-
-  if (num === undefined) {
-    console.error("Error: 'num' is missing in the request");
-    return res.status(400).json({ message: "Error in /download: Missing 'num'" });
-  }
-
-  try {
-    const user = await User.findById(req.user);
-    const directoryPath = path.join(__dirname, "/json/", `${user.number}.json`);
-
-    if (!fs.existsSync(directoryPath)) {
-      return res.status(400).json({ message: "File not found" });
-    }
-
-    fs.readFile(directoryPath, "utf8", (err, data) => {
-      if (err) {
-        console.error("Error reading file:", err);
-        return res.status(500).json({ message: "Error reading files" });
-      }
-
-      try {
-        const jsonData = JSON.parse(data);
-        if (num >= jsonData.length || num < 0) {
-          return res.status(400).json({ message: "Invalid 'num' parameter." });
-        }
-
-        const fileData = jsonData[num];
-        const imgPath = path.join(__dirname, "images", fileData.imagePath);
-
-        
-
-        if (!fs.existsSync(imgPath)) {
-          console.error("IMAGE file not found:", imgPath);
-          return res.status(500).json({ message: "IMAGE file not found" });
-        }
-
-        res.download(imgPath, "image", (err) => {
-          if (err) {
-            console.error("Error occurred during file download:", err);
-            return res.status(500).json({ message: "Error downloading the file" });
-          }
-        });
-      } catch (parseError) {
-        console.error("Error parsing JSON data:", parseError);
-        res.status(500).json({ message: "Error parsing JSON data" });
-      }
-    });
-  } catch (error) {
-    console.error("Error in /download route:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
 // to delete merge pdf
 app.post("/merge-delete", auth, async (req, res) => {
 
-  const num = req.body.num;
+  const num = parseInt(req.headers.num);
 
   if (num === undefined) {
     console.error("Error: 'num' is undefined.");

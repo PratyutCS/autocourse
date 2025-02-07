@@ -11,7 +11,6 @@ import EditableCourseDescription from "./EditableCourseDescription";
 import CourseSyllabus from "./CourseSyllabus";
 import AddField from "./AddFiled";
 import WeeklyTimetable from "./WeeklyTimetable";
-import PDFUploader from "./PDFUploader";
 import { Check, X, AlertCircle } from "lucide-react";
 import COAttainmentAnalysis from "./COAttainmentAnalysis";
 import COAssessmentWeightage from "./COAssessmentWeightage";
@@ -801,20 +800,6 @@ const FeedbackForm = (props) => {
           initialData={actionsForWeakStudentsData}
           onSave={handleWeakStudentsChange}
         />
-
-        {/* Assignments Taken */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              17
-            </div>
-            <h2 className="section-title text-xl font-semibold">
-              Assignments/Quiz/Internal Components/ Projects taken throughout
-              semester
-            </h2>
-          </div>
-          <PDFUploader num={num} aqis={aqis} />
-        </div>
 
         {/* Loading Spinner */}
         {isLoading && <LoadingSpinner />}
