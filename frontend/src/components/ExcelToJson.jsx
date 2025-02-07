@@ -8,7 +8,6 @@ const ExcelToJSON = ({ onSave, initialData }) => {
   const [error, setError] = useState(null);
   const [processedData, setProcessedData] = useState(null);
   const [maxMarksData, setMaxMarksData] = useState(null);
-  const [dataSource, setDataSource] = useState(null);
 
   console.log("INITIAL DATA IS : ", initialData);
 
@@ -40,7 +39,6 @@ const ExcelToJSON = ({ onSave, initialData }) => {
 
         setMaxMarksData(maxMarks);
         setProcessedData(remainingData);
-        setDataSource('initial');
       } catch (error) {
         console.error('Error processing initial data:', error);
         setError('Error processing initial data');
@@ -100,7 +98,6 @@ const ExcelToJSON = ({ onSave, initialData }) => {
 
             setMaxMarksData(maxMarks);
             setProcessedData(remainingData);
-            setDataSource('uploaded');
             onSave({ maxMarks, data: remainingData });
           } catch (error) {
             console.error('Error processing CSV data:', error);
@@ -156,7 +153,6 @@ const ExcelToJSON = ({ onSave, initialData }) => {
 
           setMaxMarksData(maxMarks);
           setProcessedData(remainingData);
-          setDataSource('uploaded');
           onSave({ maxMarks, data: remainingData });
         } catch (error) {
           console.error('Error processing Excel file:', error);
@@ -211,15 +207,6 @@ const ExcelToJSON = ({ onSave, initialData }) => {
       <div className="mt-4 overflow-x-auto">
         <div className="flex justify-between items-center mb-2">
           <h3 className="text-lg font-medium text-gray-700">Preview</h3>
-          {dataSource && (
-            <span className={`px-3 py-1 rounded-full text-sm ${
-              dataSource === 'initial' 
-                ? 'bg-blue-100 text-blue-800'
-                : 'bg-green-100 text-green-800'
-            }`}>
-              {dataSource === 'initial' ? 'Initial Data' : 'Uploaded Data'}
-            </span>
-          )}
         </div>
 
         {/* Display Maximum Marks - Only if there are valid values */}
@@ -287,15 +274,6 @@ const ExcelToJSON = ({ onSave, initialData }) => {
       </div>
 
       <div className="space-y-4">
-        {/* Show initial data message */}
-        {processedData && dataSource === 'initial' && (
-          <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
-            <p className="text-blue-600 text-sm">
-              Displaying initial data with separate maximum marks (undefined values removed). Upload a new file to replace it.
-            </p>
-          </div>
-        )}
-
         <div
           {...getRootProps()}
           className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors
