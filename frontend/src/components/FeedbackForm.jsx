@@ -17,6 +17,9 @@ import { Check, X, AlertCircle } from "lucide-react";
 import COAttainmentAnalysis from "./COAttainmentAnalysis";
 import COAssessmentWeightage from "./COAssessmentWeightage";
 import COAttainmentCriteria from './COAttainmentCriteria';
+
+import ExcelToJson from './ExcelToJson';
+
 const FeedbackForm = (props) => {
   const token = localStorage.getItem("token");
 
@@ -195,7 +198,19 @@ const FeedbackForm = (props) => {
   const handleCoAttainmentCriteriaSave = (criteria) => {
     setCoAttainmentCriteria(criteria);
   };
+  
+  const [studentData, setStudentData] = useState([]);
+
+  const handleStudentDataSave = (data) => {
+    setStudentData(data);
+  };
+
   /////////////////////////////////////////**Use Effect**//////////////////////////
+
+  useEffect(() => {
+    setStudentData(props.studentData || []);
+    console.log("SAVED STUDENT DATA");
+  }, [props.studentData]);
 
   useEffect(() => {
     setCoAttainmentCriteria(props.coAttainmentCriteria || "");
@@ -444,6 +459,7 @@ const FeedbackForm = (props) => {
             attendanceReportData,
             coWeightages,
             coAttainmentCriteria,
+            studentData,
           },
           {
             headers: { "x-auth-token": token },
@@ -693,6 +709,12 @@ const FeedbackForm = (props) => {
             initialData={internalAssessmentData}
           />
         </div>
+
+        {/* Excel to json to extract student data*/}
+        <ExcelToJson 
+          onSave={handleStudentDataSave}
+          initialData={studentData}
+        />
 
         {/* CO Assessment weightage Section */}
         <COAssessmentWeightage
