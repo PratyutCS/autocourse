@@ -1,98 +1,148 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { AlertCircle } from 'lucide-react';
 
-const COAttainmentAnalysis = () => {
-  // Sample data
-  const courseOutcomes = [
-    { name: 'Weights', co1: '45%', co2: '26%', co3: '29%' },
-    { name: 'No. of students scored >=3', co1: 132, co2: 153, co3: 160 },
-    { name: '% age of students scored >= 3', co1: '66%', co2: '76%', co3: '80%' },
-    { name: 'Attainment Level', co1: 2, co2: 3, co3: 3 },
-    { name: 'Overall Course Attainment', co1: 2.55, co2: null, co3: null },
-  ];
+const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria }) => {
+  const [studentPerformance, setStudentPerformance] = useState([]);
 
-  const targetAttainment = [
-    { level: 3, text: '70% Students scoring more than the Target Percentage' },
-    { level: 2, text: '60% Students scoring more than the Target Percentage' },
-    { level: 1, text: '50% Students scoring more than the Target Percentage' },
-  ];
+  useEffect(() => {
+    if (coWeightages && studentData && coAttainmentCriteria) {
+      calculateAttainment();
+    }
+  }, [coWeightages, studentData, coAttainmentCriteria]);
 
-  const programOutcomeContribution = [
-    { co: 'CO1', attainment: 2.53, statement: 'To understand the core principles underlying data structures and their significance in problem-solving.', pso1: 1, pso2: null, pso3: null, pso4: 1 },
-    { co: 'CO2', attainment: 2.52, statement: 'To apply various data structures effectively in solving specific technical and logical problems.', pso1: 3, pso2: 2, pso3: 3, pso4: 3 },
-    { co: 'CO3', attainment: 2.59, statement: 'To analyze and compare the performance of different data structures in specific problem-solving scenarios.', pso1: 3, pso2: null, pso3: 3, pso4: 2 },
-  ];
+  const calculateAttainment = () => {
+    const performanceData = [];
+    
+    // Extract COs from weightages
+    const cos = Object.keys(coWeightages);
+    
+    // Calculate individual student performance first
+    if (studentData?.maxMarks && studentData?.data) {
+      const assessmentComponents = Object.entries(studentData.maxMarks).slice(0, -1);
+      
+      studentData.data.forEach((student, index) => {
+        const studentResult = {
+          id: index + 1,
+          rollNumber: student.rollNumber || `Student ${index + 1}`,
+          coScores: {}
+        };
 
-  return (
-    <div className="bg-white p-8 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6">CO Attainment Measurement Analysis</h2>
+        // Calculate CO-wise scores for each student
+        cos.forEach(co => {
+          let weightedScore = 0;
+          let totalWeight = 0;
 
-      <div className="grid grid-cols-2 gap-8">
-        <div>
-          <h3 className="text-lg font-medium mb-4">Course Outcomes</h3>
-          <table className="w-full border-collapse">
-            <thead>
-              <tr>
-                <th className="px-4 py-2 text-left border-b">Course Outcomes</th>
-                <th className="px-4 py-2 text-center border-b">CO1</th>
-                <th className="px-4 py-2 text-center border-b">CO2</th>
-                <th className="px-4 py-2 text-center border-b">CO3</th>
-              </tr>
-            </thead>
-            <tbody>
-              {courseOutcomes.map((outcome, index) => (
-                <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
-                  <td className="px-4 py-2 text-left border-b">{outcome.name}</td>
-                  <td className="px-4 py-2 text-center border-b">{outcome.co1}</td>
-                  <td className="px-4 py-2 text-center border-b">{outcome.co2}</td>
-                  <td className="px-4 py-2 text-center border-b">{outcome.co3}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          assessmentComponents.forEach(([component, maxMark]) => {
+            const studentScore = student[component] || 0;
+            const coWeight = parseFloat(coWeightages[co][component.toLowerCase()] || 0);
+
+            weightedScore += (studentScore * (coWeight / 100));
+            totalWeight += (maxMark * (coWeight / 100));
+          });
+
+          let partial = coAttainmentCriteria[co].partial;
+          let full = coAttainmentCriteria[co].full;
+
+          console.log("partial: "+partial+" full: "+full);
+          
+          let percentage = 0;
+
+
+          if(totalWeight > 0){
+            percentage = ((weightedScore / totalWeight)*100).toFixed(2);
+          }
+          
+
+          if(percentage >= full){
+            studentResult.coScores[co] = 3;
+          }
+          else if(percentage < full && percentage >= partial){
+            studentResult.coScores[co] = 2;
+          }
+          else{
+            studentResult.coScores[co] = 1;
+          }
+        });
+
+        performanceData.push(studentResult);
+      });
+    }
+
+    setStudentPerformance(performanceData);
+  };
+
+  if (!coWeightages || !studentData || !coAttainmentCriteria) {
+    return (
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+        <div className="flex items-center gap-4 mb-6">
+          <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+            20
+          </div>
+          <h2 className="text-xl font-semibold text-gray-800">
+            CO Attainment Analysis
+          </h2>
         </div>
 
-        <div>
-          <h3 className="text-lg font-medium mb-4">Target Attainment</h3>
-          {targetAttainment.map((item, index) => (
-            <div
-              key={index}
-              className={`p-4 mb-2 rounded-lg ${
-                item.level === 3 ? 'bg-yellow-300' : item.level === 2 ? 'bg-yellow-400' : 'bg-yellow-500'
-              }`}
-            >
-              <p className="text-gray-800 font-medium">{item.text}</p>
-            </div>
-          ))}
+        <div className="text-center py-10 bg-gray-50 rounded-lg border border-gray-100">
+          <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <p className="text-gray-600 font-semibold text-lg">
+            Missing Required Data
+          </p>
+          <p className="text-sm text-gray-500 mt-2">
+            Please ensure CO weightages, student data, and attainment criteria are provided
+          </p>
         </div>
       </div>
+    );
+  }
 
-      <h3 className="text-lg font-medium mt-8 mb-4">Contribution to attainment of Program Outcomes</h3>
-      <table className="w-full border-collapse">
-        <thead>
-          <tr>
-            <th className="px-4 py-2 text-left border-b">CO</th>
-            <th className="px-4 py-2 text-left border-b">Attainment</th>
-            <th className="px-4 py-2 text-left border-b">STATEMENT</th>
-            <th className="px-4 py-2 text-center border-b">PSO1</th>
-            <th className="px-4 py-2 text-center border-b">PSO2</th>
-            <th className="px-4 py-2 text-center border-b">PSO3</th>
-            <th className="px-4 py-2 text-center border-b">PSO4</th>
-          </tr>
-        </thead>
-        <tbody>
-          {programOutcomeContribution.map((item, index) => (
-            <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
-              <td className="px-4 py-2 text-left border-b">{item.co}</td>
-              <td className="px-4 py-2 text-left border-b">{item.attainment}</td>
-              <td className="px-4 py-2 text-left border-b">{item.statement}</td>
-              <td className="px-4 py-2 text-center border-b">{item.pso1}</td>
-              <td className="px-4 py-2 text-center border-b">{item.pso2}</td>
-              <td className="px-4 py-2 text-center border-b">{item.pso3}</td>
-              <td className="px-4 py-2 text-center border-b">{item.pso4}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+  return (
+    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+      <div className="flex items-center gap-4 mb-6">
+        <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+          20
+        </div>
+        <h2 className="text-xl font-semibold text-gray-800">
+          CO Attainment Analysis
+        </h2>
+      </div>
+
+      <div className="space-y-8">
+        {/* Individual Student Performance */}
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Student-wise CO Achievement</h3>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Roll Number
+                  </th>
+                  {Object.keys(coWeightages).map(co => (
+                    <th key={co} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {co} Score
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {studentPerformance.map(student => (
+                  <tr key={student.id}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {student.rollNumber}
+                    </td>
+                    {Object.keys(coWeightages).map(co => (
+                      <td key={`${student.id}_${co}`} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {student.coScores[co]}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

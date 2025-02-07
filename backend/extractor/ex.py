@@ -360,7 +360,8 @@ def create_empty_template():
         "assignmentsTaken": "",
         "marksDetails": "",
         "attendanceReport": "",
-        "actionsForWeakStudentsData": [""]
+        "actionsForWeakStudentsData": [""],
+        "coWeightages":{}
     }
 
 def clean_json_response(response):
@@ -401,13 +402,16 @@ def ai(text):
     }, indent=2)
     
     prompt = f"""
-You must respond with ONLY a valid JSON object matching this structure:
+You must respond with ONLY a raw JSON object - no markdown, no code blocks, no other text.
+All string values must be properly escaped and valid JSON.
+The response must exactly match this structure, with no truncation:
 {json.dumps(initial_template, indent=2)}
 
 Extract relevant information from this text and fill the template:
 {text}
 
 Requirements:
+-0. CSE or ME or ECOM or ECT choose among ony these as the program
 -1. Response must be ONLY the JSON object, no other text
 -2. Keep field names exactly as shown
 -3. Keep empty fields as shown ("" for strings, [] for arrays)
@@ -424,6 +428,7 @@ Requirements:
       - Preserve empty cells as empty strings. Keep it as 0.
       - Ensure the mapping matches the table in the given document exactly
 -12. In courseSyllabus, the course content should come in this format:
+-13. The course outcomes must match mapping data
 {syllabus_format}
 """
     try:
@@ -447,6 +452,8 @@ Requirements:
 if __name__ == '__main__':
     try:
         extracted_text = extract(fn)
+        if not extracted_text:
+            print("Error: No text extracted from PDF")
         response = ai(extracted_text)
         with open(jfn, 'r') as file:
             data = json.load(file)

@@ -734,6 +734,13 @@ const FeedbackForm = (props) => {
           onSave={handleCoAttainmentCriteriaSave}
         />
 
+
+        <COAttainmentAnalysis
+          coWeightages={coWeightages}
+          studentData={studentData}
+          coAttainmentCriteria={coAttainmentCriteria}
+        />
+
         {/* Course Syllabus Section */}
         <CourseSyllabus
           onSave={handleCourseSyllabusChange}
@@ -985,7 +992,6 @@ const FeedbackForm = (props) => {
             initialData={attendanceReportData}
           />
         </div>
-        <COAttainmentAnalysis />
         <div className="bg-white p-7 rounded-2xl  border border-gray-100 mt-8  transition-all duration-300">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-9 h-9 flex items-center justify-center mr-2 shadow-sm transform hover:scale-105 transition-transform duration-200">
