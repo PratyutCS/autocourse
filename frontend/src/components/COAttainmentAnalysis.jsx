@@ -178,23 +178,23 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
         {/* Attainment Summary Table */}
         <div>
           <h3 className="text-lg font-semibold text-gray-800 mb-4">CO Attainment Summary</h3>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <div className="overflow-x-auto rounded-lg border border-gray-200">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="border-b border-gray-200 p-4 text-sm font-semibold text-gray-600 text-left">
                     Course Outcomes
                   </th>
                   {Object.keys(coWeightages).map(co => (
-                    <th key={co} className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th key={co} className="border-b border-gray-200 p-4 text-sm font-semibold text-gray-600 text-center">
                       {co}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                <tr>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+              <tbody>
+                <tr className="border-b border-gray-200 transition-colors">
+                  <td className=" p-4 text-gray-700 font-medium">
                     Weights
                   </td>
                   {Object.keys(coWeightages).map(co => (
@@ -204,31 +204,31 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
                   ))}
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td className="px-6 py-4 border-b border-gray-200 whitespace-nowrap text-sm font-medium text-gray-900">
                     No. of students scored greater than 3
                   </td>
                   {Object.keys(coWeightages).map(co => (
-                    <td key={`scored3_${co}`} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                    <td key={`scored3_${co}`} className="px-6 py-4 border-b border-gray-200 whitespace-nowrap text-sm text-gray-500 text-center">
                       {attainmentSummary.studentsScored3[co]}
                     </td>
                   ))}
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200 text-sm font-medium text-gray-900">
                     Percentage of students scored greater than 3
                   </td>
                   {Object.keys(coWeightages).map(co => (
-                    <td key={`percentage_${co}`} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                    <td key={`percentage_${co}`} className=" border-b border-gray-200 px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                       {attainmentSummary.percentageScored3[co]}
                     </td>
                   ))}
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td className=" border-b border-gray-200  px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     Attainment Level
                   </td>
                   {Object.keys(coWeightages).map(co => (
-                    <td key={`attainment_${co}`} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                    <td key={`attainment_${co}`} className="border-b border-gray-200 px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                       {attainmentSummary.attainmentLevel[co]}
                     </td>
                   ))}
@@ -247,10 +247,10 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
         </div>
 
         {/* Program Attainment Table */}
-        <div>
+        <div className=''>
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Program Attainment</h3>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
+          <div className="overflow-x-auto rounded-lg border border-gray-200">
+            <table className="min-w-full divide-y w-full border-collapse divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -282,7 +282,7 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
         {/* Individual Student Performance Table */}
         <div>
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Student-wise CO Achievement</h3>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-lg border border-gray-200">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -321,10 +321,11 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
                 </tr>
               </tbody>
             </table>
-            <div className="mt-4 text-sm text-gray-500 border-t pt-2 text-center mx-auto w-fit">
+            
+          </div>
+          <div className="mt-4 text-sm text-gray-500 pt-2 text-center mx-auto w-fit">
               Total Rows: {totalRows} | Total Columns: {totalColumns}
             </div>
-          </div>
         </div>
       </div>
     </div>
