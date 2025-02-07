@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Info } from 'lucide-react';
 
 const COAssessmentWeightage = ({
   copoMappingData,
@@ -145,6 +145,17 @@ const COAssessmentWeightage = ({
         <h2 className="text-xl font-semibold text-gray-800">
           CO Assessment Weightage Matrix
         </h2>
+      </div>
+
+      {/* Allocation Guidance Message */}
+      <div className="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-lg flex items-start gap-3">
+        <Info className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
+        <div className="text-sm text-blue-700">
+          <span className="font-semibold">Allocation Guidance:</span>
+          <p>
+            For each assessment component (columns), distribute percentage weights across Course Outcomes (rows) based on how much each assessment contributes to measuring the CO's attainment. Ensure each column totals 100%. Example: If Quiz 1 primarily assesses CO1, you might allocate 70% to CO1 and spread the remaining 30% across other COs it touches.
+          </p>
+        </div>
       </div>
 
       <div className="overflow-x-auto">
