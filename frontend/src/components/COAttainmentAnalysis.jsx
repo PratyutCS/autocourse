@@ -4,6 +4,7 @@ import { AlertCircle } from 'lucide-react';
 const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria, copoMappingData }) => {
   const [studentPerformance, setStudentPerformance] = useState([]);
   const [averages, setAverages] = useState({});
+  const [programAttainment, setProgramAttainment] = useState({});
   const [attainmentSummary, setAttainmentSummary] = useState({
     weights: {},
     studentsScored3: {},
@@ -17,6 +18,48 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
       calculateAttainment();
     }
   }, [coWeightages, studentData, coAttainmentCriteria]);
+
+  useEffect(() => {
+    if (copoMappingData && Object.keys(averages).length > 0) {
+      calculateProgramAttainment();
+    }
+  }, [copoMappingData, averages]);
+  
+  const calculateProgramAttainment = () => {
+    const programAttainments = {};
+    const weightSums = {};
+  
+    // First pass: Initialize data structures for each PO
+    Object.keys(copoMappingData.mappingData).forEach(co => {
+      Object.keys(copoMappingData.mappingData[co]).forEach(po => {
+        if (!programAttainments[po]) {
+          programAttainments[po] = 0;
+          weightSums[po] = 0;
+        }
+  
+        const mappingValue = parseFloat(copoMappingData.mappingData[co][po]) || 0;
+        const coAverage = parseFloat(averages[co]) || 0;
+  
+        // Sum up (mapping_value * CO_average) for each PO
+        programAttainments[po] += mappingValue * coAverage;
+        // Keep track of total mapping values for each PO
+        weightSums[po] += mappingValue;
+      });
+    });
+  
+    // Second pass: Calculate final weighted averages
+    Object.keys(programAttainments).forEach(po => {
+      if (weightSums[po] > 0) {
+        console.log(programAttainments[po]+" / "+weightSums[po]);
+        programAttainments[po] = (programAttainments[po] / weightSums[po]).toFixed(2);
+      } else {
+        programAttainments[po] = "0.00";
+      }
+    });
+  
+    setProgramAttainment(programAttainments);
+    console.log("Program Attainment:", programAttainments);
+  };
 
   const calculateAverages = (performanceData) => {
     const cos = Object.keys(coWeightages);
@@ -34,15 +77,13 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
       const sum = scores.reduce((acc, score) => acc + score, 0);
       avgScores[co] = (sum / performanceData.length).toFixed(2);
 
-      // Calculate summary data
-      summary.weights[co] = '33%'; // You may want to make this dynamic
+      summary.weights[co] = '33%';
       const scored3Count = scores.filter(score => score >= 3).length;
       summary.studentsScored3[co] = scored3Count;
       summary.percentageScored3[co] = `${((scored3Count / performanceData.length) * 100).toFixed(0)}%`;
-      summary.attainmentLevel[co] = 3; // This should be calculated based on your criteria
+      summary.attainmentLevel[co] = 3;
     });
 
-    // Calculate overall attainment
     summary.overallAttainment = Math.round(
       Object.values(summary.attainmentLevel).reduce((acc, val) => acc + val, 0) / 
       Object.keys(summary.attainmentLevel).length
@@ -119,7 +160,7 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
     );
   }
 
-  const totalColumns = Object.keys(coWeightages).length + 1; // +1 for the NAME column
+  const totalColumns = Object.keys(coWeightages).length + 1;
   const totalRows = studentPerformance.length;
 
   return (
@@ -152,7 +193,6 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {/* Weights Row */}
                 <tr>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     Weights
@@ -163,7 +203,6 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
                     </td>
                   ))}
                 </tr>
-                {/* Students Scored >=3 Row */}
                 <tr>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     No. of students scored greater than 3
@@ -174,10 +213,9 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
                     </td>
                   ))}
                 </tr>
-                {/* Percentage Row */}
                 <tr>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    % age of students scored greater than 3
+                    Percentage of students scored greater than 3
                   </td>
                   {Object.keys(coWeightages).map(co => (
                     <td key={`percentage_${co}`} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
@@ -185,7 +223,6 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
                     </td>
                   ))}
                 </tr>
-                {/* Attainment Level Row */}
                 <tr>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     Attainment Level
@@ -196,7 +233,6 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
                     </td>
                   ))}
                 </tr>
-                {/* Overall Course Attainment Row */}
                 <tr className="bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     Overall Course Attainment
@@ -204,6 +240,39 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
                   <td colSpan={Object.keys(coWeightages).length} className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 text-center">
                     {attainmentSummary.overallAttainment}
                   </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Program Attainment Table */}
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Program Attainment</h3>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Program Outcomes
+                  </th>
+                  {Object.keys(programAttainment).map(po => (
+                    <th key={po} className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {po}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                <tr>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    Program Attainment
+                  </td>
+                  {Object.keys(programAttainment).map(po => (
+                    <td key={`pa_${po}`} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                      {programAttainment[po]}
+                    </td>
+                  ))}
                 </tr>
               </tbody>
             </table>
@@ -240,7 +309,6 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
                     ))}
                   </tr>
                 ))}
-                {/* Average Row */}
                 <tr className="bg-gray-50 font-semibold">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     Average
@@ -253,7 +321,6 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
                 </tr>
               </tbody>
             </table>
-            {/* Centered Statistics */}
             <div className="mt-4 text-sm text-gray-500 border-t pt-2 text-center mx-auto w-fit">
               Total Rows: {totalRows} | Total Columns: {totalColumns}
             </div>
