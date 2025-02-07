@@ -1,52 +1,73 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
 
-const ExcelUploader = React.memo(({ title, identifier, onFileChange, initialData }) => {
-  const [fileContent, setFileContent] = useState(null);
+const ExcelUploader = ({ onSave, initialData }) => {
   const [fileName, setFileName] = useState('');
   const [error, setError] = useState(null);
-  const memoizedInitialData = useMemo(() => initialData, [initialData]);
+  const [processedData, setProcessedData] = useState(null);
+  const [maxMarksData, setMaxMarksData] = useState(null);
 
+  console.log("INITIAL DATA IS : ", initialData);
+
+  // Function to clean max marks data by removing undefined/empty values
+  const cleanMaxMarksData = (data) => {
+    if (!data) return null;
+    
+    const cleanedData = {};
+    Object.entries(data).forEach(([key, value]) => {
+      // Only keep the key-value pair if value is defined and not empty
+      if (value !== undefined && value !== null && value !== '') {
+        cleanedData[key] = value;
+      }
+    });
+    return Object.keys(cleanedData).length > 0 ? cleanedData : null;
+  };
+
+  // Initialize the component with initialData
   useEffect(() => {
-    if (memoizedInitialData) {
+    if (initialData && initialData.data && initialData.maxMarks) {
+      console.log('Setting initial data:', initialData);
       try {
-        setError(null);
-        const parsedData = typeof memoizedInitialData === 'string' 
-          ? JSON.parse(memoizedInitialData) 
-          : memoizedInitialData;
-        
-        if (parsedData?.content) {
-          setFileContent(parsedData.content);
-          setFileName(parsedData.fileName || '');
-        } else if (Array.isArray(parsedData)) {
-          setFileContent(parsedData);
-        }
+        // Extract max marks from first row and clean it
+        const maxMarks = cleanMaxMarksData(initialData.maxMarks);
+        const remainingData = initialData.data;
+
+        console.log('Cleaned max marks:', maxMarks);
+        console.log('Remaining data:', remainingData);
+
+        setMaxMarksData(maxMarks);
+        setProcessedData(remainingData);
       } catch (error) {
-        console.error('Error parsing initial data:', error);
-        setError('Failed to load initial data');
+        console.error('Error processing initial data:', error);
+        setError('Error processing initial data');
       }
     }
-  }, [memoizedInitialData]);
+  }, [initialData]);
 
-  // In ExcelUploader.jsx (updated processFile function)
+  const findTableStart = (data) => {
+    const headerIndicators = ['unique id', 'assessment', 'student name', 'id'];
+
+    for (let i = 0; i < data.length; i++) {
+      const row = data[i];
+      const rowValues = Object.values(row).map(val =>
+        String(val).toLowerCase().trim()
+      );
+
+      if (rowValues.some(value =>
+        headerIndicators.some(indicator => value.includes(indicator))
+      )) {
+        return i;
+      }
+    }
+    return 0;
+  };
+
   const processFile = useCallback((file) => {
     setFileName(file.name);
     setError(null);
-  
-    const extractComponentsFromHeaders = (headers) => {
-      return headers
-        .filter(header => header !== 'Sr No.' && !header.includes('Total Marks') && header !== 'Grading' && header !== 'Attendance')
-        .map(header => {
-          const match = header.match(/^(.*?)\s*\((\d+(\.\d+)?)\)$/i);
-          return match ? {
-            component: match[1].trim(),
-            maxMarks: parseFloat(match[2])
-          } : null;
-        }).filter(Boolean);
-    };
-  
+
     if (file.type === "text/csv") {
       Papa.parse(file, {
         complete: (result) => {
@@ -54,59 +75,97 @@ const ExcelUploader = React.memo(({ title, identifier, onFileChange, initialData
             setError('Error parsing CSV file');
             return;
           }
-          
-          const content = result.data.filter(row => 
-            Object.values(row).some(value => value !== '')
-          );
-          
-          const components = extractComponentsFromHeaders(result.meta.fields || []);
-          
-          setFileContent(content);
-          onFileChange({
-            content,
-            components,
-            fileName: file.name,
-            type: file.type,
-            lastModified: file.lastModified
-          }, identifier);
+
+          try {
+            let data = result.data.filter(row =>
+              Object.values(row).some(value => value !== '')
+            );
+
+            const startIndex = findTableStart(data);
+            const headers = Object.keys(data[startIndex]);
+            const processedData = data.slice(startIndex + 1).map(row => {
+              let newRow = {};
+              headers.forEach((header, index) => {
+                newRow[data[startIndex][header]] = row[header];
+              });
+              return newRow;
+            });
+
+            // Extract and clean max marks from the first row
+            const maxMarks = cleanMaxMarksData(processedData[0]);
+            const remainingData = processedData.slice(1);
+
+            setMaxMarksData(maxMarks);
+            setProcessedData(remainingData);
+            onSave({ maxMarks, data: remainingData });
+          } catch (error) {
+            console.error('Error processing CSV data:', error);
+            setError('Error processing CSV data');
+          }
         },
         header: true,
         skipEmptyLines: true
       });
     } else {
       const reader = new FileReader();
-      
+
       reader.onload = (e) => {
         try {
           const data = new Uint8Array(e.target.result);
           const workbook = XLSX.read(data, { type: "array" });
           const sheetName = workbook.SheetNames[0];
           const worksheet = workbook.Sheets[sheetName];
-          const content = XLSX.utils.sheet_to_json(worksheet);
-          const headers = Object.keys(content[0] || {});
-          const components = extractComponentsFromHeaders(headers);
-          
-          setFileContent(content);
-          onFileChange({
-            content,
-            components,
-            fileName: file.name,
-            type: file.type,
-            lastModified: file.lastModified
-          }, identifier);
+
+          let jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+          const startIndex = jsonData.findIndex(row =>
+            row.some(cell =>
+              typeof cell === 'string' &&
+              ['unique id', 'assessment', 'student name', 'id'].some(
+                indicator => String(cell).toLowerCase().includes(indicator)
+              )
+            )
+          );
+
+          if (startIndex === -1) {
+            setError('Could not find table headers');
+            return;
+          }
+
+          const headers = jsonData[startIndex];
+
+          const processedData = jsonData.slice(startIndex + 1)
+            .filter(row => row.some(cell => cell !== ''))
+            .map(row => {
+              let obj = {};
+              headers.forEach((header, index) => {
+                if (header) {
+                  obj[header] = row[index];
+                }
+              });
+              return obj;
+            });
+
+          // Extract and clean max marks from the first row
+          const maxMarks = cleanMaxMarksData(processedData[0]);
+          const remainingData = processedData.slice(1);
+
+          setMaxMarksData(maxMarks);
+          setProcessedData(remainingData);
+          onSave({ maxMarks, data: remainingData });
         } catch (error) {
           console.error('Error processing Excel file:', error);
           setError('Error processing Excel file');
         }
       };
-  
+
       reader.onerror = () => {
         setError('Error reading file');
       };
-  
+
       reader.readAsArrayBuffer(file);
     }
-  }, [identifier, onFileChange]);
+  }, [onSave]);
 
   const onDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
@@ -124,15 +183,47 @@ const ExcelUploader = React.memo(({ title, identifier, onFileChange, initialData
     multiple: false
   });
 
-  const renderFileContent = useCallback(() => {
-    if (!fileContent || !Array.isArray(fileContent) || fileContent.length === 0) {
+  const renderPreview = () => {
+    if (!processedData || !Array.isArray(processedData) || processedData.length === 0) {
+      console.log('No data to display');
       return null;
     }
 
-    const headers = Object.keys(fileContent[0]);
-    
+    // Ensure we have valid data with headers
+    const firstRow = processedData[0];
+    if (!firstRow) {
+      console.log('No rows in processed data');
+      return null;
+    }
+
+    const headers = Object.keys(firstRow);
+    if (headers.length === 0) {
+      console.log('No headers found in data');
+      return null;
+    }
+
     return (
       <div className="mt-4 overflow-x-auto">
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="text-lg font-medium text-gray-700">Preview</h3>
+        </div>
+
+        {/* Display Maximum Marks - Only if there are valid values */}
+        {maxMarksData && Object.keys(maxMarksData).length > 0 && (
+          <div className="mb-4 p-4 bg-yellow-50 rounded-lg border border-yellow-100">
+            <h4 className="text-sm font-medium text-yellow-800 mb-2">Maximum Attainable Marks:</h4>
+            <div className="grid grid-cols-2 gap-4">
+              {Object.entries(maxMarksData).map(([key, value]) => (
+                <div key={key} className="text-sm">
+                  <span className="font-medium text-yellow-700">{key}:</span>
+                  <span className="ml-2 text-yellow-900">{value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Data Table */}
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -147,7 +238,7 @@ const ExcelUploader = React.memo(({ title, identifier, onFileChange, initialData
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {fileContent.slice(0, 5).map((row, idx) => (
+            {processedData.slice(0, 5).map((row, idx) => (
               <tr key={idx} className="hover:bg-gray-50">
                 {headers.map((header) => (
                   <td
@@ -161,47 +252,55 @@ const ExcelUploader = React.memo(({ title, identifier, onFileChange, initialData
             ))}
           </tbody>
         </table>
-        {fileContent.length > 5 && (
+        {processedData.length > 5 && (
           <p className="mt-2 text-sm text-gray-500 text-center">
-            Showing first 5 rows of {fileContent.length} total rows
+            Showing first 5 rows of {processedData.length} total rows
           </p>
         )}
       </div>
     );
-  }, [fileContent]);
+  };
 
   return (
-    <div className="space-y-4">
-      {title && (
-        <h3 className="text-lg font-medium text-gray-700">{title}</h3>
-      )}
-      <div
-        {...getRootProps()}
-        className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors
-          ${isDragActive ? 'border-[#FFB255] bg-orange-50' : 'border-gray-300 hover:border-[#FFB255]'}`}
-      >
-        <input {...getInputProps()} />
-        <p className="text-gray-600">
-          {isDragActive
-            ? "Drop the file here..."
-            : "Drag 'n' drop Excel/CSV file here, or click to select"}
-        </p>
-        {fileName && (
-          <p className="mt-2 text-sm text-gray-500">
-            Current file: {fileName}
-          </p>
-        )}
-      </div>
-      {error && (
-        <div className="text-red-500 text-sm mt-2">
-          {error}
-        </div>
-      )}
-      {renderFileContent()}
-    </div>
-  );
-});
+      
 
-ExcelUploader.displayName = 'ExcelUploader';
+      <div className="space-y-4 ">
+        <div
+          {...getRootProps()}
+          className={`border-2 w-full h-[15vh]  border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors
+            ${isDragActive ? 'border-[#FFB255] bg-orange-50' : 'border-gray-300 hover:border-[#FFB255]'}`}
+        >
+          <input {...getInputProps()} />
+          <p className="text-gray-600">
+            {isDragActive
+              ? "Drop the file here..."
+              : "Drag 'n' drop Excel/CSV file here, or click to select"}
+          </p>
+          {fileName && (
+            <p className="mt-2 text-sm text-gray-500">
+              Current file: {fileName}
+            </p>
+          )}
+        </div>
+
+        {error && (
+          <div className="text-red-500 text-sm mt-2 p-3 bg-red-50 rounded-lg border border-red-100">
+            {error}
+          </div>
+        )}
+
+        {fileName && !error && (
+          <div className="p-3 bg-green-50 rounded-lg border border-green-100">
+            <p className="text-green-600 text-sm">
+              File processed successfully! Check the console for complete JSON output.
+            </p>
+          </div>
+        )}
+
+        {/* Render the preview table */}
+        {renderPreview()}
+      </div>
+  );
+};
 
 export default ExcelUploader;

@@ -217,7 +217,7 @@ app.post("/upload-image", auth, (req, res) => {
 async function dataext(number, jfn, fn) {
   try {
     const execPath = path.join(__dirname, "/data/", number, fn);
-    const pythonProcess = spawn('python', ['./extractor/ex.py', execPath, jfn]);
+    const pythonProcess = spawn('python3', ['./extractor/ex.py', execPath, jfn]);
 
     pythonProcess.stdout.on('data', (data) => {
       console.log(`Python script output: ${data}`);
@@ -384,7 +384,7 @@ app.post("/download", auth, async (req, res) => {
         }
 
         const fileData = jsonData[num];
-        const pythonProcess = spawn('python', ['./extractor/j2d2p.py', JSON.stringify(fileData)]);
+        const pythonProcess = spawn('python3', ['./extractor/j2d2p.py', JSON.stringify(fileData)]);
 
         let pdfFileName = fileData['filename'];
 

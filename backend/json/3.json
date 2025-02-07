@@ -1,1 +1,519 @@
-[]
+[
+    {
+        "filename": "1738908136Cyber Forensics_CSE4708.pdf",
+        "done": 1,
+        "Program": "CSE",
+        "course_code": "CSE4708",
+        "course_name": "Cyber Forensics",
+        "course_description": "Cyber Forensics is a core elective course in computer science and engineering and computer science undergraduate program. This course focuses on to understand Computer Forensics, Computing Investigations, Enforcement Agency Investigations. This course will provide an overview of types of computer forensics, data recovery, electronic evidence, threats, surveillance.",
+        "Course Syllabus": [
+            {
+                "srNo": 1,
+                "content": "Computer Forensics Fundamentals.",
+                "co": "1",
+                "sessions": 3
+            },
+            {
+                "srNo": 2,
+                "content": "Types of Computer Forensics Technology",
+                "co": "1",
+                "sessions": 3
+            },
+            {
+                "srNo": 3,
+                "content": "Types of Vendor and Computer Forensics Services.",
+                "co": "1",
+                "sessions": 2
+            },
+            {
+                "srNo": 4,
+                "content": "Data Recovery",
+                "co": "2",
+                "sessions": 2
+            },
+            {
+                "srNo": 5,
+                "content": "Evidence Collection and Data Seizure",
+                "co": "3",
+                "sessions": 3
+            },
+            {
+                "srNo": 6,
+                "content": "Duplication and Preservation of Digital Evidence",
+                "co": "2",
+                "sessions": 2
+            },
+            {
+                "srNo": 7,
+                "content": "Computer Image Verification and Authentication.",
+                "co": "3",
+                "sessions": 3
+            },
+            {
+                "srNo": 8,
+                "content": "Discover of Electronic Evidence",
+                "co": "3",
+                "sessions": 2
+            },
+            {
+                "srNo": 9,
+                "content": "Identification of Data",
+                "co": "3",
+                "sessions": 2
+            },
+            {
+                "srNo": 10,
+                "content": "Reconstructing Past Events",
+                "co": "3",
+                "sessions": 3
+            },
+            {
+                "srNo": 11,
+                "content": "Networks.",
+                "co": "2",
+                "sessions": 1
+            },
+            {
+                "srNo": 12,
+                "content": "Fighting against Macro Threats",
+                "co": "3",
+                "sessions": 2
+            },
+            {
+                "srNo": 13,
+                "content": "Information Warfare Arsenal",
+                "co": "4",
+                "sessions": 2
+            },
+            {
+                "srNo": 14,
+                "content": "Tactics of the Military",
+                "co": "3",
+                "sessions": 2
+            },
+            {
+                "srNo": 15,
+                "content": "Tactics of Terrorist and Rogues",
+                "co": "4",
+                "sessions": 2
+            },
+            {
+                "srNo": 16,
+                "content": "Tactics of Private Companies.",
+                "co": "3",
+                "sessions": 2
+            },
+            {
+                "srNo": 17,
+                "content": "The Future – Arsenal",
+                "co": "4",
+                "sessions": 2
+            },
+            {
+                "srNo": 18,
+                "content": "Surveillance Tools",
+                "co": "4",
+                "sessions": 1
+            },
+            {
+                "srNo": 19,
+                "content": "Victims and Refugees",
+                "co": "4",
+                "sessions": 2
+            },
+            {
+                "srNo": 20,
+                "content": "Advanced Computer Forensics.",
+                "co": "4",
+                "sessions": 2
+            },
+            {
+                "srNo": 21,
+                "content": "Payload, Key Management",
+                "co": "4",
+                "sessions": 2
+            }
+        ],
+        "Learning Resources": {
+            "textBooks": [
+                "John R. Vacca, Computer Forensics, Firewall Media, 2004",
+                "Chad Steel, Windows Forensics, Wiley India, 2006",
+                "Majid Yar, Cybercrime and Society, Sage Publications, 2006",
+                "Robert M Slade, Software Forensics, Tata McGraw Hill, 2004"
+            ],
+            "referenceLinks": []
+        },
+        "internalAssessmentData": {
+            "components": {
+                "component1731776591362": {
+                    "component": "",
+                    "duration": "",
+                    "weightage": "",
+                    "evaluationWeek": "",
+                    "remarks": ""
+                }
+            }
+        },
+        "copoMappingData": {
+            "courseOutcomes": {
+                "CO1": {
+                    "description": "Understand a brief overview of Computer Forensics Fundamentals.",
+                    "bullets": []
+                },
+                "CO2": {
+                    "description": "Identify the features of Data Recovery.",
+                    "bullets": []
+                },
+                "CO3": {
+                    "description": "Understanding of Reconstructing Past Events.",
+                    "bullets": []
+                }
+            },
+            "mappingData": {
+                "CO1": {
+                    "PO1": "",
+                    "PO2": "",
+                    "PO3": "",
+                    "PO4": "",
+                    "PO5": "",
+                    "PO6": "",
+                    "PO7": "",
+                    "PO8": "1",
+                    "PO9": "",
+                    "PO10": "",
+                    "PO11": "",
+                    "PO12": "",
+                    "PSO1": "",
+                    "PSO2": "",
+                    "PSO3": "",
+                    "PSO4": ""
+                },
+                "CO2": {
+                    "PO1": "",
+                    "PO2": "",
+                    "PO3": "",
+                    "PO4": "",
+                    "PO5": "",
+                    "PO6": "",
+                    "PO7": "",
+                    "PO8": "",
+                    "PO9": "1",
+                    "PO10": "",
+                    "PO11": "",
+                    "PO12": "",
+                    "PSO1": "",
+                    "PSO2": "",
+                    "PSO3": "",
+                    "PSO4": ""
+                },
+                "CO3": {
+                    "PO1": "",
+                    "PO2": "",
+                    "PO3": "",
+                    "PO4": "",
+                    "PO5": "",
+                    "PO6": "",
+                    "PO7": "",
+                    "PO8": "",
+                    "PO9": "",
+                    "PO10": "1",
+                    "PO11": "",
+                    "PO12": "",
+                    "PSO1": "",
+                    "PSO2": "",
+                    "PSO3": "",
+                    "PSO4": ""
+                }
+            }
+        },
+        "actionsForWeakStudentsData": [
+            ""
+        ],
+        "coWeightages": {
+            "CO1": {
+                "quiz(30)": "70",
+                "project(30)": "0",
+                "end term(40)": "10"
+            },
+            "CO2": {
+                "quiz(30)": "30",
+                "project(30)": "65",
+                "end term(40)": "20"
+            },
+            "CO3": {
+                "quiz(30)": "0",
+                "project(30)": "35",
+                "end term(40)": "70"
+            }
+        },
+        "Module/Semester": "",
+        "Session": "",
+        "course_syllabus": [
+            {
+                "srNo": 1,
+                "content": "Computer Forensics Fundamentals.",
+                "co": "1",
+                "sessions": 3
+            },
+            {
+                "srNo": 2,
+                "content": "Types of Computer Forensics Technology",
+                "co": "1",
+                "sessions": 3
+            },
+            {
+                "srNo": 3,
+                "content": "Types of Vendor and Computer Forensics Services.",
+                "co": "1",
+                "sessions": 2
+            },
+            {
+                "srNo": 4,
+                "content": "Data Recovery",
+                "co": "2",
+                "sessions": 2
+            },
+            {
+                "srNo": 5,
+                "content": "Evidence Collection and Data Seizure",
+                "co": "3",
+                "sessions": 3
+            },
+            {
+                "srNo": 6,
+                "content": "Duplication and Preservation of Digital Evidence",
+                "co": "2",
+                "sessions": 2
+            },
+            {
+                "srNo": 7,
+                "content": "Computer Image Verification and Authentication.",
+                "co": "3",
+                "sessions": 3
+            },
+            {
+                "srNo": 8,
+                "content": "Discover of Electronic Evidence",
+                "co": "3",
+                "sessions": 2
+            },
+            {
+                "srNo": 9,
+                "content": "Identification of Data",
+                "co": "3",
+                "sessions": 2
+            },
+            {
+                "srNo": 10,
+                "content": "Reconstructing Past Events",
+                "co": "3",
+                "sessions": 3
+            },
+            {
+                "srNo": 11,
+                "content": "Networks.",
+                "co": "2",
+                "sessions": 1
+            },
+            {
+                "srNo": 12,
+                "content": "Fighting against Macro Threats",
+                "co": "3",
+                "sessions": 2
+            },
+            {
+                "srNo": 13,
+                "content": "Information Warfare Arsenal",
+                "co": "4",
+                "sessions": 2
+            },
+            {
+                "srNo": 14,
+                "content": "Tactics of the Military",
+                "co": "3",
+                "sessions": 2
+            },
+            {
+                "srNo": 15,
+                "content": "Tactics of Terrorist and Rogues",
+                "co": "4",
+                "sessions": 2
+            },
+            {
+                "srNo": 16,
+                "content": "Tactics of Private Companies.",
+                "co": "3",
+                "sessions": 2
+            },
+            {
+                "srNo": 17,
+                "content": "The Future – Arsenal",
+                "co": "4",
+                "sessions": 2
+            },
+            {
+                "srNo": 18,
+                "content": "Surveillance Tools",
+                "co": "4",
+                "sessions": 1
+            },
+            {
+                "srNo": 19,
+                "content": "Victims and Refugees",
+                "co": "4",
+                "sessions": 2
+            },
+            {
+                "srNo": 20,
+                "content": "Advanced Computer Forensics.",
+                "co": "4",
+                "sessions": 2
+            },
+            {
+                "srNo": 21,
+                "content": "Payload, Key Management",
+                "co": "4",
+                "sessions": 2
+            }
+        ],
+        "coAttainmentCriteria": {
+            "CO1": {
+                "full": "85",
+                "partial": "75"
+            },
+            "CO2": {
+                "full": "85",
+                "partial": "75"
+            },
+            "CO3": {
+                "full": "85",
+                "partial": "75"
+            }
+        },
+        "studentData": {
+            "maxMarks": {
+                "Quiz(30)": 30,
+                "project(30)": 30,
+                "End Term(40)": 40,
+                "Total Marks(100.0)": 100
+            },
+            "data": [
+                {
+                    "Sr No.": 1,
+                    "Unique Id.": 240334,
+                    "Student Name": "Aditya Goel",
+                    "Quiz(30)": 28,
+                    "project(30)": 27,
+                    "End Term(40)": 28,
+                    "Total Marks(100.0)": 83,
+                    "Grading": "a+",
+                    "Attendance": 88
+                },
+                {
+                    "Sr No.": 2,
+                    "Unique Id.": 240335,
+                    "Student Name": "Anisha Chhanpadia",
+                    "Quiz(30)": 23,
+                    "project(30)": 23,
+                    "End Term(40)": 30,
+                    "Total Marks(100.0)": 76,
+                    "Grading": "a+",
+                    "Attendance": 87
+                },
+                {
+                    "Sr No.": 3,
+                    "Unique Id.": 240336,
+                    "Student Name": "Dhruv Singla",
+                    "Quiz(30)": 25,
+                    "project(30)": 22,
+                    "End Term(40)": 33,
+                    "Total Marks(100.0)": 80,
+                    "Grading": "a+",
+                    "Attendance": 93
+                },
+                {
+                    "Sr No.": 4,
+                    "Unique Id.": 240337,
+                    "Student Name": "Dorjee Phinjo Sona",
+                    "Quiz(30)": 24,
+                    "project(30)": 30,
+                    "End Term(40)": 20,
+                    "Total Marks(100.0)": 74,
+                    "Grading": "a+",
+                    "Attendance": 88
+                },
+                {
+                    "Sr No.": 5,
+                    "Unique Id.": 240338,
+                    "Student Name": "EENA CHAUDHARY",
+                    "Quiz(30)": 21,
+                    "project(30)": 24,
+                    "End Term(40)": 20,
+                    "Total Marks(100.0)": 65,
+                    "Grading": "a+",
+                    "Attendance": 77
+                },
+                {
+                    "Sr No.": 6,
+                    "Unique Id.": 240339,
+                    "Student Name": "Eshaan Chandra",
+                    "Quiz(30)": 26,
+                    "project(30)": 29,
+                    "End Term(40)": 26,
+                    "Total Marks(100.0)": 81,
+                    "Grading": "a+",
+                    "Attendance": 88
+                },
+                {
+                    "Sr No.": 7,
+                    "Unique Id.": 240340,
+                    "Student Name": "Hardik Rustagi",
+                    "Quiz(30)": 24,
+                    "project(30)": 27,
+                    "End Term(40)": 20,
+                    "Total Marks(100.0)": 71,
+                    "Grading": "a+",
+                    "Attendance": 99
+                },
+                {
+                    "Sr No.": 8,
+                    "Unique Id.": 240341,
+                    "Student Name": "Harsh Gupta",
+                    "Quiz(30)": 30,
+                    "project(30)": 29,
+                    "End Term(40)": 33,
+                    "Total Marks(100.0)": 92,
+                    "Grading": "a+",
+                    "Attendance": 81
+                },
+                {
+                    "Sr No.": 9,
+                    "Unique Id.": 240342,
+                    "Student Name": "Jiya Gera",
+                    "Quiz(30)": 25,
+                    "project(30)": 20,
+                    "End Term(40)": 20,
+                    "Total Marks(100.0)": 65,
+                    "Grading": "a+",
+                    "Attendance": 92
+                },
+                {
+                    "Sr No.": 10,
+                    "Unique Id.": 240343,
+                    "Student Name": "Keshav Gupta",
+                    "Quiz(30)": 25,
+                    "project(30)": 20,
+                    "End Term(40)": 40,
+                    "Total Marks(100.0)": 85,
+                    "Grading": "a+",
+                    "Attendance": 93
+                }
+            ]
+        },
+        "studentListData": [],
+        "weakStudentsData": [],
+        "marksDetailsData": [],
+        "attendanceReportData": [],
+        "mergePDF": "1738908245file.pdf"
+    }
+]

@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import constants from "../constants"; 
 
-const AsideComp = ({ isCollapsed, setIsCollapsed,files }) => {
+const AsideComp = ({ isCollapsed, setIsCollapsed,files, onFileSelect }) => {
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
@@ -175,39 +175,53 @@ const AsideComp = ({ isCollapsed, setIsCollapsed,files }) => {
         </h3>
         
         {files && files.length > 0 ? (
-          files.map((file, index) => (
-            <div key={index} className="group flex items-center justify-between p-2 rounded-lg hover:bg-[#3a3b40] transition-colors">
-              <span className={`text-[#f5f5f5] text-sm truncate transition-opacity ${
-                isCollapsed ? "opacity-0" : "opacity-100"
-              }`}>
-                {file.course_name || file.filename}
-              </span>
-              
-              <div className={`flex gap-2 ${isCollapsed ? "opacity-0" : "opacity-100"}`}>
-                <button
-                  onClick={() => handleFileDownload(index)}
-                  className="p-1.5 hover:bg-[#4a4b50] rounded-md transition-colors"
-                  title="Download"
-                >
-                  <IoMdDownload className="w-4 h-4 text-[#909096] hover:text-[#FFB255]" />
-                </button>
-                <button
-                  onClick={() => handleFileDelete(index)}
-                  className="p-1.5 hover:bg-[#4a4b50] rounded-md transition-colors"
-                  title="Delete"
-                >
-                  <AiFillDelete className="w-4 h-4 text-[#909096] hover:text-red-500" />
-                </button>
-              </div>
-            </div>
-          ))
-        ) : (
-          <p className={`text-[#909096] text-sm px-2 transition-opacity ${
-            isCollapsed ? "opacity-0" : "opacity-100"
-          }`}>
-            No handouts uploaded
-          </p>
-        )}
+  files.map((file, index) => (
+    <div 
+      key={index} 
+      className="group flex items-center justify-between p-2 rounded-lg hover:bg-[#3a3b40] transition-colors cursor-pointer"
+      onClick={(e) => {
+        e.preventDefault(); // Prevent default behavior
+        e.stopPropagation(); // Stop event propagation
+        onFileSelect(index); // Call the handler with the file index
+      }}
+    >
+      <span className={`text-[#f5f5f5] text-sm truncate transition-opacity ${
+        isCollapsed ? "opacity-0" : "opacity-100"
+      }`}>
+        {file.course_name || file.filename}
+      </span>
+      
+      <div className={`flex gap-2 ${isCollapsed ? "opacity-0" : "opacity-100"}`}>
+        <button
+          onClick={(e) => {
+            e.stopPropagation(); // Stop event from bubbling up
+            handleFileDownload(index);
+          }}
+          className="p-1.5 hover:bg-[#4a4b50] rounded-md transition-colors"
+          title="Download"
+        >
+          <IoMdDownload className="w-4 h-4 text-[#909096] hover:text-[#FFB255]" />
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation(); // Stop event from bubbling up
+            handleFileDelete(index);
+          }}
+          className="p-1.5 hover:bg-[#4a4b50] rounded-md transition-colors"
+          title="Delete"
+        >
+          <AiFillDelete className="w-4 h-4 text-[#909096] hover:text-red-500" />
+        </button>
+      </div>
+    </div>
+  ))
+) : (
+  <p className={`text-[#909096] text-sm px-2 transition-opacity ${
+    isCollapsed ? "opacity-0" : "opacity-100"
+  }`}>
+    No handouts uploaded
+  </p>
+)}
       </div>
 
       {/* Navigation Controls - Now properly fixed at bottom */}

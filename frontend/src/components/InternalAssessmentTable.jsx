@@ -47,6 +47,7 @@ const InternalAssessmentTable = ({ onSave, initialData }) => {
         [field]: field === 'component' ? String(value) : value
       }
     };
+
     
     const newData = { ...assessmentData, components: newComponents };
     setAssessmentData(newData);
@@ -76,18 +77,18 @@ const InternalAssessmentTable = ({ onSave, initialData }) => {
   };
 
   const removeRow = (componentKey) => {
-    if (Object.keys(assessmentData.components).length > 1) {
-      const { [componentKey]: _, ...newComponents } = assessmentData.components;
-      const newData = {
-        ...assessmentData,
-        components: newComponents
-      };
-      setAssessmentData(newData);
-      if (onSave) {
-        onSave(newData);
-      }
+  if (Object.keys(assessmentData.components).length > 1) {
+    const { [componentKey]: deletedComponent, ...newComponents } = assessmentData.components;
+    const newData = {
+      ...assessmentData,
+      components: newComponents
+    };
+    setAssessmentData(newData);
+    if (onSave) {
+      onSave(newData, deletedComponent.component); // Pass the deleted component name
     }
-  };
+  }
+};
 
   return (
     <div className="space-y-4">

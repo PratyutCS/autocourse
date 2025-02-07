@@ -10,7 +10,9 @@ import FeedbackForm from '../components/FeedbackForm';
 import { IoReturnUpBackSharp } from "react-icons/io5";
 import { AlertCircle } from "lucide-react";
 
+
 const Dashboard = () => {
+  
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const [file, setFileData] = useState(null);
@@ -22,7 +24,7 @@ const Dashboard = () => {
     isValid: true,
     message: ""
   });
-  const feedbackFormRef = useRef();
+  
 
   useEffect(() => {
     const checkTokenValidity = async () => {
@@ -65,6 +67,10 @@ const Dashboard = () => {
 
     checkTokenValidity();
   }, [navigate]);
+  const handleFileSelection = (index) => {
+    setSelectedFileIndex(index);
+    setSelectedFileData(null); // Reset the file data before fetching new data
+  };
 
   useEffect(() => {
     const fetchFilesData = async () => {
@@ -112,6 +118,7 @@ const Dashboard = () => {
     setSelectedFileIndex(null);
     setSelectedFileData(null);
   };
+  const feedbackFormRef = useRef();
   const handleSubmit = async () => {
     try {
       if (!feedbackFormRef.current) return;
@@ -150,6 +157,7 @@ const Dashboard = () => {
           isCollapsed={isCollapsed}
           setIsCollapsed={setIsCollapsed}
           files={file}
+          onFileSelect={handleFileSelection}
         />
 
         <div className="flex-1 p-6 overflow-auto">

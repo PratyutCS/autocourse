@@ -4,8 +4,8 @@ import {
   forwardRef,
   useImperativeHandle,
   useCallback,
+  useMemo,
 } from "react";
-import { useMemo } from "react";
 import axios from "axios";
 import { Check, X, AlertCircle } from "lucide-react";
 import LoadingSpinner from "./LoadingSpinner";
@@ -22,7 +22,10 @@ import COAssessmentWeightage from "./COAssessmentWeightage";
 import COAttainmentCriteria from "./COAttainmentCriteria";
 import constants from "../constants";
 import TargetAttainmentTable from "./TargetAttainmentTable";
+import AttendanceReport from "./AttendanceReport";
+import WeakStudent from "./WeakStudent";
 import "../css/feedback.css";
+import RegisteredStudentList from "./RegisteredStudentList";
 
 const SectionWrapper = ({ number, title, children, className = "" }) => (
   <div
@@ -69,33 +72,14 @@ const FeedbackForm = forwardRef((props, ref) => {
       imageFileName: null,
     },
     studentListData: props.studentListData || [],
-    weakStudentsData:
-      props.weakStudentsData?.map((student) => ({
-        ...student,
-        status: student.status || "Pending",
-      })) || [],
     marksDetailsData: props.marksDetailsData || [],
     attendanceReportData: props.attendanceReportData || [],
     internalAssessmentData: props.internalAssessmentData || { components: [] },
     actionsForWeakStudentsData: props.actionsForWeakStudentsData || [],
     weeklyTimetableData: props.weeklyTimetableData || null,
-    uploadedFiles: {
-      studentList: props.studentList || null,
-      weakstudent: props.weakstudent || null,
-      assignmentsTaken: props.assignmentsTaken || null,
-      marksDetails: props.marksDetails || null,
-      attendanceReport: props.attendanceReport || null,
-    },
     coWeightages: props.coWeightages || {},
     coAttainmentCriteria: props.coAttainmentCriteria || {},
     targetAttainments: props.targetAttainments || null,
-  });
-  const [internalAssessmentData, setInternalAssessmentData] = useState({
-    components: {
-      quiz1: { component: "Quiz 1", weightage: 20, maxMarks: 20 },
-      caseStudy: { component: "Case Study", weightage: 30 },
-      project: { weightage: 50 }, // Missing component name
-    },
   });
 
   const [isWeightageValid, setIsWeightageValid] = useState(false);
@@ -110,7 +94,7 @@ const FeedbackForm = forwardRef((props, ref) => {
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
-  // Add useEffect to track validation changes
+
   useEffect(() => {
     const validate = () => {
       const isValid = isWeightageValid && validateCriteria();
@@ -124,6 +108,7 @@ const FeedbackForm = forwardRef((props, ref) => {
     };
     validate();
   }, [isWeightageValid, formData.coAttainmentCriteria]);
+
   useImperativeHandle(ref, () => ({
     validateForm: () => {
       const isValid = isWeightageValid && validateCriteria();
@@ -137,10 +122,6 @@ const FeedbackForm = forwardRef((props, ref) => {
     },
     submitForm: handleSubmit,
   }));
-  // In FeedbackForm.jsx
-  // Add similar effects for other props if needed
-
-  // Update validateForm method
 
   const handleCOPOMappingChange = (data) => {
     setFormData((prev) => ({
@@ -157,6 +138,26 @@ const FeedbackForm = forwardRef((props, ref) => {
     }));
   };
 
+  const handleInternalAssessmentChange = (data, deletedComponentName) => {
+    setFormData((prev) => {
+      const newWeightages = { ...prev.coWeightages };
+
+      if (deletedComponentName) {
+        Object.keys(newWeightages).forEach((co) => {
+          if (newWeightages[co][deletedComponentName]) {
+            delete newWeightages[co][deletedComponentName];
+          }
+        });
+      }
+
+      return {
+        ...prev,
+        internalAssessmentData: data,
+        coWeightages: newWeightages,
+      };
+    });
+  };
+
   const totalCOWeights = useMemo(() => {
     const totals = {};
     Object.entries(formData.coWeightages).forEach(([co, assessments]) => {
@@ -169,54 +170,18 @@ const FeedbackForm = forwardRef((props, ref) => {
   }, [formData.coWeightages]);
 
   const handleFileChange = (fileData, identifier) => {
-    const { content } = fileData;
-    if (!content || !Array.isArray(content)) return;
-  
-    const studentList = content.map(row => ({
-      uniqueId: row["Unique Id."] || row["Unique Id"] || row["ID"],
-      studentName: row["Student Name"] || row["studentName"] || row["Name"],
-    }));
-  
-    const marksDetails = content.map(row => {
-      const componentMarks = {
-        assignment: row["Assignment(10)"],
-        endTerm: row["End term examination(40)"],
-        presentation: row["Group Presentation(10)"],
-        participation: row["Individual Class Participation(10)"],
-        midTerm: row["Mid Term Exam(20)"],
-        rolePlay: row["Role Play(10)"]
-      };
-      
-      return {
-        uniqueId: row["Unique Id."],
-        studentName: row["Student Name"],
-        ...componentMarks,
-        totalMarks: parseFloat(row["Total Marks(100.0)"]),
-        grade: row["Grading"],
-        attendance: parseFloat(row["Attendance"])
-      };
-    });
-  
-    const attendanceReport = content.map(row => ({
-      uniqueId: row["Unique Id."],
-      studentName: row["Student Name"],
-      attendance: parseFloat(row["Attendance"]),
-    }));
-  
-    const weakStudents = marksDetails
-      .filter(student => student.totalMarks < 90)
-      .map(student => ({
-        ...student,
-        status: student.status || "Pending"
-      }));
-  
-    setFormData(prev => ({
+    if (!fileData || !fileData.data) return;
+
+    setFormData((prev) => ({
       ...prev,
-      studentListData: studentList,
-      marksDetailsData: marksDetails,
-      attendanceReportData: attendanceReport,
-      weakStudentsData: weakStudents,
-      uploadedFiles: { ...prev.uploadedFiles, [identifier]: fileData }
+      [identifier + "Data"]: fileData.data,
+      uploadedFiles: {
+        ...prev.uploadedFiles,
+        [identifier]: {
+          data: fileData.data,
+          maxMarks: fileData.maxMarks,
+        },
+      },
     }));
   };
 
@@ -242,6 +207,7 @@ const FeedbackForm = forwardRef((props, ref) => {
       }
     }
   };
+
   const handleTargetSave = useCallback((targets) => {
     setFormData((prev) => ({ ...prev, targetAttainments: targets }));
   }, []);
@@ -260,6 +226,7 @@ const FeedbackForm = forwardRef((props, ref) => {
       ({ full, partial }) => parseFloat(full) >= parseFloat(partial)
     );
   };
+
   useEffect(() => {
     if (formData.studentListData.length > 0) {
       setProcessedStudents(formData.studentListData);
@@ -289,6 +256,7 @@ const FeedbackForm = forwardRef((props, ref) => {
       setIsLoading(false);
     }
   };
+
   const getAssessmentComponents = (internalAssessmentData) => {
     if (!internalAssessmentData?.components) return [];
 
@@ -296,14 +264,13 @@ const FeedbackForm = forwardRef((props, ref) => {
       (component) => ({
         name: component.component?.trim() || "Unnamed Assessment",
         weightage: component.weightage,
-        maxMarks: component.maxMarks || 100, // Default to 100 if maxMarks is not specified
+        maxMarks: component.maxMarks || 100,
       })
     );
   };
 
   return (
     <div className="p-5 gap-6 h-fit w-full flex flex-col bg-[#FFFEFD] overflow-hidden">
-      {/* Form Sections */}
       <div className="space-y-6 overflow-y-auto pb-8">
         <div className="bg-white rounded-xl shadow-md p-6 border-t border-r border-b border-l-4 border-[#FFB255] ">
           <div className="flex items-start space-x-4">
@@ -401,10 +368,24 @@ const FeedbackForm = forwardRef((props, ref) => {
             initialData={formData.copoMappingData}
           />
         </SectionWrapper>
+        <SectionWrapper
+          number="19"
+          title="Detail of Marks in all Components up to the End Semester"
+        >
+          <ExcelUploader
+            onSave={(data) => {
+              setFormData((prev) => ({
+                ...prev,
+                studentListData: data,
+              }));
+            }}
+            initialData={formData.studentListData}
+          />
+        </SectionWrapper>
 
         <SectionWrapper number="8" title="Internal Assessments">
           <InternalAssessmentTable
-            onSave={(data) => handleInputChange("internalAssessmentData", data)}
+            onSave={handleInternalAssessmentChange}
             initialData={formData.internalAssessmentData}
           />
         </SectionWrapper>
@@ -412,10 +393,10 @@ const FeedbackForm = forwardRef((props, ref) => {
         <SectionWrapper number="9" title="CO Assessment Weightage">
           <COAssessmentWeightage
             copoMappingData={formData.copoMappingData}
-            internalAssessmentData={formData.internalAssessmentData}
+            studentData={formData.studentListData}
             initialWeightages={formData.coWeightages}
             onChange={(data) => handleInputChange("coWeightages", data)}
-            onValidationChange={setIsWeightageValid}
+            onValidationChange={(isValid) => setIsWeightageValid(isValid)}
           />
         </SectionWrapper>
 
@@ -436,23 +417,14 @@ const FeedbackForm = forwardRef((props, ref) => {
           />
         </SectionWrapper>
 
-        <SectionWrapper number="11" title="Course Syllabus">
+        <SectionWrapper number="12" title="Course Syllabus">
           <CourseSyllabus
             onSave={(data) => handleInputChange("courseSyllabus", data)}
             initialData={formData.courseSyllabus}
           />
         </SectionWrapper>
-        {/* <SectionWrapper number="X" title="CO Attainment Calculation">
-          <COAttainmentTable
-            coWeightages={totalCOWeights}
-            studentMarks={formData.marksDetailsData}
-            onTargetAttainmentChange={(targets) =>
-              setFormData(prev => ({ ...prev, targetAttainments: targets }))
-            }
-          />
-        </SectionWrapper> */}
 
-        <SectionWrapper number="12" title="Learning Resources">
+        <SectionWrapper number="13" title="Learning Resources">
           <div className="space-y-6">
             <AddField
               label="Text Book"
@@ -477,7 +449,7 @@ const FeedbackForm = forwardRef((props, ref) => {
           </div>
         </SectionWrapper>
 
-        <SectionWrapper number="13" title="Weekly Time-Table">
+        <SectionWrapper number="14" title="Weekly Time-Table">
           <WeeklyTimetable
             initialData={formData.weeklyTimetableData}
             onChange={(newTimetable) =>
@@ -486,25 +458,15 @@ const FeedbackForm = forwardRef((props, ref) => {
           />
         </SectionWrapper>
 
-        <SectionWrapper number="14" title="Registered Student List">
-          <ExcelUploader
-            title="Student List"
-            identifier="studentList"
-            onFileChange={handleFileChange}
-            initialData={formData.studentListData}
-          />
+        <SectionWrapper number="15" title="Registered Student List">
+        <RegisteredStudentList students={formData.studentListData}/>
+         
         </SectionWrapper>
 
-        <SectionWrapper number="15" title="Identification of Weak Students">
-          <ExcelUploader
-            title="Weak Student List"
-            identifier="weakStudentsData"
-            onFileChange={handleFileChange}
-            initialData={formData.weakStudentsData}
-          />
+        <SectionWrapper number="16" title="Identification of Weak Students">
           <div className="space-y-4">
-            {!formData.weakStudentsData ||
-            formData.weakStudentsData.length === 0 ? (
+            {!formData.studentListData ||
+            formData.studentListData.length === 0 ? (
               <div className="text-center py-10 bg-gray-50 rounded-lg border border-gray-100">
                 <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-600 font-semibold text-lg">
@@ -515,95 +477,16 @@ const FeedbackForm = forwardRef((props, ref) => {
                 </p>
               </div>
             ) : (
-              <div className="space-y-4">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold text-gray-700">
-                    Student List
-                  </h3>
-                </div>
-
-                <div className="overflow-hidden rounded-lg border border-gray-200">
-                  <div className="grid grid-cols-3 gap-4 px-4 py-3 bg-gray-50 font-medium text-gray-600 border-b">
-                    <div>Student ID</div>
-                    <div>Name</div>
-                    <div className="text-right">Actions</div>
-                  </div>
-
-                  {formData.weakStudentsData.map((student) => (
-                    <div
-                      key={student.uniqueId}
-                      className="grid grid-cols-3 gap-4 px-4 py-3 border-b last:border-b-0 hover:bg-gray-50 transition-colors"
-                    >
-                      <div className="text-gray-600 self-center">
-                        {student.uniqueId}
-                      </div>
-                      <div>
-                        <div className="text-gray-800 font-medium">
-                          {student.studentName}
-                        </div>
-                        <div
-                          className={`text-sm font-medium ${
-                            student.status === "Accepted"
-                              ? "text-green-600"
-                              : student.status === "Rejected"
-                              ? "text-red-600"
-                              : "text-gray-500"
-                          }`}
-                        >
-                          Status: {student.status}
-                        </div>
-                      </div>
-                      <div className="flex justify-end space-x-2">
-                        <button
-                          className={`flex items-center px-3 py-1.5 rounded-lg text-sm ${
-                            student.status === "Accepted"
-                              ? "bg-[#FFB255] text-white cursor-not-allowed"
-                              : "bg-white border border-[#FFB255] text-[#FFB255]"
-                          }`}
-                          disabled={student.status === "Accepted"}
-                          onClick={() =>
-                            handleStudentStatusChange(
-                              student.uniqueId,
-                              "Accepted"
-                            )
-                          }
-                        >
-                          <Check className="w-4 h-4 mr-1" />
-                          Accept
-                        </button>
-                        <button
-                          className={`flex items-center px-3 py-1.5 rounded-lg text-sm ${
-                            student.status === "Rejected"
-                              ? "bg-gray-600 text-white cursor-not-allowed"
-                              : "bg-white border border-gray-400 text-gray-600"
-                          }`}
-                          disabled={student.status === "Rejected"}
-                          onClick={() =>
-                            handleStudentStatusChange(
-                              student.uniqueId,
-                              "Rejected"
-                            )
-                          }
-                        >
-                          <X className="w-4 h-4 mr-1" />
-                          Reject
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <button
-                  className="px-4 py-2 bg-white border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors"
-                  onClick={removeRejectedStudents}
-                >
-                  Remove Rejected Students
-                </button>
-              </div>
+              <WeakStudent
+                weakStudentsData={formData.studentListData}
+                handleStudentStatusChange={handleStudentStatusChange}
+                removeRejectedStudents={removeRejectedStudents}
+              />
             )}
           </div>
         </SectionWrapper>
 
-        <SectionWrapper number="16" title="Actions Taken for Weak Students">
+        <SectionWrapper number="17" title="Actions Taken for Weak Students">
           <ActionsForWeakStudents
             initialData={formData.actionsForWeakStudentsData}
             onSave={(updatedData) =>
@@ -613,86 +496,59 @@ const FeedbackForm = forwardRef((props, ref) => {
         </SectionWrapper>
 
         <SectionWrapper
-          number="17"
+          number="18"
           title="Assignments/Quiz/Internal Components/Projects Taken Throughout Semester"
         >
           <PDFUploader num={props.num} aqis={aqis} />
         </SectionWrapper>
 
+        
+
+        <SectionWrapper number="20" title="Attendance Report">
+          <AttendanceReport
+            initialData={formData.studentListData}
+            onChange={(data) => handleInputChange("attendanceReportData", data)}
+          />
+        </SectionWrapper>
+
         <SectionWrapper
-          number="18"
-          title="Detail of Marks in all Components up to the End Semester"
-        >
-          <ExcelUploader
-            title="Marks Details"
-            identifier="marksDetails"
-            onFileChange={handleFileChange}
-            initialData={formData.marksDetailsData}
-          />
-        </SectionWrapper>
+  number="21"
+  title="Feedback (class committee or otherwise) and corrective actions (if any)"
+>
+  <div className="w-full flex flex-row gap-6 items-center">
+    <label className="text-gray-700 font-medium">Quantitative feedback:</label>
+    <textarea
+      className="w-20 p-3 border border-gray-200 rounded-lg transition-all resize-none text-gray-700 focus:ring-2 focus:ring-[#FFB255]/20 focus:border-[#FFB255] outline-none"
+      placeholder="Rating..."
+      value={formData.feedbackRating}
+      onChange={(e) => handleInputChange("feedbackRating", e.target.value)}
+      rows="1"
+    />
+  </div>
 
-        <SectionWrapper number="19" title="Attendance Report">
-          <ExcelUploader
-            title="Attendance Report"
-            identifier="attendanceReport"
-            onFileChange={handleFileChange}
-            initialData={formData.attendanceReportData}
-          />
-        </SectionWrapper>
+  <textarea
+    className="mt-4 w-full p-4 border border-gray-200 rounded-lg transition-all duration-200 resize-none text-gray-700 focus:ring-2 focus:ring-[#FFB255]/20 focus:border-[#FFB255] outline-none"
+    placeholder="Enter the feedback here..."
+    value={formData.feedbackComments}
+    onChange={(e) => handleInputChange("feedbackComments", e.target.value)}
+    rows="2"
+  />
+</SectionWrapper>
 
-        <div className="bg-white p-7 rounded-2xl  border border-gray-100 mt-8  transition-all duration-300">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="section-number bg-[#FFB255] text-white rounded-full w-9 h-9 flex items-center justify-center mr-2 shadow-sm transform hover:scale-105 transition-transform duration-200">
-              20
-            </div>
+<SectionWrapper number="22" title="Faculty Course Review">
+  <textarea
+    className="w-full p-4 border border-gray-200 rounded-lg transition-all duration-200 resize-none text-gray-700 focus:ring-2 focus:ring-[#FFB255]/20 focus:border-[#FFB255] outline-none"
+    placeholder="Enter course review here..."
+    value={formData.courseReview}
+    onChange={(e) => handleInputChange("courseReview", e.target.value)}
+    rows="2"
+  />
+</SectionWrapper>
 
-            <h2 className="section-title text-xl font-semibold text-gray-800">
-              Feedback (class committee or otherwise) and corrective actions (if
-              any)
-            </h2>
-          </div>
-
-          <div className="w-full flex flex-row gap-6 items-center">
-            <label className="text-gray-700 font-medium">
-              Quantitative feedback:
-            </label>
-            <textarea
-              className="w-20 p-3 border border-gray-200 rounded-lg transition-all resize-none text-gray-700 focus:ring-2 focus:ring-[#FFB255]/20 focus:border-[#FFB255] outline-none"
-              placeholder="Rating..."
-              value={undefined}
-              rows="1"
-            />
-          </div>
-
-          <textarea
-            className="mt-4 w-full p-4 border border-gray-200 rounded-lg transition-all duration-200 resize-none text-gray-700 focus:ring-2 focus:ring-[#FFB255]/20 focus:border-[#FFB255] outline-none"
-            placeholder="Enter the feedback here..."
-            value={undefined}
-            rows="2"
-          />
-        </div>
-        <div className="bg-white p-7 rounded-2xl shadow-md border border-gray-100 mt-8 hover:shadow-lg transition-all duration-300">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="section-number bg-[#FFB255] text-white rounded-full w-9 h-9 flex items-center justify-center mr-2 shadow-sm transform hover:scale-105 transition-transform duration-200">
-              21
-            </div>
-            <h2 className="section-title text-xl font-semibold text-gray-800">
-              Faculty Course Review
-            </h2>
-          </div>
-          <textarea
-            className="w-full p-4 border border-gray-200 rounded-lg transition-all duration-200 resize-none text-gray-700 focus:ring-2 focus:ring-[#FFB255]/20 focus:border-[#FFB255] outline-none"
-            placeholder="Enter course review here...."
-            value={undefined}
-            rows="2"
-          />
-        </div>
-
-        {/* Loading Spinner */}
-        {isLoading && <LoadingSpinner />}
-      </div>
-    </div>
+{isLoading && <LoadingSpinner />}
+</div>
+</div>
   );
 });
-
+FeedbackForm.displayName = "FeedbackForm";
 export default FeedbackForm;
