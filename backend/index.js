@@ -400,7 +400,6 @@ app.post("/form", auth, async (req, res) => {
         jsonData[num]['Module/Semester'] = req.body.module || "";
         jsonData[num]['Session'] = req.body.session || "";
         jsonData[num]["course_description"] = req.body.EditableCourseDescriptionData || "";
-        jsonData[num]['course_syllabus'] = req.body.courseSyllabus || "";
         jsonData[num]["Course Syllabus"] = req.body.courseSyllabus || "";
         jsonData[num]["Learning Resources"] = req.body.learningResources || "";
         jsonData[num]["copoMappingData"] = req.body.copoMappingData || "";
@@ -415,12 +414,6 @@ app.post("/form", auth, async (req, res) => {
         if (req.body.weeklyTimetableData) {
           jsonData[num]["weeklyTimetableData"] = req.body.weeklyTimetableData;
         }
-
-        // Add new data fields
-        jsonData[num]["studentListData"] = req.body.studentListData || null;
-        jsonData[num]["weakStudentsData"] = req.body.weakStudentsData || null;
-        jsonData[num]["marksDetailsData"] = req.body.marksDetailsData || null;
-        jsonData[num]["attendanceReportData"] = req.body.attendanceReportData || null;
 
         fs.writeFileSync(directoryPath, JSON.stringify(jsonData));
         res.status(200).json({ message: "Form data saved successfully" });
