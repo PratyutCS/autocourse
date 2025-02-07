@@ -449,8 +449,9 @@ if __name__ == '__main__':
         extracted_text = extract(fn)
         if not extracted_text:
             print("Error: No text extracted from PDF")
+        print("EXTRACTED TEXT IS: {}".format(extracted_text))
         response = ai(extracted_text)
-        with open(jfn, 'r') as file:
+        with open(jfn, 'r', encoding="utf-8") as file:
             data = json.load(file)
         datnum = None
         for i, dat in enumerate(data):
@@ -474,7 +475,7 @@ if __name__ == '__main__':
                 data[datnum]['done'] = 1
             else:
                 print(f"Filename {fn} not found in the JSON file.")
-            with open(jfn, 'w') as f:
+            with open(jfn, 'w', encoding="utf-8") as f:
                 json.dump(data, f, indent=2)
         except json.JSONDecodeError as e:
             print("------- Error in parsing AI response ---------")
