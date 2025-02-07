@@ -136,11 +136,12 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
   };
 
   if (!coWeightages || !studentData || !coAttainmentCriteria || !copoMappingData) {
+    console.log("true hai lumnd ke");
     return (
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
         <div className="flex items-center gap-4 mb-6">
           <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-            20
+            12
           </div>
           <h2 className="text-xl font-semibold text-gray-800">
             CO Attainment Analysis
@@ -167,7 +168,7 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
       <div className="flex items-center gap-4 mb-6">
         <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-          20
+          12
         </div>
         <h2 className="text-xl font-semibold text-gray-800">
           CO Attainment Analysis

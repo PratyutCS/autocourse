@@ -77,11 +77,7 @@ const Info = () => {
             actionsForWeakStudentsData={file["actionsForWeakStudentsData"] || ""}
             program={file["Program"] || ""}
             weeklyTimetableData={file["weeklyTimetableData"] || ""}
-            studentListData={file["studentListData"] || []}
-            weakStudentsData={file["weakStudentsData"] || []}
-            marksDetailsData={file["marksDetailsData"] || []}
-            attendanceReportData={file["attendanceReportData"] || []}
-            aqis={file["mergePDF"] || {}}
+            mergePDF={file["mergePDF"] || ""}
             coWeightages={file["coWeightages"] || {}}
             coAttainmentCriteria={file["coAttainmentCriteria"] || {}}
             studentData={file["studentData"] || {}}

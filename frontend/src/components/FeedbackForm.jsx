@@ -11,10 +11,11 @@ import EditableCourseDescription from "./EditableCourseDescription";
 import CourseSyllabus from "./CourseSyllabus";
 import AddField from "./AddFiled";
 import WeeklyTimetable from "./WeeklyTimetable";
-import { Check, X, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import COAttainmentAnalysis from "./COAttainmentAnalysis";
 import COAssessmentWeightage from "./COAssessmentWeightage";
 import COAttainmentCriteria from './COAttainmentCriteria';
+import PDFUploader from './PDFUploader';
 
 import ExcelToJson from './ExcelToJson';
 
@@ -55,9 +56,6 @@ const FeedbackForm = (props) => {
   const [copoMappingData, setCopoMappingData] = useState({
     courseOutcomes: {},
     mappingData: {},
-    tableMode: 'manual',
-    imagePath: null,
-    imageFileName: null
   });
 
 
@@ -750,7 +748,7 @@ const FeedbackForm = (props) => {
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
-              12
+              14
             </div>
             <h2 className="text-xl font-semibold text-gray-800">
               Learning Resources
@@ -778,7 +776,7 @@ const FeedbackForm = (props) => {
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              13
+              15
             </div>
             <h2 className="text-xl font-semibold text-gray-800">
               Weekly Time-Table
@@ -799,6 +797,19 @@ const FeedbackForm = (props) => {
           label="Actions Taken for Weak Students"
           initialData={actionsForWeakStudentsData}
           onSave={handleWeakStudentsChange}
+        />
+        {/* Add the component inside your return statement, where you want it to appear*/}
+        <PDFUploader
+          num={num}
+          onUploadSuccess={(filename) => {
+            // Handle successful upload
+            console.log('File uploaded:', filename);
+          }}
+          onDeleteSuccess={() => {
+            // Handle successful deletion
+            console.log('File deleted');
+          }}
+          initialFileName={props.mergePDF} // Pass the initial filename if available
         />
 
         {/* Loading Spinner */}

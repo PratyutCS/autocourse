@@ -355,11 +355,6 @@ def create_empty_template():
             }
         },
         "weeklyTimetableData": "",
-        "studentList": "",
-        "weakstudent": "",
-        "assignmentsTaken": "",
-        "marksDetails": "",
-        "attendanceReport": "",
         "actionsForWeakStudentsData": [""],
         "coWeightages":{}
     }
