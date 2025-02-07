@@ -3,12 +3,25 @@ import { AlertCircle } from 'lucide-react';
 
 const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria }) => {
   const [studentPerformance, setStudentPerformance] = useState([]);
+  const [averages, setAverages] = useState({});
 
   useEffect(() => {
     if (coWeightages && studentData && coAttainmentCriteria) {
       calculateAttainment();
     }
   }, [coWeightages, studentData, coAttainmentCriteria]);
+
+  const calculateAverages = (performanceData) => {
+    const cos = Object.keys(coWeightages);
+    const avgScores = {};
+
+    cos.forEach(co => {
+      const sum = performanceData.reduce((acc, student) => acc + student.coScores[co], 0);
+      avgScores[co] = (sum / performanceData.length).toFixed(2);
+    });
+
+    setAverages(avgScores);
+  };
 
   const calculateAttainment = () => {
     const performanceData = [];
@@ -42,16 +55,12 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria 
 
           let partial = coAttainmentCriteria[co].partial;
           let full = coAttainmentCriteria[co].full;
-
-          console.log("partial: "+partial+" full: "+full);
           
           let percentage = 0;
-
 
           if(totalWeight > 0){
             percentage = ((weightedScore / totalWeight)*100).toFixed(2);
           }
-          
 
           if(percentage >= full){
             studentResult.coScores[co] = 3;
@@ -69,6 +78,7 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria 
     }
 
     setStudentPerformance(performanceData);
+    calculateAverages(performanceData);
   };
 
   if (!coWeightages || !studentData || !coAttainmentCriteria) {
@@ -138,6 +148,17 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria 
                     ))}
                   </tr>
                 ))}
+                {/* Average Row */}
+                <tr className="bg-gray-50 font-semibold">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    Average
+                  </td>
+                  {Object.keys(coWeightages).map(co => (
+                    <td key={`average_${co}`} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {averages[co]}
+                    </td>
+                  ))}
+                </tr>
               </tbody>
             </table>
           </div>
