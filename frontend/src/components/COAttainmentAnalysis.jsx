@@ -25,18 +25,18 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria 
 
   const calculateAttainment = () => {
     const performanceData = [];
-    
+
     // Extract COs from weightages
     const cos = Object.keys(coWeightages);
-    
+
     // Calculate individual student performance first
     if (studentData?.maxMarks && studentData?.data) {
       const assessmentComponents = Object.entries(studentData.maxMarks).slice(0, -1);
-      
+
       studentData.data.forEach((student, index) => {
         const studentResult = {
           id: index + 1,
-          rollNumber: student.rollNumber || `Student ${index + 1}`,
+          rollNumber: student["Student Name"] || `Student ${index + 1}`,
           coScores: {}
         };
 
@@ -53,22 +53,22 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria 
             totalWeight += (maxMark * (coWeight / 100));
           });
 
-          let partial = coAttainmentCriteria[co].partial;
-          let full = coAttainmentCriteria[co].full;
-          
+          const partial = coAttainmentCriteria?.[co]?.partial || 0;
+          const full = coAttainmentCriteria?.[co]?.full || 0;
+
           let percentage = 0;
 
-          if(totalWeight > 0){
-            percentage = ((weightedScore / totalWeight)*100).toFixed(2);
+          if (totalWeight > 0) {
+            percentage = ((weightedScore / totalWeight) * 100).toFixed(2);
           }
 
-          if(percentage >= full){
+          if (percentage >= full) {
             studentResult.coScores[co] = 3;
           }
-          else if(percentage < full && percentage >= partial){
+          else if (percentage < full && percentage >= partial) {
             studentResult.coScores[co] = 2;
           }
-          else{
+          else {
             studentResult.coScores[co] = 1;
           }
         });
@@ -106,6 +106,9 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria 
     );
   }
 
+  const totalColumns = Object.keys(coWeightages).length + 1; // +1 for the NAME column
+  const totalRows = studentPerformance.length;
+
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
       <div className="flex items-center gap-4 mb-6">
@@ -126,7 +129,7 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria 
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Roll Number
+                    NAME
                   </th>
                   {Object.keys(coWeightages).map(co => (
                     <th key={co} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -136,7 +139,7 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria 
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {studentPerformance.map(student => (
+                {studentPerformance.slice(0, 5).map(student => (
                   <tr key={student.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {student.rollNumber}
@@ -161,6 +164,9 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria 
                 </tr>
               </tbody>
             </table>
+            <div className="mt-4 text-sm text-gray-500 border-t pt-2 text-center">
+              Total Rows: {totalRows} | Total Columns: {totalColumns}
+            </div>
           </div>
         </div>
       </div>
