@@ -7,16 +7,43 @@ const ExcelToJSON = ({ onSave, initialData }) => {
   const [fileName, setFileName] = useState('');
   const [error, setError] = useState(null);
   const [processedData, setProcessedData] = useState(null);
+  const [maxMarksData, setMaxMarksData] = useState(null);
   const [dataSource, setDataSource] = useState(null);
 
-  // Initialize the component with initialData, skipping the first object
+  console.log("INITIAL DATA IS : ", initialData);
+
+  // Function to clean max marks data by removing undefined/empty values
+  const cleanMaxMarksData = (data) => {
+    if (!data) return null;
+    
+    const cleanedData = {};
+    Object.entries(data).forEach(([key, value]) => {
+      // Only keep the key-value pair if value is defined and not empty
+      if (value !== undefined && value !== null && value !== '') {
+        cleanedData[key] = value;
+      }
+    });
+    return Object.keys(cleanedData).length > 0 ? cleanedData : null;
+  };
+
+  // Initialize the component with initialData
   useEffect(() => {
-    if (initialData && Array.isArray(initialData) && initialData.length > 1) { // Changed from length > 0
-      console.log('Setting initial data (excluding first object):', initialData.slice(1));
-      setProcessedData(initialData.slice(1)); // Skip the first object
-      // Only set dataSource to 'initial' if there's no uploaded data yet
-      if (!dataSource || dataSource !== 'uploaded') {
+    if (initialData && initialData.data && initialData.maxMarks) {
+      console.log('Setting initial data:', initialData);
+      try {
+        // Extract max marks from first row and clean it
+        const maxMarks = cleanMaxMarksData(initialData.maxMarks);
+        const remainingData = initialData.data;
+
+        console.log('Cleaned max marks:', maxMarks);
+        console.log('Remaining data:', remainingData);
+
+        setMaxMarksData(maxMarks);
+        setProcessedData(remainingData);
         setDataSource('initial');
+      } catch (error) {
+        console.error('Error processing initial data:', error);
+        setError('Error processing initial data');
       }
     }
   }, [initialData]);
@@ -52,23 +79,33 @@ const ExcelToJSON = ({ onSave, initialData }) => {
             return;
           }
 
-          let data = result.data.filter(row =>
-            Object.values(row).some(value => value !== '')
-          );
+          try {
+            let data = result.data.filter(row =>
+              Object.values(row).some(value => value !== '')
+            );
 
-          const startIndex = findTableStart(data);
-          const headers = Object.keys(data[startIndex]);
-          const processedData = data.slice(startIndex + 1).map(row => {
-            let newRow = {};
-            headers.forEach((header, index) => {
-              newRow[data[startIndex][header]] = row[header];
+            const startIndex = findTableStart(data);
+            const headers = Object.keys(data[startIndex]);
+            const processedData = data.slice(startIndex + 1).map(row => {
+              let newRow = {};
+              headers.forEach((header, index) => {
+                newRow[data[startIndex][header]] = row[header];
+              });
+              return newRow;
             });
-            return newRow;
-          });
 
-          setProcessedData(processedData);
-          setDataSource('uploaded');
-          onSave(processedData);
+            // Extract and clean max marks from the first row
+            const maxMarks = cleanMaxMarksData(processedData[0]);
+            const remainingData = processedData.slice(1);
+
+            setMaxMarksData(maxMarks);
+            setProcessedData(remainingData);
+            setDataSource('uploaded');
+            onSave({ maxMarks, data: remainingData });
+          } catch (error) {
+            console.error('Error processing CSV data:', error);
+            setError('Error processing CSV data');
+          }
         },
         header: true,
         skipEmptyLines: true
@@ -89,7 +126,7 @@ const ExcelToJSON = ({ onSave, initialData }) => {
             row.some(cell =>
               typeof cell === 'string' &&
               ['unique id', 'assessment', 'student name', 'id'].some(
-                indicator => cell.toLowerCase().includes(indicator)
+                indicator => String(cell).toLowerCase().includes(indicator)
               )
             )
           );
@@ -113,9 +150,14 @@ const ExcelToJSON = ({ onSave, initialData }) => {
               return obj;
             });
 
-          setProcessedData(processedData);
+          // Extract and clean max marks from the first row
+          const maxMarks = cleanMaxMarksData(processedData[0]);
+          const remainingData = processedData.slice(1);
+
+          setMaxMarksData(maxMarks);
+          setProcessedData(remainingData);
           setDataSource('uploaded');
-          onSave(processedData);
+          onSave({ maxMarks, data: remainingData });
         } catch (error) {
           console.error('Error processing Excel file:', error);
           setError('Error processing Excel file');
@@ -152,8 +194,14 @@ const ExcelToJSON = ({ onSave, initialData }) => {
       return null;
     }
 
-    const headers = Object.keys(processedData[0]);
-    
+    // Ensure we have valid data with headers
+    const firstRow = processedData[0];
+    if (!firstRow) {
+      console.log('No rows in processed data');
+      return null;
+    }
+
+    const headers = Object.keys(firstRow);
     if (headers.length === 0) {
       console.log('No headers found in data');
       return null;
@@ -173,6 +221,23 @@ const ExcelToJSON = ({ onSave, initialData }) => {
             </span>
           )}
         </div>
+
+        {/* Display Maximum Marks - Only if there are valid values */}
+        {maxMarksData && Object.keys(maxMarksData).length > 0 && (
+          <div className="mb-4 p-4 bg-yellow-50 rounded-lg border border-yellow-100">
+            <h4 className="text-sm font-medium text-yellow-800 mb-2">Maximum Attainable Marks:</h4>
+            <div className="grid grid-cols-2 gap-4">
+              {Object.entries(maxMarksData).map(([key, value]) => (
+                <div key={key} className="text-sm">
+                  <span className="font-medium text-yellow-700">{key}:</span>
+                  <span className="ml-2 text-yellow-900">{value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Data Table */}
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -222,10 +287,11 @@ const ExcelToJSON = ({ onSave, initialData }) => {
       </div>
 
       <div className="space-y-4">
+        {/* Show initial data message */}
         {processedData && dataSource === 'initial' && (
           <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
             <p className="text-blue-600 text-sm">
-              Displaying initial data. Upload a new file to replace it.
+              Displaying initial data with separate maximum marks (undefined values removed). Upload a new file to replace it.
             </p>
           </div>
         )}
@@ -262,6 +328,7 @@ const ExcelToJSON = ({ onSave, initialData }) => {
           </div>
         )}
 
+        {/* Render the preview table */}
         {renderPreview()}
       </div>
     </div>

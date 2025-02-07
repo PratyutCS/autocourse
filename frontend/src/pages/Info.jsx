@@ -84,7 +84,7 @@ const Info = () => {
             aqis={file["mergePDF"] || {}}
             coWeightages={file["coWeightages"] || {}}
             coAttainmentCriteria={file["coAttainmentCriteria"] || {}}
-            studentData={file["studentData"] || []}
+            studentData={file["studentData"] || {}}
             />
           ) : (
             <LoadingSpinner />

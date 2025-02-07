@@ -198,7 +198,7 @@ const FeedbackForm = (props) => {
   const handleCoAttainmentCriteriaSave = (criteria) => {
     setCoAttainmentCriteria(criteria);
   };
-  
+
   const [studentData, setStudentData] = useState([]);
 
   const handleStudentDataSave = (data) => {
@@ -208,8 +208,8 @@ const FeedbackForm = (props) => {
   /////////////////////////////////////////**Use Effect**//////////////////////////
 
   useEffect(() => {
-    setStudentData(props.studentData || []);
-    console.log("SAVED STUDENT DATA");
+    setStudentData(props.studentData || {});
+    console.log("SAVED STUDENT DATA", studentData);
   }, [props.studentData]);
 
   useEffect(() => {
@@ -711,7 +711,7 @@ const FeedbackForm = (props) => {
         </div>
 
         {/* Excel to json to extract student data*/}
-        <ExcelToJson 
+        <ExcelToJson
           onSave={handleStudentDataSave}
           initialData={studentData}
         />
@@ -719,7 +719,7 @@ const FeedbackForm = (props) => {
         {/* CO Assessment weightage Section */}
         <COAssessmentWeightage
           copoMappingData={copoMappingData}
-          internalAssessmentData={internalAssessmentData}
+          studentData={studentData}
           initialWeightages={coWeightages}
           onChange={(weightages) => {
             setCoWeightages(weightages);
