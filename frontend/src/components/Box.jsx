@@ -4,7 +4,6 @@ import Cards from './Cards';
 import NewC from './NewC';
 
 export default function Box(props) {
-
   return (
     <div className="box1">
       <Cards />
@@ -16,6 +15,7 @@ export default function Box(props) {
               name={file.course_name || file.course_code || file.filename || "Unknown Course"} 
               num={index} 
               userData={props.userData} 
+              done={file.done} // Passing the done value to NewC
             />
           </div>
         ))

@@ -7,21 +7,21 @@ import AsideComp from "../components/AsideComp";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import WelcomeCard from "../components/WelcomeCard";
 
-
 const Dashboard = () => {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
-  const [file, setFileData] = useState(null);
+  const [files, setFiles] = useState(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Validates token and fetch user details
   useEffect(() => {
     const checkTokenValidity = async () => {
       const token = localStorage.getItem("token");
 
       if (token) {
         try {
-          const response = await axios.post(
+          const tokenResponse = await axios.post(
             constants.url + "/tokenIsValid",
             {},
             {
@@ -29,15 +29,15 @@ const Dashboard = () => {
             }
           );
 
-          if (!response.data) {
+          if (!tokenResponse.data) {
             localStorage.removeItem("token");
             navigate("/");
           } else {
             try {
-              const response = await axios.get(constants.url + "/", {
+              const userResponse = await axios.get(constants.url + "/", {
                 headers: { "x-auth-token": token },
               });
-              setUserData(response.data);
+              setUserData(userResponse.data);
             } catch (error) {
               console.error("Error receiving data:", error);
               localStorage.removeItem("token");
@@ -57,16 +57,16 @@ const Dashboard = () => {
     checkTokenValidity();
   }, [navigate]);
 
+  // Fetch files data after userData is loaded
   useEffect(() => {
-    // console.log(userData);
     const fetchFilesData = async () => {
       if (userData) {
         const token = localStorage.getItem("token");
         try {
-          const response = await axios.get(constants.url + "/files", {
+          const filesResponse = await axios.get(constants.url + "/files", {
             headers: { "x-auth-token": token },
           });
-          setFileData(response.data);
+          setFiles(filesResponse.data);
         } catch (error) {
           console.error("Error fetching files data:", error);
         } finally {
@@ -78,6 +78,39 @@ const Dashboard = () => {
     fetchFilesData();
   }, [userData]);
 
+  // Polling mechanism to check for file updates when any file's "done" value is not equal to 1
+  useEffect(() => {
+    let pollInterval;
+
+    const pollForUpdates = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const response = await axios.get(constants.url + "/files", {
+          headers: { "x-auth-token": token },
+        });
+        // Compare the new files data with current state
+        if (JSON.stringify(response.data) !== JSON.stringify(files)) {
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error("Error polling file updates:", error);
+      }
+    };
+
+    if (files && Array.isArray(files)) {
+      // Determine whether any file isn't marked as done (i.e., done !== 1)
+      const needsPolling = files.some((file) => file.done !== 1);
+      if (needsPolling) {
+        // Poll every 10 seconds
+        pollInterval = setInterval(pollForUpdates, 10000);
+      }
+    }
+
+    return () => {
+      if (pollInterval) clearInterval(pollInterval);
+    };
+  }, [files]);
+
   if (isLoading || !userData) {
     return <LoadingSpinner />;
   }
@@ -85,8 +118,12 @@ const Dashboard = () => {
   return (
     <div className="h-screen w-full overflow-hidden bg-[#FFFEFD]">
       <div className="flex h-full">
-        <AsideComp userEmail={userData.email} isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
-        
+        <AsideComp 
+          userEmail={userData.email} 
+          isCollapsed={isCollapsed} 
+          setIsCollapsed={setIsCollapsed} 
+        />
+
         <div className="flex-1 p-6 overflow-auto">
           <div className="max-w-6xl mx-auto space-y-6">
             {/* Welcome Section */}
@@ -102,8 +139,7 @@ const Dashboard = () => {
                   Your Files
                 </h2>
               </div>
-              
-              <Box files={file} userData={userData} />
+              <Box files={files} userData={userData} />
             </div>
           </div>
         </div>

@@ -10,8 +10,9 @@ from docx.oxml.ns import qn
 from docx2pdf import convert
 from PyPDF2 import PdfMerger
 
-# Open the base document
-doc = Document('./extractor/sample.docx')
+# Open the base document using a context manager to ensure the file is closed promptly
+with open('./extractor/sample.docx', 'rb') as f:
+    doc = Document(f)
 
 # Read data from command line (expected to be a JSON string)
 print(sys.argv[1])
@@ -384,9 +385,6 @@ def create_actions_doc(data):
         timetable_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
         
         # Loop through each action and add as a bullet.
-        # Changes applied:
-        # - Ensured paragraphs for bullet points are flush left by setting left_indent and first_line_indent to 0.
-        # - The bullet character ("• ") is added manually with its font size set to match the desired style.
         for action in data['actionsForWeakStudentsData']:
             para = doc.add_paragraph()
             para.alignment = WD_ALIGN_PARAGRAPH.LEFT
@@ -401,19 +399,23 @@ create_actions_doc(data)
 
 #######################################################################################################################
 # Saving the Document and Converting to PDF
-doc.save('./download/' + data['filename'][:-4] + '_del' + '.docx')
+output_doc = './download/' + data['filename'][:-4] + '_del' + '.docx'
+doc.save(output_doc)
 print("Document updated and saved.")
-convert('./download/' + data['filename'][:-4] + '_del' + '.docx')
-os.remove('./download/' + data['filename'][:-4] + '_del' + '.docx')
+convert(output_doc)
+os.remove(output_doc)
 
-pdf_list = ['./download/' + data['filename'][:-4] + '_del' + '.pdf', "./data/1/" + data['mergePDF']]
+if(data.get('mergePDF')):
+    pdf_list = [output_doc.replace('.docx', '.pdf'), "./data/1/" + data['mergePDF']]
+
+pdf_list = [output_doc.replace('.docx', '.pdf')]
 merger = PdfMerger()
 for pdf in pdf_list:
     print(pdf)
     merger.append(pdf)
 
 # Optionally remove the temporary PDF file:
-# os.remove('./download/' + data['filename'][:-4] + '_del' + '.pdf')
+# os.remove(output_doc.replace('.docx', '.pdf'))
 
 merger.write("./download/" + data['filename'])
 merger.close()
