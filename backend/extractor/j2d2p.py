@@ -1,61 +1,50 @@
 import json
+import sys
+import os
 from docx import Document
 from docx.shared import Pt, RGBColor, Inches
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
-from docx.shared import Pt, Inches
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_PARAGRAPH_ALIGNMENT
 from docx.oxml import OxmlElement
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml.ns import qn
 from docx2pdf import convert
-import sys
-import os
 from PyPDF2 import PdfMerger
 
-
+# Open the base document
 doc = Document('./extractor/sample.docx')
 
-# with open('../json/1.json', 'r') as f:
-#     data = json.load(f)
-#     data = data[0]
-
+# Read data from command line (expected to be a JSON string)
 print(sys.argv[1])
 data = json.loads(sys.argv[1])
 
 header = ""
 
-# code for adding sessions and other data
+# Helper function to replace placeholders in the document
 def rep(doc, key):
     for paragraph in doc.paragraphs:
         placeholder = f'{{{{{key}}}}}'
         if placeholder in paragraph.text:
-                value = data.get(key, "")
-                paragraph.text = paragraph.text.replace(placeholder, value)
-                
-                # paragraph.paragraph_format.left_indent = Inches(0.2)
+            value = data.get(key, "")
+            paragraph.text = paragraph.text.replace(placeholder, value)
 
-
+# Replace placeholders if the keys exist
 if data.get('Program'):
-    rep(doc,"Program")
-
+    rep(doc, "Program")
 if data.get('Session'):
-    rep(doc,"Session")
-
+    rep(doc, "Session")
 if data.get('course_name'):
-    rep(doc,"course_name")
-    header = header+data.get("course_name", "")+" ("
-
+    rep(doc, "course_name")
+    header += data.get("course_name", "") + " ("
 if data.get('course_code'):
-    rep(doc,"course_code")
-    header = header+data.get("course_code", "")+") Sem: "
-
+    rep(doc, "course_code")
+    header += data.get("course_code", "") + ") Sem: "
 if data.get('Module/Semester'):
-    rep(doc,"Module/Semester")
-    header = header+data.get("Module/Semester", "")
+    rep(doc, "Module/Semester")
+    header += data.get("Module/Semester", "")
 
 #######################################################################################################################
+# Code for adding headers to the document
 
-#code for adding header
 section = doc.sections[0]
 section.different_first_page_header_footer = True
 
@@ -63,42 +52,37 @@ section.different_first_page_header_footer = True
 first_page_header = section.first_page_header
 first_page_paragraph = first_page_header.paragraphs[0] if first_page_header.paragraphs else first_page_header.add_paragraph()
 first_page_paragraph.text = header
-first_page_paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT  # Right-aligned header for the first page
-first_page_paragraph.paragraph_format.right_indent = Inches(0.2)  # 0.5-inch margin from the right
+first_page_paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+first_page_paragraph.paragraph_format.right_indent = Inches(0.2)
 
 # Header for the rest of the pages
 default_header = section.header
 default_paragraph = default_header.paragraphs[0] if default_header.paragraphs else default_header.add_paragraph()
 default_paragraph.text = header
-default_paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT  # Right-aligned header for other pages
-default_paragraph.paragraph_format.right_indent = Inches(0.2)  # 0.5-inch margin from the right
+default_paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+default_paragraph.paragraph_format.right_indent = Inches(0.2)
 
-########################################################################################################################
-
+#######################################################################################################################
+# Course Description and Objectives
 if data.get('course_description'):
-    # Add page break only if the document is not empty or already on a new page
     if doc.paragraphs and doc.paragraphs[-1].text.strip():
         doc.add_page_break()
-
     course_heading = doc.add_heading(level=1)
     course_heading.paragraph_format.left_indent = Inches(0.5)
-    course_run = course_heading.add_run(
-        '6. Course Description and its objectives')
+    course_run = course_heading.add_run('6. Course Description and its objectives')
     course_run.font.name = 'Carlito'
     course_run.font.size = Pt(16)
     course_run.font.color.rgb = RGBColor(28, 132, 196)
     course_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
 
     doc.add_paragraph()
-    course_description_paragraph = doc.add_paragraph(
-        data['course_description'])
+    course_description_paragraph = doc.add_paragraph(data['course_description'])
     course_description_paragraph.paragraph_format.left_indent = Inches(0.7)
     course_description_paragraph.paragraph_format.right_indent = Inches(0.5)
     course_description_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
 
-
-##################################################################################################################
-
+#######################################################################################################################
+# CO-PO Mapping Section
 if data.get('copoMappingData'):
     doc.add_page_break()
     co_heading = doc.add_heading(level=1)
@@ -124,9 +108,7 @@ if data.get('copoMappingData'):
                 paragraph = doc.add_paragraph(f'{co_key}: {co_value["description"]}')
                 paragraph.paragraph_format.left_indent = Inches(0.7)
                 paragraph.paragraph_format.right_indent = Inches(0.5)
-
-                for bullet in co_value['bullets']:
-                    doc.add_paragraph()
+                for bullet in co_value.get('bullets', []):
                     bullet_paragraph = doc.add_paragraph('• ' + bullet)
                     bullet_paragraph.paragraph_format.left_indent = Inches(1)
                     bullet_paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
@@ -136,85 +118,69 @@ if data.get('copoMappingData'):
                 paragraph.paragraph_format.left_indent = Inches(0.7)
                 paragraph.paragraph_format.right_indent = Inches(0.5)
 
-    if data['copoMappingData'].get('tableMode') == 'image':
+    if data['copoMappingData'].get('mappingData'):
         doc.add_paragraph()
-        image_path = data['copoMappingData'].get('imagePath', '')
-        if image_path:
-            print(image_path)
-            paragraph = doc.add_paragraph()
-            paragraph_format = paragraph.paragraph_format
-            paragraph_format.left_indent = Inches(0.7)
-            run = paragraph.add_run()
-            run.add_picture("." + image_path, width=Inches(6.0))  # Adjust width as needed
-    else:
-        if data['copoMappingData'].get('mappingData'):
-            doc.add_paragraph()
-            course_outcomes_heading = doc.add_paragraph()
-            course_outcomes_run = course_outcomes_heading.add_run('CO/PO Mapping:')
-            course_outcomes_run.bold = True
-            course_outcomes_run.font.size = Pt(12)
-            course_outcomes_heading.paragraph_format.left_indent = Inches(0.7)
-            course_outcomes_heading.paragraph_format.right_indent = Inches(0.5)
-            course_outcomes_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        mapping_heading = doc.add_paragraph()
+        mapping_run = mapping_heading.add_run('CO/PO Mapping:')
+        mapping_run.bold = True
+        mapping_run.font.size = Pt(12)
+        mapping_heading.paragraph_format.left_indent = Inches(0.7)
+        mapping_heading.paragraph_format.right_indent = Inches(0.5)
+        mapping_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
 
-            co_po_mapping = data['copoMappingData']['mappingData']
+        co_po_mapping = data['copoMappingData']['mappingData']
+        doc.add_paragraph()
 
-            doc.add_paragraph()
+        table = doc.add_table(rows=1, cols=len(co_po_mapping[list(co_po_mapping.keys())[0]]) + 1)
+        hdr_cells = table.rows[0].cells
+        hdr_cells[0].text = 'Course Outcomes (CO)'
+        for i, po_key in enumerate(co_po_mapping[list(co_po_mapping.keys())[0]].keys()):
+            hdr_cells[i + 1].text = po_key
 
-            table = doc.add_table(rows=1, cols=len(
-                co_po_mapping[list(co_po_mapping.keys())[0]]) + 1)  # +1 for CO column
+        for co_key, po_values in co_po_mapping.items():
+            row_cells = table.add_row().cells
+            row_cells[0].text = co_key
+            for i, value in enumerate(po_values.values()):
+                row_cells[i + 1].text = str(value) if value != "" else ""
 
-            hdr_cells = table.rows[0].cells
-            hdr_cells[0].text = 'Course Outcomes (CO)'
-            for i, po_key in enumerate(co_po_mapping[list(co_po_mapping.keys())[0]].keys()):
-                hdr_cells[i + 1].text = po_key
+        for row in table.rows:
+            for cell in row.cells:
+                cell.width = Inches(0.1)
+                for paragraph in cell.paragraphs:
+                    for run in paragraph.runs:
+                        run.font.size = Pt(10)
 
-            for co_key, po_values in co_po_mapping.items():
-                row_cells = table.add_row().cells
-                row_cells[0].text = co_key  # CO column
-                for i, value in enumerate(po_values.values()):
-                    # Add values, convert int to str
-                    row_cells[i + 1].text = str(value) if value != "" else ""
+        # Set borders for the table cells
+        def set_cell_border(cell, border_type, border_size, border_color):
+            tc = cell._tc
+            tcPr = tc.get_or_add_tcPr()
+            border = OxmlElement(f'w:{border_type}')
+            border.set(qn('w:val'), 'single')
+            border.set(qn('w:sz'), str(border_size))
+            border.set(qn('w:color'), border_color)
+            element = tcPr.xpath(f"./w:{border_type}")
+            if element:
+                element[0].getparent().replace(element[0], border)
+            else:
+                tcPr.append(border)
 
-            for row in table.rows:
-                for cell in row.cells:
-                    cell.width = Inches(0.5)
-                    for paragraph in cell.paragraphs:
-                        for run in paragraph.runs:
-                            run.font.size = Pt(10)
+        for row in table.rows:
+            for cell in row.cells:
+                set_cell_border(cell, 'top', 4, '000000')
+                set_cell_border(cell, 'bottom', 4, '000000')
+                set_cell_border(cell, 'left', 4, '000000')
+                set_cell_border(cell, 'right', 4, '000000')
 
-            def set_cell_border(cell, border_type, border_size, border_color):
-                tc = cell._tc
-                tcPr = tc.get_or_add_tcPr()
+        table.alignment = WD_TABLE_ALIGNMENT.CENTER
 
-                border = OxmlElement(f'w:{border_type}')
-                border.set(qn('w:val'), 'single')
-                border.set(qn('w:sz'), str(border_size))
-                border.set(qn('w:color'), border_color)
+        for row in table.rows:
+            tr = row._tr
+            trPr = tr.get_or_add_trPr()
+            cantSplit = OxmlElement('w:cantSplit')
+            trPr.append(cantSplit)
 
-                element = tcPr.xpath(f"./w:{border_type}")
-                if element:
-                    element[0].getparent().replace(element[0], border)
-                else:
-                    tcPr.append(border)
-
-            for row in table.rows:
-                for cell in row.cells:
-                    set_cell_border(cell, 'top', 4, '000000')
-                    set_cell_border(cell, 'bottom', 4, '000000')
-                    set_cell_border(cell, 'left', 4, '000000')
-                    set_cell_border(cell, 'right', 4, '000000')
-
-            table.alignment = WD_TABLE_ALIGNMENT.CENTER
-
-            for row in table.rows:
-                tr = row._tr
-                trPr = tr.get_or_add_trPr()
-                cantSplit = OxmlElement('w:cantSplit')
-                trPr.append(cantSplit)
-#################################################################################################################
-
-# Course Syllabus Table
+#######################################################################################################################
+# Course Syllabus Section
 if data.get('Course Syllabus'):
     doc.add_page_break()
     syllabus_heading = doc.add_heading(level=1)
@@ -226,57 +192,46 @@ if data.get('Course Syllabus'):
 
     doc.add_paragraph()
 
-    # Create table
-    table = doc.add_table(rows=1, cols=4)  # 4 columns for srNo, content, co, sessions
-    
-    # Set header cells
+    table = doc.add_table(rows=1, cols=4)
     hdr_cells = table.rows[0].cells
     headers = ['Sr. No.', 'Content', 'CO', 'Sessions']
-    for i, header in enumerate(headers):
-        hdr_cells[i].text = header
-        # Make headers bold
+    for i, header_text in enumerate(headers):
+        hdr_cells[i].text = header_text
         paragraph = hdr_cells[i].paragraphs[0]
-        run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(header)
+        run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(header_text)
         run.bold = True
         run.font.size = Pt(10)
 
-    # Add data rows
     for item in data['Course Syllabus']:
         row_cells = table.add_row().cells
         row_cells[0].text = str(item.get('srNo', ''))
         row_cells[1].text = str(item.get('content', ''))
         row_cells[2].text = str(item.get('co', ''))
         row_cells[3].text = str(item.get('sessions', ''))
-        
-        # Set font size for data cells
         for cell in row_cells:
             for paragraph in cell.paragraphs:
                 for run in paragraph.runs:
                     run.font.size = Pt(10)
 
-    # Set column widths
     widths = [Inches(0.8), Inches(3.5), Inches(0.8), Inches(0.8)]
     for row in table.rows:
         for idx, cell in enumerate(row.cells):
-            cell.width = widths[idx]
+            if idx < len(widths):
+                cell.width = widths[idx]
 
-    # Add borders to cells
     def set_cell_border(cell, border_type, border_size, border_color):
         tc = cell._tc
         tcPr = tc.get_or_add_tcPr()
-        
         border = OxmlElement(f'w:{border_type}')
         border.set(qn('w:val'), 'single')
         border.set(qn('w:sz'), str(border_size))
         border.set(qn('w:color'), border_color)
-        
         element = tcPr.xpath(f"./w:{border_type}")
         if element:
             element[0].getparent().replace(element[0], border)
         else:
             tcPr.append(border)
 
-    # Apply borders to all cells
     for row in table.rows:
         for cell in row.cells:
             set_cell_border(cell, 'top', 4, '000000')
@@ -284,20 +239,16 @@ if data.get('Course Syllabus'):
             set_cell_border(cell, 'left', 4, '000000')
             set_cell_border(cell, 'right', 4, '000000')
 
-    # Set table alignment to center
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
-
-    # Prevent table rows from splitting across pages
     for row in table.rows:
         tr = row._tr
         trPr = tr.get_or_add_trPr()
         cantSplit = OxmlElement('w:cantSplit')
         trPr.append(cantSplit)
 
-#############################################################################################################
-
+#######################################################################################################################
+# Learning Resources Section
 def create_learning_resources_doc(data):
-    # Add Learning Resources heading
     doc.add_page_break()
     timetable_heading = doc.add_heading(level=1)
     timetable_run = timetable_heading.add_run('9. Learning Resources')
@@ -306,52 +257,45 @@ def create_learning_resources_doc(data):
     timetable_run.font.color.rgb = RGBColor(28, 132, 196)
     timetable_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
     
-    # Add "Text Books:" subheading
     textbooks_heading = doc.add_heading('Text Books:', level=2)
     textbooks_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
     textbooks_run = textbooks_heading.runs[0]
     textbooks_run.bold = True
     textbooks_run.font.size = Pt(12)
-
     
-    # Add textbooks with checkmarks
     if data.get('textBooks'):
         for book in data['textBooks']:
             para = doc.add_paragraph()
             para.paragraph_format.left_indent = Inches(1)
-            bullet = para.add_run("✓ ") # Manually add bullet
+            bullet = para.add_run("✓ ")
             bullet.font.size = Pt(12)
             text = para.add_run(book)
             text.font.size = Pt(12)
 
-    doc.add_paragraph()  # Add spacing
+    doc.add_paragraph()
     
-    # Add "Reference Links:" subheading
     ref_heading = doc.add_heading('Reference Links:', level=2)
     ref_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
     ref_run = ref_heading.runs[0]
     ref_run.bold = True
     ref_run.font.size = Pt(12)
     
-    # Add reference links with manual bullet points
     if data.get('referenceLinks'):
         for link in data['referenceLinks']:
             para = doc.add_paragraph()
             para.paragraph_format.left_indent = Inches(1)
-            bullet = para.add_run("• ")  # Manually add bullet
+            bullet = para.add_run("• ")
             bullet.font.size = Pt(12)
             link_run = para.add_run(link)
             link_run.font.size = Pt(12)
-            link_run.font.color.rgb = RGBColor(0, 0, 255)  # Blue color for links
+            link_run.font.color.rgb = RGBColor(0, 0, 255)
             link_run.underline = True
-
 
 create_learning_resources_doc(data["Learning Resources"])
 
-############################################################################################################
-
+#######################################################################################################################
+# Weekly Timetable Section
 if data.get('weeklyTimetableData'):
-    # Add a page break and heading for Weekly Timetable
     doc.add_page_break()
     timetable_heading = doc.add_heading(level=1)
     timetable_run = timetable_heading.add_run('10. Weekly Timetable')
@@ -361,77 +305,58 @@ if data.get('weeklyTimetableData'):
     timetable_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
 
     doc.add_paragraph()
-
-    # Get time slots from any day (they're the same for all days)
     time_slots = list(data['weeklyTimetableData']['Monday'].keys())
     days = list(data['weeklyTimetableData'].keys())
-
-    # Create a table with days as columns and time slots as rows
-    # Add 1 to rows for the header
     table = doc.add_table(rows=len(time_slots) + 1, cols=len(days) + 1)
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
 
-    # Add header row with days
     header_cells = table.rows[0].cells
     header_cells[0].text = 'Time'
     for i, day in enumerate(days):
         header_cells[i + 1].text = day
-        # Style header cells
         paragraph = header_cells[i + 1].paragraphs[0]
         run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(day)
         run.bold = True
         run.font.size = Pt(10)
         paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    # Style the "Time" header cell
     time_paragraph = header_cells[0].paragraphs[0]
     time_run = time_paragraph.runs[0] if time_paragraph.runs else time_paragraph.add_run('Time')
     time_run.bold = True
     time_run.font.size = Pt(10)
     time_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    # Populate time slots and availability
     for i, time_slot in enumerate(time_slots):
         row_cells = table.rows[i + 1].cells
-        # Add time slot
         row_cells[0].text = time_slot
-        
-        # Add availability for each day
         for j, day in enumerate(days):
             is_available = data['weeklyTimetableData'][day][time_slot]
             cell = row_cells[j + 1]
-            cell.text = data['course_name'] + " (" + data['course_code']+")" if is_available else ''
-            
-            # Style cells
+            cell.text = data['course_name'] + " (" + data['course_code'] + ")" if is_available else ''
             paragraph = cell.paragraphs[0]
             paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
             for run in paragraph.runs:
                 run.font.size = Pt(10)
 
-    # Set column widths
     column_widths = [Inches(1.1)] + [Inches(1)] * len(days)
     for row in table.rows:
         for idx, cell in enumerate(row.cells):
             if idx < len(column_widths):
                 cell.width = column_widths[idx]
 
-    # Apply borders to cells
     def set_cell_border(cell, border_type, border_size, border_color):
         tc = cell._tc
         tcPr = tc.get_or_add_tcPr()
-
         border = OxmlElement(f'w:{border_type}')
         border.set(qn('w:val'), 'single')
         border.set(qn('w:sz'), str(border_size))
         border.set(qn('w:color'), border_color)
-
         element = tcPr.xpath(f"./w:{border_type}")
         if element:
             element[0].getparent().replace(element[0], border)
         else:
             tcPr.append(border)
 
-    # Apply borders to all cells
     for row in table.rows:
         for cell in row.cells:
             set_cell_border(cell, 'top', 4, '000000')
@@ -439,272 +364,17 @@ if data.get('weeklyTimetableData'):
             set_cell_border(cell, 'left', 4, '000000')
             set_cell_border(cell, 'right', 4, '000000')
 
-    # Prevent table rows from splitting across pages
     for row in table.rows:
         tr = row._tr
         trPr = tr.get_or_add_trPr()
         cantSplit = OxmlElement('w:cantSplit')
         trPr.append(cantSplit)
 
-############################################################################################################
-
-if data.get('studentListData'):
-    # Add a page break and heading for the Student List
-    doc.add_page_break()
-    student_list_heading = doc.add_heading(level=1)
-    student_list_run = student_list_heading.add_run('11. Student List')
-    student_list_run.font.name = 'Carlito'
-    student_list_run.font.size = Pt(16)
-    student_list_run.font.color.rgb = RGBColor(28, 132, 196)
-    student_list_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
-
-    doc.add_paragraph()
-
-    # Extract the content for the student list
-    student_list_content = data['studentListData']
-
-    # Dynamically generate headers from the first dictionary in the content
-    headers = list(student_list_content[0].keys())
-
-    # Create a table with the number of columns based on headers
-    table = doc.add_table(rows=1, cols=len(headers))
-    table.alignment = WD_TABLE_ALIGNMENT.CENTER
-
-    # Populate header row
-    hdr_cells = table.rows[0].cells
-    for i, header in enumerate(headers):
-        hdr_cells[i].text = header
-        # Style header cells
-        paragraph = hdr_cells[i].paragraphs[0]
-        run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(header)
-        run.bold = True
-        run.font.size = Pt(10)
-        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-
-    # Populate rows with student list content
-    for entry in student_list_content:
-        row_cells = table.add_row().cells
-        for i, key in enumerate(headers):
-            row_cells[i].text = str(entry.get(key, ''))
-            # Style cells
-            for paragraph in row_cells[i].paragraphs:
-                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                for run in paragraph.runs:
-                    run.font.size = Pt(10)
-
-    # Set column widths (adjustable based on the content)
-    column_widths = [Inches(2.0)] + [Inches(1.5)] * (len(headers) - 1)
-    for row in table.rows:
-        for idx, cell in enumerate(row.cells):
-            if idx < len(column_widths):
-                cell.width = column_widths[idx]
-
-    # Apply borders to cells
-    def set_cell_border(cell, border_type, border_size, border_color):
-        tc = cell._tc
-        tcPr = tc.get_or_add_tcPr()
-
-        border = OxmlElement(f'w:{border_type}')
-        border.set(qn('w:val'), 'single')
-        border.set(qn('w:sz'), str(border_size))
-        border.set(qn('w:color'), border_color)
-
-        element = tcPr.xpath(f"./w:{border_type}")
-        if element:
-            element[0].getparent().replace(element[0], border)
-        else:
-            tcPr.append(border)
-
-    # Apply borders to all cells
-    for row in table.rows:
-        for cell in row.cells:
-            set_cell_border(cell, 'top', 4, '000000')
-            set_cell_border(cell, 'bottom', 4, '000000')
-            set_cell_border(cell, 'left', 4, '000000')
-            set_cell_border(cell, 'right', 4, '000000')
-
-    # Prevent table rows from splitting across pages
-    for row in table.rows:
-        tr = row._tr
-        trPr = tr.get_or_add_trPr()
-        cantSplit = OxmlElement('w:cantSplit')
-        trPr.append(cantSplit)
-
-
-#############################################################################################################
-
-if data.get('internalAssessmentData') and data['internalAssessmentData'].get('components'):
-    # Add a page break and heading for Internal Assessment Data
-    doc.add_page_break()
-    assessment_heading = doc.add_heading(level=1)
-    assessment_run = assessment_heading.add_run('12. Internal Assessment Data')
-    assessment_run.font.name = 'Carlito'
-    assessment_run.font.size = Pt(16)
-    assessment_run.font.color.rgb = RGBColor(28, 132, 196)
-    assessment_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
-
-    doc.add_paragraph()
-
-    # Extract the components dictionary
-    components = data['internalAssessmentData']['components']
-
-    # Generate headers dynamically from the first component
-    headers = list(next(iter(components.values())).keys())
-
-    # Create a table with the number of columns based on headers
-    table = doc.add_table(rows=1, cols=len(headers))
-    table.alignment = WD_TABLE_ALIGNMENT.CENTER
-
-    # Populate header row
-    hdr_cells = table.rows[0].cells
-    for i, header in enumerate(headers):
-        hdr_cells[i].text = header.capitalize()  # Capitalize for better formatting
-        # Style header cells
-        paragraph = hdr_cells[i].paragraphs[0]
-        run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(header)
-        run.bold = True
-        run.font.size = Pt(10)
-        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-
-    # Populate rows with component data
-    for component_id, component_data in components.items():
-        row_cells = table.add_row().cells
-        for i, key in enumerate(headers):
-            row_cells[i].text = str(component_data.get(key, ''))
-            # Style cells
-            for paragraph in row_cells[i].paragraphs:
-                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                for run in paragraph.runs:
-                    run.font.size = Pt(10)
-
-    # Set column widths (adjustable based on content)
-    column_widths = [Inches(1)] * len(headers)
-    for row in table.rows:
-        for idx, cell in enumerate(row.cells):
-            if idx < len(column_widths):
-                cell.width = column_widths[idx]
-
-    # Apply borders to cells
-    def set_cell_border(cell, border_type, border_size, border_color):
-        tc = cell._tc
-        tcPr = tc.get_or_add_tcPr()
-
-        border = OxmlElement(f'w:{border_type}')
-        border.set(qn('w:val'), 'single')
-        border.set(qn('w:sz'), str(border_size))
-        border.set(qn('w:color'), border_color)
-
-        element = tcPr.xpath(f"./w:{border_type}")
-        if element:
-            element[0].getparent().replace(element[0], border)
-        else:
-            tcPr.append(border)
-
-    # Apply borders to all cells
-    for row in table.rows:
-        for cell in row.cells:
-            set_cell_border(cell, 'top', 4, '000000')
-            set_cell_border(cell, 'bottom', 4, '000000')
-            set_cell_border(cell, 'left', 4, '000000')
-            set_cell_border(cell, 'right', 4, '000000')
-
-    # Prevent table rows from splitting across pages
-    for row in table.rows:
-        tr = row._tr
-        trPr = tr.get_or_add_trPr()
-        cantSplit = OxmlElement('w:cantSplit')
-        trPr.append(cantSplit)
-
-#############################################################################################################
-
-if data.get('weakStudentsData'):
-    # Add a page break and heading for Weak Students Data
-    doc.add_page_break()
-    heading = doc.add_heading(level=1)
-    heading_run = heading.add_run('13. Weak Students Data')
-    heading_run.font.name = 'Carlito'
-    heading_run.font.size = Pt(16)
-    heading_run.font.color.rgb = RGBColor(28, 132, 196)
-    heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
-
-    doc.add_paragraph()
-
-    # Extract and filter the content for weak students who are accepted
-    weak_students_data = [student for student in data['weakStudentsData'] if student['status'] == 'Accepted']
-
-    # Define the headers (excluding 'status')
-    headers = ['uniqueId', 'studentName', 'totalMarks', 'grade']
-
-    # Create a table with the number of columns based on headers
-    table = doc.add_table(rows=1, cols=len(headers))
-    table.alignment = WD_TABLE_ALIGNMENT.CENTER
-
-    # Populate header row
-    hdr_cells = table.rows[0].cells
-    for i, header in enumerate(headers):
-        hdr_cells[i].text = header
-        # Style header cells
-        paragraph = hdr_cells[i].paragraphs[0]
-        run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(header)
-        run.bold = True
-        run.font.size = Pt(10)
-        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-
-    # Populate rows with weak students data
-    for entry in weak_students_data:
-        row_cells = table.add_row().cells
-        for i, key in enumerate(headers):
-            row_cells[i].text = str(entry.get(key, ''))
-            # Style cells
-            for paragraph in row_cells[i].paragraphs:
-                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                for run in paragraph.runs:
-                    run.font.size = Pt(10)
-
-    # Set column widths (auto-adjustable based on the content)
-    column_widths = [Inches(2.0)] + [Inches(1.5)] * (len(headers) - 1)
-    for row in table.rows:
-        for idx, cell in enumerate(row.cells):
-            if idx < len(column_widths):
-                cell.width = column_widths[idx]
-
-    # Apply borders to cells
-    def set_cell_border(cell, border_type, border_size, border_color):
-        tc = cell._tc
-        tcPr = tc.get_or_add_tcPr()
-
-        border = OxmlElement(f'w:{border_type}')
-        border.set(qn('w:val'), 'single')
-        border.set(qn('w:sz'), str(border_size))
-        border.set(qn('w:color'), border_color)
-
-        element = tcPr.xpath(f"./w:{border_type}")
-        if element:
-            element[0].getparent().replace(element[0], border)
-        else:
-            tcPr.append(border)
-
-    # Apply borders to all cells
-    for row in table.rows:
-        for cell in row.cells:
-            set_cell_border(cell, 'top', 4, '000000')
-            set_cell_border(cell, 'bottom', 4, '000000')
-            set_cell_border(cell, 'left', 4, '000000')
-            set_cell_border(cell, 'right', 4, '000000')
-
-    # Prevent table rows from splitting across pages
-    for row in table.rows:
-        tr = row._tr
-        trPr = tr.get_or_add_trPr()
-        cantSplit = OxmlElement('w:cantSplit')
-        trPr.append(cantSplit)
-
-############################################################################################################################################
-
+#######################################################################################################################
+# Updated Actions Taken for Weak Students Section (create_actions_doc)
 def create_actions_doc(data):
-    # Add heading with bullet points
     if data.get('actionsForWeakStudentsData'):
-        # Add the main heading
+        # Add the main heading with a page break.
         doc.add_page_break()
         timetable_heading = doc.add_heading(level=1)
         timetable_run = timetable_heading.add_run('14. Actions taken for weak students')
@@ -713,297 +383,37 @@ def create_actions_doc(data):
         timetable_run.font.color.rgb = RGBColor(28, 132, 196)
         timetable_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
         
-        # Add actions with bullet points
+        # Loop through each action and add as a bullet.
+        # Changes applied:
+        # - Ensured paragraphs for bullet points are flush left by setting left_indent and first_line_indent to 0.
+        # - The bullet character ("• ") is added manually with its font size set to match the desired style.
         for action in data['actionsForWeakStudentsData']:
             para = doc.add_paragraph()
-            # Add bullet point
-            bullet = para.add_run("• ")
-            bullet.font.size = Pt(12)
-            # Add action text
-            action_text = para.add_run(action)
-            action_text.font.size = Pt(12)
+            para.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            para.paragraph_format.left_indent = Pt(0)
+            para.paragraph_format.first_line_indent = Pt(0)
+            bullet_run = para.add_run("• ")
+            bullet_run.font.size = Pt(12)
+            action_run = para.add_run(action)
+            action_run.font.size = Pt(12)
 
 create_actions_doc(data)
 
-
-#############################################################################################################
-
-if data.get('marksDetailsData'):
-    # Add a page break and heading for Marks Details
-    doc.add_page_break()
-    marks_heading = doc.add_heading(level=1)
-    marks_run = marks_heading.add_run('15. Marks Details')
-    marks_run.font.name = 'Carlito'
-    marks_run.font.size = Pt(16)
-    marks_run.font.color.rgb = RGBColor(28, 132, 196)
-    marks_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
-
-    doc.add_paragraph()
-
-    # Extract the content for the marks details
-    marks_content = data['marksDetailsData']
-
-    # Dynamically generate headers from the first dictionary in the content
-    headers = list(marks_content[0].keys())
-
-    # Create a table with the number of columns based on headers
-    table = doc.add_table(rows=1, cols=len(headers))
-    table.alignment = WD_TABLE_ALIGNMENT.CENTER
-
-    # Populate header row
-    hdr_cells = table.rows[0].cells
-    for i, header in enumerate(headers):
-        hdr_cells[i].text = header
-        # Style header cells
-        paragraph = hdr_cells[i].paragraphs[0]
-        run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(header)
-        run.bold = True
-        run.font.size = Pt(10)
-        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-
-    # Populate rows with marks content
-    for entry in marks_content:
-        row_cells = table.add_row().cells
-        for i, key in enumerate(headers):
-            row_cells[i].text = str(entry.get(key, ''))
-            # Style cells
-            for paragraph in row_cells[i].paragraphs:
-                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                for run in paragraph.runs:
-                    run.font.size = Pt(10)
-
-    # Set column widths (auto-adjustable based on the content)
-    column_widths = [Inches(2.0)] + [Inches(1.5)] * (len(headers) - 1)
-    for row in table.rows:
-        for idx, cell in enumerate(row.cells):
-            if idx < len(column_widths):
-                cell.width = column_widths[idx]
-
-    # Apply borders to cells
-    def set_cell_border(cell, border_type, border_size, border_color):
-        tc = cell._tc
-        tcPr = tc.get_or_add_tcPr()
-
-        border = OxmlElement(f'w:{border_type}')
-        border.set(qn('w:val'), 'single')
-        border.set(qn('w:sz'), str(border_size))
-        border.set(qn('w:color'), border_color)
-
-        element = tcPr.xpath(f"./w:{border_type}")
-        if element:
-            element[0].getparent().replace(element[0], border)
-        else:
-            tcPr.append(border)
-
-    # Apply borders to all cells
-    for row in table.rows:
-        for cell in row.cells:
-            set_cell_border(cell, 'top', 4, '000000')
-            set_cell_border(cell, 'bottom', 4, '000000')
-            set_cell_border(cell, 'left', 4, '000000')
-            set_cell_border(cell, 'right', 4, '000000')
-
-    # Prevent table rows from splitting across pages
-    for row in table.rows:
-        tr = row._tr
-        trPr = tr.get_or_add_trPr()
-        cantSplit = OxmlElement('w:cantSplit')
-        trPr.append(cantSplit)
-
-#############################################################################################################
-
-if data.get('assignmentsTaken'):
-    # Add a page break and heading for Weekly Timetable
-    doc.add_page_break()
-    timetable_heading = doc.add_heading(level=1)
-    timetable_run = timetable_heading.add_run('16. assignmentsTaken')
-    timetable_run.font.name = 'Carlito'
-    timetable_run.font.size = Pt(16)
-    timetable_run.font.color.rgb = RGBColor(28, 132, 196)
-    timetable_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
-
-    doc.add_paragraph()
-
-    # Extract the content for the timetable
-    timetable_content = data['assignmentsTaken']['content']
-
-    # Dynamically generate headers from the first dictionary in the content
-    headers = list(timetable_content[0].keys())
-
-    # Create a table with the number of columns based on headers
-    table = doc.add_table(rows=1, cols=len(headers))
-    table.alignment = WD_TABLE_ALIGNMENT.CENTER
-
-    # Populate header row
-    hdr_cells = table.rows[0].cells
-    for i, header in enumerate(headers):
-        hdr_cells[i].text = header
-        # Style header cells
-        paragraph = hdr_cells[i].paragraphs[0]
-        run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(header)
-        run.bold = True
-        run.font.size = Pt(10)
-        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-
-    # Populate rows with timetable content
-    for entry in timetable_content:
-        row_cells = table.add_row().cells
-        for i, key in enumerate(headers):
-            row_cells[i].text = str(entry.get(key, ''))
-            # Style cells
-            for paragraph in row_cells[i].paragraphs:
-                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                for run in paragraph.runs:
-                    run.font.size = Pt(10)
-
-    # Set column widths (auto-adjustable based on the content)
-    column_widths = [Inches(2.0)] + [Inches(1.5)] * (len(headers) - 1)
-    for row in table.rows:
-        for idx, cell in enumerate(row.cells):
-            if idx < len(column_widths):
-                cell.width = column_widths[idx]
-
-    # Apply borders to cells
-    def set_cell_border(cell, border_type, border_size, border_color):
-        tc = cell._tc
-        tcPr = tc.get_or_add_tcPr()
-
-        border = OxmlElement(f'w:{border_type}')
-        border.set(qn('w:val'), 'single')
-        border.set(qn('w:sz'), str(border_size))
-        border.set(qn('w:color'), border_color)
-
-        element = tcPr.xpath(f"./w:{border_type}")
-        if element:
-            element[0].getparent().replace(element[0], border)
-        else:
-            tcPr.append(border)
-
-    # Apply borders to all cells
-    for row in table.rows:
-        for cell in row.cells:
-            set_cell_border(cell, 'top', 4, '000000')
-            set_cell_border(cell, 'bottom', 4, '000000')
-            set_cell_border(cell, 'left', 4, '000000')
-            set_cell_border(cell, 'right', 4, '000000')
-
-    # Prevent table rows from splitting across pages
-    for row in table.rows:
-        tr = row._tr
-        trPr = tr.get_or_add_trPr()
-        cantSplit = OxmlElement('w:cantSplit')
-        trPr.append(cantSplit)
-
-#############################################################################################################
-
-if data.get('attendanceReportData'):
-    # Add a page break and heading for Attendance Report
-    doc.add_page_break()
-    timetable_heading = doc.add_heading(level=1)
-    timetable_run = timetable_heading.add_run('17. Attendance Report')
-    timetable_run.font.name = 'Carlito'
-    timetable_run.font.size = Pt(16)
-    timetable_run.font.color.rgb = RGBColor(28, 132, 196)
-    timetable_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
-
-    doc.add_paragraph()
-
-    # Extract the content for the attendance report
-    attendance_content = data['attendanceReportData']
-
-    # Dynamically generate headers from the first dictionary in the content
-    headers = list(attendance_content[0].keys())
-
-    # Create a table with the number of columns based on headers
-    table = doc.add_table(rows=1, cols=len(headers))
-    table.alignment = WD_TABLE_ALIGNMENT.CENTER
-
-    # Populate header row
-    hdr_cells = table.rows[0].cells
-    for i, header in enumerate(headers):
-        hdr_cells[i].text = header
-        # Style header cells
-        paragraph = hdr_cells[i].paragraphs[0]
-        run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(header)
-        run.bold = True
-        run.font.size = Pt(10)
-        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-
-    # Populate rows with attendance content
-    for entry in attendance_content:
-        row_cells = table.add_row().cells
-        for i, key in enumerate(headers):
-            row_cells[i].text = str(entry.get(key, ''))
-            # Style cells
-            for paragraph in row_cells[i].paragraphs:
-                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                for run in paragraph.runs:
-                    run.font.size = Pt(10)
-
-    # Set column widths (auto-adjustable based on the content)
-    column_widths = [Inches(2.0)] + [Inches(1.5)] * (len(headers) - 1)
-    for row in table.rows:
-        for idx, cell in enumerate(row.cells):
-            if idx < len(column_widths):
-                cell.width = column_widths[idx]
-
-    # Apply borders to cells
-    def set_cell_border(cell, border_type, border_size, border_color):
-        tc = cell._tc
-        tcPr = tc.get_or_add_tcPr()
-
-        border = OxmlElement(f'w:{border_type}')
-        border.set(qn('w:val'), 'single')
-        border.set(qn('w:sz'), str(border_size))
-        border.set(qn('w:color'), border_color)
-
-        element = tcPr.xpath(f"./w:{border_type}")
-        if element:
-            element[0].getparent().replace(element[0], border)
-        else:
-            tcPr.append(border)
-
-    # Apply borders to all cells
-    for row in table.rows:
-        for cell in row.cells:
-            set_cell_border(cell, 'top', 4, '000000')
-            set_cell_border(cell, 'bottom', 4, '000000')
-            set_cell_border(cell, 'left', 4, '000000')
-            set_cell_border(cell, 'right', 4, '000000')
-
-    # Prevent table rows from splitting across pages
-    for row in table.rows:
-        tr = row._tr
-        trPr = tr.get_or_add_trPr()
-        cantSplit = OxmlElement('w:cantSplit')
-        trPr.append(cantSplit)
-
-
-###############################################################################################################################################
-
-
-
-
-#SAVING
-doc.save('./download/'+data['filename'][:-4]+'_del'+'.docx')
-
+#######################################################################################################################
+# Saving the Document and Converting to PDF
+doc.save('./download/' + data['filename'][:-4] + '_del' + '.docx')
 print("Document updated and saved.")
+convert('./download/' + data['filename'][:-4] + '_del' + '.docx')
+os.remove('./download/' + data['filename'][:-4] + '_del' + '.docx')
 
-convert('./download/'+data['filename'][:-4]+'_del'+'.docx')
-os.remove('./download/'+data['filename'][:-4]+'_del'+'.docx')
-
-pdf_list = ['./download/'+data['filename'][:-4]+'_del'+'.pdf', "./data/1/"+data['mergePDF']]
-
-## merge
-
+pdf_list = ['./download/' + data['filename'][:-4] + '_del' + '.pdf', "./data/1/" + data['mergePDF']]
 merger = PdfMerger()
-
 for pdf in pdf_list:
     print(pdf)
     merger.append(pdf)
 
+# Optionally remove the temporary PDF file:
+# os.remove('./download/' + data['filename'][:-4] + '_del' + '.pdf')
 
-# os.remove('./download/'+data['filename'][:-4]+'_del'+'.pdf')
-
-merger.write("./download/"+data['filename'])
+merger.write("./download/" + data['filename'])
 merger.close()

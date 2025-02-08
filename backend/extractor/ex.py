@@ -331,13 +331,27 @@ def create_empty_template():
         "course_name": "",
         "Module/Semester": "",
         "course_description": "",
-        "Course Syllabus": "",
+        "Course Syllabus": [{
+                "srNo": 1,
+                "content": "Topic Name with Details",
+                "co": "1",
+                "sessions": 1
+            },
+            ],
         "Learning Resources": {
             "textBooks": [],
             "referenceLinks": []
         },
         "internalAssessmentData": {
-            "components": {}
+            "components": {
+                "component1": {
+                    "component": "",
+                    "duration": "",
+                    "weightage": "",
+                    "evaluationWeek": "",
+                    "remarks": ""
+                }
+            }
         },
         "copoMappingData": {
             "courseOutcomes": {
@@ -354,9 +368,65 @@ def create_empty_template():
                 }
             }
         },
-        "weeklyTimetableData": "",
-        "actionsForWeakStudentsData": [""],
-        "coWeightages":{}
+        
+        "weeklyTimetableData": {
+            "Monday": {
+                "9:15-10:10": False,
+                "10:15-11:10": False,
+                "11:15-12:10": False,
+                "12:15-13:10": False,
+                "13:15-14:10": False,
+                "14:15-15:10": False,
+                "15:15-16:10": False,
+                "16:15-17:10": False,
+                "17:15-18:10": False
+            },
+            "Tuesday": {
+                "9:15-10:10": False,
+                "10:15-11:10": False,
+                "11:15-12:10": False,
+                "12:15-13:10": False,
+                "13:15-14:10": False,
+                "14:15-15:10": False,
+                "15:15-16:10": False,
+                "16:15-17:10": False,
+                "17:15-18:10": False
+            },
+            "Wednesday": {
+                "9:15-10:10": False,
+                "10:15-11:10": False,
+                "11:15-12:10": False,
+                "12:15-13:10": False,
+                "13:15-14:10": False,
+                "14:15-15:10": False,
+                "15:15-16:10": False,
+                "16:15-17:10": False,
+                "17:15-18:10": False
+            },
+            "Thursday": {
+                "9:15-10:10": False,
+                "10:15-11:10": False,
+                "11:15-12:10": False,
+                "12:15-13:10": False,
+                "13:15-14:10": False,
+                "14:15-15:10": False,
+                "15:15-16:10": False,
+                "16:15-17:10": False,
+                "17:15-18:10": False
+            },
+            "Friday": {
+                "9:15-10:10": False,
+                "10:15-11:10": False,
+                "11:15-12:10": False,
+                "12:15-13:10": False,
+                "13:15-14:10": False,
+                "14:15-15:10": False,
+                "15:15-16:10": False,
+                "16:15-17:10": False,
+                "17:15-18:10": False
+            }
+        },
+        "actionsForWeakStudentsData": [""]
     }
 
 def clean_json_response(response):
@@ -376,7 +446,7 @@ def ai(text):
 
     assessment_format = json.dumps({
         "components": {
-            "component1731776591362": {
+            "component1": {
                 "component": "",
                 "duration": "",
                 "weightage": "",
@@ -409,22 +479,22 @@ Requirements:
 -0. CSE or ME or ECOM or ECT choose among ony these as the program
 -1. Response must be ONLY the JSON object, no other text
 -2. Keep field names exactly as shown
--3. Keep empty fields as shown ("" for strings, [] for arrays)
+-3. Use the default value if not given then keep empty fields as shown ("" for strings, [] for arrays)
 -4. textBooks objects must have: title, author, publisher, edition, year, isbn
 -5. referenceLinks objects must have: title, authors, journal, volume, year, doi
 -6. Preserve all existing template fields even if not mentioned in the text
 -7. course_description is the Course Overview and Context in the pdf. There can be more than 1 paragraphs inside it, so include all the paragraphs.
 -8. In the internal component(component ) it should have component, Duration(duration), Weightage(weightage), Evaluation(evaluation) Week(week) and Remarks(remarks) format:{assessment_format}.
 -9. If there are paragraphs, add a break or start from a new line.
--10. For The textBooks and referenceLinks, Each should be a simple string in the array and Do not include any additional fields or nested objects.
--11. For the mappingData in copoMappingData, 
+-10. For refrenceLinks extract links given if any.
+-11. For The textBooks and referenceLinks, Each should be a simple string in the array and Do not include any additional fields or nested objects.
+-12. For the mappingData in copoMappingData, 
       - Use the exact mapping values from the table.
       - Maintain the complete structure.
-      - Preserve empty cells as empty strings. Keep it as 0.
-      - Ensure the mapping matches the table in the given document exactly
--12. In courseSyllabus, the course content should come in this format:
--13. The course outcomes must match mapping data
-{syllabus_format}
+      - Preserve empty cells as 0. Keep it as 0.
+      - Ensure the mapping matches the table i.e. course outcomes in the given document exactly
+-13. In courseSyllabus, the course content should come in this format:{syllabus_format}
+-14. The mapping data must match course outcomes
 """
     try:
         # Use the OpenAI client to create a chat completion
