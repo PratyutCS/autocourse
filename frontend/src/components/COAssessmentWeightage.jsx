@@ -14,7 +14,7 @@ const COAssessmentWeightage = ({
   // Transform max marks data into assessment components, excluding the last column
   const getAssessmentComponents = () => {
     if (!studentData?.maxMarks) return [];
-    
+
     // Convert maxmarks object to array of entries and remove the last entry
     const entries = Object.entries(studentData.maxMarks);
     const filteredEntries = entries.slice(0, -1); // Exclude the last entry
@@ -117,7 +117,7 @@ const COAssessmentWeightage = ({
             CO Assessment Weightage Matrix
           </h2>
         </div>
-        
+
         <div className="text-center py-10 bg-gray-50 rounded-lg border border-gray-100">
           <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <p className="text-gray-600 font-semibold text-lg">
@@ -196,11 +196,10 @@ const COAssessmentWeightage = ({
                       max="100"
                       value={weightages[co]?.[assessment.name] || "0"}
                       onChange={(e) => handleWeightageChange(co, assessment.name, e.target.value)}
-                      className={`w-20 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#FFB255]/20 focus:border-[#FFB255] ${
-                        weightages[co]?.[assessment.name] !== initialWeightages?.[co]?.[assessment.name]
+                      className={`w-20 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#FFB255]/20 focus:border-[#FFB255] ${weightages[co]?.[assessment.name] !== initialWeightages?.[co]?.[assessment.name]
                           ? 'border-amber-300 bg-amber-50'
                           : 'border-gray-300'
-                      }`}
+                        }`}
                     />
                   </td>
                 ))}

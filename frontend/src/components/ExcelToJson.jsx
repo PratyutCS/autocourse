@@ -9,7 +9,7 @@ const ExcelToJSON = ({ onSave, initialData }) => {
   const [processedData, setProcessedData] = useState(null);
   const [maxMarksData, setMaxMarksData] = useState(null);
 
-  console.log("INITIAL DATA IS : ", initialData);
+  // console.log("INITIAL DATA IS : ", initialData);
 
   // Function to clean max marks data by removing undefined/empty values
   const cleanMaxMarksData = (data) => {
@@ -28,14 +28,14 @@ const ExcelToJSON = ({ onSave, initialData }) => {
   // Initialize the component with initialData
   useEffect(() => {
     if (initialData && initialData.data && initialData.maxMarks) {
-      console.log('Setting initial data:', initialData);
+      // console.log('Setting initial data:', initialData);
       try {
         // Extract max marks from first row and clean it
         const maxMarks = cleanMaxMarksData(initialData.maxMarks);
         const remainingData = initialData.data;
 
-        console.log('Cleaned max marks:', maxMarks);
-        console.log('Remaining data:', remainingData);
+        // console.log('Cleaned max marks:', maxMarks);
+        // console.log('Remaining data:', remainingData);
 
         setMaxMarksData(maxMarks);
         setProcessedData(remainingData);
@@ -186,20 +186,20 @@ const ExcelToJSON = ({ onSave, initialData }) => {
 
   const renderPreview = () => {
     if (!processedData || !Array.isArray(processedData) || processedData.length === 0) {
-      console.log('No data to display');
+      // console.log('No data to display');
       return null;
     }
 
     // Ensure we have valid data with headers
     const firstRow = processedData[0];
     if (!firstRow) {
-      console.log('No rows in processed data');
+      // console.log('No rows in processed data');
       return null;
     }
 
     const headers = Object.keys(firstRow);
     if (headers.length === 0) {
-      console.log('No headers found in data');
+      // console.log('No headers found in data');
       return null;
     }
 
@@ -301,7 +301,7 @@ const ExcelToJSON = ({ onSave, initialData }) => {
         {fileName && !error && (
           <div className="p-3 bg-green-50 rounded-lg border border-green-100">
             <p className="text-green-600 text-sm">
-              File processed successfully! Check the console for complete JSON output.
+              File processed successfully!
             </p>
           </div>
         )}

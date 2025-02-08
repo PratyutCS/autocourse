@@ -10,8 +10,8 @@ import constants from "../constants";
 export default function NewC(props) {
   const navigate = useNavigate();
 
-  const form = (num) => {
-    navigate('/form', { state: { num: num } });
+  const form = (num, userData) => {
+    navigate('/form', { state: { num: num, userData: userData } });
   }
 
   const Delete = async (num) => {
@@ -71,7 +71,7 @@ export default function NewC(props) {
 
         <div className="w-full flex flex-col gap-3 mt-4">
           <button
-            onClick={() => form(props.num)}
+            onClick={() => form(props.num, props.userData)}
             className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FFB255] hover:bg-[#ffa133] text-white rounded-md transition-all duration-200 font-medium shadow-sm hover:shadow"
           >
             <FaRegFilePdf className="w-4 h-4" />

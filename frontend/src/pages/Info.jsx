@@ -17,8 +17,7 @@ const ErrorDisplay = ({ message }) => (
 const Info = () => {
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const { num } = location.state || {};
-
+  const { num, userData } = location.state || {};
   const token = localStorage.getItem('token');
   const [file, setFileData] = useState(null);
   const [error, setError] = useState(null);
@@ -57,7 +56,7 @@ const Info = () => {
 
   return (
     <div className='dash'>
-      <AsideComp isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed}/>
+      <AsideComp userEmail={userData.email} isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed}/>
       <div className="right">
           
         <div className="box23 w-full">

@@ -7,34 +7,14 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types"; 
 
-const AsideComp = ({ isCollapsed, setIsCollapsed }) => {
-  const [userData, setUserData] = useState(null);
+const AsideComp = ({ userEmail, isCollapsed, setIsCollapsed }) => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/");
-        return;
-      }
-
-      try {
-        const response = await axios.get(constants.url + "/", {
-          headers: { "x-auth-token": token },
-        });
-        setUserData(response.data);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        localStorage.removeItem("token");
-        navigate("/");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUserData();
+    if(userEmail){
+      setIsLoading(false);
+    }
   }, [navigate]);
 
   const handleLogout = async (e) => {
@@ -127,8 +107,8 @@ const AsideComp = ({ isCollapsed, setIsCollapsed }) => {
               }`}
             >
               <span className="text-m font-light hover:text-white">Logout</span>
-              {userData && (
-                <p className="font-light text-[#E4F3FF] opacity-[0.3] hover:text-white">{userData.email}</p>
+              {userEmail && (
+                <p className="font-light text-[#E4F3FF] opacity-[0.3] hover:text-white">{userEmail}</p>
               )}
             </div>
           </button>

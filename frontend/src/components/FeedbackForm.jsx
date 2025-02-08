@@ -22,14 +22,6 @@ import ExcelToJson from './ExcelToJson';
 const FeedbackForm = (props) => {
   const token = localStorage.getItem("token");
 
-  const [aqis, setaqis] = useState(props.aqis || "")
-
-
-  useEffect(() => {
-    setaqis(props.aqis || "");
-    console.log("aqis lol", aqis);
-  }, [props.aqis]);
-
   let num = props.num;
   const [isLoading, setIsLoading] = useState(false);
   const [coursecode, setCourseCode] = useState("");
@@ -58,11 +50,6 @@ const FeedbackForm = (props) => {
     mappingData: {},
   });
 
-
-  const [studentListData, setStudentListData] = useState([]);
-  const [weakStudentsData, setWeakStudentsData] = useState([]);
-  const [marksDetailsData, setMarksDetailsData] = useState([]);
-  const [attendanceReportData, setAttendanceReportData] = useState([]);
   const [internalAssessmentData, setInternalAssessmentData] = useState({
     components: [],
   });
@@ -84,89 +71,19 @@ const FeedbackForm = (props) => {
   const EditableCourseDescriptionDataChange = (data) => {
     setEditableCourseDescriptionData(data);
   };
-  // const saveToBackend = async (data) => {
-  //   try {
-  //     const response = await fetch('http://localhost:3000/upload-image', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'x-auth-token': localStorage.getItem('token')
-  //       },
-  //       body: JSON.stringify({
-  //         courseOutcomes: data.courseOutcomes,
-  //         mappingData: data.mappingData,
-  //         tableMode: data.tableMode,
-  //         imagePath: data.imagePath,
-  //         imageFileName: data.imageFileName
-  //       })
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error('Failed to save data');
-  //     }
-
-  //     const result = await response.json();
-  //     console.log('Data saved successfully:', result);
-  //   } catch (error) {
-  //     console.error('Error saving data:', error);
-  //     // Handle error appropriately
-  //   }
-  // };
-
 
   const handleCOPOMappingChange = (data) => {
     const newData = { ...copoMappingData };
-
-    if (data.tableMode) {
-      newData.tableMode = data.tableMode;
-    }
 
     if (data.courseOutcomes) {
       newData.courseOutcomes = data.courseOutcomes;
     }
 
     if (data.mappingData) {
-      if (data.tableMode === 'image' && data.imagePath) {
-        newData.imagePath = data.imagePath;
-        newData.imageFileName = data.imageFileName;
-        newData.mappingData = data.mappingData;
-        // Clear manual mapping data when switching to image mode
-        // newData.mappingData = {};
-      } else {
-        newData.mappingData = data.mappingData;
-      }
+      newData.mappingData = data.mappingData;
     }
 
     setCopoMappingData(newData);
-
-    // Save to backend
-    // saveToBackend(newData);
-  };
-
-  const handleStudentStatusChange = async (uniqueId, newStatus) => {
-    // Update local state
-    setWeakStudentsData((prevData) =>
-      prevData.map((student) =>
-        student.uniqueId === uniqueId
-          ? { ...student, status: newStatus }
-          : student
-      )
-    );
-
-    // If status is Accepted, save to backend
-    if (newStatus === "Accepted") {
-      try {
-        const studentToSave = weakStudentsData.find(
-          (student) => student.uniqueId === uniqueId
-        );
-
-        // Make API call to save the student data
-        await saveWeakStudent(studentToSave);
-      } catch (error) {
-        console.error("Error saving student data:", error);
-        // Optionally add error handling UI feedback
-      }
-    }
   };
 
   const handleInternalAssessmentChange = (data) => {
@@ -205,7 +122,7 @@ const FeedbackForm = (props) => {
 
   useEffect(() => {
     setStudentData(props.studentData || {});
-    console.log("SAVED STUDENT DATA", studentData);
+    // console.log("SAVED STUDENT DATA", studentData);
   }, [props.studentData]);
 
   useEffect(() => {
@@ -271,27 +188,6 @@ const FeedbackForm = (props) => {
   }, [props.copoMappingData]);
 
   useEffect(() => {
-    setStudentListData(props.studentListData || []);
-  }, [props.studentListData]);
-
-  useEffect(() => {
-    const weakStudents =
-      props.weakStudentsData?.map((student) => ({
-        ...student,
-        status: student.status || "Pending",
-      })) || [];
-    setWeakStudentsData(weakStudents);
-  }, [props.weakStudentsData]);
-
-  useEffect(() => {
-    setMarksDetailsData(props.marksDetailsData || []);
-  }, [props.marksDetailsData]);
-
-  useEffect(() => {
-    setAttendanceReportData(props.attendanceReportData || []);
-  }, [props.attendanceReportData]);
-
-  useEffect(() => {
     setInternalAssessmentData(
       props.internalAssessmentData || {
         components: [],
@@ -309,13 +205,6 @@ const FeedbackForm = (props) => {
     setWeeklyTimetableData(props.weeklyTimetableData || null);
   }, [props.weeklyTimetableData]);
 
-  const [uploadedFiles, setUploadedFiles] = useState({
-    studentList: props.studentList || null,
-    weakstudent: props.weakstudent || null,
-    assignmentsTaken: props.assignmentsTaken || null,
-    marksDetails: props.marksDetails || null,
-    attendanceReport: props.attendanceReport || null,
-  });
 
   useEffect(() => {
     const loadSavedData = () => {
@@ -339,73 +228,7 @@ const FeedbackForm = (props) => {
 
     loadSavedData();
   }, [num, props.weeklyTimetableData]);
-  const [selectedProgram, setSelectedProgram] = useState('');
-
-  const handleFileChange = (fileData, identifier) => {
-    console.log("Handling file change:", identifier, fileData);
-
-    const { content } = fileData;
-
-    // Check if content is valid
-    if (!content || !Array.isArray(content)) {
-      console.error("Invalid file content");
-      return;
-    }
-
-    // Common data extraction
-    const studentList = content.map((row) => ({
-      uniqueId: row["Unique Id"] || row["uniqueId"] || row["ID"],
-      studentName: row["Student Name"] || row["studentName"] || row["Name"],
-    }));
-
-    const marksDetails = content.map((row) => ({
-      uniqueId: row["Unique Id"],
-      studentName: row["Student Name"],
-      totalMarks: parseFloat(row["Total Marks"]),
-      grade: row["Grade"],
-      // Add other relevant fields
-    }));
-
-    const attendanceReport = content.map((row) => ({
-      uniqueId: row["Unique Id"],
-      studentName: row["Student Name"],
-      attendance: parseFloat(row["Attendance"]),
-    }));
-
-    const weakStudents = marksDetails.filter(
-      (student) => student.totalMarks < 90
-    );
-
-    setStudentListData(studentList);
-    setMarksDetailsData(marksDetails);
-    setAttendanceReportData(attendanceReport);
-    setWeakStudentsData(weakStudents);
-    setUploadedFiles((prev) => ({
-      ...prev,
-      [identifier]: fileData,
-    }));
-  };
-  const saveWeakStudent = async (studentData) => {
-    const response = await fetch("/api/save-weak-student", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(studentData),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to save student data");
-    }
-
-    return await response.json();
-  };
-  const removeRejectedStudents = () => {
-    setWeakStudentsData((prevData) =>
-      prevData.filter((student) => student.status !== "Rejected")
-    );
-
-  };
+  
   const programOptions = ['CSE', 'ME', 'ECOM', 'ECT'];
 
   const validateCriteria = () => {
@@ -427,10 +250,7 @@ const FeedbackForm = (props) => {
     if (num !== undefined) {
       try {
         setIsLoading(true);
-        console.log("Preparing to save data:", {
-          weeklyTimetableData,
-          // other data...
-        });
+        // console.log("Preparing to save data:", {weeklyTimetableData,});
 
         const response = await axios.post(
           constants.url + "/form",
@@ -447,12 +267,7 @@ const FeedbackForm = (props) => {
             copoMappingData,
             internalAssessmentData,
             actionsForWeakStudentsData,
-            uploadedFiles,
             weeklyTimetableData,
-            studentListData,
-            weakStudentsData,
-            marksDetailsData,
-            attendanceReportData,
             coWeightages,
             coAttainmentCriteria,
             studentData,
@@ -719,7 +534,7 @@ const FeedbackForm = (props) => {
           initialWeightages={coWeightages}
           onChange={(weightages) => {
             setCoWeightages(weightages);
-            console.log('Updated weightages:', weightages);
+            // console.log('Updated weightages:', weightages);
           }}
           onValidationChange={(isValid) => setIsWeightageValid(isValid)}
         />

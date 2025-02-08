@@ -18,7 +18,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: 'http://localhost:3001', 
+  origin: 'http://localhost:3001',
   credentials: true,
 }));
 app.use(authRouter);
@@ -36,7 +36,7 @@ mongoose.connect(DB)
 
 // To check if the server is working or not
 app.get("/works", (req, res) => {
-  res.status(200).json({ message: "Server works" });
+  res.status(200).json({ message: "Server is Live ....." });
 });
 
 // Function to delete expired sessions
@@ -105,7 +105,19 @@ app.get("/files", auth, async (req, res) => {
 
       try {
         const jsonData = JSON.parse(data);
-        res.status(200).json(jsonData);
+        const filteredData = jsonData.map(item => {
+          const filtered = {};
+
+          // Only include fields if they exist in the original data
+          if ('filename' in item) filtered.filename = item.filename;
+          if ('course_code' in item) filtered.course_code = item.course_code;
+          if ('done' in item) filtered.done = item.done;
+          if ('course_name' in item) filtered.course_name = item.course_name;
+
+          return filtered;
+        });
+
+        res.status(200).json(filteredData);
       } catch (parseError) {
         console.error("Error parsing JSON:", parseError);
         res.status(500).json({ message: "Error parsing JSON data" });
@@ -264,7 +276,7 @@ app.post("/delete", auth, async (req, res) => {
       fs.unlinkSync(downloadFilePath);
       console.log(`Deleted file: ${downloadFilePath}`);
     }
-    fileToDelete = jsonData[num].filename.split(".")[0]+"_del."+jsonData[num].filename.split(".")[1];
+    fileToDelete = jsonData[num].filename.split(".")[0] + "_del." + jsonData[num].filename.split(".")[1];
     // console.log("[DELETE] filetodelete is : ",fileToDelete);
     downloadFilePath = path.join(downloadPath, fileToDelete);
     if (fs.existsSync(downloadFilePath)) {
@@ -272,15 +284,15 @@ app.post("/delete", auth, async (req, res) => {
       console.log(`Deleted file: ${downloadFilePath}`);
     }
 
-    if(jsonData[num]["copoMappingData"] && jsonData[num]["copoMappingData"]["imagePath"] && jsonData[num]["copoMappingData"]["imagePath"] != ""){
+    if (jsonData[num]["copoMappingData"] && jsonData[num]["copoMappingData"]["imagePath"] && jsonData[num]["copoMappingData"]["imagePath"] != "") {
       console.log("reached here 1");
-      if (fs.existsSync("."+jsonData[num]["copoMappingData"]["imagePath"])) {
+      if (fs.existsSync("." + jsonData[num]["copoMappingData"]["imagePath"])) {
         console.log("reached here");
-        fs.unlinkSync("."+jsonData[num]["copoMappingData"]["imagePath"]);
-        console.log(`Deleted file: ${"."+jsonData[num]["copoMappingData"]["imagePath"]}`);
+        fs.unlinkSync("." + jsonData[num]["copoMappingData"]["imagePath"]);
+        console.log(`Deleted file: ${"." + jsonData[num]["copoMappingData"]["imagePath"]}`);
       }
     }
-    else{
+    else {
       console.log("[DELETE] image does not exist");
     }
 
@@ -441,7 +453,7 @@ app.post('/upload-pdf', auth, (req, res) => {
     }
 
     const num = parseInt(req.headers.num); // Ensure 'num' is a number
-    console.log("num is: "+num);
+    console.log("num is: " + num);
 
     const file = req.file;
     if (!file) {
@@ -466,10 +478,10 @@ app.post('/upload-pdf', auth, (req, res) => {
         jsonData.push({});
       }
 
-      if(jsonData[num]["mergePDF"] && jsonData[num]["mergePDF"] != ""){
-        if (fs.existsSync("./data/1/"+jsonData[num]["mergePDF"])) {
-          fs.unlinkSync("./data/1/"+jsonData[num]["mergePDF"]);
-          console.log(`Deleted file: ${"./data/1/"+jsonData[num]["mergePDF"]}`);
+      if (jsonData[num]["mergePDF"] && jsonData[num]["mergePDF"] != "") {
+        if (fs.existsSync("./data/1/" + jsonData[num]["mergePDF"])) {
+          fs.unlinkSync("./data/1/" + jsonData[num]["mergePDF"]);
+          console.log(`Deleted file: ${"./data/1/" + jsonData[num]["mergePDF"]}`);
         }
       }
 
@@ -477,7 +489,7 @@ app.post('/upload-pdf', auth, (req, res) => {
       fs.writeFileSync(jsonFilename, JSON.stringify(jsonData, null, 2));
 
       console.log('Your PDF has been uploaded: ' + file.filename.toString());
-      
+
       res.status(200).json({
         message: 'PDF uploaded and JSON updated successfully',
         filename: file.filename.toString(),
@@ -510,13 +522,13 @@ app.post("/merge-delete", auth, async (req, res) => {
       return res.status(400).json({ message: "Invalid 'num' parameter." });
     }
 
-    if(jsonData[num]["mergePDF"] && jsonData[num]["mergePDF"] != ""){
-      if (fs.existsSync("./data/1/"+jsonData[num]["mergePDF"])) {
-        fs.unlinkSync("./data/1/"+jsonData[num]["mergePDF"]);
-        console.log(`Deleted file: ${"./data/1/"+jsonData[num]["mergePDF"]}`);
+    if (jsonData[num]["mergePDF"] && jsonData[num]["mergePDF"] != "") {
+      if (fs.existsSync("./data/1/" + jsonData[num]["mergePDF"])) {
+        fs.unlinkSync("./data/1/" + jsonData[num]["mergePDF"]);
+        console.log(`Deleted file: ${"./data/1/" + jsonData[num]["mergePDF"]}`);
       }
     }
-    else{
+    else {
       console.log("[MERGE-DELETE] file does not exist");
     }
 

@@ -15,19 +15,12 @@ const COAttainmentCriteria = ({ copoMappingData, initialCriteria, onSave }) => {
       };
     });
 
-
     if (JSON.stringify(criteria) !== JSON.stringify(newCriteria)) {
       setCriteria(newCriteria);
       onSave(newCriteria);
     }
-
-    
-    console.log("criteria1 is :",criteria);
   }, [copoMappingData, initialCriteria]);
-  
-  useEffect(() => {
-    console.log("criteria is :",criteria);
-  }, [criteria]);
+
 
   const handleChange = (co, type, value) => {
     const newCriteria = {

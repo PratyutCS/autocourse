@@ -24,11 +24,11 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
       calculateProgramAttainment();
     }
   }, [copoMappingData, averages]);
-  
+
   const calculateProgramAttainment = () => {
     const programAttainments = {};
     const weightSums = {};
-  
+
     // First pass: Initialize data structures for each PO
     Object.keys(copoMappingData.mappingData).forEach(co => {
       Object.keys(copoMappingData.mappingData[co]).forEach(po => {
@@ -36,29 +36,29 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
           programAttainments[po] = 0;
           weightSums[po] = 0;
         }
-  
+
         const mappingValue = parseFloat(copoMappingData.mappingData[co][po]) || 0;
         const coAverage = parseFloat(averages[co]) || 0;
-  
+
         // Sum up (mapping_value * CO_average) for each PO
         programAttainments[po] += mappingValue * coAverage;
         // Keep track of total mapping values for each PO
         weightSums[po] += mappingValue;
       });
     });
-  
+
     // Second pass: Calculate final weighted averages
     Object.keys(programAttainments).forEach(po => {
       if (weightSums[po] > 0) {
-        console.log(programAttainments[po]+" / "+weightSums[po]);
+        // console.log(programAttainments[po]+" / "+weightSums[po]);
         programAttainments[po] = (programAttainments[po] / weightSums[po]).toFixed(2);
       } else {
         programAttainments[po] = "0.00";
       }
     });
-  
+
     setProgramAttainment(programAttainments);
-    console.log("Program Attainment:", programAttainments);
+    // console.log("Program Attainment:", programAttainments);
   };
 
   const calculateAverages = (performanceData) => {
@@ -85,7 +85,7 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
     });
 
     summary.overallAttainment = Math.round(
-      Object.values(summary.attainmentLevel).reduce((acc, val) => acc + val, 0) / 
+      Object.values(summary.attainmentLevel).reduce((acc, val) => acc + val, 0) /
       Object.keys(summary.attainmentLevel).length
     );
 
@@ -123,8 +123,8 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
           const full = coAttainmentCriteria?.[co]?.full || 0;
           let percentage = totalWeight > 0 ? ((weightedScore / totalWeight) * 100).toFixed(2) : 0;
 
-          studentResult.coScores[co] = percentage >= full ? 3 : 
-                                     percentage >= partial ? 2 : 1;
+          studentResult.coScores[co] = percentage >= full ? 3 :
+            percentage >= partial ? 2 : 1;
         });
 
         performanceData.push(studentResult);
@@ -136,7 +136,7 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
   };
 
   if (!coWeightages || !studentData || !coAttainmentCriteria || !copoMappingData) {
-    console.log("true hai lumnd ke");
+    // console.log("true hai lumnd ke");
     return (
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
         <div className="flex items-center gap-4 mb-6">
@@ -322,11 +322,11 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
                 </tr>
               </tbody>
             </table>
-            
+
           </div>
           <div className="mt-4 text-sm text-gray-500 pt-2 text-center mx-auto w-fit">
-              Total Rows: {totalRows} | Total Columns: {totalColumns}
-            </div>
+            Total Rows: {totalRows} | Total Columns: {totalColumns}
+          </div>
         </div>
       </div>
     </div>

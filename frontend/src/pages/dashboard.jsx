@@ -58,7 +58,7 @@ const Dashboard = () => {
   }, [navigate]);
 
   useEffect(() => {
-    console.log(userData);
+    // console.log(userData);
     const fetchFilesData = async () => {
       if (userData) {
         const token = localStorage.getItem("token");
@@ -85,13 +85,12 @@ const Dashboard = () => {
   return (
     <div className="h-screen w-full overflow-hidden bg-[#FFFEFD]">
       <div className="flex h-full">
-        <AsideComp isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+        <AsideComp userEmail={userData.email} isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
         
         <div className="flex-1 p-6 overflow-auto">
           <div className="max-w-6xl mx-auto space-y-6">
             {/* Welcome Section */}
-            {/* Welcome Section */}
-            <WelcomeCard userName={userData["name"]} />
+            <WelcomeCard userName={userData.name} />
 
             {/* File Cards Section */}
             <div className="bg-white rounded-lg shadow-md p-6 border border-gray-100 transform hover:shadow-lg transition-all duration-300">
@@ -104,7 +103,7 @@ const Dashboard = () => {
                 </h2>
               </div>
               
-              <Box files={file} />
+              <Box files={file} userData={userData} />
             </div>
           </div>
         </div>
