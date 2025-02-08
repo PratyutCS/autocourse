@@ -3,6 +3,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const auth = require("./middleware/auth.js");
 const authRouter = require("./routes/auth");
+const authRouter2 = require("./routes/auth2");
 const User = require("./models/user");
 const Session = require("./models/session");
 const upload = require("./storage");
@@ -22,6 +23,7 @@ app.use(cors({
   credentials: true,
 }));
 app.use(authRouter);
+app.use(authRouter2);
 
 // Database connection
 const DB = "mongodb+srv://AikataPratyut:qazwsxedc%400987654321@mscdb.0tplylu.mongodb.net/kkpr";
@@ -542,6 +544,17 @@ app.post("/merge-delete", auth, async (req, res) => {
     res.status(500).json({ message: "Error in /delete" });
   }
 });
+
+
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//--------------ADMIN--------------------
+
+app.get("/admin/login", (req,res)=>{
+  res.send("works");
+});
+
+
 
 app.listen(PORT, () => {
   console.log(`Server connected at port ${PORT}`);

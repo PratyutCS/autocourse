@@ -119,12 +119,18 @@ const COAttainmentAnalysis = ({ coWeightages, studentData, coAttainmentCriteria,
             totalWeight += (maxMark * (coWeight / 100));
           });
 
-          const partial = coAttainmentCriteria?.[co]?.partial || 0;
-          const full = coAttainmentCriteria?.[co]?.full || 0;
+          const partial = parseFloat(coAttainmentCriteria?.[co]?.partial || 0);
+          const full = parseFloat(coAttainmentCriteria?.[co]?.full || 0);
           let percentage = totalWeight > 0 ? ((weightedScore / totalWeight) * 100).toFixed(2) : 0;
-
-          studentResult.coScores[co] = percentage >= full ? 3 :
-            percentage >= partial ? 2 : 1;
+          if(percentage >= full){
+            studentResult.coScores[co] = 3;
+          }
+          else if(percentage >= partial && percentage < full){
+            studentResult.coScores[co] = 2;
+          }
+          else{
+            studentResult.coScores[co] = 1;
+          }
         });
 
         performanceData.push(studentResult);
