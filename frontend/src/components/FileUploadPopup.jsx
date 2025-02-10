@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { RiCloseFill } from "react-icons/ri";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import axios from 'axios';

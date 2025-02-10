@@ -1,4 +1,3 @@
-import React from 'react';
 import { useDropzone } from 'react-dropzone';
 import * as XLSX from 'xlsx';
 

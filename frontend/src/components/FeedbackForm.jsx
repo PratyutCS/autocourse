@@ -7,7 +7,7 @@ import {
   useMemo,
 } from "react";
 import axios from "axios";
-import { Check, X, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import LoadingSpinner from "./LoadingSpinner";
 import COPOMapping from "./COPOMapping";
 import InternalAssessmentTable from "./InternalAssessmentTable";

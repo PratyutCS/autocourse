@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Input from './ui/Input';
 import { useDebounce } from './hooks/use-debounce';
-import axios from 'axios';
 import { cn } from "@/lib/utils";
 
 const TargetAttainmentTable = ({ initialData, onSave }) => {

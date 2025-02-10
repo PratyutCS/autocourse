@@ -1,4 +1,3 @@
-import React from 'react';
 
 const RegisteredStudentList = ({ students }) => {
   // Check if students and students.data exist and is an array

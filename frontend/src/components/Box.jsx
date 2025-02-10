@@ -1,4 +1,3 @@
-import React from 'react'
 import '../css/box.css'
 import Cards from "./Cards";
 import NewC from "./NewC";

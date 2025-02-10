@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 const AttendanceReport = ({ initialData, onChange }) => {
   // Define the columns we want to show

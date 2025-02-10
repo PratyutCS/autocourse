@@ -1,5 +1,3 @@
-import React from 'react';
-
 const EditableCourseDescription = ({ courseDescription, onChange }) => {
   const handleChange = (e) => {
     onChange(e.target.value );

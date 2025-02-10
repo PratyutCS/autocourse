@@ -1,4 +1,3 @@
-import React from 'react';
 import { FaRegFilePdf } from "react-icons/fa6";
 import { AiFillDelete } from "react-icons/ai";
 import { IoMdDownload } from "react-icons/io";
