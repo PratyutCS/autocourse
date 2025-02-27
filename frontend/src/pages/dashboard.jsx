@@ -25,7 +25,10 @@ const Dashboard = () => {
             constants.url + "/tokenIsValid",
             {},
             {
-              headers: { "x-auth-token": token },
+              headers: { 
+                "x-auth-token": token,
+                "ngrok-skip-browser-warning": "69420"
+              },
             }
           );
 
@@ -35,7 +38,10 @@ const Dashboard = () => {
           } else {
             try {
               const userResponse = await axios.get(constants.url + "/", {
-                headers: { "x-auth-token": token },
+                headers: { 
+                  "x-auth-token": token,
+                  "ngrok-skip-browser-warning": "69420"
+                },
               });
               setUserData(userResponse.data);
             } catch (error) {
@@ -64,7 +70,10 @@ const Dashboard = () => {
         const token = localStorage.getItem("token");
         try {
           const filesResponse = await axios.get(constants.url + "/files", {
-            headers: { "x-auth-token": token },
+            headers: { 
+              "x-auth-token": token,
+              "ngrok-skip-browser-warning": "69420"
+            },
           });
           setFiles(filesResponse.data);
         } catch (error) {
@@ -86,7 +95,10 @@ const Dashboard = () => {
       const token = localStorage.getItem("token");
       try {
         const response = await axios.get(constants.url + "/files", {
-          headers: { "x-auth-token": token },
+          headers: { 
+            "x-auth-token": token,
+            "ngrok-skip-browser-warning": "69420"
+          },
         });
         // Compare the new files data with current state
         if (JSON.stringify(response.data) !== JSON.stringify(files)) {

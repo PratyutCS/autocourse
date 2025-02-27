@@ -5,14 +5,14 @@ import { HiMenuAlt3 } from "react-icons/hi";
 import constants from "../constants";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import PropTypes from "prop-types"; 
+import PropTypes from "prop-types";
 
 const AsideComp = ({ userEmail, isCollapsed, setIsCollapsed }) => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if(userEmail){
+    if (userEmail) {
       setIsLoading(false);
     }
   }, [navigate]);
@@ -26,7 +26,10 @@ const AsideComp = ({ userEmail, isCollapsed, setIsCollapsed }) => {
         constants.url + "/api/signout",
         {},
         {
-          headers: { "x-auth-token": token },
+          headers: {
+            "x-auth-token": token,
+            "ngrok-skip-browser-warning": "69420"
+          }
         }
       );
 
@@ -49,9 +52,8 @@ const AsideComp = ({ userEmail, isCollapsed, setIsCollapsed }) => {
 
   return (
     <aside
-      className={`relative flex flex-col bg-[#323439] h-full transition-all duration-300 ease-in-out ${
-        isCollapsed ? "w-[4vw]" : "w-[20vw]"
-      }`}
+      className={`relative flex flex-col bg-[#323439] h-full transition-all duration-300 ease-in-out ${isCollapsed ? "w-[4vw]" : "w-[20vw]"
+        }`}
     >
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
@@ -59,9 +61,8 @@ const AsideComp = ({ userEmail, isCollapsed, setIsCollapsed }) => {
       >
         <HiMenuAlt3
           size={20}
-          className={`text-gray-300 transform transition-transform duration-300 ${
-            isCollapsed ? "rotate-180" : ""
-          }`}
+          className={`text-gray-300 transform transition-transform duration-300 ${isCollapsed ? "rotate-180" : ""
+            }`}
         />
       </button>
 
@@ -72,9 +73,8 @@ const AsideComp = ({ userEmail, isCollapsed, setIsCollapsed }) => {
           className="h-[7vh] w-auto"
         />
         <h1
-          className={`font-['Nunito'] font-light text-[#c3c3c3] text-[2vmin] transition-opacity duration-300 ${
-            isCollapsed ? "opacity-0" : "opacity-100"
-          }`}
+          className={`font-['Nunito'] font-light text-[#c3c3c3] text-[2vmin] transition-opacity duration-300 ${isCollapsed ? "opacity-0" : "opacity-100"
+            }`}
         >
           Bml Munjal University
         </h1>
@@ -87,9 +87,8 @@ const AsideComp = ({ userEmail, isCollapsed, setIsCollapsed }) => {
         >
           <RxQuestionMarkCircled size={24} className="hover:text-white" />
           <span
-            className={`transition-opacity  font-light text-m duration-300 hover:text-white ${
-              isCollapsed ? "opacity-0" : "opacity-100"
-            }`}
+            className={`transition-opacity  font-light text-m duration-300 hover:text-white ${isCollapsed ? "opacity-0" : "opacity-100"
+              }`}
           >
             Support
           </span>
@@ -102,9 +101,8 @@ const AsideComp = ({ userEmail, isCollapsed, setIsCollapsed }) => {
           >
             <TfiPowerOff size={24} className="hover:text-white" />
             <div
-              className={`flex flex-col items-start transition-opacity duration-300 ${
-                isCollapsed ? "opacity-0" : "opacity-100"
-              }`}
+              className={`flex flex-col items-start transition-opacity duration-300 ${isCollapsed ? "opacity-0" : "opacity-100"
+                }`}
             >
               <span className="text-m font-light hover:text-white">Logout</span>
               {userEmail && (

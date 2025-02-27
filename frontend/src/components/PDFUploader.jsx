@@ -44,11 +44,12 @@ const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess, initialFileName })
       setUploading(true);
       setError('');
       
-      const response = await axios.post(constants.url+'/upload-pdf', formData, {
+      const response = await axios.post(constants.url + '/upload-pdf', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'num': num,
-          'x-auth-token': localStorage.getItem('token')
+          'x-auth-token': localStorage.getItem('token'),
+          'ngrok-skip-browser-warning': '69420'
         }
       });
 
@@ -68,10 +69,11 @@ const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess, initialFileName })
       setUploading(true);
       setError('');
 
-      await axios.post(constants.url+'/merge-delete', {}, {
+      await axios.post(constants.url + '/merge-delete', {}, {
         headers: {
           'num': num,
-          'x-auth-token': localStorage.getItem('token')
+          'x-auth-token': localStorage.getItem('token'),
+          'ngrok-skip-browser-warning': '69420'
         }
       });
 

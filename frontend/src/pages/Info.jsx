@@ -29,7 +29,10 @@ const Info = () => {
     const fetchFilesData = async () => {
       try {
         const response = await axios.post(constants.url + '/numdata', { num }, {
-          headers: { 'x-auth-token': token }
+          headers: { 
+            'x-auth-token': token,
+            'ngrok-skip-browser-warning': '69420'
+          }
         });
         setFileData(response.data);
 

@@ -228,7 +228,7 @@ const FeedbackForm = (props) => {
 
     loadSavedData();
   }, [num, props.weeklyTimetableData]);
-  
+
   const programOptions = ['CSE', 'ME', 'ECOM', 'ECT'];
 
   const validateCriteria = () => {
@@ -273,7 +273,10 @@ const FeedbackForm = (props) => {
             studentData,
           },
           {
-            headers: { "x-auth-token": token },
+            headers: {
+              "x-auth-token": token,
+              "ngrok-skip-browser-warning": "69420"
+            }
           }
         );
 

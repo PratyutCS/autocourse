@@ -1,0 +1,6 @@
+[scripts]
+build = "vite build"
+dev = "vite"
+serve = "serve -s dist -l 3001"
+lint = "eslint ."
+preview = "vite preview"

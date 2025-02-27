@@ -65,7 +65,7 @@ const COAttainmentCriteria = ({ copoMappingData, initialCriteria, onSave }) => {
                     min="0"
                     max="100"
                     className="w-full p-2 border border-gray-200 rounded-md"
-                    value={criteria[co]?.full}
+                    value={criteria[co]?.full ?? 0}
                     onChange={(e) => handleChange(co, 'full', e.target.value)}
                   />
                 </td>
@@ -80,7 +80,7 @@ const COAttainmentCriteria = ({ copoMappingData, initialCriteria, onSave }) => {
                     min="0"
                     max="100"
                     className="w-full p-2 border border-gray-200 rounded-md"
-                    value={criteria[co]?.partial}
+                    value={criteria[co]?.partial ?? 0}
                     onChange={(e) => handleChange(co, 'partial', e.target.value)}
                   />
                 </td>

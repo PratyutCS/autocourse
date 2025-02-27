@@ -19,7 +19,8 @@ export default function NewC(props) {
     try {
       const response = await axios.post(constants.url + '/delete', { num }, {
         headers: {
-          'x-auth-token': token
+          'x-auth-token': token,
+          'ngrok-skip-browser-warning': '69420'
         }
       });
       if (response.status === 200) {
@@ -35,7 +36,8 @@ export default function NewC(props) {
     try {
       const response = await axios.post(constants.url + '/download', { num }, {
         headers: {
-          'x-auth-token': token
+          'x-auth-token': token,
+          'ngrok-skip-browser-warning': '69420'
         },
         responseType: 'blob'
       });

@@ -36,7 +36,12 @@ function Signup() {
         name: formData.name,
         email: formData.email,
         password: formData.password
-      }, { withCredentials: true });
+      }, {
+        withCredentials: true,
+        headers: {
+          "ngrok-skip-browser-warning": "69420"
+        }
+      });
 
       localStorage.setItem('token', response.data.token);
       setMessage("Signup successful! Redirecting...");

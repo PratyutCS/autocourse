@@ -19,7 +19,10 @@ function Login() {
       if (token) {
         try {
           const response = await axios.post(constants.url + '/tokenIsValid', {}, {
-            headers: { 'x-auth-token': token }
+            headers: {
+              'x-auth-token': token,
+              "ngrok-skip-browser-warning": "69420"
+            }
           });
 
           if (response.data) {
@@ -43,12 +46,18 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    
+
     try {
       const response = await axios.post(link, {
         email: username,
         password,
-      }, { withCredentials: true });
+      }, {
+        withCredentials: true,
+        headers: {
+          "ngrok-skip-browser-warning": "69420"
+        }
+      });
+
       localStorage.setItem('token', response.data.token);
 
       setMessage("Login successful! Redirecting...");
@@ -71,7 +80,7 @@ function Login() {
         <div className="p-8">
           {/* Header Section */}
           <div className="text-center mb-8">
-            <img 
+            <img
               src="/customer-logo.png"
               alt="BML Munjal University"
               className="mx-auto mb-4 h-[6rem] rounded-lg transform transition-transform duration-300 hover:scale-105"
