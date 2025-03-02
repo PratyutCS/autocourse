@@ -166,3 +166,7 @@
   .animate-spin-fast {
     animation: spin-fast 0.8s linear infinite;
   }
+
+  .box23::-webkit-scrollbar{
+    display: none;
+  }
