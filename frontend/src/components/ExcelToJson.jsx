@@ -2,8 +2,10 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
+import constants from '../constants';
 
 const ExcelToJSON = ({ onSave, initialData }) => {
+  const token = localStorage.getItem("token");
   const [fileName, setFileName] = useState('');
   const [error, setError] = useState(null);
   const [processedData, setProcessedData] = useState(null);
@@ -262,15 +264,51 @@ const ExcelToJSON = ({ onSave, initialData }) => {
     );
   };
 
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(`${constants.url}/download/xlsx`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          "x-auth-token": token,
+          "ngrok-skip-browser-warning": "69420"
+        },
+        body: JSON.stringify({})
+      });
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = 'sample.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading the file:', error);
+    }
+  };
+
   return (
     <div className="p-6 bg-white rounded-xl shadow-sm border border-gray-100">
-      <div className="flex items-center gap-4 mb-6">
-        <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
-          <span>9</span>
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex items-center gap-4">
+          <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
+            <span>9</span>
+          </div>
+          <h2 className="text-xl font-semibold text-gray-800">
+            Student Data
+          </h2>
         </div>
-        <h2 className="text-xl font-semibold text-gray-800">
-          Excel/CSV to JSON Converter
-        </h2>
+
+        <div>
+          <button
+            onClick={handleDownload}
+            className="inline-block bg-[#FFB255] text-white px-4 py-2 rounded-lg shadow-sm transition-colors hover:bg-orange-600"
+          >
+            Download Sample Excel
+          </button>
+        </div>
       </div>
 
       <div className="space-y-4">

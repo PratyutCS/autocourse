@@ -548,6 +548,32 @@ app.post("/merge-delete", auth, async (req, res) => {
   }
 });
 
+// To download
+app.post("/download/xlsx", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user);
+
+    if (user.number >= 0 && user.number < 200) {
+      const directoryPath = path.join(__dirname, "excel", "sample.xlsx");
+
+      if (!fs.existsSync(directoryPath)) {
+        return res.status(400).json({ message: "File not found" });
+      }
+
+      res.download(directoryPath, "sample.xlsx", (err) => {
+        if (err) {
+          console.error("Error occurred during file download:", err);
+          return res.status(500).json({ message: "Error downloading the file" });
+        }
+      });
+    } else {
+      return res.status(400).json({ message: "Invalid user number" });
+    }
+  } catch (error) {
+    console.error("Error in /download route:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
