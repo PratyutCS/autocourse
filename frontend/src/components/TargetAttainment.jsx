@@ -57,7 +57,7 @@ const TargetAttainment = ({ copoMappingData, initialCriteria, onSave }) => {
           </thead>
           <tbody>
             <tr>
-              <td className="px-4 py-2 border-b">Min. % marks (fully attained)</td>
+              <td className="px-4 py-2 border-b">Min. % students (fully attained)</td>
               {Object.keys(copoMappingData.courseOutcomes).map((co) => (
                 <td key={`${co}-full`} className="px-4 py-2 border-b">
                   <input
@@ -72,7 +72,7 @@ const TargetAttainment = ({ copoMappingData, initialCriteria, onSave }) => {
               ))}
             </tr>
             <tr>
-              <td className="px-4 py-2 border-b">Min. % marks (partially attained)</td>
+              <td className="px-4 py-2 border-b">Min. % students (partially attained)</td>
               {Object.keys(copoMappingData.courseOutcomes).map((co) => (
                 <td key={`${co}-partial`} className="px-4 py-2 border-b">
                   <input

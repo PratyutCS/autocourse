@@ -570,6 +570,7 @@ const FeedbackForm = (props) => {
           studentData={studentData}
           coAttainmentCriteria={coAttainmentCriteria}
           copoMappingData={copoMappingData}
+          targetAttainment={targetAttainment}
         />
 
         {/* Course Syllabus Section */}
