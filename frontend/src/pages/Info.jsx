@@ -83,6 +83,7 @@ const Info = () => {
             coWeightages={file["coWeightages"] || {}}
             coAttainmentCriteria={file["coAttainmentCriteria"] || {}}
             studentData={file["studentData"] || {}}
+            targetAttainment={file["targetAttainment"] || {}}
             />
           ) : (
             <LoadingSpinner />

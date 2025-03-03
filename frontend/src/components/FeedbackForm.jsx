@@ -16,6 +16,7 @@ import COAttainmentAnalysis from "./COAttainmentAnalysis";
 import COAssessmentWeightage from "./COAssessmentWeightage";
 import COAttainmentCriteria from './COAttainmentCriteria';
 import PDFUploader from './PDFUploader';
+import TargetAttainment from './TargetAttainment';
 
 import ExcelToJson from './ExcelToJson';
 
@@ -107,9 +108,13 @@ const FeedbackForm = (props) => {
 
 
   const [coAttainmentCriteria, setCoAttainmentCriteria] = useState({});
+  const [targetAttainment, setTargetAttainment] = useState({});
 
   const handleCoAttainmentCriteriaSave = (criteria) => {
     setCoAttainmentCriteria(criteria);
+  };
+  const handleTargetAttainmentSave = (criteria) => {
+    setTargetAttainment(criteria);
   };
 
   const [studentData, setStudentData] = useState([]);
@@ -128,6 +133,10 @@ const FeedbackForm = (props) => {
   useEffect(() => {
     setCoAttainmentCriteria(props.coAttainmentCriteria || "");
   }, [props.coAttainmentCriteria]);
+  
+  useEffect(() => {
+    setTargetAttainment(props.targetAttainment || "");
+  }, [props.targetAttainment]);
 
   useEffect(() => {
     setCourseCode(props.coursecode || "");
@@ -271,6 +280,7 @@ const FeedbackForm = (props) => {
             coWeightages,
             coAttainmentCriteria,
             studentData,
+            targetAttainment,
           },
           {
             headers: {
@@ -546,6 +556,12 @@ const FeedbackForm = (props) => {
           copoMappingData={copoMappingData}
           initialCriteria={coAttainmentCriteria}
           onSave={handleCoAttainmentCriteriaSave}
+        />
+
+        <TargetAttainment
+          copoMappingData={copoMappingData}
+          initialCriteria={targetAttainment}
+          onSave={handleTargetAttainmentSave}
         />
 
 

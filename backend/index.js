@@ -425,6 +425,7 @@ app.post("/form", auth, async (req, res) => {
         jsonData[num]["Program"] = req.body.program || "";
         jsonData[num]["coWeightages"] = req.body.coWeightages || "";
         jsonData[num]["coAttainmentCriteria"] = req.body.coAttainmentCriteria || "";
+        jsonData[num]["targetAttainment"] = req.body.targetAttainment || "";
         jsonData[num]["studentData"] = req.body.studentData || "";
 
         // Include weeklyTimetableData
