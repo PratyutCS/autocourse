@@ -720,18 +720,6 @@ def create_co_attainment_analysis(doc, data):
     # Make sure rows don't split across pages
     prevent_table_row_breaks(summary_table)
     
-    # Add attainment criteria explanation
-    doc.add_paragraph()
-    criteria_para = doc.add_paragraph("CO Attainment Criteria:")
-    criteria_para.paragraph_format.left_indent = Inches(0.5)
-    
-    for co in cos:
-        if co in data.get('targetAttainment', {}):
-            full_threshold = data['targetAttainment'][co].get('full', 70)
-            partial_threshold = data['targetAttainment'][co].get('partial', 60)
-            
-            criteria_para.add_run(f"\n• {co}: Level 3 (≥{full_threshold}%), Level 2 (≥{partial_threshold}%), Level 1 (<{partial_threshold}%)")
-    
     # 2. Generate Program Attainment Table on a new page
     # Get ALL possible POs from the mapping data
     all_pos = set()
@@ -781,11 +769,6 @@ def create_co_attainment_analysis(doc, data):
         
         program_table.alignment = WD_TABLE_ALIGNMENT.CENTER
         prevent_table_row_breaks(program_table)
-        
-        # Add explanation for PO attainment calculation
-        doc.add_paragraph()
-        po_explanation = doc.add_paragraph("Program outcome attainment is calculated as the weighted average of CO attainments based on the CO-PO mapping values.")
-        po_explanation.paragraph_format.left_indent = Inches(0.5)
     
     # 3. Generate Student-wise CO Achievement Table on a new page
     if result["student_performance"]:
@@ -843,20 +826,6 @@ def create_co_attainment_analysis(doc, data):
         student_table.alignment = WD_TABLE_ALIGNMENT.CENTER
         
         # Note: We don't prevent table row breaks for this table to allow pagination
-        
-        # Add total rows/columns info
-        total_rows = len(result["student_performance"])
-        total_columns = len(cos) + 1
-        row_col_info = doc.add_paragraph(f"Total Rows: {total_rows} | Total Columns: {total_columns}")
-        row_col_info.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        
-        # Add explanation of the scoring scale
-        doc.add_paragraph()
-        scoring_explanation = doc.add_paragraph("CO Achievement Score Legend:")
-        scoring_explanation.paragraph_format.left_indent = Inches(0.5)
-        scoring_explanation.add_run("\n• Score 3: Full attainment")
-        scoring_explanation.add_run("\n• Score 2: Partial attainment")
-        scoring_explanation.add_run("\n• Score 1: No attainment")
 
 # Helper functions
 def calculate_co_attainment(data):
