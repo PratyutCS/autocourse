@@ -631,137 +631,485 @@ if data.get('studentData'):
 
 #################  Attainment Table #########################
 
-if data.get('studentData'):
-    # STUDENT OUTCOME ATTAINMENT TABLE
+def create_co_attainment_analysis(doc, data):
+    """Generate CO attainment analysis tables with support for multi-page tables"""
+    if not all(key in data for key in ['coWeightages', 'studentData', 'coAttainmentCriteria', 'copoMappingData']):
+        return  # Skip if required data is missing
+
+    # Add section heading with page break
     doc.add_page_break()
-    outcome_heading = doc.add_heading(level=1)
-    outcome_run = outcome_heading.add_run('21. Student Outcome Attainment')
-    outcome_run.font.name = 'Carlito'
-    outcome_run.font.size = Pt(16)
-    outcome_run.font.color.rgb = RGBColor(28, 132, 196)
-    outcome_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    heading = doc.add_heading(level=1)
+    run = heading.add_run('12. CO Attainment Analysis')
+    run.font.name = 'Carlito'
+    run.font.size = Pt(16)
+    run.font.color.rgb = RGBColor(28, 132, 196)
+    heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
     
     doc.add_paragraph()
+
+    # Calculate CO attainment
+    result = calculate_co_attainment(data)
+    cos = list(data.get('coWeightages', {}).keys())
+
+    # 1. Generate CO Attainment Summary Table
+    summary_heading = doc.add_heading('CO Attainment Summary', level=2)
+    summary_heading.runs[0].font.size = Pt(14)
+    doc.add_paragraph()
     
-    # Get the CO keys from coWeightages
-    co_keys = list(data.get('coWeightages', {}).keys())
+    summary_table = doc.add_table(rows=6, cols=len(cos) + 1)
     
-    # Create the outcome attainment table with dynamic CO columns
-    table = doc.add_table(rows=1, cols=3 + len(co_keys))
+    # Header row
+    header_cells = summary_table.rows[0].cells
+    header_cells[0].text = "Course Outcomes"
     
-    # Set header row
-    header_cells = table.rows[0].cells
-    headers = ['Sr. No.', 'Roll No', 'Student Name'] + co_keys
+    for i, co in enumerate(cos):
+        header_cells[i + 1].text = co
+        format_cell(header_cells[i + 1], bold=True, alignment=WD_ALIGN_PARAGRAPH.CENTER)
     
-    for i, header_text in enumerate(headers):
-        header_cells[i].text = header_text
-        paragraph = header_cells[i].paragraphs[0]
-        run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(header_text)
-        run.bold = True
-        run.font.size = Pt(9)
-        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    format_cell(header_cells[0], bold=True, alignment=WD_ALIGN_PARAGRAPH.LEFT)
     
-    # Calculate CO attainment for each student
-    for i, student in enumerate(data['studentData']['data']):
-        row_cells = table.add_row().cells
+    # Data rows
+    row_labels = ["Weights", "No. of students scored greater than 3", 
+                 "Percentage of students scored greater than 3", "Attainment Level"]
+    
+    for row_idx, label in enumerate(row_labels):
+        row = summary_table.rows[row_idx + 1]
+        row.cells[0].text = label
+        format_cell(row.cells[0], bold=False, alignment=WD_ALIGN_PARAGRAPH.LEFT)
         
-        # Add base data
-        row_cells[0].text = str(i + 1)  # Sr. No.
-        row_cells[1].text = "220C203{:04d}".format(i + 1)  # Roll No (formatted)
-        row_cells[2].text = student['Student Name']
-        
-        # Calculate CO attainment levels for each CO
-        for j, co_key in enumerate(co_keys):
-            # Get the CO attainment criteria
-            criteria = data.get('coAttainmentCriteria', {}).get(co_key, {'full': 70, 'partial': 60})
-            full_attainment = criteria.get('full', 70)
-            partial_attainment = criteria.get('partial', 60)
+        for col_idx, co in enumerate(cos):
+            cell = row.cells[col_idx + 1]
             
-            # Get the CO weightages
-            weightages = data.get('coWeightages', {}).get(co_key, {})
+            if row_idx == 0:  # Weights
+                cell.text = result["attainment_summary"]["weights"].get(co, "0.00%")
+            elif row_idx == 1:  # Students scored 3
+                cell.text = str(result["attainment_summary"]["students_scored3"].get(co, 0))
+            elif row_idx == 2:  # Percentage scored 3
+                cell.text = result["attainment_summary"]["percentage_scored3"].get(co, "0%")
+            elif row_idx == 3:  # Attainment Level
+                cell.text = str(result["attainment_summary"]["attainment_level"].get(co, 0))
             
-            # Calculate weighted score for this CO
-            total_co_score = 0
-            for assessment, weight in weightages.items():
-                # Extract assessment name (strip the weightage part)
-                assessment_name = assessment.split('(')[0].strip()
-                
-                # Find matching assessment in student data
-                for key in student:
-                    if assessment_name.lower() in key.lower():
-                        # Calculate percentage score for this assessment
-                        max_mark = data['studentData']['maxMarks'].get(key, 0)
-                        if max_mark > 0:
-                            score_percentage = (student[key] / max_mark) * 100
-                            # Apply weightage (assuming weight is stored as string percentage)
-                            weighted_score = score_percentage * (float(weight) / 100)
-                            total_co_score += weighted_score
-                        break
-            
-            # Determine attainment level (3, 2, 1)
-            if total_co_score >= full_attainment:
-                attainment_level = 3
-            elif total_co_score >= partial_attainment:
-                attainment_level = 2
-            else:
-                attainment_level = 1
-                
-            # Set the attainment level in the table
-            row_cells[3 + j].text = str(attainment_level)
-        
-        # Format cell text
-        for cell in row_cells:
-            paragraph = cell.paragraphs[0]
-            paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            for run in paragraph.runs:
-                run.font.size = Pt(9)
+            format_cell(cell, bold=False, alignment=WD_ALIGN_PARAGRAPH.CENTER)
     
-    # Adjust column widths
-    base_widths = [Inches(0.8), Inches(1.5), Inches(2)]
-    co_widths = [Inches(0.6)] * len(co_keys)
-    widths = base_widths + co_widths
+    # Overall Course Attainment row
+    overall_row = summary_table.rows[5]
+    overall_row.cells[0].text = "Overall Course Attainment"
+    format_cell(overall_row.cells[0], bold=True, alignment=WD_ALIGN_PARAGRAPH.LEFT)
     
-    for row in table.rows:
-        for idx, cell in enumerate(row.cells):
-            if idx < len(widths):
-                cell.width = widths[idx]
+    overall_row.cells[1].text = f"{result['attainment_summary']['overall_attainment']:.4f}"
     
-    # Set table borders
-    def set_cell_border(cell, border_type, border_size, border_color):
-        tc = cell._tc
-        tcPr = tc.get_or_add_tcPr()
-        border = OxmlElement(f'w:{border_type}')
-        border.set(qn('w:val'), 'single')
-        border.set(qn('w:sz'), str(border_size))
-        border.set(qn('w:color'), border_color)
-        element = tcPr.xpath(f"./w:{border_type}")
-        if element:
-            element[0].getparent().replace(element[0], border)
-        else:
-            tcPr.append(border)
+    # Merge cells for overall attainment
+    for i in range(2, len(cos) + 1):
+        try:
+            overall_row.cells[1].merge(overall_row.cells[i])
+        except:
+            pass
     
-    for row in table.rows:
+    format_cell(overall_row.cells[1], bold=True, alignment=WD_ALIGN_PARAGRAPH.CENTER)
+    
+    # Add borders to summary table
+    for row in summary_table.rows:
         for cell in row.cells:
-            set_cell_border(cell, 'top', 3, '000000')
-            set_cell_border(cell, 'bottom', 3, '000000')
-            set_cell_border(cell, 'left', 3, '000000')
-            set_cell_border(cell, 'right', 3, '000000')
+            set_cell_border(cell, 'top', 4, '000000')
+            set_cell_border(cell, 'bottom', 4, '000000')
+            set_cell_border(cell, 'left', 4, '000000')
+            set_cell_border(cell, 'right', 4, '000000')
     
-    table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    summary_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+
+    # Make sure rows don't split across pages
+    prevent_table_row_breaks(summary_table)
     
-    # Ensure table rows don't split across pages
+    # Add attainment criteria explanation
+    doc.add_paragraph()
+    criteria_para = doc.add_paragraph("CO Attainment Criteria:")
+    criteria_para.paragraph_format.left_indent = Inches(0.5)
+    
+    for co in cos:
+        if co in data.get('targetAttainment', {}):
+            full_threshold = data['targetAttainment'][co].get('full', 70)
+            partial_threshold = data['targetAttainment'][co].get('partial', 60)
+            
+            criteria_para.add_run(f"\n• {co}: Level 3 (≥{full_threshold}%), Level 2 (≥{partial_threshold}%), Level 1 (<{partial_threshold}%)")
+    
+    # 2. Generate Program Attainment Table on a new page
+    # Get ALL possible POs from the mapping data
+    all_pos = set()
+    for co, po_mappings in data.get('copoMappingData', {}).get('mappingData', {}).items():
+        all_pos.update(po_mappings.keys())
+    
+    # Sort POs in a natural order (PO1, PO2, ..., PSO1, PSO2, ...)
+    pos = sorted(list(all_pos), key=lambda x: (
+        'PSO' in x, 
+        int(''.join(filter(str.isdigit, x or '0'))) if any(c.isdigit() for c in x) else 0
+    ))
+    
+    if pos:
+        doc.add_page_break()
+        program_heading = doc.add_heading('Program Attainment', level=2)
+        program_heading.runs[0].font.size = Pt(14)
+        doc.add_paragraph()
+        
+        program_table = doc.add_table(rows=2, cols=len(pos) + 1)
+        
+        # Header row
+        header_cells = program_table.rows[0].cells
+        header_cells[0].text = "Program Outcomes"
+        
+        for i, po in enumerate(pos):
+            header_cells[i + 1].text = po
+            format_cell(header_cells[i + 1], bold=True, alignment=WD_ALIGN_PARAGRAPH.CENTER)
+        
+        format_cell(header_cells[0], bold=True, alignment=WD_ALIGN_PARAGRAPH.LEFT)
+        
+        # Data row
+        data_row = program_table.rows[1]
+        data_row.cells[0].text = "Program Attainment"
+        format_cell(data_row.cells[0], bold=False, alignment=WD_ALIGN_PARAGRAPH.LEFT)
+        
+        for col_idx, po in enumerate(pos):
+            data_row.cells[col_idx + 1].text = result["program_attainment"].get(po, "0.00")
+            format_cell(data_row.cells[col_idx + 1], bold=False, alignment=WD_ALIGN_PARAGRAPH.CENTER)
+        
+        # Add borders to program table
+        for row in program_table.rows:
+            for cell in row.cells:
+                set_cell_border(cell, 'top', 4, '000000')
+                set_cell_border(cell, 'bottom', 4, '000000')
+                set_cell_border(cell, 'left', 4, '000000')
+                set_cell_border(cell, 'right', 4, '000000')
+        
+        program_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        prevent_table_row_breaks(program_table)
+        
+        # Add explanation for PO attainment calculation
+        doc.add_paragraph()
+        po_explanation = doc.add_paragraph("Program outcome attainment is calculated as the weighted average of CO attainments based on the CO-PO mapping values.")
+        po_explanation.paragraph_format.left_indent = Inches(0.5)
+    
+    # 3. Generate Student-wise CO Achievement Table on a new page
+    if result["student_performance"]:
+        doc.add_page_break()
+        student_heading = doc.add_heading('Student-wise CO Achievement', level=2)
+        student_heading.runs[0].font.size = Pt(14)
+        doc.add_paragraph()
+        
+        # Create table with all students (will handle pagination automatically)
+        rows_count = len(result["student_performance"]) + 2  # +2 for header and average row
+        student_table = doc.add_table(rows=rows_count, cols=len(cos) + 1)
+        
+        # Header row
+        header_cells = student_table.rows[0].cells
+        header_cells[0].text = "NAME"
+        
+        for i, co in enumerate(cos):
+            header_cells[i + 1].text = f"{co} Score"
+            format_cell(header_cells[i + 1], bold=True, alignment=WD_ALIGN_PARAGRAPH.CENTER)
+        
+        format_cell(header_cells[0], bold=True, alignment=WD_ALIGN_PARAGRAPH.CENTER)
+        
+        # Student data rows
+        for row_idx, student in enumerate(result["student_performance"]):
+            row = student_table.rows[row_idx + 1]
+            row.cells[0].text = student["rollNumber"]
+            format_cell(row.cells[0], bold=False, alignment=WD_ALIGN_PARAGRAPH.LEFT)
+            
+            for col_idx, co in enumerate(cos):
+                cell = row.cells[col_idx + 1]
+                cell.text = str(student["coScores"].get(co, ""))
+                format_cell(cell, bold=False, alignment=WD_ALIGN_PARAGRAPH.CENTER)
+        
+        # Average row
+        avg_row = student_table.rows[rows_count - 1]
+        avg_row.cells[0].text = "Average"
+        format_cell(avg_row.cells[0], bold=True, alignment=WD_ALIGN_PARAGRAPH.LEFT)
+        
+        for col_idx, co in enumerate(cos):
+            cell = avg_row.cells[col_idx + 1]
+            cell.text = result["averages"].get(co, "0.00")
+            format_cell(cell, bold=True, alignment=WD_ALIGN_PARAGRAPH.CENTER)
+        
+        # Set column widths for the student table
+        set_table_column_widths(student_table, [Inches(2.0)] + [Inches(0.9)] * len(cos))
+        
+        # Add borders to student table
+        for row in student_table.rows:
+            for cell in row.cells:
+                set_cell_border(cell, 'top', 4, '000000')
+                set_cell_border(cell, 'bottom', 4, '000000')
+                set_cell_border(cell, 'left', 4, '000000')
+                set_cell_border(cell, 'right', 4, '000000')
+        
+        student_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        
+        # Note: We don't prevent table row breaks for this table to allow pagination
+        
+        # Add total rows/columns info
+        total_rows = len(result["student_performance"])
+        total_columns = len(cos) + 1
+        row_col_info = doc.add_paragraph(f"Total Rows: {total_rows} | Total Columns: {total_columns}")
+        row_col_info.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        
+        # Add explanation of the scoring scale
+        doc.add_paragraph()
+        scoring_explanation = doc.add_paragraph("CO Achievement Score Legend:")
+        scoring_explanation.paragraph_format.left_indent = Inches(0.5)
+        scoring_explanation.add_run("\n• Score 3: Full attainment")
+        scoring_explanation.add_run("\n• Score 2: Partial attainment")
+        scoring_explanation.add_run("\n• Score 1: No attainment")
+
+# Helper functions
+def calculate_co_attainment(data):
+    """Calculate CO attainment based on student data and weightages"""
+    co_weightages = data.get('coWeightages', {})
+    student_data = data.get('studentData', {})
+    co_attainment_criteria = data.get('coAttainmentCriteria', {})
+    copo_mapping_data = data.get('copoMappingData', {})
+    target_attainment = data.get('targetAttainment', {})
+    
+    # Initialize results
+    student_performance = []
+    averages = {}
+    program_attainment = {}
+    attainment_summary = {
+        "weights": {},
+        "students_scored3": {},
+        "percentage_scored3": {},
+        "attainment_level": {},
+        "overall_attainment": 0
+    }
+    
+    # Get all CO keys
+    cos = list(co_weightages.keys())
+    
+    # Calculate student performance and CO scores
+    if student_data and 'maxMarks' in student_data and 'data' in student_data:
+        # Get assessment components, excluding the total
+        assessment_components = [(comp, max_mark) for comp, max_mark in student_data['maxMarks'].items() 
+                                if 'Total' not in comp]
+        
+        # Process each student
+        for student in student_data['data']:
+            student_result = {
+                "id": student.get("Unique Id."),
+                "rollNumber": student.get("Student Name", ""),
+                "coScores": {}
+            }
+            
+            # Calculate CO scores for each student
+            for co in cos:
+                weighted_score = 0
+                total_weight = 0
+                
+                for component, max_mark in assessment_components:
+                    # Match component to co_weightages keys (case-insensitive)
+                    component_key = component.lower()
+                    
+                    # Find matching key in co_weightages for this CO
+                    co_component = None
+                    for key in co_weightages.get(co, {}):
+                        if component.lower().split('(')[0].strip() in key.lower():
+                            co_component = key
+                            break
+                    
+                    if co_component:
+                        student_score = float(student.get(component, 0))
+                        max_mark = float(max_mark if max_mark else 0)
+                        co_weight = float(co_weightages[co].get(co_component, 0))
+                        
+                        weighted_score += (student_score * (co_weight / 100))
+                        total_weight += (max_mark * (co_weight / 100))
+                
+                # Determine attainment level based on percentage
+                partial = float(co_attainment_criteria.get(co, {}).get('partial', 0))
+                full = float(co_attainment_criteria.get(co, {}).get('full', 0))
+                
+                percentage = (weighted_score / total_weight) * 100 if total_weight > 0 else 0
+                
+                # Assign score based on student's percentage
+                if percentage >= full:
+                    student_result['coScores'][co] = 3
+                elif percentage >= partial:
+                    student_result['coScores'][co] = 2
+                else:
+                    student_result['coScores'][co] = 1
+            
+            student_performance.append(student_result)
+    
+    # Calculate CO weights
+    attainment_summary["weights"] = calculate_co_weights(co_weightages, student_data)
+    
+    # Calculate averages and attainment summary
+    for co in cos:
+        scores = [student['coScores'].get(co, 0) for student in student_performance]
+        avg = sum(scores) / len(scores) if scores else 0
+        averages[co] = f"{avg:.2f}"
+        
+        # Count students who scored 3
+        scored3_count = sum(1 for score in scores if score >= 3)
+        attainment_summary["students_scored3"][co] = scored3_count
+        
+        # Calculate percentage of students who scored 3
+        percentage_scored3 = (scored3_count / len(scores)) * 100 if scores else 0
+        attainment_summary["percentage_scored3"][co] = f"{percentage_scored3:.2f}%"
+        
+        # Calculate attainment level based on percentage of students who scored 3
+        # This is critical for determining the overall attainment
+        if target_attainment and co in target_attainment:
+            full = float(target_attainment[co].get('full', 0))
+            partial = float(target_attainment[co].get('partial', 0))
+            
+            if percentage_scored3 >= full:
+                attainment_summary["attainment_level"][co] = 3
+            elif percentage_scored3 >= partial:
+                attainment_summary["attainment_level"][co] = 2
+            else:
+                attainment_summary["attainment_level"][co] = 1
+        else:
+            # Fallback to criteria from coAttainmentCriteria if targetAttainment is not available
+            if co_attainment_criteria and co in co_attainment_criteria:
+                full = float(co_attainment_criteria[co].get('full', 0))
+                partial = float(co_attainment_criteria[co].get('partial', 0))
+                
+                if percentage_scored3 >= full:
+                    attainment_summary["attainment_level"][co] = 3
+                elif percentage_scored3 >= partial:
+                    attainment_summary["attainment_level"][co] = 2
+                else:
+                    attainment_summary["attainment_level"][co] = 1
+            else:
+                attainment_summary["attainment_level"][co] = 1
+    
+    # Calculate overall attainment as average of individual CO attainments
+    attainment_values = list(attainment_summary["attainment_level"].values())
+    attainment_summary["overall_attainment"] = sum(attainment_values) / len(attainment_values) if attainment_values else 0
+    
+    # Calculate program attainment
+    program_attainment = calculate_program_attainment(copo_mapping_data, averages)
+    
+    return {
+        "student_performance": student_performance,
+        "averages": averages,
+        "program_attainment": program_attainment,
+        "attainment_summary": attainment_summary
+    }
+
+def calculate_co_weights(co_weightages, student_data):
+    """Calculate CO weights based on assessment components"""
+    cos = list(co_weightages.keys())
+    weights = {}
+    
+    # Guard against studentData or maxMarks being missing
+    if not student_data or 'maxMarks' not in student_data:
+        return {co: "0.00%" for co in cos}
+    
+    assessment_components = [(comp, mark) for comp, mark in student_data['maxMarks'].items() 
+                            if 'Total' not in comp]
+    total_max_marks = sum(float(mark or 0) for _, mark in assessment_components)
+    
+    for co in cos:
+        co_weighted_sum = 0
+        
+        for component, max_mark in assessment_components:
+            # Match component to co_weightages keys (case-insensitive)
+            co_component = None
+            for key in co_weightages.get(co, {}):
+                if component.lower().split('(')[0].strip() in key.lower():
+                    co_component = key
+                    break
+            
+            if co_component:
+                co_weight = float(co_weightages[co].get(co_component, 0))
+                co_weighted_sum += (float(max_mark or 0) * (co_weight / 100))
+        
+        # Calculate percentage weight
+        weight_percentage = (co_weighted_sum / total_max_marks * 100) if total_max_marks > 0 else 0
+        weights[co] = f"{weight_percentage:.2f}%"
+    
+    return weights
+
+def calculate_program_attainment(copo_mapping_data, averages):
+    """Calculate program attainment based on CO-PO mapping and CO averages"""
+    program_attainments = {}
+    weight_sums = {}
+    
+    # Get all possible POs from the mapping data
+    all_pos = set()
+    for co, po_mappings in copo_mapping_data.get('mappingData', {}).items():
+        all_pos.update(po_mappings.keys())
+    
+    # Initialize program attainments and weight sums for all POs
+    for po in all_pos:
+        program_attainments[po] = 0
+        weight_sums[po] = 0
+    
+    # Calculate weighted sums for each PO
+    for co, po_mappings in copo_mapping_data.get('mappingData', {}).items():
+        for po, mapping_value in po_mappings.items():
+            # Convert mapping value to float, treat empty string as 0
+            mapping_value = float(mapping_value) if mapping_value and mapping_value.strip() else 0
+            co_average = float(averages.get(co, 0))
+            
+            # Sum up (mapping_value * CO_average) for each PO
+            program_attainments[po] += mapping_value * co_average
+            # Keep track of total mapping values for each PO
+            weight_sums[po] += mapping_value
+    
+    # Calculate final weighted averages
+    for po in program_attainments:
+        if weight_sums[po] > 0:
+            program_attainments[po] = f"{program_attainments[po] / weight_sums[po]:.2f}"
+        else:
+            program_attainments[po] = "0.00"
+    
+    return program_attainments
+
+def format_cell(cell, bold=False, alignment=WD_ALIGN_PARAGRAPH.LEFT):
+    """Format a table cell"""
+    paragraph = cell.paragraphs[0]
+    paragraph.alignment = alignment
+    
+    for run in paragraph.runs:
+        run.font.bold = bold
+        run.font.size = Pt(10)
+    
+    # If no runs, create one
+    if not paragraph.runs:
+        run = paragraph.add_run(cell.text)
+        run.font.bold = bold
+        run.font.size = Pt(10)
+        cell.text = ""  # Clear text since we've added it to the run
+
+def set_cell_border(cell, border_type, border_size, border_color):
+    """Set cell border properties"""
+    tc = cell._tc
+    tcPr = tc.get_or_add_tcPr()
+    border = OxmlElement(f'w:{border_type}')
+    border.set(qn('w:val'), 'single')
+    border.set(qn('w:sz'), str(border_size))
+    border.set(qn('w:color'), border_color)
+    element = tcPr.xpath(f"./w:{border_type}")
+    if element:
+        element[0].getparent().replace(element[0], border)
+    else:
+        tcPr.append(border)
+
+def set_table_column_widths(table, widths):
+    """Set column widths for a table"""
+    for i, width in enumerate(widths):
+        for row in table.rows:
+            if i < len(row.cells):
+                row.cells[i].width = width
+
+def prevent_table_row_breaks(table):
+    """Ensure table rows don't split across pages"""
     for row in table.rows:
         tr = row._tr
         trPr = tr.get_or_add_trPr()
         cantSplit = OxmlElement('w:cantSplit')
         trPr.append(cantSplit)
-    
-    # Add CO attainment summary if needed
-    doc.add_paragraph()
-    summary_para = doc.add_paragraph("CO Attainment Criteria:")
-    summary_para.add_run(f"\n• Level 3 (Full Attainment): ≥ {data.get('coAttainmentCriteria', {}).get('CO1', {}).get('full', 70)}%")
-    summary_para.add_run(f"\n• Level 2 (Partial Attainment): ≥ {data.get('coAttainmentCriteria', {}).get('CO1', {}).get('partial', 60)}%")
-    summary_para.add_run(f"\n• Level 1 (No Attainment): < {data.get('coAttainmentCriteria', {}).get('CO1', {}).get('partial', 60)}%")
+
+create_co_attainment_analysis(doc, data)
 
 # Updated Actions Taken for Weak Students Section (create_actions_doc)
 def create_actions_doc(data):
