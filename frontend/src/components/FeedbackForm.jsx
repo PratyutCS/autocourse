@@ -17,7 +17,7 @@ import COAssessmentWeightage from "./COAssessmentWeightage";
 import COAttainmentCriteria from './COAttainmentCriteria';
 import PDFUploader from './PDFUploader';
 import TargetAttainment from './TargetAttainment';
-import StudentCOAchievement from './StudentCOAchievement';
+import AdvanceAndWeakStudentIdentification from './AdvanceAndWeakStudentIdentification';
 
 import ExcelToJson from './ExcelToJson';
 
@@ -600,7 +600,7 @@ const FeedbackForm = (props) => {
           targetAttainment={targetAttainment}
         />
 
-        <StudentCOAchievement
+        <AdvanceAndWeakStudentIdentification
           coWeightages={coWeightages}
           studentData={studentData}
           coAttainmentCriteria={coAttainmentCriteria}

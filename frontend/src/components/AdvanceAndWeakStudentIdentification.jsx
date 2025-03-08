@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AlertCircle } from 'lucide-react';
 
-const StudentCOAchievement = ({
+const AdvanceAndWeakStudentIdentification = ({
   coWeightages,
   studentData,
   coAttainmentCriteria
@@ -231,4 +231,4 @@ const StudentCOAchievement = ({
   );
 };
 
-export default StudentCOAchievement;
+export default AdvanceAndWeakStudentIdentification;
