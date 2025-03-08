@@ -17,6 +17,7 @@ import COAssessmentWeightage from "./COAssessmentWeightage";
 import COAttainmentCriteria from './COAttainmentCriteria';
 import PDFUploader from './PDFUploader';
 import TargetAttainment from './TargetAttainment';
+import StudentCOAchievement from './StudentCOAchievement';
 
 import ExcelToJson from './ExcelToJson';
 
@@ -116,6 +117,31 @@ const FeedbackForm = (props) => {
   const handleTargetAttainmentSave = (criteria) => {
     setTargetAttainment(criteria);
   };
+
+  const [learnerCategories, setLearnerCategories] = useState({
+    advancedLearners: [],
+    mediumLearners: [],
+    slowLearners: []
+  });
+  
+  // 2. Fix the handleLearners function
+  const handleLearners = (categories) => {
+    setLearnerCategories(categories);
+    console.log("Learner categories updated:", categories);
+  };
+  
+  // 3. Add useEffect to initialize from props (with the other useEffects)
+  useEffect(() => {
+    setLearnerCategories(props.learnerCategories || {
+      advancedLearners: [],
+      mediumLearners: [],
+      slowLearners: []
+    });
+  }, [props.learnerCategories]);
+
+  useEffect(() => {
+    console.log(learnerCategories);
+  }, [learnerCategories]);
 
   const [studentData, setStudentData] = useState([]);
 
@@ -281,6 +307,7 @@ const FeedbackForm = (props) => {
             coAttainmentCriteria,
             studentData,
             targetAttainment,
+            learnerCategories,
           },
           {
             headers: {
@@ -571,6 +598,14 @@ const FeedbackForm = (props) => {
           coAttainmentCriteria={coAttainmentCriteria}
           copoMappingData={copoMappingData}
           targetAttainment={targetAttainment}
+        />
+
+        <StudentCOAchievement
+          coWeightages={coWeightages}
+          studentData={studentData}
+          coAttainmentCriteria={coAttainmentCriteria}
+          learnerCategories={learnerCategories}
+          onSave={handleLearners}
         />
 
         {/* Course Syllabus Section */}
