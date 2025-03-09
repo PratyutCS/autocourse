@@ -629,10 +629,20 @@ if data.get('studentData'):
 
 
 
-#################  Attainment Table #########################
+################################################################  Attainment Table #########################
+
+import matplotlib.pyplot as plt
+import numpy as np
+import io
+from docx import Document
+from docx.shared import Inches, Pt, RGBColor
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
 
 def create_co_attainment_analysis(doc, data):
-    """Generate CO attainment analysis tables with support for multi-page tables"""
+    """Generate CO attainment analysis tables with support for multi-page tables and charts"""
     if not all(key in data for key in ['coWeightages', 'studentData', 'coAttainmentCriteria', 'copoMappingData']):
         return  # Skip if required data is missing
 
@@ -720,6 +730,12 @@ def create_co_attainment_analysis(doc, data):
     # Make sure rows don't split across pages
     prevent_table_row_breaks(summary_table)
     
+    # Add percentage scored ≥ 3 chart below the summary table
+    doc.add_paragraph().add_run('Percentage of Students Scored ≥ 3').bold = True
+    doc.add_paragraph()
+    add_percentage_scored3_chart(doc, result, cos)
+    doc.add_paragraph()
+    
     # 2. Generate Program Attainment Table on a new page
     # Get ALL possible POs from the mapping data
     all_pos = set()
@@ -769,6 +785,12 @@ def create_co_attainment_analysis(doc, data):
         
         program_table.alignment = WD_TABLE_ALIGNMENT.CENTER
         prevent_table_row_breaks(program_table)
+        
+        # Add program attainment chart
+        doc.add_paragraph().add_run('Program Attainment Chart').bold = True
+        doc.add_paragraph()
+        add_program_attainment_chart(doc, result, pos)
+        doc.add_paragraph()
     
     # 3. Generate Student-wise CO Achievement Table on a new page
     if result["student_performance"]:
@@ -825,7 +847,115 @@ def create_co_attainment_analysis(doc, data):
         
         student_table.alignment = WD_TABLE_ALIGNMENT.CENTER
         
-        # Note: We don't prevent table row breaks for this table to allow pagination
+        # Add course outcome attainment chart
+        doc.add_paragraph().add_run('Course Outcome Attainment').bold = True
+        doc.add_paragraph()
+        add_course_attainment_chart(doc, result, cos)
+        doc.add_paragraph()
+
+# Chart generation functions
+def add_percentage_scored3_chart(doc, result, cos):
+    """Create a horizontal bar chart showing percentage of students who scored ≥ 3 for each CO"""
+    plt.figure(figsize=(8, 4))
+    
+    # Extract data
+    percentages = [float(result["attainment_summary"]["percentage_scored3"].get(co, "0%").replace("%", "")) for co in cos]
+    
+    # Create horizontal bar chart with proper color format
+    y_pos = np.arange(len(cos))
+    plt.barh(y_pos, percentages, color=(49/255, 85/255, 163/255, 0.6))  # Fixed color format
+    
+    # Customize chart
+    plt.yticks(y_pos, cos)
+    plt.xlabel('Percentage (%)')
+    plt.title('Percentage of Students Scored ≥ 3')
+    plt.xlim(0, 100)
+    plt.grid(axis='x', linestyle='--', alpha=0.7)
+    
+    # Add value labels to the bars
+    for i, v in enumerate(percentages):
+        plt.text(v + 1, i, f"{v:.2f}%", va='center')
+    
+    # Save chart to memory and add to document
+    image_stream = io.BytesIO()
+    plt.tight_layout()
+    plt.savefig(image_stream, format='png', dpi=100)
+    image_stream.seek(0)
+    doc.add_picture(image_stream, width=Inches(6))
+    plt.close()
+    
+    # Center the image
+    doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+def add_program_attainment_chart(doc, result, pos):
+    """Create a horizontal bar chart showing program attainment for each PO"""
+    plt.figure(figsize=(8, 5))
+    
+    # Extract data
+    attainments = [float(result["program_attainment"].get(po, "0.00")) for po in pos]
+    
+    # Create horizontal bar chart with proper color format
+    y_pos = np.arange(len(pos))
+    plt.barh(y_pos, attainments, color=(49/255, 85/255, 163/255, 0.6))  # Fixed color format
+    
+    # Customize chart
+    plt.yticks(y_pos, pos)
+    plt.xlabel('Attainment')
+    plt.title('Program Attainment')
+    plt.xlim(0, 3)
+    plt.grid(axis='x', linestyle='--', alpha=0.7)
+    
+    # Add value labels to the bars
+    for i, v in enumerate(attainments):
+        plt.text(v + 0.1, i, f"{v:.2f}", va='center')
+    
+    # Save chart to memory and add to document
+    image_stream = io.BytesIO()
+    plt.tight_layout()
+    plt.savefig(image_stream, format='png', dpi=100)
+    image_stream.seek(0)
+    doc.add_picture(image_stream, width=Inches(6))
+    plt.close()
+    
+    # Center the image
+    doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+def add_course_attainment_chart(doc, result, cos):
+    """Create a horizontal bar chart showing CO attainment with target line"""
+    plt.figure(figsize=(8, 4))
+    
+    # Extract data
+    attainments = [float(result["averages"].get(co, "0.00")) for co in cos]
+    
+    # Create horizontal bar chart with proper color format
+    y_pos = np.arange(len(cos))
+    plt.barh(y_pos, attainments, color=(49/255, 85/255, 163/255, 0.6), label='Attainment')
+    
+    # Add target line (value 3, which is the maximum score)
+    plt.axvline(x=3, color=(237/255, 125/255, 49/255, 0.6), linestyle='-', linewidth=2, label='Required')
+    
+    # Customize chart
+    plt.yticks(y_pos, cos)
+    plt.xlabel('Attainment Score')
+    plt.title('Course Outcome Attainment')
+    plt.xlim(0, 3.5)
+    plt.grid(axis='x', linestyle='--', alpha=0.7)
+    plt.legend(loc='lower right')
+    
+    # Add value labels to the bars
+    for i, v in enumerate(attainments):
+        plt.text(v + 0.1, i, f"{v:.2f}", va='center')
+    
+    # Save chart to memory and add to document
+    image_stream = io.BytesIO()
+    plt.tight_layout()
+    plt.savefig(image_stream, format='png', dpi=100)
+    image_stream.seek(0)
+    doc.add_picture(image_stream, width=Inches(6))
+    plt.close()
+    
+    # Center the image
+    doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
 
 # Helper functions
 def calculate_co_attainment(data):
@@ -1080,6 +1210,208 @@ def prevent_table_row_breaks(table):
 
 create_co_attainment_analysis(doc, data)
 
+#########################################################################################################################
+
+# Function to create learner categorization table
+def create_learner_categorization(doc, data):
+    # Add page break and section heading
+    doc.add_page_break()
+    heading = doc.add_heading(level=1)
+    run = heading.add_run('13. Student Learning Categories')
+    run.font.name = 'Carlito'
+    run.font.size = Pt(16)
+    run.font.color.rgb = RGBColor(28, 132, 196)
+    heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    
+    doc.add_paragraph()
+    
+    # Get calculated student performance data
+    student_performance = []
+    cos = []
+    
+    # Extract data from CO attainment calculation or recalculate if needed
+    if data.get('coWeightages'):
+        cos = list(data['coWeightages'].keys())
+        
+        # Calculate student categorization
+        result = calculate_co_attainment(data)
+        if result and "student_performance" in result:
+            student_performance = result["student_performance"]
+    
+    if not student_performance or not cos:
+        paragraph = doc.add_paragraph("No student performance data available.")
+        return
+    
+    # Categorize students
+    advanced_learners = []
+    slow_learners = []
+    medium_learners = []
+    
+    for student in student_performance:
+        # Get all CO scores for the student
+        scores = [student['coScores'].get(co, 0) for co in cos]
+        avg_score = sum(scores) / len(scores) if scores else 0
+        
+        # Categorize based on average score
+        if all(score >= 3 for score in scores):
+            advanced_learners.append(student)
+        elif all(score <= 1 for score in scores):
+            slow_learners.append(student)
+        else:
+            medium_learners.append(student)
+    
+    # 1. Create summary table
+    summary_heading = doc.add_heading('Learner Categories Summary', level=2)
+    summary_heading.runs[0].font.size = Pt(14)
+    doc.add_paragraph()
+    
+    summary_table = doc.add_table(rows=4, cols=2)
+    summary_table.autofit = False
+    
+    # Header row
+    header_cells = summary_table.rows[0].cells
+    header_cells[0].text = "Learner Category"
+    header_cells[1].text = "Number of Students"
+    
+    for cell in header_cells:
+        for paragraph in cell.paragraphs:
+            for run in paragraph.runs:
+                run.bold = True
+                run.font.size = Pt(12)
+            paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    
+    # Data rows
+    categories = [
+        ("Advanced Learners", len(advanced_learners)),
+        ("Medium Learners", len(medium_learners)),
+        ("Slow Learners", len(slow_learners))
+    ]
+    
+    for idx, (category, count) in enumerate(categories):
+        row = summary_table.rows[idx + 1]
+        row.cells[0].text = category
+        row.cells[1].text = str(count)
+        
+        # Format cells
+        for cell in row.cells:
+            for paragraph in cell.paragraphs:
+                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                for run in paragraph.runs:
+                    run.font.size = Pt(11)
+    
+    # Set column widths and add borders
+    summary_table.columns[0].width = Inches(3.0)
+    summary_table.columns[1].width = Inches(2.0)
+    summary_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    
+    # Add borders to summary table
+    for row in summary_table.rows:
+        for cell in row.cells:
+            set_cell_border(cell, 'top', 4, '000000')
+            set_cell_border(cell, 'bottom', 4, '000000')
+            set_cell_border(cell, 'left', 4, '000000')
+            set_cell_border(cell, 'right', 4, '000000')
+    
+    doc.add_paragraph().add_run().add_break()
+    
+    # 2. Create detailed student table with color coding
+    detailed_heading = doc.add_heading('Student Learning Classification', level=2)
+    detailed_heading.runs[0].font.size = Pt(14)
+    doc.add_paragraph()
+    
+    # Create table with all students
+    student_count = len(student_performance)
+    student_table = doc.add_table(rows=student_count + 1, cols=len(cos) + 2)
+    student_table.autofit = False
+    
+    # Header row
+    header_cells = student_table.rows[0].cells
+    header_cells[0].text = "Student Name"
+    header_cells[1].text = "Category"
+    
+    for i, co in enumerate(cos):
+        header_cells[i + 2].text = co
+    
+    # Format header row
+    for cell in header_cells:
+        for paragraph in cell.paragraphs:
+            paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            for run in paragraph.runs:
+                run.bold = True
+                run.font.size = Pt(11)
+    
+    # Set column widths
+    student_table.columns[0].width = Inches(3.0)
+    student_table.columns[1].width = Inches(1.5)
+    for i in range(2, len(cos) + 2):
+        student_table.columns[i].width = Inches(0.8)
+    
+    # Add all students to table with color coding
+    # Sort students by category: advanced first, then medium, then slow
+    all_students = advanced_learners + medium_learners + slow_learners
+    
+    for idx, student in enumerate(all_students):
+        row = student_table.rows[idx + 1]
+        
+        # Determine student category and color
+        scores = [student['coScores'].get(co, 0) for co in cos]
+        if all(score >= 3 for score in scores):
+            category = "Advanced Learner"
+            color = "C6E0B4"  # Light green
+        elif all(score <= 1 for score in scores):
+            category = "Slow Learner"
+            color = "FFEB9C"  # Light yellow
+        else:
+            category = "Medium Learner"
+            color = "F2F2F2"  # Light grey
+        
+        # Add student data
+        row.cells[0].text = student.get("rollNumber", "")
+        row.cells[1].text = category
+        
+        # Add CO scores
+        for i, co in enumerate(cos):
+            row.cells[i + 2].text = str(student['coScores'].get(co, ""))
+        
+        # Apply shading to EACH cell in the row individually
+        for cell in row.cells:
+            # Get cell properties
+            tc_pr = cell._tc.get_or_add_tcPr()
+            
+            # Create shading element
+            shading = OxmlElement('w:shd')
+            shading.set(qn('w:val'), 'clear')  # The shading type
+            shading.set(qn('w:color'), 'auto')  # Auto for the text color
+            shading.set(qn('w:fill'), color)    # Fill color code
+            
+            # Remove any existing shading
+            existing_shading = tc_pr.find(qn('w:shd'))
+            if existing_shading is not None:
+                tc_pr.remove(existing_shading)
+            
+            # Add new shading
+            tc_pr.append(shading)
+            
+            # Format text in cell
+            for paragraph in cell.paragraphs:
+                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                for run in paragraph.runs:
+                    run.font.size = Pt(10)
+    
+    # Add borders to student table
+    for row in student_table.rows:
+        for cell in row.cells:
+            set_cell_border(cell, 'top', 4, '000000')
+            set_cell_border(cell, 'bottom', 4, '000000')
+            set_cell_border(cell, 'left', 4, '000000')
+            set_cell_border(cell, 'right', 4, '000000')
+    
+    student_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+
+# Add this function call after create_co_attainment_analysis(doc, data) and before create_actions_doc(data)
+create_learner_categorization(doc, data)
+
+#########################################################################################################################
 # Updated Actions Taken for Weak Students Section (create_actions_doc)
 def create_actions_doc(data):
     if data.get('actionsForWeakStudentsData'):
@@ -1104,6 +1436,74 @@ def create_actions_doc(data):
             action_run.font.size = Pt(12)
 
 create_actions_doc(data)
+
+########################################################################################################################
+
+# Feedback Data Section
+def create_feedback_section(doc, data):
+    if data.get('feedbackData'):
+        # Add page break and section heading
+        doc.add_page_break()
+        feedback_heading = doc.add_heading(level=1)
+        feedback_run = feedback_heading.add_run('15. Student Feedback')
+        feedback_run.font.name = 'Carlito'
+        feedback_run.font.size = Pt(16)
+        feedback_run.font.color.rgb = RGBColor(28, 132, 196)
+        feedback_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        
+        # Add quantitative feedback
+        if data['feedbackData'].get('quantitativeFeedback'):
+            quant_heading = doc.add_paragraph()
+            quant_heading_run = quant_heading.add_run('Quantitative Feedback:')
+            quant_heading_run.bold = True
+            quant_heading_run.font.size = Pt(12)
+            quant_heading.paragraph_format.left_indent = Inches(0.7)
+            
+            quant_para = doc.add_paragraph()
+            quant_para.paragraph_format.left_indent = Inches(0.7)
+            quant_para.paragraph_format.right_indent = Inches(0.5)
+            quant_run = quant_para.add_run(f"Average Rating: {data['feedbackData']['quantitativeFeedback']}/5")
+            quant_run.font.size = Pt(12)
+        
+        # Add qualitative feedback
+        if data['feedbackData'].get('qualitativeFeedback'):
+            doc.add_paragraph()  # Add space
+            qual_heading = doc.add_paragraph()
+            qual_heading_run = qual_heading.add_run('Qualitative Feedback:')
+            qual_heading_run.bold = True
+            qual_heading_run.font.size = Pt(12)
+            qual_heading.paragraph_format.left_indent = Inches(0.7)
+            
+            qual_para = doc.add_paragraph()
+            qual_para.paragraph_format.left_indent = Inches(0.7)
+            qual_para.paragraph_format.right_indent = Inches(0.5)
+            qual_para.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            qual_run = qual_para.add_run(data['feedbackData']['qualitativeFeedback'])
+            qual_run.font.size = Pt(12)
+
+# Faculty Course Review Section
+def create_faculty_review_section(doc, data):
+    if data.get('facultyCourseReview'):
+        # Add page break and section heading
+        doc.add_page_break()
+        review_heading = doc.add_heading(level=1)
+        review_run = review_heading.add_run('16. Faculty Course Review')
+        review_run.font.name = 'Carlito'
+        review_run.font.size = Pt(16)
+        review_run.font.color.rgb = RGBColor(28, 132, 196)
+        review_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        
+        # Add review content
+        review_para = doc.add_paragraph()
+        review_para.paragraph_format.left_indent = Inches(0.7)
+        review_para.paragraph_format.right_indent = Inches(0.5)
+        review_para.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        review_run = review_para.add_run(data['facultyCourseReview'])
+        review_run.font.size = Pt(12)
+
+# Call these functions after creating actions doc but before saving the document
+create_feedback_section(doc, data)
+create_faculty_review_section(doc, data)
 
 #######################################################################################################################
 # Saving the Document and Converting to PDF
