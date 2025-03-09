@@ -19,6 +19,7 @@ import PDFUploader from './PDFUploader';
 import TargetAttainment from './TargetAttainment';
 import AdvanceAndWeakStudentIdentification from './AdvanceAndWeakStudentIdentification';
 import FeedbackAndCorrectiveActions from './FeedbackAndCorrectiveActions';
+import FacultyCourseReview from './FacultyCourseReview';
 
 import ExcelToJson from './ExcelToJson';
 
@@ -160,6 +161,14 @@ const FeedbackForm = (props) => {
   const handleFeedbackChange = (data) => {
     setFeedbackData(data);
   };
+
+  const [facultyCourseReview, setFacultyCourseReview] = useState("");
+
+  useEffect(() => {
+    setFacultyCourseReview(props.facultyCourseReview || "");
+  }, [props.facultyCourseReview]);
+
+
 
   /////////////////////////////////////////**Use Effect**//////////////////////////
 
@@ -320,6 +329,7 @@ const FeedbackForm = (props) => {
             studentData,
             targetAttainment,
             feedbackData,
+            facultyCourseReview,
           },
           {
             headers: {
@@ -697,6 +707,12 @@ const FeedbackForm = (props) => {
         <FeedbackAndCorrectiveActions
           initialData={feedbackData}
           onSave={handleFeedbackChange}
+        />
+
+        {/* Faculty Course Review */}
+        <FacultyCourseReview
+          initialData={facultyCourseReview}
+          onSave={(data) => setFacultyCourseReview(data)}
         />
 
         {/* Loading Spinner */}
