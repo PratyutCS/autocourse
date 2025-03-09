@@ -7,7 +7,6 @@ const AdvanceAndWeakStudentIdentification = ({
   coAttainmentCriteria
 }) => {
   const [studentPerformance, setStudentPerformance] = useState([]);
-  const [averages, setAverages] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -36,19 +35,18 @@ const AdvanceAndWeakStudentIdentification = ({
           cos.forEach(co => {
             let weightedScore = 0;
             let totalWeight = 0;
-
+            
             assessmentComponents.forEach(([component, maxMark]) => {
               const studentScore = student[component] || 0;
               const coWeight = parseFloat(coWeightages[co]?.[component.toLowerCase()] || 0);
-
               weightedScore += (studentScore * (coWeight / 100));
               totalWeight += (maxMark * (coWeight / 100));
             });
-
+            
             const partial = parseFloat(coAttainmentCriteria?.[co]?.partial || 0);
             const full = parseFloat(coAttainmentCriteria?.[co]?.full || 0);
             const percentage = totalWeight > 0 ? ((weightedScore / totalWeight) * 100) : 0;
-
+            
             if (percentage >= full) {
               studentResult.coScores[co] = 3;
             } else if (percentage >= partial && percentage < full) {
@@ -57,56 +55,27 @@ const AdvanceAndWeakStudentIdentification = ({
               studentResult.coScores[co] = 1;
             }
           });
-
-          // Calculate the row average for the student
+          
+          // Calculate the row average (calculation kept but not displayed)
           const coScoreValues = Object.values(studentResult.coScores);
           const rowAverage = coScoreValues.length > 0 
             ? (coScoreValues.reduce((sum, score) => sum + score, 0) / coScoreValues.length)
             : 0;
           studentResult.rowAverage = parseFloat(rowAverage.toFixed(2));
-
+          
           performanceData.push(studentResult);
         });
       }
-
-      // Sort by rowAverage descending (highest average first)
+      
+      // Sort by rowAverage descending
       performanceData.sort((a, b) => b.rowAverage - a.rowAverage);
-
       setStudentPerformance(performanceData);
-      calculateAverages(performanceData);
     } catch (err) {
       console.error("Error in calculateStudentAchievement:", err);
       setError("Failed to calculate student achievement data");
       setStudentPerformance([]);
-      setAverages({});
     } finally {
       setLoading(false);
-    }
-  };
-
-  const calculateAverages = (performanceData) => {
-    const cos = Object.keys(coWeightages || {});
-    const avgScores = {};
-
-    try {
-      cos.forEach(co => {
-        const scores = performanceData.map(student => student.coScores[co]);
-        const sum = scores.reduce((acc, score) => acc + score, 0);
-        avgScores[co] = performanceData.length > 0 
-          ? (sum / performanceData.length).toFixed(2)
-          : "0.00";
-      });
-      
-      // Calculate overall average of student row averages.
-      const totalRowAverage = performanceData.reduce((sum, student) => sum + student.rowAverage, 0);
-      avgScores.rowAverage = performanceData.length > 0 
-          ? (totalRowAverage / performanceData.length).toFixed(2)
-          : "0.00";
-
-      setAverages(avgScores);
-    } catch (err) {
-      console.error("Error in calculateAverages:", err);
-      setAverages({});
     }
   };
 
@@ -114,18 +83,18 @@ const AdvanceAndWeakStudentIdentification = ({
     return (
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
         <div className="flex items-center gap-4 mb-6">
-          <h2 className="text-lg font-semibold text-gray-800">
-            Student-wise CO Achievement
+          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center">
+            12
+          </div>
+          <h2 className="section-title text-xl font-semibold text-gray-800">
+            Advanced &amp; Weak Students
           </h2>
         </div>
-
-        <div className="text-center py-10 bg-gray-50 rounded-lg border border-gray-100">
+        <div className="text-center py-10 bg-gray-50 rounded-lg border border-gray-200">
           <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600 font-semibold text-lg">
-            Missing Required Data
-          </p>
+          <p className="text-gray-600 font-semibold text-lg">Missing Required Data</p>
           <p className="text-sm text-gray-500 mt-2">
-            Please ensure CO weightages, student data, and attainment criteria are provided
+            Please ensure CO weightages, student data, and attainment criteria are provided.
           </p>
         </div>
       </div>
@@ -135,7 +104,14 @@ const AdvanceAndWeakStudentIdentification = ({
   if (loading) {
     return (
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">Student-wise CO Achievement</h2>
+        <div className="flex items-center gap-4 mb-6">
+          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center">
+            12
+          </div>
+          <h2 className="section-title text-xl font-semibold text-gray-800">
+            Advanced &amp; Weak Students
+          </h2>
+        </div>
         <div className="text-center py-10">Loading...</div>
       </div>
     );
@@ -144,87 +120,93 @@ const AdvanceAndWeakStudentIdentification = ({
   if (error) {
     return (
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">Student-wise CO Achievement</h2>
+        <div className="flex items-center gap-4 mb-6">
+          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center">
+            12
+          </div>
+          <h2 className="section-title text-xl font-semibold text-gray-800">
+            Advanced &amp; Weak Students
+          </h2>
+        </div>
         <div className="text-center py-10 text-red-500">{error}</div>
       </div>
     );
   }
 
-  // Include an extra column for the student row average.
-  const totalColumns = Object.keys(coWeightages).length + 2; // NAME + CO score columns + Row Average
-  const totalRows = studentPerformance.length;
+  // Only display identified learners (advanced with all scores 3 or slow with all scores 1)
+  const filteredPerformance = studentPerformance.filter(student => {
+    const coScores = Object.values(student.coScores);
+    return coScores.every(score => score === 3) || coScores.every(score => score === 1);
+  });
+
+  const totalColumns = Object.keys(coWeightages).length + 1; // Name column + CO scores columns
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">Student-wise CO Achievement</h2>
-      
-      {studentPerformance.length > 0 ? (
+      <div className="flex items-center gap-4 mb-6">
+        <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center">
+          12
+        </div>
+        <h2 className="section-title text-xl font-semibold text-gray-800">
+          Advanced &amp; Weak Students
+        </h2>
+      </div>
+      {filteredPerformance.length > 0 ? (
         <div>
-          <div className="overflow-x-auto rounded-lg border border-gray-200">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white border border-gray-200">
+              <thead>
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    NAME
-                  </th>
+                  <th className="px-4 py-2 border-b text-left">NAME</th>
                   {Object.keys(coWeightages || {}).map(co => (
-                    <th
-                      key={co}
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      {co} Score
-                    </th>
+                    <th key={co} className="px-4 py-2 border-b text-left">{co} Score</th>
                   ))}
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Average
-                  </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {studentPerformance.map(student => (
-                  <tr key={student.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {student.rollNumber}
-                    </td>
-                    {Object.keys(coWeightages || {}).map(co => (
-                      <td
-                        key={`${student.id}_${co}`}
-                        className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                      >
-                        {student.coScores[co]}
-                      </td>
-                    ))}
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {student.rowAverage}
-                    </td>
-                  </tr>
-                ))}
-                <tr className="bg-gray-50 font-semibold">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    Overall Average
-                  </td>
-                  {Object.keys(coWeightages || {}).map(co => (
-                    <td
-                      key={`average_${co}`}
-                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-                    >
-                      {averages[co] || "0.00"}
-                    </td>
-                  ))}
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {averages.rowAverage || "0.00"}
-                  </td>
-                </tr>
+              <tbody>
+                {filteredPerformance.map(student => {
+                  const coScores = Object.values(student.coScores);
+                  const isAdvancedLearner = coScores.every(score => score === 3);
+                  const isSlowLearner = coScores.every(score => score === 1);
+                  const rowClassName = isAdvancedLearner
+                    ? "bg-green-100"
+                    : isSlowLearner
+                      ? "bg-yellow-100"
+                      : "";
+                  return (
+                    <tr key={student.id} className={rowClassName}>
+                      <td className="px-4 py-2 border-b">{student.rollNumber}</td>
+                      {Object.keys(coWeightages || {}).map(co => (
+                        <td key={`${student.id}_${co}`} className="px-4 py-2 border-b">
+                          {student.coScores[co]}
+                        </td>
+                      ))}
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
-          <div className="mt-4 text-sm text-gray-500 pt-2 text-center mx-auto w-fit">
-            Total Rows: {totalRows} | Total Columns: {totalColumns}
+          <div className="mt-4 text-sm text-gray-600 text-center">
+            Total Identified Learners: {filteredPerformance.length} | Total Columns: {totalColumns}
+          </div>
+          <div className="mt-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
+            <h3 className="text-base font-semibold mb-2">Legend</h3>
+            <ul className="list-disc pl-5 text-sm">
+              <li className="flex items-center">
+                <span className="inline-block w-4 h-4 mr-2 bg-green-100 border border-green-300 rounded"></span>
+                <span className="text-green-700 font-medium">Advanced Learner</span> (all CO scores are 3)
+              </li>
+              <li className="flex items-center mt-1">
+                <span className="inline-block w-4 h-4 mr-2 bg-yellow-100 border border-yellow-300 rounded"></span>
+                <span className="text-yellow-700 font-medium">Slow Learner</span> (all CO scores are 1)
+              </li>
+            </ul>
           </div>
         </div>
       ) : (
-        <div className="text-center py-10 bg-gray-50 rounded-lg border border-gray-100">
-          <p className="text-gray-600">No student data available</p>
+        <div className="text-center py-10 bg-gray-50 rounded-lg border border-gray-200">
+          <p className="text-gray-600">No advanced or slow learners identified</p>
         </div>
       )}
     </div>
