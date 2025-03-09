@@ -84,7 +84,7 @@ const Info = () => {
             coAttainmentCriteria={file["coAttainmentCriteria"] || {}}
             studentData={file["studentData"] || {}}
             targetAttainment={file["targetAttainment"] || {}}
-            learnerCategories={file["learnerCategories"] || {}}
+            feedbackData={file["feedbackData"] || {}}
             />
           ) : (
             <LoadingSpinner />

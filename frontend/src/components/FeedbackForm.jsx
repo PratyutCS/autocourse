@@ -18,6 +18,7 @@ import COAttainmentCriteria from './COAttainmentCriteria';
 import PDFUploader from './PDFUploader';
 import TargetAttainment from './TargetAttainment';
 import AdvanceAndWeakStudentIdentification from './AdvanceAndWeakStudentIdentification';
+import FeedbackAndCorrectiveActions from './FeedbackAndCorrectiveActions';
 
 import ExcelToJson from './ExcelToJson';
 
@@ -123,13 +124,12 @@ const FeedbackForm = (props) => {
     mediumLearners: [],
     slowLearners: []
   });
-  
+
   // 2. Fix the handleLearners function
   const handleLearners = (categories) => {
     setLearnerCategories(categories);
-    console.log("Learner categories updated:", categories);
   };
-  
+
   // 3. Add useEffect to initialize from props (with the other useEffects)
   useEffect(() => {
     setLearnerCategories(props.learnerCategories || {
@@ -139,14 +139,26 @@ const FeedbackForm = (props) => {
     });
   }, [props.learnerCategories]);
 
-  useEffect(() => {
-    console.log(learnerCategories);
-  }, [learnerCategories]);
-
   const [studentData, setStudentData] = useState([]);
 
   const handleStudentDataSave = (data) => {
     setStudentData(data);
+  };
+
+  const [feedbackData, setFeedbackData] = useState({
+    quantitativeFeedback: "",
+    qualitativeFeedback: ""
+  });
+
+  useEffect(() => {
+    setFeedbackData(props.feedbackData || {
+      quantitativeFeedback: "",
+      qualitativeFeedback: ""
+    });
+  }, [props.feedbackData]);
+
+  const handleFeedbackChange = (data) => {
+    setFeedbackData(data);
   };
 
   /////////////////////////////////////////**Use Effect**//////////////////////////
@@ -159,7 +171,7 @@ const FeedbackForm = (props) => {
   useEffect(() => {
     setCoAttainmentCriteria(props.coAttainmentCriteria || "");
   }, [props.coAttainmentCriteria]);
-  
+
   useEffect(() => {
     setTargetAttainment(props.targetAttainment || "");
   }, [props.targetAttainment]);
@@ -307,7 +319,7 @@ const FeedbackForm = (props) => {
             coAttainmentCriteria,
             studentData,
             targetAttainment,
-            learnerCategories,
+            feedbackData,
           },
           {
             headers: {
@@ -680,6 +692,11 @@ const FeedbackForm = (props) => {
             console.log('File deleted');
           }}
           initialFileName={props.mergePDF} // Pass the initial filename if available
+        />
+
+        <FeedbackAndCorrectiveActions
+          initialData={feedbackData}
+          onSave={handleFeedbackChange}
         />
 
         {/* Loading Spinner */}
