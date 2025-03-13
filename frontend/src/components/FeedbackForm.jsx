@@ -302,6 +302,95 @@ const FeedbackForm = (props) => {
     3: 'Electrical Engineering'
   };
 
+  const SearchableDropdown = ({ options, value, onChange }) => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [isOpen, setIsOpen] = useState(false);
+  
+    // Filter options based on search term
+    const filteredOptions = Object.entries(options).filter(([_, label]) =>
+      label.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  
+    // Get the selected program label
+    const selectedLabel = options[value] || "Select a program";
+  
+    return (
+      <div className="relative w-full">
+        {/* Search input with selected value prominently displayed */}
+        <div 
+          className={`flex items-center border ${value ? 'border-[#FFB255]' : 'border-gray-300'} rounded-md overflow-hidden`}
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          <div className="p-2 flex-grow cursor-pointer flex items-center justify-between">
+            {/* Show selected value prominently */}
+            <span className={value ? 'font-medium text-gray-800' : 'text-gray-500'}>
+              {selectedLabel}
+            </span>
+  
+            {/* Status indicator for selected items */}
+            {value > 0 && (
+              <span className="ml-2 bg-[#FFB255] text-white text-xs px-2 py-0.5 rounded-full">
+                Selected
+              </span>
+            )}
+          </div>
+          <button 
+            className={`p-2 ${value ? 'bg-[#FFB255] text-white' : 'bg-gray-100 text-gray-700'}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsOpen(!isOpen);
+            }}
+          >
+            {isOpen ? '▲' : '▼'}
+          </button>
+        </div>
+  
+        {/* Search field appears when dropdown is open */}
+        {isOpen && (
+          <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg overflow-hidden">
+            <input
+              type="text"
+              placeholder="Search programs..."
+              className="p-3 w-full border-b focus:outline-none focus:border-[#FFB255]"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onClick={(e) => e.stopPropagation()}
+              autoFocus
+            />
+            
+            <div className="max-h-60 overflow-y-auto">
+              {filteredOptions.length > 0 ? (
+                filteredOptions.map(([programValue, label]) => (
+                  <div
+                    key={programValue}
+                    className={`p-3 cursor-pointer flex items-center justify-between
+                      ${parseInt(programValue) === value 
+                        ? "bg-[#FFB255] bg-opacity-20 border-l-4 border-[#FFB255] text-[#FFB255] font-medium" 
+                        : "hover:bg-gray-100"}`}
+                    onClick={() => {
+                      onChange(parseInt(programValue));
+                      setIsOpen(false);
+                      setSearchTerm('');
+                    }}
+                  >
+                    <span>{label}</span>
+                    {parseInt(programValue) === value && (
+                      <svg className="w-5 h-5 text-[#FFB255]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div className="p-3 text-gray-500 text-center">No results found</div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const validateCriteria = () => {
     return Object.keys(coAttainmentCriteria).every(co => {
       const { full, partial } = coAttainmentCriteria[co];
@@ -330,7 +419,7 @@ const FeedbackForm = (props) => {
         const response = await axios.post(
           constants.url + "/form",
           {
-            program:selectedProgram,
+            program: selectedProgram,
             num,
             coursecode,
             coursetitle,
@@ -447,7 +536,6 @@ const FeedbackForm = (props) => {
 
         <div className="grid grid-cols-2 gap-4">
           {/* Program Section */}
-
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
@@ -455,18 +543,13 @@ const FeedbackForm = (props) => {
               </div>
               <h2 className="text-xl font-semibold text-gray-800">Program</h2>
             </div>
-            <select
+
+            {/* Replace the original select with the SearchableDropdown */}
+            <SearchableDropdown
+              options={programOptions}
               value={selectedProgram}
-              onChange={(e) => setSelectedProgram(parseInt(e.target.value))}
-              className="w-full p-2 border rounded-md"
-            >
-              <option value="0" disabled>Select a program</option>
-              {Object.entries(programOptions).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
+              onChange={(value) => setSelectedProgram(value)}
+            />
           </div>
 
           {/* Course Code Section */}
