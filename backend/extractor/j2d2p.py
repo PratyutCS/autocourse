@@ -25,8 +25,21 @@ def rep(doc, key):
     for paragraph in doc.paragraphs:
         placeholder = f'{{{{{key}}}}}'
         if placeholder in paragraph.text:
-            value = data.get(key, "")
-            paragraph.text = paragraph.text.replace(placeholder, value)
+            if key == "Program":
+                # Program mapping based on numbers
+                program_options = {
+                    "1": "Computer Science Engineering",
+                    "2": "Mechanical Engineering", 
+                    "3": "Electrical Engineering"
+                }
+                # Convert program number to string before lookup
+                program_value = data.get(key, "0")
+                program_number = str(program_value)
+                program_name = program_options.get(program_number, f"Unknown Program: {program_value}")
+                paragraph.text = paragraph.text.replace(placeholder, program_name)
+            else:
+                value = data.get(key, "")
+                paragraph.text = paragraph.text.replace(placeholder, value)
 
 # Replace placeholders if the keys exist
 if data.get('Program'):
