@@ -342,7 +342,11 @@ app.post("/download", auth, async (req, res) => {
         if (fileData["done"] !== 1) {
           return res.status(400).json({ message: "extraction not yet finished" });
         }
-        const pythonProcess = spawn('python3', ['./extractor/j2d2p.py', JSON.stringify(fileData)]);
+        const pythonProcess = spawn('python3', ['./extractor/j2d2p.py']);
+        
+        // Write JSON to the Python process's stdin and close it to signal we're done
+        pythonProcess.stdin.write(JSON.stringify(fileData));
+        pythonProcess.stdin.end();
 
         let pdfFileName = fileData['filename'];
 

@@ -15,8 +15,8 @@ with open('./extractor/sample.docx', 'rb') as f:
     doc = Document(f)
 
 # Read data from command line (expected to be a JSON string)
-print(sys.argv[1])
-data = json.loads(sys.argv[1])
+input_data = sys.stdin.read()
+data = json.loads(input_data)
 
 header = ""
 
