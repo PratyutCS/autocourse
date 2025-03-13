@@ -285,7 +285,22 @@ const FeedbackForm = (props) => {
     loadSavedData();
   }, [num, props.weeklyTimetableData]);
 
-  const programOptions = ['CSE', 'ME', 'ECOM', 'ECT'];
+  const [selectedProgram, setSelectedProgram] = useState(0);
+
+  useEffect(() => {
+    const programNumber = parseInt(props.program);
+    if (programOptions[programNumber]) {
+      setSelectedProgram(programNumber);
+    } else {
+      setSelectedProgram(0);
+    }
+  }, [props.program]);
+
+  const programOptions = {
+    1: 'Computer Science Engineering',
+    2: 'Mechanical Engineering',
+    3: 'Electrical Engineering'
+  };
 
   const validateCriteria = () => {
     return Object.keys(coAttainmentCriteria).every(co => {
@@ -304,6 +319,10 @@ const FeedbackForm = (props) => {
       return;
     }
     if (num !== undefined) {
+      if (selectedProgram === 0) {
+        alert("Please select a valid program option before submitting.");
+        return;
+      }
       try {
         setIsLoading(true);
         // console.log("Preparing to save data:", {weeklyTimetableData,});
@@ -311,7 +330,7 @@ const FeedbackForm = (props) => {
         const response = await axios.post(
           constants.url + "/form",
           {
-            program,
+            program:selectedProgram,
             num,
             coursecode,
             coursetitle,
@@ -375,11 +394,11 @@ const FeedbackForm = (props) => {
           )}
           <button
             onClick={postData}
-            className={`${isWeightageValid && validateCriteria()
+            className={`${isWeightageValid && validateCriteria() && selectedProgram !== 0
               ? "bg-[#FFB255] hover:bg-[#f5a543]"
               : "bg-gray-400 cursor-not-allowed"
               } transition-colors text-white font-semibold rounded-lg px-8 py-3 shadow-sm hover:shadow-md transform hover:-translate-y-0.5`}
-            disabled={!isWeightageValid || !validateCriteria()}
+            disabled={!isWeightageValid || !validateCriteria() || selectedProgram === 0}
           >
             Submit Form
           </button>
@@ -428,6 +447,7 @@ const FeedbackForm = (props) => {
 
         <div className="grid grid-cols-2 gap-4">
           {/* Program Section */}
+
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
@@ -435,30 +455,18 @@ const FeedbackForm = (props) => {
               </div>
               <h2 className="text-xl font-semibold text-gray-800">Program</h2>
             </div>
-            {/* Textarea for Program Details */}
-            <textarea
-              className="w-full p-3 border border-gray-200 rounded-md transition-all resize-none text-gray-700 mb-4"
-              placeholder="Enter program details here..."
-              value={program}
-              onChange={(e) => setProgram(e.target.value)}
-              rows="2"
-            />
-            {/* Radio Button Section */}
-            <div>
-              <p className="mb-2 text-gray-700 font-medium">Select Program Option:</p>
-              <select
-                value={program}
-                onChange={(e) => setProgram(e.target.value)}
-                className="w-full p-2 border rounded-md"
-              >
-                <option value="" disabled>Select a program</option>
-                {programOptions.map((programOption) => (
-                  <option key={programOption} value={programOption}>
-                    {programOption}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <select
+              value={selectedProgram}
+              onChange={(e) => setSelectedProgram(parseInt(e.target.value))}
+              className="w-full p-2 border rounded-md"
+            >
+              <option value="0" disabled>Select a program</option>
+              {Object.entries(programOptions).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Course Code Section */}

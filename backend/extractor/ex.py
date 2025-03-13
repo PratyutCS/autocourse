@@ -476,7 +476,7 @@ Extract relevant information from this text and fill the template:
 {text}
 
 Requirements:
--0. CSE or ME or ECOM or ECT choose among ony these as the program
+-0. program are 1 for 'Computer Science Engineering', 2 for 'Mechanical Engineering', 3 for 'Electrical Engineering' choose among these 3 only and give back only the number 
 -1. Response must be ONLY the JSON object, no other text
 -2. Keep field names exactly as shown
 -3. Use the default value if not given then keep empty fields as shown ("" for strings, [] for arrays)
