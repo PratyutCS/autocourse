@@ -11,12 +11,24 @@ from docx2pdf import convert
 from PyPDF2 import PdfMerger
 
 # Open the base document using a context manager to ensure the file is closed promptly
-with open('./extractor/sample.docx', 'rb') as f:
-    doc = Document(f)
+
 
 # Read data from command line (expected to be a JSON string)
 input_data = sys.stdin.read()
 data = json.loads(input_data)
+
+if data.get('Program'):
+    program_value = data.get("Program", "0")
+    proram_number = str(program_value)
+    if program_value == "0" or program_value>3:
+        with open('./extractor/sample.docx', 'rb') as f:
+            doc = Document(f)
+    else:
+        with open('./extractor/'+proram_number+'.docx', 'rb') as f:
+            doc = Document(f)
+else:
+    with open('./extractor/sample.docx', 'rb') as f:
+        doc = Document(f)
 
 header = ""
 
@@ -30,7 +42,7 @@ def rep(doc, key):
                 program_options = {
                     "1": "Computer Science Engineering",
                     "2": "Mechanical Engineering", 
-                    "3": "Electrical Engineering"
+                    "3": "Electronics and Computer Engineering"
                 }
                 # Convert program number to string before lookup
                 program_value = data.get(key, "0")
@@ -42,8 +54,8 @@ def rep(doc, key):
                 paragraph.text = paragraph.text.replace(placeholder, value)
 
 # Replace placeholders if the keys exist
-if data.get('Program'):
-    rep(doc, "Program")
+# if data.get('Program'):
+#     rep(doc, "Program")
 if data.get('Session'):
     rep(doc, "Session")
 if data.get('course_name'):

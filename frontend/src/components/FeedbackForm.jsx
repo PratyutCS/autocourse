@@ -299,7 +299,7 @@ const FeedbackForm = (props) => {
   const programOptions = {
     1: 'Computer Science Engineering',
     2: 'Mechanical Engineering',
-    3: 'Electrical Engineering'
+    3: 'Electronics and Computer Engineering'
   };
 
   const SearchableDropdown = ({ options, value, onChange }) => {
