@@ -14,12 +14,24 @@ export default defineConfig({
     }
   },
   plugins: [react()],
-  server: {port: 3001},
+  server: {
+    port: 3001,
+    strictPort: true,
+  },
+  preview: {
+    port: 3001,
+    strictPort: true,
+  },
   define: {
     'process.env': {},
     'process.version': {}
   },
   optimizeDeps: {
     include: ['react-pdf']
+  },
+  build: {
+    outDir: 'dist',
+    minify: 'esbuild',  // Changed from 'terser' to 'esbuild'
+    sourcemap: false,
   }
 })
