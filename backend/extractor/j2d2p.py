@@ -10,9 +10,6 @@ from docx.oxml.ns import qn
 from docx2pdf import convert
 from PyPDF2 import PdfMerger
 
-# Open the base document using a context manager to ensure the file is closed promptly
-
-
 # Read data from command line (expected to be a JSON string)
 input_data = sys.stdin.read()
 data = json.loads(input_data)
@@ -20,7 +17,7 @@ data = json.loads(input_data)
 if data.get('Program'):
     program_value = data.get("Program", "0")
     proram_number = str(program_value)
-    if program_value == "0" or program_value>3:
+    if program_value == "0" or program_value > 3:
         with open('./extractor/sample.docx', 'rb') as f:
             doc = Document(f)
     else:
