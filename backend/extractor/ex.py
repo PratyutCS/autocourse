@@ -323,9 +323,35 @@ def extract(file):
         print(f"Error extracting PDF: {str(e)}")
         return ""
 
+def get_mapping_template(program):
+    """
+    Return the appropriate mapping template based on program
+    """
+    if program == 2:  # Mechanical Engineering
+        return {
+            "PO1": "", "PO2": "", "PO3": "", "PO4": "", "PO5": "",
+            "PO6": "", "PO7": "", "PO8": "", "PO9": "", "PO10": "",
+            "PO11": "", "PSO1": "", "PSO2": ""
+        }
+    elif program == 3:  # Electronics and Computer Engineering
+        return {
+            "PO1": "", "PO2": "", "PO3": "", "PO4": "", "PO5": "",
+            "PO6": "", "PO7": "", "PO8": "", "PO9": "", "PO10": "",
+            "PO11": "", "PO12": "", "PO13": "", "PSO1": "", "PSO2": "", "PSO3": ""
+        }
+    else:  # Default to Computer Science Engineering (Program 1)
+        return {
+            "PO1": "", "PO2": "", "PO3": "", "PO4": "", "PO5": "",
+            "PO6": "", "PO7": "", "PO8": "", "PO9": "", "PO10": "",
+            "PO11": "", "PO12": "", "PSO1": "", "PSO2": "", "PSO3": "", "PSO4": ""
+        }
+
 def create_empty_template():
+    # Default to program 1 initially
+    program = 1
+    
     return {
-        "Program": "",
+        "Program": program,
         "Session": "",
         "course_code": "",
         "course_name": "",
@@ -361,11 +387,7 @@ def create_empty_template():
                 }
             },
             "mappingData": {
-                "CO1": {
-                    "PO1": "", "PO2": "", "PO3": "", "PO4": "", "PO5": "",
-                    "PO6": "", "PO7": "", "PO8": "", "PO9": "", "PO10": "",
-                    "PO11": "", "PO12": "", "PSO1": "", "PSO2": "", "PSO3": "", "PSO4": ""
-                }
+                "CO1": get_mapping_template(program)
             }
         },
         
@@ -476,25 +498,50 @@ Extract relevant information from this text and fill the template:
 {text}
 
 Requirements:
--0. program are 1 for 'Computer Science Engineering', 2 for 'Mechanical Engineering', 3 for 'Electrical Engineering' choose among these 3 only and give back only the number 
+-0. Program field must be exactly one of these values:
+   * 1 for 'Computer Science Engineering' 
+   * 2 for 'Mechanical Engineering' 
+   * 3 for 'Electronics and Computer Engineering'
+   Based on your analysis of the document, determine which program is most appropriate and provide ONLY the number.
+
 -1. Response must be ONLY the JSON object, no other text
+
 -2. Keep field names exactly as shown
+
 -3. Use the default value if not given then keep empty fields as shown ("" for strings, [] for arrays)
+
 -4. textBooks objects must have: title, author, publisher, edition, year, isbn
+
 -5. referenceLinks objects must have: title, authors, journal, volume, year, doi
+
 -6. Preserve all existing template fields even if not mentioned in the text
+
 -7. course_description is the Course Overview and Context in the pdf. There can be more than 1 paragraphs inside it, so include all the paragraphs.
+
 -8. In the internal component(component ) it should have component, Duration(duration), Weightage(weightage), Evaluation(evaluation) Week(week) and Remarks(remarks) format:{assessment_format}.
+
 -9. If there are paragraphs, add a break or start from a new line.
+
 -10. For refrenceLinks extract links given if any.
+
 -11. For The textBooks and referenceLinks, Each should be a simple string in the array and Do not include any additional fields or nested objects.
--12. For the mappingData in copoMappingData, 
-      - Use the exact mapping values from the table.
-      - Maintain the complete structure.
-      - Preserve empty cells as 0. Keep it as 0.
-      - Ensure the mapping matches the table i.e. course outcomes in the given document exactly
+
+-12. For the mappingData in copoMappingData:
+      - First, accurately identify the program type from the document content.
+      - Use the following PO/PSO structure based on the identified program:
+         * For Program 1 (Computer Science): 12 POs (PO1-PO12) and 4 PSOs (PSO1-PSO4)
+         * For Program 2 (Mechanical): 11 POs (PO1-PO11) and 2 PSOs (PSO1-PSO2)
+         * For Program 3 (Electronics and Computer): 13 POs (PO1-PO13) and 3 PSOs (PSO1-PSO3)
+      - Extract the exact mapping values from the table.
+      - Preserve empty cells as empty strings "".
+      - Ensure the mapping matches the course outcomes exactly as present in the document.
+      - The Program field value must match the structure used in the mappingData.
+
 -13. In courseSyllabus, the course content should come in this format:{syllabus_format}
+
 -14. The mapping data must match course outcomes
+
+-15. Ensure consistency between the Program field (1, 2, or 3) and the corresponding copoMappingData structure.
 """
     try:
         # Use the OpenAI client to create a chat completion
@@ -506,7 +553,20 @@ Requirements:
         # Get the response content from the completion object
         response_content = completion.choices[0].message.content
         cleaned_response = clean_json_response(response_content)
+        
         if cleaned_response:
+            # Update the mapping template based on the identified program
+            program = cleaned_response.get("Program", 1)
+            if "copoMappingData" in cleaned_response and "mappingData" in cleaned_response["copoMappingData"]:
+                for co in cleaned_response["copoMappingData"]["mappingData"]:
+                    # Replace the mapping template with the appropriate one for the detected program
+                    mapping_template = get_mapping_template(program)
+                    # Preserve any values from the cleaned response
+                    for po, value in cleaned_response["copoMappingData"]["mappingData"][co].items():
+                        if po in mapping_template:
+                            mapping_template[po] = value
+                    cleaned_response["copoMappingData"]["mappingData"][co] = mapping_template
+            
             return json.dumps(cleaned_response)
         return json.dumps(initial_template)
 

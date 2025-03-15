@@ -305,19 +305,19 @@ const FeedbackForm = (props) => {
   const SearchableDropdown = ({ options, value, onChange }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isOpen, setIsOpen] = useState(false);
-  
+
     // Filter options based on search term
     const filteredOptions = Object.entries(options).filter(([_, label]) =>
       label.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  
+
     // Get the selected program label
     const selectedLabel = options[value] || "Select a program";
-  
+
     return (
       <div className="relative w-full">
         {/* Search input with selected value prominently displayed */}
-        <div 
+        <div
           className={`flex items-center border ${value ? 'border-[#FFB255]' : 'border-gray-300'} rounded-md overflow-hidden`}
           onClick={() => setIsOpen(!isOpen)}
         >
@@ -326,7 +326,7 @@ const FeedbackForm = (props) => {
             <span className={value ? 'font-medium text-gray-800' : 'text-gray-500'}>
               {selectedLabel}
             </span>
-  
+
             {/* Status indicator for selected items */}
             {value > 0 && (
               <span className="ml-2 bg-[#FFB255] text-white text-xs px-2 py-0.5 rounded-full">
@@ -334,7 +334,7 @@ const FeedbackForm = (props) => {
               </span>
             )}
           </div>
-          <button 
+          <button
             className={`p-2 ${value ? 'bg-[#FFB255] text-white' : 'bg-gray-100 text-gray-700'}`}
             onClick={(e) => {
               e.stopPropagation();
@@ -344,7 +344,7 @@ const FeedbackForm = (props) => {
             {isOpen ? '▲' : '▼'}
           </button>
         </div>
-  
+
         {/* Search field appears when dropdown is open */}
         {isOpen && (
           <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg overflow-hidden">
@@ -357,15 +357,15 @@ const FeedbackForm = (props) => {
               onClick={(e) => e.stopPropagation()}
               autoFocus
             />
-            
+
             <div className="max-h-60 overflow-y-auto">
               {filteredOptions.length > 0 ? (
                 filteredOptions.map(([programValue, label]) => (
                   <div
                     key={programValue}
                     className={`p-3 cursor-pointer flex items-center justify-between
-                      ${parseInt(programValue) === value 
-                        ? "bg-[#FFB255] bg-opacity-20 border-l-4 border-[#FFB255] text-[#FFB255] font-medium" 
+                      ${parseInt(programValue) === value
+                        ? "bg-[#FFB255] bg-opacity-20 border-l-4 border-[#FFB255] text-[#FFB255] font-medium"
                         : "hover:bg-gray-100"}`}
                     onClick={() => {
                       onChange(parseInt(programValue));
@@ -653,8 +653,10 @@ const FeedbackForm = (props) => {
             </h2>
           </div>
           <COPOMapping
+            program={selectedProgram.toString()} // Pass the selected program directly
             onSave={handleCOPOMappingChange}
             initialData={copoMappingData}
+            key={`copo-${selectedProgram}`} // Add a key that changes when program changes to force re-mount
           />
         </div>
 
