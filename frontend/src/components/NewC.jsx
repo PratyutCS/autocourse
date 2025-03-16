@@ -111,7 +111,7 @@ export default function NewC(props) {
     
     return (
       <div className="fixed top-6 right-6 z-50 animate-slideIn">
-        <div className={${bgColor} ${textColor} flex items-center gap-3 py-3 px-4 rounded-lg shadow-lg max-w-xs}>
+        <div className={`${bgColor} ${textColor} flex items-center gap-3 py-3 px-4 rounded-lg shadow-lg max-w-xs`}>
           <div className="flex-shrink-0">
             {icon}
           </div>
