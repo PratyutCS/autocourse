@@ -426,56 +426,63 @@ app.post("/form", auth, async (req, res) => {
 
         // Update existing fields
 
-        //========================= PROGRAM ========================================================================console.log("program1 is: "+req.body.program);
-        // Convert to string properly
-        let program = String(req.body.program);
-        // Check if length > 2, if so take first 2 chars, otherwise keep as is
-        program = program.length > 2 ? program.substring(0, 2) : program;
-        console.log("program is: " + program);
-        var program_return = 0;
+        //========================= PROGRAM ========================================================================
         try {
-          program_return = validateNumeric(program);
+          let program = String(req.body.program);
+          program = program.length > 2 ? program.substring(0, 2) : program;
+          var program_return = 0;
+          try {
+            program_return = validateNumeric(program);
+          }
+          catch (error) {
+            console.error("Error in validateNumeric function:", error.message || error);
+            program_return = 0;
+          }
+          if (program_return < 0 || program_return > 3) {
+            program_return = 0;
+          }
+          jsonData[num]["Program"] = program_return;
         }
-        catch (error) {
-          console.error("Error in validateNumeric function:", error.message || error);
-          program_return = 0;
+        catch {
+          jsonData[num]["Program"] = 0;
         }
-        if (program_return < 0 || program_return > 3) {
-          program_return = 0;
-        }
-        jsonData[num]["Program"] = program_return;
 
         //================================= COURSE CODE ============================================================
-        let raw_code = String(req.body.coursecode);
-        let course_code = "";
-        if (raw_code.length > 7) {
-          course_code = raw_code.substring(7);
-        }
-        else if (raw_code.length < 7) {
-          course_code = "";
-        }
-        else {
-          course_code = raw_code;
-        }
+        try {
+          let raw_code = String(req.body.coursecode);
+          let course_code = "";
+          if (raw_code.length > 7) {
+            course_code = raw_code.substring(7);
+          }
+          else if (raw_code.length < 7) {
+            course_code = "";
+          }
+          else {
+            course_code = raw_code;
+          }
 
-        if (course_code.length != 7) {
-          jsonData[num]['course_code'] = "";
-        }
-        else {
-          let firstThree = course_code.substring(0, 3);
-          let lastFour = course_code.substring(3);
-          console.log("firstthree: " + firstThree);
-          console.log("lastfour: " + lastFour);
-
-          let isFirstThreeAlpha = /^[a-zA-Z]+$/.test(firstThree);
-
-          let isLastFourNumeric = /^[0-9]+$/.test(lastFour);
-
-          if (isFirstThreeAlpha && isLastFourNumeric) {
-            jsonData[num]['course_code'] = firstThree.toUpperCase() + lastFour;
-          } else {
+          if (course_code.length != 7) {
             jsonData[num]['course_code'] = "";
           }
+          else {
+            let firstThree = course_code.substring(0, 3);
+            let lastFour = course_code.substring(3);
+            console.log("firstthree: " + firstThree);
+            console.log("lastfour: " + lastFour);
+
+            let isFirstThreeAlpha = /^[a-zA-Z]+$/.test(firstThree);
+
+            let isLastFourNumeric = /^[0-9]+$/.test(lastFour);
+
+            if (isFirstThreeAlpha && isLastFourNumeric) {
+              jsonData[num]['course_code'] = firstThree.toUpperCase() + lastFour;
+            } else {
+              jsonData[num]['course_code'] = "";
+            }
+          }
+        }
+        catch {
+          jsonData[num]['course_code'] = "";
         }
 
 
