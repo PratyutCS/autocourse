@@ -331,7 +331,14 @@ const FeedbackForm = (props) => {
   const programOptions = {
     1: 'Computer Science Engineering',
     2: 'Mechanical Engineering',
-    3: 'Electronics and Computer Engineering'
+    3: 'Electronics and Computer Engineering',
+    4: 'Bachelor of Business Administration (BBA)',
+    5: 'Master of Business Administration (MBA)',
+    6: 'Bachelor of Commerce (BCOM)',
+    7: 'Master of Commerce (MCOM)',
+    8: 'Bachelor of Arts (BA)',
+    9: 'Bachelor of Arts and Bachelor of Laws (BA LLB)',
+    10: 'Bachelor of Laws (LLB)'
   };
 
   const SearchableDropdown = ({ options, value, onChange }) => {

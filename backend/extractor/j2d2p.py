@@ -17,7 +17,7 @@ data = json.loads(input_data)
 if data.get('Program'):
     program_value = data.get("Program", "0")
     proram_number = str(program_value)
-    if program_value == "0" or program_value > 3:
+    if program_value == "0" or program_value > 10:
         with open('./extractor/sample.docx', 'rb') as f:
             doc = Document(f)
     else:
@@ -39,7 +39,14 @@ def rep(doc, key):
                 program_options = {
                     "1": "Computer Science Engineering",
                     "2": "Mechanical Engineering", 
-                    "3": "Electronics and Computer Engineering"
+                    "3": "Electronics and Computer Engineering",
+                    "4": 'Bachelor of Business Administration (BBA)',
+                     "5": 'Master of Business Administration (MBA)',
+                     "6": 'Bachelor of Commerce (BCOM)',
+                     "7": 'Master of Commerce (MCOM)',
+                     "8": 'Bachelor of Arts (BA)',
+                     "9": 'Bachelor of Arts and Bachelor of Laws (BA LLB)',
+                     "10": 'Bachelor of Laws (LLB)'
                 }
                 # Convert program number to string before lookup
                 program_value = data.get(key, "0")
