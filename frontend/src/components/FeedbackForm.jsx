@@ -20,6 +20,7 @@ import TargetAttainment from './TargetAttainment';
 import AdvanceAndWeakStudentIdentification from './AdvanceAndWeakStudentIdentification';
 import FeedbackAndCorrectiveActions from './FeedbackAndCorrectiveActions';
 import FacultyCourseReview from './FacultyCourseReview';
+import CourseCodeInput from './CourseCodeInput';
 
 import ExcelToJson from './ExcelToJson';
 
@@ -168,9 +169,40 @@ const FeedbackForm = (props) => {
     setFacultyCourseReview(props.facultyCourseReview || "");
   }, [props.facultyCourseReview]);
 
+  const validateCourseCode = (code) => {
+    // Empty is not valid
+    if (!code || code.length === 0) {
+      setIsCourseCodeValid(false);
+      return;
+    }
+
+    // Must be exactly 7 characters
+    if (code.length !== 7) {
+      setIsCourseCodeValid(false);
+      return;
+    }
+
+    const firstThree = code.substring(0, 3);
+    const lastFour = code.substring(3);
+
+    const isFirstThreeAlpha = /^[a-zA-Z]+$/.test(firstThree);
+    const isLastFourNumeric = /^[0-9]+$/.test(lastFour);
+
+    if (isFirstThreeAlpha && isLastFourNumeric) {
+      setIsCourseCodeValid(true);
+    } else {
+      setIsCourseCodeValid(false);
+    }
+  };
 
 
   /////////////////////////////////////////**Use Effect**//////////////////////////
+
+  const [isCourseCodeValid, setIsCourseCodeValid] = useState(false);
+
+  useEffect(() => {
+    validateCourseCode(coursecode);
+  }, [coursecode]);
 
   useEffect(() => {
     setStudentData(props.studentData || {});
@@ -407,6 +439,11 @@ const FeedbackForm = (props) => {
       alert("Please ensure that the 'Min. % marks (fully attained)' are greater than or equal to 'Min. % marks (partially attained)' for all COs.");
       return;
     }
+
+    if (!isCourseCodeValid) {
+      alert("Please enter a valid course code (3 letters followed by 4 numbers).");
+      return;
+    }
     if (num !== undefined) {
       if (selectedProgram === 0) {
         alert("Please select a valid program option before submitting.");
@@ -483,11 +520,11 @@ const FeedbackForm = (props) => {
           )}
           <button
             onClick={postData}
-            className={`${isWeightageValid && validateCriteria() && selectedProgram !== 0
-              ? "bg-[#FFB255] hover:bg-[#f5a543]"
-              : "bg-gray-400 cursor-not-allowed"
+            className={`${isWeightageValid && validateCriteria() && selectedProgram !== 0 && isCourseCodeValid
+                ? "bg-[#FFB255] hover:bg-[#f5a543]"
+                : "bg-gray-400 cursor-not-allowed"
               } transition-colors text-white font-semibold rounded-lg px-8 py-3 shadow-sm hover:shadow-md transform hover:-translate-y-0.5`}
-            disabled={!isWeightageValid || !validateCriteria() || selectedProgram === 0}
+            disabled={!isWeightageValid || !validateCriteria() || selectedProgram === 0 || !isCourseCodeValid}
           >
             Submit Form
           </button>
@@ -562,12 +599,10 @@ const FeedbackForm = (props) => {
                 Course Code
               </h2>
             </div>
-            <textarea
-              className="w-full p-3 border border-gray-200 rounded-md transition-all resize-none text-gray-700"
-              placeholder="Enter course code here..."
+
+            <CourseCodeInput
               value={coursecode}
-              onChange={(e) => setCourseCode(e.target.value)}
-              rows="2"
+              onChange={(value) => setCourseCode(value)}
             />
           </div>
 

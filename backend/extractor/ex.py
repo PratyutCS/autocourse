@@ -542,6 +542,17 @@ Requirements:
 -14. The mapping data must match course outcomes
 
 -15. Ensure consistency between the Program field (1, 2, or 3) and the corresponding copoMappingData structure.
+
+-16. For course_code field, apply the following validation rules:
+      - The course code must be exactly 7 characters long
+      - The first 3 characters must be letters (alphabetical characters only)
+      - The last 4 characters must be numbers (digits only)
+      - If these conditions are met, convert the first 3 characters to uppercase
+      - If the extracted course code doesn't meet these requirements, try to:
+        * If longer than 7 characters, use only the first 7 that follow the pattern
+        * If shorter than 7 characters, leave as empty string
+        * If the pattern doesn't match (first 3 letters, last 4 numbers), leave as empty string
+      - Example of valid course codes: CSC1234, MAT5678, PHY9012 (3 letters followed by 4 numbers)
 """
     try:
         # Use the OpenAI client to create a chat completion
@@ -567,12 +578,46 @@ Requirements:
                             mapping_template[po] = value
                     cleaned_response["copoMappingData"]["mappingData"][co] = mapping_template
             
+            # Validate and format course code
+            if "course_code" in cleaned_response:
+                course_code = cleaned_response["course_code"]
+                validated_code = validate_course_code(course_code)
+                cleaned_response["course_code"] = validated_code
+                
             return json.dumps(cleaned_response)
         return json.dumps(initial_template)
 
     except Exception as e:
         print(f"Error in AI processing: {str(e)}")
         return json.dumps(initial_template)
+
+def validate_course_code(code):
+    """
+    Validate course code according to specified rules:
+    - Must be exactly 7 characters
+    - First 3 characters must be letters
+    - Last 4 characters must be numbers
+    - If valid, convert first 3 letters to uppercase
+    """
+    if not code:
+        return ""
+        
+    # Handle if code is longer than 7 characters
+    if len(code) > 7:
+        code = code[:7]
+    
+    # Return empty if code is less than 7 characters
+    if len(code) < 7:
+        return ""
+        
+    # Check if first 3 characters are letters and last 4 are numbers
+    first_three = code[:3]
+    last_four = code[3:]
+    
+    if re.match(r'^[a-zA-Z]+$', first_three) and re.match(r'^[0-9]+$', last_four):
+        return first_three.upper() + last_four
+    else:
+        return ""
 
 if __name__ == '__main__':
     try:
