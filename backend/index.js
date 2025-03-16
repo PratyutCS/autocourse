@@ -343,7 +343,7 @@ app.post("/download", auth, async (req, res) => {
           return res.status(400).json({ message: "extraction not yet finished" });
         }
         const pythonProcess = spawn('python3', ['./extractor/j2d2p.py']);
-        
+
         // Write JSON to the Python process's stdin and close it to signal we're done
         pythonProcess.stdin.write(JSON.stringify(fileData));
         pythonProcess.stdin.end();
@@ -389,6 +389,15 @@ app.post("/download", auth, async (req, res) => {
   }
 });
 
+function validateNumeric(str) {
+  if (!str) return 0;
+  if (/^\d+$/.test(str)) {
+    return parseInt(str, 10);
+  } else {
+    return 0;
+  }
+}
+
 // To modify form parts
 app.post("/form", auth, async (req, res) => {
   const num = req.body.num;
@@ -416,7 +425,61 @@ app.post("/form", auth, async (req, res) => {
         }
 
         // Update existing fields
-        jsonData[num]['course_code'] = req.body.coursecode || "";
+
+        //========================= PROGRAM ========================================================================console.log("program1 is: "+req.body.program);
+        // Convert to string properly
+        let program = String(req.body.program);
+        // Check if length > 2, if so take first 2 chars, otherwise keep as is
+        program = program.length > 2 ? program.substring(0, 2) : program;
+        console.log("program is: " + program);
+        var program_return = 0;
+        try {
+          program_return = validateNumeric(program);
+        }
+        catch (error) {
+          console.error("Error in validateNumeric function:", error.message || error);
+          program_return = 0;
+        }
+        if (program_return < 0 || program_return > 3) {
+          program_return = 0;
+        }
+        jsonData[num]["Program"] = program_return;
+
+        //================================= COURSE CODE ============================================================
+        let raw_code = String(req.body.coursecode);
+        let course_code = "";
+        if (raw_code.length > 7) {
+          course_code = raw_code.substring(7);
+        }
+        else if (raw_code.length < 7) {
+          course_code = "";
+        }
+        else {
+          course_code = raw_code;
+        }
+
+        if (course_code.length != 7) {
+          jsonData[num]['course_code'] = "";
+        }
+        else {
+          let firstThree = course_code.substring(0, 3);
+          let lastFour = course_code.substring(3);
+          console.log("firstthree: " + firstThree);
+          console.log("lastfour: " + lastFour);
+
+          let isFirstThreeAlpha = /^[a-zA-Z]+$/.test(firstThree);
+
+          let isLastFourNumeric = /^[0-9]+$/.test(lastFour);
+
+          if (isFirstThreeAlpha && isLastFourNumeric) {
+            jsonData[num]['course_code'] = firstThree.toUpperCase() + lastFour;
+          } else {
+            jsonData[num]['course_code'] = "";
+          }
+        }
+
+
+
         jsonData[num]['course_name'] = req.body.coursetitle || "";
         jsonData[num]['Module/Semester'] = req.body.module || "";
         jsonData[num]['Session'] = req.body.session || "";
@@ -426,7 +489,6 @@ app.post("/form", auth, async (req, res) => {
         jsonData[num]["copoMappingData"] = req.body.copoMappingData || "";
         jsonData[num]["internalAssessmentData"] = req.body.internalAssessmentData || "";
         jsonData[num]["actionsForWeakStudentsData"] = req.body.actionsForWeakStudentsData || "";
-        jsonData[num]["Program"] = req.body.program || "";
         jsonData[num]["coWeightages"] = req.body.coWeightages || "";
         jsonData[num]["coAttainmentCriteria"] = req.body.coAttainmentCriteria || "";
         jsonData[num]["targetAttainment"] = req.body.targetAttainment || "";
@@ -586,7 +648,7 @@ app.post("/download/xlsx", auth, async (req, res) => {
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //--------------ADMIN--------------------
 
-app.get("/admin/login", (req,res)=>{
+app.get("/admin/login", (req, res) => {
   res.send("works");
 });
 
