@@ -82,7 +82,7 @@ const CourseSyllabus = ({ onSave, initialData }) => {
         13
         </div>
         <h2 className="text-2xl font-semibold text-gray-800">
-          Course Syllabus
+          Course content and session wise plan
         </h2>
       </div>
 
@@ -112,23 +112,35 @@ const CourseSyllabus = ({ onSave, initialData }) => {
                   />
                 </td>
                 <td className="border-b border-gray-200 p-4">
-                  <input
-                    type="text"
-                    value={row.co}
-                    onChange={(e) => handleInputChange(index, 'co', e.target.value)}
-                    className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-center text-gray-700"
-                    placeholder="CO"
-                  />
+                  <div className="relative group">
+                    <input
+                      type="text"
+                      value={row.co}
+                      onChange={(e) => handleInputChange(index, 'co', e.target.value)}
+                      className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-center text-gray-700"
+                      placeholder="CO"
+                      title="Enter in format CO1, CO2, etc."
+                    />
+                    <div className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 text-white text-xs rounded py-1 px-2 -top-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap pointer-events-none">
+                      Enter in format CO1, CO2, etc.
+                    </div>
+                  </div>
                 </td>
                 <td className="border-b border-gray-200 p-4">
-                  <input
-                    type="number"
-                    value={row.sessions}
-                    onChange={(e) => handleInputChange(index, 'sessions', e.target.value)}
-                    min="0"
-                    className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-center text-gray-700"
-                    placeholder="Sessions"
-                  />
+                  <div className="relative group">
+                    <input
+                      type="number"
+                      value={row.sessions}
+                      onChange={(e) => handleInputChange(index, 'sessions', e.target.value)}
+                      min="0"
+                      className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-center text-gray-700"
+                      placeholder="Sessions"
+                      title="Write the number of sessions which are needed to cover this content"
+                    />
+                    <div className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 text-white text-xs rounded py-1 px-2 -top-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap pointer-events-none">
+                      Write the number of sessions which are needed to cover this content
+                    </div>
+                  </div>
                 </td>
                 <td className="border-b border-gray-200 p-4">
                   {syllabusData.length > 1 && (

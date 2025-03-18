@@ -109,7 +109,7 @@ const FeedbackAndCorrectiveActions = ({ initialData, onSave }) => {
           onChange={handleQualitativeChange}
           className="w-full p-3 border border-gray-200 rounded-md transition-all resize-y text-gray-700"
           placeholder="Enter qualitative feedback and corrective actions taken..."
-          rows="6"
+          rows="2"
         />
       </div>
     </div>

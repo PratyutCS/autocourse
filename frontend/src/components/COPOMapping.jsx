@@ -18,15 +18,51 @@ const COPOMapping = ({ onSave, initialData, program }) => {
         return [
           "CO/PO",
           "PO1", "PO2", "PO3", "PO4", "PO5", "PO6",
-          "PO7", "PO8", "PO9", "PO10", "PO11",
+          "PO7", "PO8", "PO9", "PO10", "PO11","PO12",
           "PSO1", "PSO2"
         ];
       case 3: // Electronics and Computer Engineering
         return [
           "CO/PO",
           "PO1", "PO2", "PO3", "PO4", "PO5", "PO6",
-          "PO7", "PO8", "PO9", "PO10", "PO11", "PO12", "PO13",
-          "PSO1", "PSO2", "PSO3"
+          "PO7", "PO8", "PO9", "PO10", "PO11", "PO12", 
+          "PSO1", "PSO2", 
+        ];
+      case 4: // BBA
+        return [
+          "CO/PO",
+          "PO1", "PO2", "PO3", "PO4", "PO5", "PO6",
+          "PSFA1", "PSFA2",
+        ];
+
+        case 5: // BCOM(Hons)/
+        return [
+          "CO/PO",
+          "PO1", "PO2", "PO3", "PO4", "PO5", "PO6","PO7","PO8",
+          
+        ];
+        case 6: // Integrated BBA/MBA
+        return [
+          "CO/PO",
+          "PO1", "PO2", "PO3", "PO4", "PO5", "PO6",
+          "PSFB1", "PSFB2", "PSFB3",
+        ];
+        case 7: // BA (Hons) Libreral Arts
+        return [
+          "CO/PO",
+          "PO1", "PO2", "PO3", "PO4", "PO5", "PO6","PO7",
+        ];
+        case 8: //  BA LLB (Hons)
+        return [
+          "CO/PO",
+          "PO1", "PO2", "PO3", "PO4", "PO5", "PO6","PO7",
+          "PSO1", "PSO2"
+        ];
+        case 9: // BBA LLB (Hons)
+        return [
+          "CO/PO",
+          "PO1", "PO2", "PO3", "PO4", "PO5", "PO6","PO7",
+          "PSO1", "PSO2"
         ];
       default: // Default to Computer Science Engineering format
         return [
@@ -316,7 +352,13 @@ const COPOMapping = ({ onSave, initialData, program }) => {
       case 1: return "Computer Science Engineering";
       case 2: return "Mechanical Engineering";
       case 3: return "Electronics and Computer Engineering";
-      default: return "Default Engineering";
+      case 4: return "BBA";
+      case 5: return "BCOM(Hons)";
+      case 6: return "Integrated BBA/MBA";
+      case 7: return "BA (Hons) Libreral Arts";
+      case 8: return "BA LLB (Hons)";
+      case 9: return "BBA LLB (Hons)";
+      default: return "Default";
     }
   };
 

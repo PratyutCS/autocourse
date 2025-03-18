@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Info } from "lucide-react";
 
 const FacultyCourseReview = ({ initialData, onSave }) => {
   const [reviewText, setReviewText] = useState(initialData || "");
@@ -28,17 +29,22 @@ const FacultyCourseReview = ({ initialData, onSave }) => {
         </h2>
       </div>
       <div className="space-y-3">
-        <p className="text-gray-600 text-sm">
-          Provide details on: Use of Innovative Pedagogies, Technology, Experiential Learning, 
-          Integration with the Vision and Mission of the University, Feedback, Course Outcome 
-          attainment for the next run of the course, etc.
+      <div className="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-lg flex items-start gap-3">
+        <Info className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
+        <div className="text-sm text-blue-700">
+          <span className="font-semibold">Allocation Guidance:</span>
+          <p>
+           If applicable, including aspects such as the use of innovative pedagogies, technology integration, experiential learning, alignment with the university's vision and mission, and feedback for the next run of the course.
         </p>
+        </div>
+      </div>
+        
         <textarea
-          className="w-full p-4 border border-gray-200 rounded-md transition-all min-h-[250px] text-gray-700 focus:border-[#FFB255] focus:ring focus:ring-orange-100 focus:outline-none"
+          className="w-full p-4 border border-gray-200 rounded-md transition-all min-h-[20px] text-gray-700 focus:border-[#FFB255] focus:ring focus:ring-orange-100 focus:outline-none"
           placeholder="Enter your course review here..."
           value={reviewText}
           onChange={handleChange}
-          rows="8"
+          rows="2"
         />
       </div>
     </div>

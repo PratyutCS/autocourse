@@ -94,7 +94,7 @@ const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess, initialFileName })
           17
         </div>
         <h2 className="text-xl font-semibold text-gray-800">
-          Assignment and Solution and Assessment merged
+        Assignments/Quiz/Projects with Sample Solution
         </h2>
       </div>
 
@@ -130,6 +130,7 @@ const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess, initialFileName })
         ) : (
           <div>
             <p className="text-gray-600 mb-2">Drag and drop your PDF file here, or click to select</p>
+            <p className="text-yellow-600 mb-2 ">(Upload only one pdf which covers all the assignment (s)/Quiz(s) etc. and solutions)</p>
             <p className="text-gray-400 text-sm">Maximum file size: 50MB</p>
           </div>
         )}

@@ -130,7 +130,6 @@ export default function NewC(props) {
   // Conditional styling: if done is not equal to 1, add a red border highlight.
   const cardClass = `relative group h-[18rem] w-[16rem] bg-white rounded-lg shadow-sm transition-all duration-300 
     ${props.done !== 1 ? 'border-4 border-red-500' : 'hover:shadow-md border border-gray-200 hover:border-[#FFB255]'}`;
-
   return (
     <>
       <Notification />
