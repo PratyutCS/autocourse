@@ -46,20 +46,26 @@ const TargetAttainment = ({ copoMappingData, initialCriteria, onSave }) => {
         </h2>
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200">
+        <table className="min-w-full border-collapse rounded-lg overflow-hidden">
           <thead>
             <tr>
-              <th className="px-4 py-2 border-b">Criteria</th>
+              <th className="bg-gray-50 border border-gray-200 p-3 font-semibold text-gray-700 text-sm">
+                Criteria
+              </th>
               {Object.keys(copoMappingData.courseOutcomes).map((co) => (
-                <th key={co} className="px-4 py-2 border-b">{co} (in %)</th>
+                <th key={co} className="bg-gray-50 border border-gray-200 p-3 font-semibold text-gray-700 text-sm">
+                  {co} (in %)
+                </th>
               ))}
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td className="px-4 py-2 border-b">Min. % students (fully attained)</td>
+              <td className="border border-gray-200 p-3 text-sm text-gray-600 font-medium bg-gray-50">
+                Min. % students (fully attained)
+              </td>
               {Object.keys(copoMappingData.courseOutcomes).map((co) => (
-                <td key={`${co}-full`} className="px-4 py-2 border-b">
+                <td key={`${co}-full`} className="border border-gray-200 p-3">
                   <input
                     type="number"
                     min="0"
@@ -72,9 +78,11 @@ const TargetAttainment = ({ copoMappingData, initialCriteria, onSave }) => {
               ))}
             </tr>
             <tr>
-              <td className="px-4 py-2 border-b">Min. % students (partially attained)</td>
+              <td className="border border-gray-200 p-3 text-sm text-gray-600 font-medium bg-gray-50">
+                Min. % students (partially attained)
+              </td>
               {Object.keys(copoMappingData.courseOutcomes).map((co) => (
-                <td key={`${co}-partial`} className="px-4 py-2 border-b">
+                <td key={`${co}-partial`} className="border border-gray-200 p-3">
                   <input
                     type="number"
                     min="0"

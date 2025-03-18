@@ -438,7 +438,7 @@ app.post("/form", auth, async (req, res) => {
             console.error("Error in validateNumeric function:", error.message || error);
             program_return = 0;
           }
-          if (program_return < 0 || program_return > 3) {
+          if (program_return < 0 || program_return > 9) {
             program_return = 0;
           }
           jsonData[num]["Program"] = program_return;
