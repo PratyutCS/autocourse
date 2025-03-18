@@ -59,7 +59,7 @@ const Info = () => {
 
   return (
     <div className='dash'>
-      <AsideComp userEmail={userData.email} isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed}/>
+      <AsideComp userEmail={userData.email} files={file} isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed}/>
       <div className="right">
           
         <div className="box23 w-full">

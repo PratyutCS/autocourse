@@ -40,13 +40,13 @@ def rep(doc, key):
                     "1": "Computer Science Engineering",
                     "2": "Mechanical Engineering", 
                     "3": "Electronics and Computer Engineering",
-                    "4": 'Bachelor of Business Administration (BBA)',
-                     "5": 'Master of Business Administration (MBA)',
-                     "6": 'Bachelor of Commerce (BCOM)',
-                     "7": 'Master of Commerce (MCOM)',
-                     "8": 'Bachelor of Arts (BA)',
-                     "9": 'Bachelor of Arts and Bachelor of Laws (BA LLB)',
-                     "10": 'Bachelor of Laws (LLB)'
+                    "4": "BBA",
+                    "5": "BCOM (Hons)",
+                    "6": "Integrated BBA MBA",
+                    "7": "BA (Hons) Liberal Arts",
+                    "8": "BA LLB (Hons)",
+                    "9": "BBA LLB (Hons)",
+                    "10":"MBA",
                 }
                 # Convert program number to string before lookup
                 program_value = data.get(key, "0")
@@ -338,47 +338,205 @@ if data.get('weeklyTimetableData'):
     timetable_run.font.size = Pt(16)
     timetable_run.font.color.rgb = RGBColor(28, 132, 196)
     timetable_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
-
     doc.add_paragraph()
-    time_slots = list(data['weeklyTimetableData']['Monday'].keys())
-    days = list(data['weeklyTimetableData'].keys())
-    table = doc.add_table(rows=len(time_slots) + 1, cols=len(days) + 1)
-    table.alignment = WD_TABLE_ALIGNMENT.CENTER
-
-    header_cells = table.rows[0].cells
-    header_cells[0].text = 'Time'
-    for i, day in enumerate(days):
-        header_cells[i + 1].text = day
-        paragraph = header_cells[i + 1].paragraphs[0]
-        run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(day)
-        run.bold = True
-        run.font.size = Pt(10)
-        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-
-    time_paragraph = header_cells[0].paragraphs[0]
-    time_run = time_paragraph.runs[0] if time_paragraph.runs else time_paragraph.add_run('Time')
-    time_run.bold = True
-    time_run.font.size = Pt(10)
-    time_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-
-    for i, time_slot in enumerate(time_slots):
-        row_cells = table.rows[i + 1].cells
-        row_cells[0].text = time_slot
-        for j, day in enumerate(days):
-            is_available = data['weeklyTimetableData'][day][time_slot]
-            cell = row_cells[j + 1]
-            cell.text = data['course_name'] + " (" + data['course_code'] + ")" if is_available else ''
-            paragraph = cell.paragraphs[0]
-            paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            for run in paragraph.runs:
+    
+    # Check if this is an MBA timetable (has 'entries' field) or regular timetable
+    if 'entries' in data['weeklyTimetableData']:
+        # MBA Timetable - Format entries in a different layout
+        entries = data['weeklyTimetableData'].get('entries', [])
+        
+        if entries:
+            # Sort entries by day and time for better organization
+            days_order = {
+                'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4, 
+                'Friday': 5, 'Saturday': 6, 'Sunday': 7
+            }
+            
+            # Sort entries by day first, then by time (AM before PM, then by hour)
+            sorted_entries = sorted(entries, key=lambda x: (
+                days_order.get(x.get('day', ''), 999),
+                0 if x.get('period', '') == 'AM' else 1,
+                x.get('hour', 0)
+            ))
+            
+            # Create a table for the MBA timetable with columns: Day, Start Time, End Time, Duration
+            table = doc.add_table(rows=len(sorted_entries) + 1, cols=4)
+            table.alignment = WD_TABLE_ALIGNMENT.CENTER
+            
+            # Set header row
+            header_cells = table.rows[0].cells
+            headers = ['Day', 'Start Time', 'End Time', 'Duration (hrs)']
+            
+            for i, header in enumerate(headers):
+                header_cells[i].text = header
+                paragraph = header_cells[i].paragraphs[0]
+                run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(header)
+                run.bold = True
+                run.font.size = Pt(11)
+                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            
+            # Helper function to calculate end time
+            def get_end_time(start_hour, period, duration):
+                hour = start_hour
+                end_period = period
+                
+                hour_part = int(duration)
+                minute_part = int((duration - hour_part) * 60)
+                
+                hour += hour_part
+                minutes = minute_part
+                
+                # Handle period change
+                if hour >= 12:
+                    if hour > 12:
+                        hour = hour - 12
+                    if period == 'AM':
+                        end_period = 'PM'
+                
+                # Format the time
+                return f"{hour}:{minutes:02d} {end_period}"
+            
+            # Fill the table with MBA timetable data
+            for i, entry in enumerate(sorted_entries):
+                row_cells = table.rows[i + 1].cells
+                day = entry.get('day', '')
+                hour = entry.get('hour', 0)
+                period = entry.get('period', 'AM')
+                duration = entry.get('duration', 1)
+                
+                # Format the start and end times
+                start_time = f"{hour}:00 {period}"
+                end_time = get_end_time(hour, period, duration)
+                
+                # Set cell values
+                row_cells[0].text = day
+                row_cells[1].text = start_time
+                row_cells[2].text = end_time
+                row_cells[3].text = str(duration)
+                
+                # Apply formatting to cells
+                for j, cell in enumerate(row_cells):
+                    paragraph = cell.paragraphs[0]
+                    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                    for run in paragraph.runs:
+                        run.font.size = Pt(10)
+            
+            # Set column widths for better readability
+            column_widths = [Inches(1.5), Inches(1.2), Inches(1.2), Inches(1)]
+            for row in table.rows:
+                for idx, cell in enumerate(row.cells):
+                    if idx < len(column_widths):
+                        cell.width = column_widths[idx]
+            
+            # Add a visual weekly overview table below the entries table
+            doc.add_paragraph().add_run().add_break()
+            overview_para = doc.add_paragraph()
+            overview_run = overview_para.add_run("Weekly Overview")
+            overview_run.bold = True
+            overview_run.font.size = Pt(12)
+            
+            # Create weekly overview table
+            days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+            overview_table = doc.add_table(rows=1, cols=len(days))
+            overview_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+            
+            # Add days as headers
+            header_cells = overview_table.rows[0].cells
+            for i, day in enumerate(days):
+                header_cells[i].text = day
+                paragraph = header_cells[i].paragraphs[0]
+                run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(day)
+                run.bold = True
                 run.font.size = Pt(10)
+                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            
+            # Add a row for classes
+            class_row = overview_table.add_row()
+            class_cells = class_row.cells
+            
+            # Group entries by day
+            day_entries = {}
+            for day in days:
+                day_entries[day] = [e for e in sorted_entries if e.get('day') == day]
+            
+            # Add class entries to each day cell
+            for i, day in enumerate(days):
+                cell = class_cells[i]
+                entries_for_day = day_entries[day]
+                
+                if entries_for_day:
+                    for entry in entries_for_day:
+                        start_time = f"{entry.get('hour', 0)}:00 {entry.get('period', 'AM')}"
+                        end_time = get_end_time(entry.get('hour', 0), entry.get('period', 'AM'), entry.get('duration', 1))
+                        
+                        paragraph = cell.add_paragraph()
+                        run = paragraph.add_run(f"{start_time} - {end_time}")
+                        run.font.size = Pt(9)
+                        run.bold = True
+                        
+                        detail_para = cell.add_paragraph()
+                        detail_run = detail_para.add_run(f"{data['course_code']} ({entry.get('duration')}hr)")
+                        detail_run.font.size = Pt(8)
+                        detail_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                        
+                        # Add spacing between entries
+                        if entry != entries_for_day[-1]:
+                            cell.add_paragraph()
+                else:
+                    paragraph = cell.add_paragraph()
+                    run = paragraph.add_run("No class")
+                    run.font.size = Pt(9)
+                    run.italic = True
+                    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            
+            # Set even height and width for overview table
+            column_width = Inches(1.1)
+            for row in overview_table.rows:
+                for cell in row.cells:
+                    cell.width = column_width
+                    
+    else:
+        # Regular Timetable (Original code for non-MBA timetable)
+        time_slots = list(data['weeklyTimetableData']['Monday'].keys())
+        days = list(data['weeklyTimetableData'].keys())
+        table = doc.add_table(rows=len(time_slots) + 1, cols=len(days) + 1)
+        table.alignment = WD_TABLE_ALIGNMENT.CENTER
 
-    column_widths = [Inches(1.1)] + [Inches(1)] * len(days)
-    for row in table.rows:
-        for idx, cell in enumerate(row.cells):
-            if idx < len(column_widths):
-                cell.width = column_widths[idx]
+        header_cells = table.rows[0].cells
+        header_cells[0].text = 'Time'
+        for i, day in enumerate(days):
+            header_cells[i + 1].text = day
+            paragraph = header_cells[i + 1].paragraphs[0]
+            run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(day)
+            run.bold = True
+            run.font.size = Pt(10)
+            paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
+        time_paragraph = header_cells[0].paragraphs[0]
+        time_run = time_paragraph.runs[0] if time_paragraph.runs else time_paragraph.add_run('Time')
+        time_run.bold = True
+        time_run.font.size = Pt(10)
+        time_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+        for i, time_slot in enumerate(time_slots):
+            row_cells = table.rows[i + 1].cells
+            row_cells[0].text = time_slot
+            for j, day in enumerate(days):
+                is_available = data['weeklyTimetableData'][day][time_slot]
+                cell = row_cells[j + 1]
+                cell.text = data['course_name'] + " (" + data['course_code'] + ")" if is_available else ''
+                paragraph = cell.paragraphs[0]
+                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                for run in paragraph.runs:
+                    run.font.size = Pt(10)
+
+        column_widths = [Inches(1.1)] + [Inches(1)] * len(days)
+        for row in table.rows:
+            for idx, cell in enumerate(row.cells):
+                if idx < len(column_widths):
+                    cell.width = column_widths[idx]
+
+    # Apply border styling to the table (works for both table types)
     def set_cell_border(cell, border_type, border_size, border_color):
         tc = cell._tc
         tcPr = tc.get_or_add_tcPr()
@@ -392,20 +550,20 @@ if data.get('weeklyTimetableData'):
         else:
             tcPr.append(border)
 
-    for row in table.rows:
-        for cell in row.cells:
-            set_cell_border(cell, 'top', 4, '000000')
-            set_cell_border(cell, 'bottom', 4, '000000')
-            set_cell_border(cell, 'left', 4, '000000')
-            set_cell_border(cell, 'right', 4, '000000')
+    # Apply borders to all tables in the timetable section
+    for table in doc.tables[-2:]:  # Apply to the last two tables (entries and overview for MBA, or just one table for regular)
+        for row in table.rows:
+            for cell in row.cells:
+                set_cell_border(cell, 'top', 4, '000000')
+                set_cell_border(cell, 'bottom', 4, '000000')
+                set_cell_border(cell, 'left', 4, '000000')
+                set_cell_border(cell, 'right', 4, '000000')
 
-    for row in table.rows:
-        tr = row._tr
-        trPr = tr.get_or_add_trPr()
-        cantSplit = OxmlElement('w:cantSplit')
-        trPr.append(cantSplit)
-        
-        
+            # Prevent row splitting across pages
+            tr = row._tr
+            trPr = tr.get_or_add_trPr()
+            cantSplit = OxmlElement('w:cantSplit')
+            trPr.append(cantSplit)  
 ################################################## StudentData ########################################################
 
 if data.get('studentData'):

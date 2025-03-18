@@ -7,6 +7,7 @@ import { IoReturnUpBackSharp } from "react-icons/io5";
 import COPOMapping from "./COPOMapping";
 import InternalAssessmentTable from "./InternalAssessmentTable";
 import ActionsForWeakStudents from "./ActionsForWeakStudents";
+import MBAWeeklyTimetable from './MBAWeeklyTimetable';
 import EditableCourseDescription from "./EditableCourseDescription";
 import CourseSyllabus from "./CourseSyllabus";
 import AddField from "./AddFiled";
@@ -121,25 +122,23 @@ const FeedbackForm = (props) => {
     setTargetAttainment(criteria);
   };
 
-  const [learnerCategories, setLearnerCategories] = useState({
+const [learnerCategories, setLearnerCategories] = useState({
+  advancedLearners: [],
+  mediumLearners: [],
+  slowLearners: []
+});
+
+const handleLearners = (categories) => {
+  setLearnerCategories(categories);
+};
+
+useEffect(() => {
+  setLearnerCategories(props.learnerCategories || {
     advancedLearners: [],
     mediumLearners: [],
     slowLearners: []
   });
-
-  // 2. Fix the handleLearners function
-  const handleLearners = (categories) => {
-    setLearnerCategories(categories);
-  };
-
-  // 3. Add useEffect to initialize from props (with the other useEffects)
-  useEffect(() => {
-    setLearnerCategories(props.learnerCategories || {
-      advancedLearners: [],
-      mediumLearners: [],
-      slowLearners: []
-    });
-  }, [props.learnerCategories]);
+}, [props.learnerCategories]);
 
   const [studentData, setStudentData] = useState([]);
 
@@ -338,6 +337,7 @@ const FeedbackForm = (props) => {
     7: 'BA (Hons) Libreral Arts',
     8: 'BA LLB (Hons)',
     9: 'BBA LLB (Hons)',
+    10:'MBA'
   };
 
   const SearchableDropdown = ({ options, value, onChange }) => {
@@ -537,9 +537,6 @@ const FeedbackForm = (props) => {
         </div>
       </div>
 
-
-
-
       <div className="space-y-6 overflow-scroll">
         <div className="bg-white rounded-xl shadow-md p-6 border-t border-r border-b border-l-4 border-[#FFB255] ">
           <div className="flex items-start space-x-4">
@@ -708,7 +705,7 @@ const FeedbackForm = (props) => {
               8
             </div>
             <h2 className="section-title text-xl font-semibold">
-              Details of all Assessments; weightages, due dates
+              Details of all Assessments, weightages and due dates
             </h2>
           </div>
           <InternalAssessmentTable
@@ -800,23 +797,32 @@ const FeedbackForm = (props) => {
 
         {/* Weekly Time-Table */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              15
-            </div>
-            <h2 className="text-xl font-semibold text-gray-800">
-              Weekly Time-Table
-            </h2>
-          </div>
-          <div className="p-4 rounded-lg">
-            <WeeklyTimetable
-              initialData={weeklyTimetableData}
-              onChange={(newTimetable) => {
-                setWeeklyTimetableData(newTimetable);
-              }}
-            />
-          </div>
-        </div>
+  <div className="flex items-center gap-4 mb-6">
+    <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+      15
+    </div>
+    <h2 className="text-xl font-semibold text-gray-800">
+      Weekly Time-Table
+    </h2>
+  </div>
+  <div className="p-4 rounded-lg">
+    {selectedProgram === 6 || selectedProgram === 10    ? ( // 6 is Integrated BBA MBA
+      <MBAWeeklyTimetable
+        initialData={weeklyTimetableData}
+        onChange={(newTimetable) => {
+          setWeeklyTimetableData(newTimetable);
+        }}
+      />
+    ) : (
+      <WeeklyTimetable
+        initialData={weeklyTimetableData}
+        onChange={(newTimetable) => {
+          setWeeklyTimetableData(newTimetable);
+        }}
+      />
+    )}
+  </div>
+</div>
 
         {/* Actions for Weak Students */}
         <ActionsForWeakStudents

@@ -131,7 +131,8 @@ const Dashboard = () => {
     <div className="h-screen w-full overflow-hidden bg-[#FFFEFD]">
       <div className="flex h-full">
         <AsideComp 
-          userEmail={userData.email} 
+          userEmail={userData.email}
+          files={files} 
           isCollapsed={isCollapsed} 
           setIsCollapsed={setIsCollapsed} 
         />

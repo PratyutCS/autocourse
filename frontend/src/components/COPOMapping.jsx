@@ -64,6 +64,11 @@ const COPOMapping = ({ onSave, initialData, program }) => {
           "PO1", "PO2", "PO3", "PO4", "PO5", "PO6","PO7",
           "PSO1", "PSO2"
         ];
+        case 10: // BBA LLB (Hons)
+        return [
+          "CO/PO",
+          "PO1", "PO2", "PO3", "PO4", "PO5", "PO6",
+        ];
       default: // Default to Computer Science Engineering format
         return [
           "CO/PO",
@@ -358,6 +363,7 @@ const COPOMapping = ({ onSave, initialData, program }) => {
       case 7: return "BA (Hons) Libreral Arts";
       case 8: return "BA LLB (Hons)";
       case 9: return "BBA LLB (Hons)";
+      case 10: return "MBA";
       default: return "Default";
     }
   };

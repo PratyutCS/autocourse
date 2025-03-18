@@ -1,1 +1,551 @@
-[{"filename":"1740972177CourseHandout(Seminar Case Study Bactch 2021-25).pdf","done":1,"Program":7,"course_name":"Seminar/Case Studies","course_description":"The main objective of this course is to introduce students to different data structures and illustrate their effective use in solving technical and logical problems. The course comprehensively explores different problem-solving techniques and skills. Proficiency in problem-solving skills is a fundamental expectation for any competent developer, as these concepts are commonly assessed by reputable companies during the screening process for software developer positions. The primary emphasis will be on achieving a deep understanding of data structures, their implementation, practical applications through problem-solving scenarios, exploring various programming paradigms, algorithm analysis, and the practical application of different data structures and algorithms. This course explores the fundamental workings of algorithms and data structures, which lie at its core essence.","Course Syllabus":[{"srNo":1,"content":"Linear Search, Maximum in an Array, Sorting(Selection, Bubble and Insertion), Binary search, Kadane's Algo-O(N), Merge two sorted arrays, Rotate Array anti clock wise by k times, Unique Number-1, and tell about bitwise operators, Basics of strings, String methods, String builder, Mutable and Immutable concepts, 2D Arrays: Wave Print, Spiral Print, and Transpose","co":"1","sessions":1},{"srNo":2,"content":"Recursion: Factorial, Fibonacci, isArraySorted, SumofArray, Print Numbers – 1) Increasing Order 2) Decreasing Order, MergeSort, Subsequence, Rat in Maze, N_Stairs, Subset Sum","co":"2","sessions":1},{"srNo":3,"content":"Stack: stack implementation, Queue implementation, Linkedlist implementation(Add and Delete), Mid (Cycle detection hints), Reverse LinkedList, Merge two Sorted LinkedList, Intersection of two LinkedList, Binary Tree implementation and traversal of binary tree(PreOrder, InOrder and PostOrder), Diameter-O(N^2) and O(N) height, count number of node, Level-Order, Create Tree using Pre and Inorder, Create Tree using level-order, Binary Search Tree implementation, Addition and Deletion","co":"2","sessions":1},{"srNo":4,"content":"BST to LinkedList, Balanced binary Tree, Valid BST, priority queue Collections, Kth Smallest, Meeting Room-2, Merge k Sorted List, Map and Set Collections (HashMap TreeMap and LinkedHashMap), SubArray using Map related Question","co":"3","sessions":1},{"srNo":5,"content":"Dynamic Programming: Fib, min Steps to one, coin Changes, LCS, LIS, knapsack, Edit Distance, Graph basic, BFS, DFS, Dijkstra, MST(Prims), bipartite","co":"1","sessions":1}],"Learning Resources":{"textBooks":["Cracking the Coding Interview author( Gayle Laakmann McDowell )","Coding Interview Questions author(Narasimha Karumanchi)"],"referenceLinks":["Data Structures and Algorithms Specialization","NPTEL Data Structures And Algorithms, IIT Delhi"]},"internalAssessmentData":{"components":{"component1":{"component":"","duration":"","weightage":"","evaluationWeek":"","remarks":""}}},"copoMappingData":{"courseOutcomes":{"CO1":{"description":"","bullets":[]},"CO2":{"description":"","bullets":[]},"CO3":{"description":"","bullets":[]}},"mappingData":{"CO1":{"PO1":"","PO2":"","PO3":"2","PO4":"2","PO5":"2","PO6":"","PO7":""},"CO2":{"PO1":"","PO2":"","PO3":"","PO4":"","PO5":"","PO6":"","PO7":""},"CO3":{"PO1":"","PO2":"3","PO3":"3","PO4":"2","PO5":"","PO6":"","PO7":""}}},"weeklyTimetableData":{"Monday":{"9:15-10:10":true,"10:15-11:10":false,"11:15-12:10":false,"12:15-13:10":false,"13:15-14:10":false,"14:15-15:10":false,"15:15-16:10":false,"16:15-17:10":false,"17:15-18:10":true},"Tuesday":{"9:15-10:10":false,"10:15-11:10":true,"11:15-12:10":false,"12:15-13:10":false,"13:15-14:10":false,"14:15-15:10":false,"15:15-16:10":false,"16:15-17:10":true,"17:15-18:10":false},"Wednesday":{"9:15-10:10":false,"10:15-11:10":false,"11:15-12:10":true,"12:15-13:10":false,"13:15-14:10":false,"14:15-15:10":false,"15:15-16:10":true,"16:15-17:10":false,"17:15-18:10":false},"Thursday":{"9:15-10:10":false,"10:15-11:10":false,"11:15-12:10":false,"12:15-13:10":true,"13:15-14:10":false,"14:15-15:10":true,"15:15-16:10":false,"16:15-17:10":false,"17:15-18:10":false},"Friday":{"9:15-10:10":false,"10:15-11:10":false,"11:15-12:10":false,"12:15-13:10":false,"13:15-14:10":true,"14:15-15:10":false,"15:15-16:10":false,"16:15-17:10":false,"17:15-18:10":false}},"actionsForWeakStudentsData":["we beat them"],"course_code":"ABC1404","Module/Semester":"5th","Session":"2024-25","coWeightages":{"CO1":{"quiz(30)":"70","project(30)":"0","end term(40)":"10"},"CO2":{"quiz(30)":"30","project(30)":"65","end term(40)":"20"},"CO3":{"quiz(30)":"0","project(30)":"35","end term(40)":"70"}},"coAttainmentCriteria":{"CO1":{"full":75,"partial":74},"CO2":{"full":75,"partial":74},"CO3":{"full":75,"partial":74}},"studentData":{"maxMarks":{"Quiz(30)":30,"project(30)":30,"End Term(40)":40,"Total Marks(100.0)":100},"data":[{"Sr No.":1,"Unique Id.":240334,"Student Name":"Aditya Goel","Quiz(30)":28,"project(30)":27,"End Term(40)":28,"Total Marks(100.0)":83,"Grading":"a+","Attendance":88},{"Sr No.":2,"Unique Id.":240335,"Student Name":"Anisha Chhanpadia","Quiz(30)":23,"project(30)":23,"End Term(40)":30,"Total Marks(100.0)":76,"Grading":"a+","Attendance":87},{"Sr No.":3,"Unique Id.":240336,"Student Name":"Dhruv Singla","Quiz(30)":25,"project(30)":22,"End Term(40)":33,"Total Marks(100.0)":80,"Grading":"a+","Attendance":93},{"Sr No.":4,"Unique Id.":240337,"Student Name":"Dorjee Phinjo Sona","Quiz(30)":24,"project(30)":30,"End Term(40)":20,"Total Marks(100.0)":74,"Grading":"a+","Attendance":88},{"Sr No.":5,"Unique Id.":240338,"Student Name":"EENA CHAUDHARY","Quiz(30)":21,"project(30)":24,"End Term(40)":20,"Total Marks(100.0)":65,"Grading":"a+","Attendance":77},{"Sr No.":6,"Unique Id.":240339,"Student Name":"Eshaan Chandra","Quiz(30)":26,"project(30)":29,"End Term(40)":26,"Total Marks(100.0)":81,"Grading":"a+","Attendance":88},{"Sr No.":7,"Unique Id.":240340,"Student Name":"Hardik Rustagi","Quiz(30)":24,"project(30)":27,"End Term(40)":20,"Total Marks(100.0)":71,"Grading":"a+","Attendance":99},{"Sr No.":8,"Unique Id.":240341,"Student Name":"Harsh Gupta","Quiz(30)":30,"project(30)":29,"End Term(40)":33,"Total Marks(100.0)":92,"Grading":"a+","Attendance":81},{"Sr No.":9,"Unique Id.":240342,"Student Name":"Jiya Gera","Quiz(30)":25,"project(30)":20,"End Term(40)":20,"Total Marks(100.0)":65,"Grading":"a+","Attendance":92},{"Sr No.":10,"Unique Id.":240343,"Student Name":"Keshav Gupta","Quiz(30)":25,"project(30)":20,"End Term(40)":40,"Total Marks(100.0)":85,"Grading":"a+","Attendance":93}]},"targetAttainment":{"CO1":{"full":85,"partial":55},"CO2":{"full":85,"partial":55},"CO3":{"full":85,"partial":55}},"mergePDF":"1741317159pratyut_cv.pdf","feedbackData":{"quantitativeFeedback":"4.37","qualitativeFeedback":"course was good"},"facultyCourseReview":"lol this field never was suppose to even work how did it work good question!!!!!"}]
+[
+    {
+        "filename": "1740972177CourseHandout(Seminar Case Study Bactch 2021-25).pdf",
+        "done": 1,
+        "Program": 10,
+        "course_name": "Seminar/Case Studies",
+        "course_description": "The main objective of this course is to introduce students to different data structures and illustrate their effective use in solving technical and logical problems. The course comprehensively explores different problem-solving techniques and skills. Proficiency in problem-solving skills is a fundamental expectation for any competent developer, as these concepts are commonly assessed by reputable companies during the screening process for software developer positions. The primary emphasis will be on achieving a deep understanding of data structures, their implementation, practical applications through problem-solving scenarios, exploring various programming paradigms, algorithm analysis, and the practical application of different data structures and algorithms. This course explores the fundamental workings of algorithms and data structures, which lie at its core essence.",
+        "Course Syllabus": [
+            {
+                "srNo": 1,
+                "content": "Linear Search, Maximum in an Array, Sorting(Selection, Bubble and Insertion), Binary search, Kadane's Algo-O(N), Merge two sorted arrays, Rotate Array anti clock wise by k times, Unique Number-1, and tell about bitwise operators, Basics of strings, String methods, String builder, Mutable and Immutable concepts, 2D Arrays: Wave Print, Spiral Print, and Transpose",
+                "co": "1",
+                "sessions": 1
+            },
+            {
+                "srNo": 2,
+                "content": "Recursion: Factorial, Fibonacci, isArraySorted, SumofArray, Print Numbers – 1) Increasing Order 2) Decreasing Order, MergeSort, Subsequence, Rat in Maze, N_Stairs, Subset Sum",
+                "co": "2",
+                "sessions": 1
+            },
+            {
+                "srNo": 3,
+                "content": "Stack: stack implementation, Queue implementation, Linkedlist implementation(Add and Delete), Mid (Cycle detection hints), Reverse LinkedList, Merge two Sorted LinkedList, Intersection of two LinkedList, Binary Tree implementation and traversal of binary tree(PreOrder, InOrder and PostOrder), Diameter-O(N^2) and O(N) height, count number of node, Level-Order, Create Tree using Pre and Inorder, Create Tree using level-order, Binary Search Tree implementation, Addition and Deletion",
+                "co": "2",
+                "sessions": 1
+            },
+            {
+                "srNo": 4,
+                "content": "BST to LinkedList, Balanced binary Tree, Valid BST, priority queue Collections, Kth Smallest, Meeting Room-2, Merge k Sorted List, Map and Set Collections (HashMap TreeMap and LinkedHashMap), SubArray using Map related Question",
+                "co": "3",
+                "sessions": 1
+            },
+            {
+                "srNo": 5,
+                "content": "Dynamic Programming: Fib, min Steps to one, coin Changes, LCS, LIS, knapsack, Edit Distance, Graph basic, BFS, DFS, Dijkstra, MST(Prims), bipartite",
+                "co": "1",
+                "sessions": 1
+            }
+        ],
+        "Learning Resources": {
+            "textBooks": [
+                "Cracking the Coding Interview author( Gayle Laakmann McDowell )",
+                "Coding Interview Questions author(Narasimha Karumanchi)"
+            ],
+            "referenceLinks": [
+                "Data Structures and Algorithms Specialization",
+                "NPTEL Data Structures And Algorithms, IIT Delhi"
+            ]
+        },
+        "internalAssessmentData": {
+            "components": {
+                "component1": {
+                    "component": "",
+                    "duration": "",
+                    "weightage": "",
+                    "evaluationWeek": "",
+                    "remarks": ""
+                }
+            }
+        },
+        "copoMappingData": {
+            "courseOutcomes": {
+                "CO1": {
+                    "description": "",
+                    "bullets": []
+                },
+                "CO2": {
+                    "description": "",
+                    "bullets": []
+                },
+                "CO3": {
+                    "description": "",
+                    "bullets": []
+                }
+            },
+            "mappingData": {
+                "CO1": {
+                    "PO1": "",
+                    "PO2": "",
+                    "PO3": "2",
+                    "PO4": "2",
+                    "PO5": "2",
+                    "PO6": ""
+                },
+                "CO2": {
+                    "PO1": "",
+                    "PO2": "",
+                    "PO3": "",
+                    "PO4": "",
+                    "PO5": "",
+                    "PO6": ""
+                },
+                "CO3": {
+                    "PO1": "",
+                    "PO2": "3",
+                    "PO3": "3",
+                    "PO4": "2",
+                    "PO5": "",
+                    "PO6": ""
+                }
+            }
+        },
+        "weeklyTimetableData": {
+            "entries": [
+                {
+                    "id": 1742319514510,
+                    "day": "Monday",
+                    "hour": 9,
+                    "period": "AM",
+                    "duration": 1
+                },
+                {
+                    "id": 1742319523445,
+                    "day": "Monday",
+                    "hour": 9,
+                    "period": "AM",
+                    "duration": 1
+                }
+            ]
+        },
+        "actionsForWeakStudentsData": [
+            "we beat them"
+        ],
+        "course_code": "ABC1404",
+        "Module/Semester": "5th",
+        "Session": "2024-25",
+        "coWeightages": {
+            "CO1": {
+                "assignment": "30",
+                "end term examination": "40",
+                "group presentation": "30",
+                "individual class participation": "30",
+                "mid term exam": "100",
+                "role play": "100"
+            },
+            "CO2": {
+                "assignment": "30",
+                "end term examination": "30",
+                "group presentation": "30",
+                "individual class participation": "30",
+                "mid term exam": "0",
+                "role play": "0"
+            },
+            "CO3": {
+                "assignment": "40",
+                "end term examination": "30",
+                "group presentation": "40",
+                "individual class participation": "40",
+                "mid term exam": "0",
+                "role play": "0"
+            }
+        },
+        "coAttainmentCriteria": {
+            "CO1": {
+                "full": 55,
+                "partial": 30
+            },
+            "CO2": {
+                "full": 55,
+                "partial": 30
+            },
+            "CO3": {
+                "full": 55,
+                "partial": 30
+            }
+        },
+        "studentData": {
+            "maxMarks": {
+                "Assignment": "10",
+                "End term examination": "40",
+                "Group Presentation": "10",
+                "Individual Class Participation": "10",
+                "Mid Term Exam": "20",
+                "Role Play": "10",
+                "Total Marks(100.0)": 100
+            },
+            "data": [
+                {
+                    "Sr.No": 1,
+                    "Unique Id.": "240334",
+                    "Student Name": "Aditya  Goel",
+                    "Assignment": "8.5",
+                    "End term examination": "0.0",
+                    "Group Presentation": "9.0",
+                    "Individual Class Participation": "0.0",
+                    "Mid Term Exam": "6.5",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "32.00",
+                    "Grading": "F",
+                    "Attendance": "75.00"
+                },
+                {
+                    "Sr.No": 2,
+                    "Unique Id.": "240335",
+                    "Student Name": "Anisha  Chhanpadia",
+                    "Assignment": "8.5",
+                    "End term examination": "21.0",
+                    "Group Presentation": "9.0",
+                    "Individual Class Participation": "9.0",
+                    "Mid Term Exam": "10.5",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "66.00",
+                    "Grading": "B+",
+                    "Attendance": "85.19"
+                },
+                {
+                    "Sr.No": 3,
+                    "Unique Id.": "240336",
+                    "Student Name": "Dhruv  Singla",
+                    "Assignment": "8.5",
+                    "End term examination": "24.0",
+                    "Group Presentation": "9.0",
+                    "Individual Class Participation": "1.0",
+                    "Mid Term Exam": "6.0",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "56.50",
+                    "Grading": "C",
+                    "Attendance": "71.43"
+                },
+                {
+                    "Sr.No": 4,
+                    "Unique Id.": "240337",
+                    "Student Name": "Dorjee Phinjo Sona  ",
+                    "Assignment": "8.5",
+                    "End term examination": "18.5",
+                    "Group Presentation": "9.0",
+                    "Individual Class Participation": "7.0",
+                    "Mid Term Exam": "3.0",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "54.00",
+                    "Grading": "C",
+                    "Attendance": "89.29"
+                },
+                {
+                    "Sr.No": 5,
+                    "Unique Id.": "240338",
+                    "Student Name": "EENA  CHAUDHARY",
+                    "Assignment": "9.0",
+                    "End term examination": "29.0",
+                    "Group Presentation": "9.0",
+                    "Individual Class Participation": "8.5",
+                    "Mid Term Exam": "8.0",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "71.50",
+                    "Grading": "B+",
+                    "Attendance": "100.00"
+                },
+                {
+                    "Sr.No": 6,
+                    "Unique Id.": "240339",
+                    "Student Name": "Eshaan  Chandra",
+                    "Assignment": "7.5",
+                    "End term examination": "26.0",
+                    "Group Presentation": "8.5",
+                    "Individual Class Participation": "6.0",
+                    "Mid Term Exam": "8.0",
+                    "Role Play": "7.5",
+                    "Total Marks(100.0)": "63.50",
+                    "Grading": "B",
+                    "Attendance": "85.71"
+                },
+                {
+                    "Sr.No": 7,
+                    "Unique Id.": "240340",
+                    "Student Name": "Hardik  Rustagi",
+                    "Assignment": "9.0",
+                    "End term examination": "21.0",
+                    "Group Presentation": "8.5",
+                    "Individual Class Participation": "7.5",
+                    "Mid Term Exam": "4.5",
+                    "Role Play": "7.5",
+                    "Total Marks(100.0)": "58.00",
+                    "Grading": "C+",
+                    "Attendance": "78.57"
+                },
+                {
+                    "Sr.No": 8,
+                    "Unique Id.": "240341",
+                    "Student Name": "Harsh  Gupta",
+                    "Assignment": "8.0",
+                    "End term examination": "20.0",
+                    "Group Presentation": "7.5",
+                    "Individual Class Participation": "0.0",
+                    "Mid Term Exam": "7.5",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "51.00",
+                    "Grading": "C",
+                    "Attendance": "82.14"
+                },
+                {
+                    "Sr.No": 9,
+                    "Unique Id.": "240342",
+                    "Student Name": "Jiya  Gera",
+                    "Assignment": "8.5",
+                    "End term examination": "26.5",
+                    "Group Presentation": "8.5",
+                    "Individual Class Participation": "7.5",
+                    "Mid Term Exam": "8.5",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "67.50",
+                    "Grading": "B+",
+                    "Attendance": "92.86"
+                },
+                {
+                    "Sr.No": 10,
+                    "Unique Id.": "240343",
+                    "Student Name": "Keshav  Gupta",
+                    "Assignment": "7.5",
+                    "End term examination": "5.0",
+                    "Group Presentation": "8.5",
+                    "Individual Class Participation": "0.0",
+                    "Mid Term Exam": "4.0",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "33.00",
+                    "Grading": "F",
+                    "Attendance": "75.00"
+                },
+                {
+                    "Sr.No": 11,
+                    "Unique Id.": "240345",
+                    "Student Name": "Luvisha  Verma",
+                    "Assignment": "8.0",
+                    "End term examination": "20.0",
+                    "Group Presentation": "7.5",
+                    "Individual Class Participation": "9.5",
+                    "Mid Term Exam": "7.5",
+                    "Role Play": "7.0",
+                    "Total Marks(100.0)": "59.50",
+                    "Grading": "B",
+                    "Attendance": "92.86"
+                },
+                {
+                    "Sr.No": 12,
+                    "Unique Id.": "240346",
+                    "Student Name": "Mehal  Raghav",
+                    "Assignment": "8.0",
+                    "End term examination": "30.0",
+                    "Group Presentation": "7.5",
+                    "Individual Class Participation": "3.0",
+                    "Mid Term Exam": "4.0",
+                    "Role Play": "7.0",
+                    "Total Marks(100.0)": "59.50",
+                    "Grading": "B",
+                    "Attendance": "81.48"
+                },
+                {
+                    "Sr.No": 13,
+                    "Unique Id.": "240347",
+                    "Student Name": "Neha Raju Shinde",
+                    "Assignment": "8.5",
+                    "End term examination": "20.5",
+                    "Group Presentation": "8.5",
+                    "Individual Class Participation": "6.0",
+                    "Mid Term Exam": "6.0",
+                    "Role Play": "7.5",
+                    "Total Marks(100.0)": "57.00",
+                    "Grading": "C+",
+                    "Attendance": "89.29"
+                },
+                {
+                    "Sr.No": 14,
+                    "Unique Id.": "240348",
+                    "Student Name": "Priya  Chadda",
+                    "Assignment": "9.0",
+                    "End term examination": "34.0",
+                    "Group Presentation": "8.5",
+                    "Individual Class Participation": "6.5",
+                    "Mid Term Exam": "16.0",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "82.00",
+                    "Grading": "A",
+                    "Attendance": "85.19"
+                },
+                {
+                    "Sr.No": 15,
+                    "Unique Id.": "240349",
+                    "Student Name": "Purnendu  Vashishtha",
+                    "Assignment": "8.0",
+                    "End term examination": "11.5",
+                    "Group Presentation": "8.0",
+                    "Individual Class Participation": "6.5",
+                    "Mid Term Exam": "8.0",
+                    "Role Play": "7.0",
+                    "Total Marks(100.0)": "49.00",
+                    "Grading": "C",
+                    "Attendance": "96.43"
+                },
+                {
+                    "Sr.No": 16,
+                    "Unique Id.": "240350",
+                    "Student Name": "Sagar  Bista",
+                    "Assignment": "9.5",
+                    "End term examination": "23.0",
+                    "Group Presentation": "8.0",
+                    "Individual Class Participation": "7.5",
+                    "Mid Term Exam": "12.0",
+                    "Role Play": "7.0",
+                    "Total Marks(100.0)": "67.00",
+                    "Grading": "B+",
+                    "Attendance": "96.43"
+                },
+                {
+                    "Sr.No": 17,
+                    "Unique Id.": "240351",
+                    "Student Name": "Shoryaveer  Singh",
+                    "Assignment": "8.0",
+                    "End term examination": "21.5",
+                    "Group Presentation": "0.0",
+                    "Individual Class Participation": "1.0",
+                    "Mid Term Exam": "2.5",
+                    "Role Play": "7.0",
+                    "Total Marks(100.0)": "40.00",
+                    "Grading": "F",
+                    "Attendance": "60.71"
+                },
+                {
+                    "Sr.No": 18,
+                    "Unique Id.": "240352",
+                    "Student Name": "Yash  Garg",
+                    "Assignment": "8.0",
+                    "End term examination": "5.0",
+                    "Group Presentation": "7.0",
+                    "Individual Class Participation": "0.0",
+                    "Mid Term Exam": "2.5",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "30.50",
+                    "Grading": "F",
+                    "Attendance": "71.43"
+                },
+                {
+                    "Sr.No": 19,
+                    "Unique Id.": "240870",
+                    "Student Name": "Sanchi  Narang",
+                    "Assignment": "9.5",
+                    "End term examination": "35.0",
+                    "Group Presentation": "8.0",
+                    "Individual Class Participation": "9.5",
+                    "Mid Term Exam": "17.0",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "87.00",
+                    "Grading": "A+",
+                    "Attendance": "96.43"
+                },
+                {
+                    "Sr.No": 20,
+                    "Unique Id.": "240871",
+                    "Student Name": "Cheshtha  Narang",
+                    "Assignment": "7.5",
+                    "End term examination": "33.0",
+                    "Group Presentation": "9.0",
+                    "Individual Class Participation": "9.5",
+                    "Mid Term Exam": "8.0",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "75.00",
+                    "Grading": "B+",
+                    "Attendance": "96.43"
+                },
+                {
+                    "Sr.No": 21,
+                    "Unique Id.": "240909",
+                    "Student Name": "Nishtha  Arora",
+                    "Assignment": "8.5",
+                    "End term examination": "18.5",
+                    "Group Presentation": "7.5",
+                    "Individual Class Participation": "8.5",
+                    "Mid Term Exam": "17.5",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "68.50",
+                    "Grading": "B+",
+                    "Attendance": "100.00"
+                },
+                {
+                    "Sr.No": 22,
+                    "Unique Id.": "240794",
+                    "Student Name": "Astha  Jaiswal",
+                    "Assignment": "0.0",
+                    "End term examination": "0.0",
+                    "Group Presentation": "0.0",
+                    "Individual Class Participation": "0.0",
+                    "Mid Term Exam": "0.0",
+                    "Role Play": "0.0",
+                    "Total Marks(100.0)": "0.00",
+                    "Grading": "",
+                    "Attendance": "42.86"
+                },
+                {
+                    "Sr.No": 23,
+                    "Unique Id.": "240333",
+                    "Student Name": "Kshitij  Khera",
+                    "Assignment": "9.5",
+                    "End term examination": "15.5",
+                    "Group Presentation": "7.5",
+                    "Individual Class Participation": "4.5",
+                    "Mid Term Exam": "8.5",
+                    "Role Play": "7.0",
+                    "Total Marks(100.0)": "52.50",
+                    "Grading": "C",
+                    "Attendance": "78.57"
+                },
+                {
+                    "Sr.No": 24,
+                    "Unique Id.": "240943",
+                    "Student Name": "Hitansh  Goel",
+                    "Assignment": "8.0",
+                    "End term examination": "11.5",
+                    "Group Presentation": "7.5",
+                    "Individual Class Participation": "4.0",
+                    "Mid Term Exam": "3.5",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "42.50",
+                    "Grading": "D",
+                    "Attendance": "82.14"
+                },
+                {
+                    "Sr.No": 25,
+                    "Unique Id.": "240963",
+                    "Student Name": "Sneha Singh  ",
+                    "Assignment": "8.0",
+                    "End term examination": "26.5",
+                    "Group Presentation": "8.0",
+                    "Individual Class Participation": "5.5",
+                    "Mid Term Exam": "9.5",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "65.50",
+                    "Grading": "B+",
+                    "Attendance": "82.14"
+                }
+            ]
+        },
+        "targetAttainment": {
+            "CO1": {
+                "full": 65,
+                "partial": 40
+            },
+            "CO2": {
+                "full": 65,
+                "partial": 40
+            },
+            "CO3": {
+                "full": 65,
+                "partial": 40
+            }
+        },
+        "mergePDF": "1741317159pratyut_cv.pdf",
+        "feedbackData": {
+            "quantitativeFeedback": "4.37",
+            "qualitativeFeedback": "course was good"
+        },
+        "facultyCourseReview": "lol this field never was suppose to even work how did it work good question!!!!!"
+    }
+]

@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import { TfiPowerOff } from "react-icons/tfi";
 import { RxQuestionMarkCircled } from "react-icons/rx";
 import { HiMenuAlt3 } from "react-icons/hi";
+import { FaRegFilePdf } from "react-icons/fa6";
+import { AiFillDelete } from "react-icons/ai";
+import { IoMdDownload } from "react-icons/io";
 import constants from "../constants";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
-const AsideComp = ({ userEmail, isCollapsed, setIsCollapsed }) => {
+const AsideComp = ({ userEmail, isCollapsed, setIsCollapsed, files }) => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -15,7 +18,7 @@ const AsideComp = ({ userEmail, isCollapsed, setIsCollapsed }) => {
     if (userEmail) {
       setIsLoading(false);
     }
-  }, [navigate]);
+  }, [userEmail]);
 
   const handleLogout = async (e) => {
     e.preventDefault();
@@ -39,6 +42,54 @@ const AsideComp = ({ userEmail, isCollapsed, setIsCollapsed }) => {
       }
     } catch (error) {
       console.error("Error during logout:", error);
+    }
+  };
+
+  const handleDelete = async (fileId) => {
+    const token = localStorage.getItem("token");
+    try {
+      await axios.post(
+        constants.url + "/delete",
+        { id: fileId },
+        {
+          headers: {
+            "x-auth-token": token,
+            "ngrok-skip-browser-warning": "69420"
+          }
+        }
+      );
+      window.location.reload();
+    } catch (error) {
+      console.error("Error deleting file:", error);
+    }
+  };
+
+  const handleDownload = async (fileId) => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.post(
+        constants.url + "/download",
+        { id: fileId },
+        {
+          headers: {
+            "x-auth-token": token,
+            "ngrok-skip-browser-warning": "69420"
+          },
+          responseType: 'blob'
+        }
+      );
+
+      if (response.status === 200) {
+        const url = window.URL.createObjectURL(new Blob([response.data], { type: response.data.type }));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'file.pdf');
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+      }
+    } catch (error) {
+      console.error("Error downloading file:", error);
     }
   };
 
@@ -66,7 +117,7 @@ const AsideComp = ({ userEmail, isCollapsed, setIsCollapsed }) => {
         />
       </button>
 
-      <div className="flex items-center  h-[20%] gap-4">
+      <div className="flex items-center h-[20%] gap-4 px-4 py-6">
         <img
           src="/customer-logo.png"
           alt="BMU Logo"
@@ -80,6 +131,37 @@ const AsideComp = ({ userEmail, isCollapsed, setIsCollapsed }) => {
         </h1>
       </div>
 
+      <div className="flex-1 overflow-auto">
+        {files && files.length > 0 ? (
+          files.map((file, index) => (
+            <div key={index} className="flex items-center justify-between p-4 border-b border-gray-700">
+              <div className="flex items-center gap-2">
+                <FaRegFilePdf className="text-gray-300" size={20} />
+                <span className={`text-gray-300 transition-opacity duration-300 ${isCollapsed ? "opacity-0" : "opacity-100"}`}>
+                  {file.course_name || file.course_code || file.filename || "Unknown Course"}
+                </span>
+              </div>
+              <div className={`flex gap-2 transition-opacity duration-300 ${isCollapsed ? "opacity-0" : "opacity-100"}`}>
+                <button
+                  onClick={() => handleDownload(file.id)}
+                  className="text-blue-500 hover:text-blue-400"
+                >
+                  <IoMdDownload size={20} />
+                </button>
+                <button
+                  onClick={() => handleDelete(file.id)}
+                  className="text-red-500 hover:text-red-400"
+                >
+                  <AiFillDelete size={20} />
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-300 px-4 py-2">No files available.</p>
+        )}
+      </div>
+
       <div className="absolute bottom-4 left-3 w-[90%] text-[#c3c3c3] font-['Lato'] font-thin flex flex-col justify-evenly items-start gap-4">
         <button
           type="button"
@@ -87,7 +169,7 @@ const AsideComp = ({ userEmail, isCollapsed, setIsCollapsed }) => {
         >
           <RxQuestionMarkCircled size={24} className="hover:text-white" />
           <span
-            className={`transition-opacity  font-light text-m duration-300 hover:text-white ${isCollapsed ? "opacity-0" : "opacity-100"
+            className={`transition-opacity font-light text-m duration-300 hover:text-white ${isCollapsed ? "opacity-0" : "opacity-100"
               }`}
           >
             Support
@@ -117,8 +199,10 @@ const AsideComp = ({ userEmail, isCollapsed, setIsCollapsed }) => {
 };
 
 AsideComp.propTypes = {
+  userEmail: PropTypes.string.isRequired,
   isCollapsed: PropTypes.bool.isRequired,
   setIsCollapsed: PropTypes.func.isRequired,
+  files: PropTypes.array.isRequired
 };
 
 export default AsideComp;
