@@ -546,6 +546,112 @@
             "quantitativeFeedback": "4.37",
             "qualitativeFeedback": "course was good"
         },
-        "facultyCourseReview": "lol this field never was suppose to even work how did it work good question!!!!!"
+        "facultyCourseReview": "lol this field never was suppose to even work how did it work good question!!!!!",
+        "learnerCategories": {
+            "advancedLearners": [
+                {
+                    "id": "240335",
+                    "rollNumber": "Anisha  Chhanpadia",
+                    "coScores": {
+                        "CO1": 3,
+                        "CO2": 3,
+                        "CO3": 3
+                    },
+                    "rowAverage": 3
+                },
+                {
+                    "id": "240338",
+                    "rollNumber": "EENA  CHAUDHARY",
+                    "coScores": {
+                        "CO1": 3,
+                        "CO2": 3,
+                        "CO3": 3
+                    },
+                    "rowAverage": 3
+                },
+                {
+                    "id": "240339",
+                    "rollNumber": "Eshaan  Chandra",
+                    "coScores": {
+                        "CO1": 3,
+                        "CO2": 3,
+                        "CO3": 3
+                    },
+                    "rowAverage": 3
+                },
+                {
+                    "id": "240342",
+                    "rollNumber": "Jiya  Gera",
+                    "coScores": {
+                        "CO1": 3,
+                        "CO2": 3,
+                        "CO3": 3
+                    },
+                    "rowAverage": 3
+                },
+                {
+                    "id": "240348",
+                    "rollNumber": "Priya  Chadda",
+                    "coScores": {
+                        "CO1": 3,
+                        "CO2": 3,
+                        "CO3": 3
+                    },
+                    "rowAverage": 3
+                },
+                {
+                    "id": "240350",
+                    "rollNumber": "Sagar  Bista",
+                    "coScores": {
+                        "CO1": 3,
+                        "CO2": 3,
+                        "CO3": 3
+                    },
+                    "rowAverage": 3
+                },
+                {
+                    "id": "240870",
+                    "rollNumber": "Sanchi  Narang",
+                    "coScores": {
+                        "CO1": 3,
+                        "CO2": 3,
+                        "CO3": 3
+                    },
+                    "rowAverage": 3
+                },
+                {
+                    "id": "240871",
+                    "rollNumber": "Cheshtha  Narang",
+                    "coScores": {
+                        "CO1": 3,
+                        "CO2": 3,
+                        "CO3": 3
+                    },
+                    "rowAverage": 3
+                },
+                {
+                    "id": "240909",
+                    "rollNumber": "Nishtha  Arora",
+                    "coScores": {
+                        "CO1": 3,
+                        "CO2": 3,
+                        "CO3": 3
+                    },
+                    "rowAverage": 3
+                },
+                {
+                    "id": "240963",
+                    "rollNumber": "Sneha Singh  ",
+                    "coScores": {
+                        "CO1": 3,
+                        "CO2": 3,
+                        "CO3": 3
+                    },
+                    "rowAverage": 3
+                }
+            ],
+            "mediumLearners": [],
+            "slowLearners": []
+        }
     }
 ]

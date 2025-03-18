@@ -122,23 +122,24 @@ const FeedbackForm = (props) => {
     setTargetAttainment(criteria);
   };
 
-const [learnerCategories, setLearnerCategories] = useState({
-  advancedLearners: [],
-  mediumLearners: [],
-  slowLearners: []
-});
-
-const handleLearners = (categories) => {
-  setLearnerCategories(categories);
-};
-
-useEffect(() => {
-  setLearnerCategories(props.learnerCategories || {
+  const [learnerCategories, setLearnerCategories] = useState({
     advancedLearners: [],
     mediumLearners: [],
     slowLearners: []
   });
-}, [props.learnerCategories]);
+
+  const handleLearners = (categories) => {
+    console.log("this ran");
+    setLearnerCategories(categories);
+  };
+
+  useEffect(() => {
+    setLearnerCategories(props.learnerCategories || {
+      advancedLearners: [],
+      mediumLearners: [],
+      slowLearners: []
+    });
+  }, [props.learnerCategories]);
 
   const [studentData, setStudentData] = useState([]);
 
@@ -337,7 +338,7 @@ useEffect(() => {
     7: 'BA (Hons) Libreral Arts',
     8: 'BA LLB (Hons)',
     9: 'BBA LLB (Hons)',
-    10:'MBA'
+    10: 'MBA'
   };
 
   const SearchableDropdown = ({ options, value, onChange }) => {
@@ -481,6 +482,7 @@ useEffect(() => {
             targetAttainment,
             feedbackData,
             facultyCourseReview,
+            learnerCategories,
           },
           {
             headers: {
@@ -527,8 +529,8 @@ useEffect(() => {
           <button
             onClick={postData}
             className={`${isWeightageValid && validateCriteria() && selectedProgram !== 0 && isCourseCodeValid
-                ? "bg-[#FFB255] hover:bg-[#f5a543]"
-                : "bg-gray-400 cursor-not-allowed"
+              ? "bg-[#FFB255] hover:bg-[#f5a543]"
+              : "bg-gray-400 cursor-not-allowed"
               } transition-colors text-white font-semibold rounded-lg px-8 py-3 shadow-sm hover:shadow-md transform hover:-translate-y-0.5`}
             disabled={!isWeightageValid || !validateCriteria() || selectedProgram === 0 || !isCourseCodeValid}
           >
@@ -797,32 +799,32 @@ useEffect(() => {
 
         {/* Weekly Time-Table */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
-  <div className="flex items-center gap-4 mb-6">
-    <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-      15
-    </div>
-    <h2 className="text-xl font-semibold text-gray-800">
-      Weekly Time-Table
-    </h2>
-  </div>
-  <div className="p-4 rounded-lg">
-    {selectedProgram === 6 || selectedProgram === 10    ? ( // 6 is Integrated BBA MBA
-      <MBAWeeklyTimetable
-        initialData={weeklyTimetableData}
-        onChange={(newTimetable) => {
-          setWeeklyTimetableData(newTimetable);
-        }}
-      />
-    ) : (
-      <WeeklyTimetable
-        initialData={weeklyTimetableData}
-        onChange={(newTimetable) => {
-          setWeeklyTimetableData(newTimetable);
-        }}
-      />
-    )}
-  </div>
-</div>
+          <div className="flex items-center gap-4 mb-6">
+            <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+              15
+            </div>
+            <h2 className="text-xl font-semibold text-gray-800">
+              Weekly Time-Table
+            </h2>
+          </div>
+          <div className="p-4 rounded-lg">
+            {selectedProgram === 6 || selectedProgram === 10 ? ( // 6 is Integrated BBA MBA
+              <MBAWeeklyTimetable
+                initialData={weeklyTimetableData}
+                onChange={(newTimetable) => {
+                  setWeeklyTimetableData(newTimetable);
+                }}
+              />
+            ) : (
+              <WeeklyTimetable
+                initialData={weeklyTimetableData}
+                onChange={(newTimetable) => {
+                  setWeeklyTimetableData(newTimetable);
+                }}
+              />
+            )}
+          </div>
+        </div>
 
         {/* Actions for Weak Students */}
         <ActionsForWeakStudents

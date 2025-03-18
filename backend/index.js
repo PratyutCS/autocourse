@@ -502,6 +502,7 @@ app.post("/form", auth, async (req, res) => {
         jsonData[num]["studentData"] = req.body.studentData || "";
         jsonData[num]["feedbackData"] = req.body.feedbackData || "";
         jsonData[num]["facultyCourseReview"] = req.body.facultyCourseReview || "";
+        jsonData[num]["learnerCategories"] = req.body.learnerCategories || {};
 
         // Include weeklyTimetableData
         if (req.body.weeklyTimetableData) {

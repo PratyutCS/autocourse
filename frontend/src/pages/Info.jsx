@@ -86,6 +86,7 @@ const Info = () => {
             targetAttainment={file["targetAttainment"] || {}}
             feedbackData={file["feedbackData"] || {}}
             facultyCourseReview={file["facultyCourseReview"] || ""}
+            learnerCategories={file["learnerCategories"] || {}}
             />
           ) : (
             <LoadingSpinner />
