@@ -22,6 +22,7 @@ import AdvanceAndWeakStudentIdentification from './AdvanceAndWeakStudentIdentifi
 import FeedbackAndCorrectiveActions from './FeedbackAndCorrectiveActions';
 import FacultyCourseReview from './FacultyCourseReview';
 import CourseCodeInput from './CourseCodeInput';
+import AssessmentSelection from './AssessmentSelection';
 
 import ExcelToJson from './ExcelToJson';
 
@@ -194,6 +195,14 @@ const FeedbackForm = (props) => {
       setIsCourseCodeValid(false);
     }
   };
+
+  const [selectedAssessments, setSelectedAssessments] = useState(props.selectedAssessments || []);
+
+  useEffect(() => {
+    setSelectedAssessments(props.selectedAssessments || []);
+  }, [props.selectedAssessments]);
+
+
 
 
   /////////////////////////////////////////**Use Effect**//////////////////////////
@@ -483,6 +492,7 @@ const FeedbackForm = (props) => {
             feedbackData,
             facultyCourseReview,
             learnerCategories,
+            selectedAssessments,
           },
           {
             headers: {
@@ -733,6 +743,22 @@ const FeedbackForm = (props) => {
           }}
           onValidationChange={(isValid) => setIsWeightageValid(isValid)}
         />
+
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+              9
+            </div>
+            <h2 className="section-title text-xl font-semibold">
+              Select Assessments for Analysis
+            </h2>
+          </div>
+          <AssessmentSelection
+            studentData={studentData}
+            selectedAssessments={selectedAssessments}
+            onChange={(selected) => setSelectedAssessments(selected)}
+          />
+        </div>
 
         <COAttainmentCriteria
           copoMappingData={copoMappingData}

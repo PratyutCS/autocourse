@@ -87,6 +87,7 @@ const Info = () => {
             feedbackData={file["feedbackData"] || {}}
             facultyCourseReview={file["facultyCourseReview"] || ""}
             learnerCategories={file["learnerCategories"] || {}}
+            selectedAssessments={file["selectedAssessments"] || []}
             />
           ) : (
             <LoadingSpinner />

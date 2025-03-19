@@ -467,8 +467,8 @@ app.post("/form", auth, async (req, res) => {
           else {
             let firstThree = course_code.substring(0, 3);
             let lastFour = course_code.substring(3);
-            console.log("firstthree: " + firstThree);
-            console.log("lastfour: " + lastFour);
+            // console.log("firstthree: " + firstThree);
+            // console.log("lastfour: " + lastFour);
 
             let isFirstThreeAlpha = /^[a-zA-Z]+$/.test(firstThree);
 
@@ -503,6 +503,7 @@ app.post("/form", auth, async (req, res) => {
         jsonData[num]["feedbackData"] = req.body.feedbackData || "";
         jsonData[num]["facultyCourseReview"] = req.body.facultyCourseReview || "";
         jsonData[num]["learnerCategories"] = req.body.learnerCategories || {};
+        jsonData[num]["selectedAssessments"] = req.body.selectedAssessments || [];
 
         // Include weeklyTimetableData
         if (req.body.weeklyTimetableData) {
