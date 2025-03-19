@@ -88,6 +88,7 @@ const Info = () => {
             facultyCourseReview={file["facultyCourseReview"] || ""}
             learnerCategories={file["learnerCategories"] || {}}
             selectedAssessments={file["selectedAssessments"] || []}
+            par_sem_slowLearner={file["par_sem_slowLearner"] || []}
             />
           ) : (
             <LoadingSpinner />

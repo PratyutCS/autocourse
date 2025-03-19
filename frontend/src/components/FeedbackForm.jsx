@@ -204,6 +204,12 @@ const FeedbackForm = (props) => {
 
 
 
+  const [par_sem_slowLearner, setPar_sem_slowLearner] = useState(props.par_sem_slowLearner || []);
+
+  useEffect(() => {
+    setPar_sem_slowLearner(props.par_sem_slowLearner || []);
+  }, [props.par_sem_slowLearner]);
+
 
   /////////////////////////////////////////**Use Effect**//////////////////////////
 
@@ -493,6 +499,7 @@ const FeedbackForm = (props) => {
             facultyCourseReview,
             learnerCategories,
             selectedAssessments,
+            par_sem_slowLearner,
           },
           {
             headers: {
@@ -750,7 +757,7 @@ const FeedbackForm = (props) => {
               9
             </div>
             <h2 className="section-title text-xl font-semibold">
-              Select Assessments for Analysis
+              Select Assessments for Partial Semester Slow Learner Analysis
             </h2>
           </div>
           <AssessmentSelection
