@@ -486,11 +486,34 @@ app.post("/form", auth, async (req, res) => {
         }
 
 
+        const courseTitle = req.body.coursetitle || "";
+        if (courseTitle !== "" && courseTitle.length > 128) {
+          courseTitle = courseTitle.substring(0, 128);
+        }
+        jsonData[num]['course_name'] = courseTitle;
 
-        jsonData[num]['course_name'] = req.body.coursetitle || "";
-        jsonData[num]['Module/Semester'] = req.body.module || "";
-        jsonData[num]['Session'] = req.body.session || "";
-        jsonData[num]["course_description"] = req.body.EditableCourseDescriptionData || "";
+
+        let moduleValue = req.body.module || "";
+        if (moduleValue !== "" && moduleValue.length > 10) {
+          moduleValue = moduleValue.substring(0, 10);
+        }
+        jsonData[num]['Module/Semester'] = moduleValue;
+
+
+        let sessionValue = req.body.session || "";
+        if (sessionValue !== "" && sessionValue.length > 12) {
+          sessionValue = sessionValue.substring(0, 12);
+        }
+        jsonData[num]['Session'] = sessionValue;
+
+
+        let courseDescription = req.body.EditableCourseDescriptionData || "";
+        if (courseDescription !== "" && courseDescription.length > 4096) {
+          courseDescription = courseDescription.substring(0, 4096);
+        }
+        jsonData[num]["course_description"] = courseDescription;
+
+
         jsonData[num]["Course Syllabus"] = req.body.courseSyllabus || "";
         jsonData[num]["Learning Resources"] = req.body.learningResources || "";
         jsonData[num]["copoMappingData"] = req.body.copoMappingData || "";
@@ -500,8 +523,40 @@ app.post("/form", auth, async (req, res) => {
         jsonData[num]["coAttainmentCriteria"] = req.body.coAttainmentCriteria || "";
         jsonData[num]["targetAttainment"] = req.body.targetAttainment || "";
         jsonData[num]["studentData"] = req.body.studentData || "";
-        jsonData[num]["feedbackData"] = req.body.feedbackData || "";
-        jsonData[num]["facultyCourseReview"] = req.body.facultyCourseReview || "";
+
+
+        let feedbackData = req.body.feedbackData || {};
+
+        // Validate quantitativeFeedback
+        let quantitative = parseFloat(feedbackData.quantitativeFeedback);
+        if (isNaN(quantitative)) {
+          quantitative = 0.00;
+        }
+        if (quantitative > 5.00) {
+          quantitative = 5.00;
+        } else if (quantitative < 0.00) {
+          quantitative = 0.00;
+        }
+        // Optionally, format the number to two decimal places:
+        feedbackData.quantitativeFeedback = quantitative.toFixed(2);
+
+        // Validate qualitativeFeedback
+        let qualitative = feedbackData.qualitativeFeedback || "";
+        if (qualitative !== "" && qualitative.length > 4096) {
+          qualitative = qualitative.substring(0, 4096);
+        }
+        feedbackData.qualitativeFeedback = qualitative;
+
+        jsonData[num]["feedbackData"] = feedbackData;
+
+
+        let facultyCourseReview = req.body.facultyCourseReview || "";
+        if (facultyCourseReview !== "" && facultyCourseReview.length > 4096) {
+          facultyCourseReview = facultyCourseReview.substring(0, 4096);
+        }
+        jsonData[num]["facultyCourseReview"] = facultyCourseReview;
+
+
         jsonData[num]["learnerCategories"] = req.body.learnerCategories || {};
         jsonData[num]["selectedAssessments"] = req.body.selectedAssessments || [];
         jsonData[num]["par_sem_slowLearner"] = req.body.par_sem_slowLearner || [];
