@@ -912,19 +912,33 @@ def create_co_attainment_analysis(doc, data):
             set_cell_border(cell, 'left', 4, '000000')
             set_cell_border(cell, 'right', 4, '000000')
     
+    # Set narrower column widths similar to attendance report table
+    # First column wider for labels, subsequent columns narrower for data
+    col_widths = [Inches(3)] + [Inches(2)] * len(cos)
+    set_table_column_widths(summary_table, col_widths)
+    
+    # Center align the table
     summary_table.alignment = WD_TABLE_ALIGNMENT.CENTER
-
+    
+    # Make sure the table width is controlled
+    summary_table.autofit = False
+    
+    # Reduce font size for better fit
+    for row in summary_table.rows:
+        for cell in row.cells:
+            for paragraph in cell.paragraphs:
+                for run in paragraph.runs:
+                    run.font.size = Pt(9)  # Smaller font size for compact table
+    
     # Make sure rows don't split across pages
     prevent_table_row_breaks(summary_table)
+    doc.add_paragraph()
+    doc.add_paragraph()
     
     # Add percentage scored ≥ 3 chart below the summary table
-    doc.add_paragraph().add_run('Percentage of Students Scored ≥ 3').bold = True
-    doc.add_paragraph()
     add_percentage_scored3_chart(doc, result, cos)
     doc.add_paragraph()
     
-    # 2. Generate Program Attainment Table on a new page
-    # Get ALL possible POs from the mapping data
     all_pos = set()
     for co, po_mappings in data.get('copoMappingData', {}).get('mappingData', {}).items():
         all_pos.update(po_mappings.keys())
@@ -974,8 +988,6 @@ def create_co_attainment_analysis(doc, data):
         prevent_table_row_breaks(program_table)
         
         # Add program attainment chart
-        doc.add_paragraph().add_run('Program Attainment Chart').bold = True
-        doc.add_paragraph()
         add_program_attainment_chart(doc, result, pos)
         doc.add_paragraph()
     
@@ -1034,9 +1046,6 @@ def create_co_attainment_analysis(doc, data):
         
         student_table.alignment = WD_TABLE_ALIGNMENT.CENTER
         
-        # Add course outcome attainment chart
-        doc.add_paragraph().add_run('Course Outcome Attainment').bold = True
-        doc.add_paragraph()
         add_course_attainment_chart(doc, result, cos)
         doc.add_paragraph()
 
@@ -1452,6 +1461,7 @@ def create_learner_categorization(doc, data):
     summary_heading.runs[0].font.size = Pt(14)
     doc.add_paragraph()
     
+    # Create the summary table with proper alignment
     summary_table = doc.add_table(rows=4, cols=2)
     summary_table.autofit = False
     
@@ -1460,12 +1470,9 @@ def create_learner_categorization(doc, data):
     header_cells[0].text = "Learner Category"
     header_cells[1].text = "Number of Students"
     
-    for cell in header_cells:
-        for paragraph in cell.paragraphs:
-            for run in paragraph.runs:
-                run.bold = True
-                run.font.size = Pt(12)
-            paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    # Format header cells using the format_cell helper function
+    format_cell(header_cells[0], bold=True, alignment=WD_ALIGN_PARAGRAPH.CENTER)
+    format_cell(header_cells[1], bold=True, alignment=WD_ALIGN_PARAGRAPH.CENTER)
     
     # Data rows
     categories = [
@@ -1479,17 +1486,19 @@ def create_learner_categorization(doc, data):
         row.cells[0].text = category
         row.cells[1].text = str(count)
         
-        # Format cells
-        for cell in row.cells:
-            for paragraph in cell.paragraphs:
-                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                for run in paragraph.runs:
-                    run.font.size = Pt(11)
+        # Format cells using the format_cell helper function
+        format_cell(row.cells[0], bold=False, alignment=WD_ALIGN_PARAGRAPH.CENTER)
+        format_cell(row.cells[1], bold=False, alignment=WD_ALIGN_PARAGRAPH.CENTER)
     
-    # Set column widths and add borders
-    summary_table.columns[0].width = Inches(3.0)
-    summary_table.columns[1].width = Inches(2.0)
+    # Set column widths like in the reference table
+    col_widths = [Inches(3), Inches(3)]
+    set_table_column_widths(summary_table, col_widths)
+    
+    # Center align the table
     summary_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    
+    # Make sure the table width is controlled
+    summary_table.autofit = False
     
     # Add borders to summary table
     for row in summary_table.rows:
@@ -1498,6 +1507,16 @@ def create_learner_categorization(doc, data):
             set_cell_border(cell, 'bottom', 4, '000000')
             set_cell_border(cell, 'left', 4, '000000')
             set_cell_border(cell, 'right', 4, '000000')
+    
+    # Reduce font size for better fit
+    for row in summary_table.rows:
+        for cell in row.cells:
+            for paragraph in cell.paragraphs:
+                for run in paragraph.runs:
+                    run.font.size = Pt(9)  # Smaller font size for compact table
+    
+    # Make sure rows don't split across pages
+    prevent_table_row_breaks(summary_table)
     
     doc.add_paragraph().add_run().add_break()
     
@@ -1516,22 +1535,17 @@ def create_learner_categorization(doc, data):
     header_cells[0].text = "Student Name"
     header_cells[1].text = "Category"
     
+    # Format header cells using the format_cell helper function
+    format_cell(header_cells[0], bold=True, alignment=WD_ALIGN_PARAGRAPH.CENTER)
+    format_cell(header_cells[1], bold=True, alignment=WD_ALIGN_PARAGRAPH.CENTER)
+    
     for i, co in enumerate(cos):
         header_cells[i + 2].text = co
+        format_cell(header_cells[i + 2], bold=True, alignment=WD_ALIGN_PARAGRAPH.CENTER)
     
-    # Format header row
-    for cell in header_cells:
-        for paragraph in cell.paragraphs:
-            paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            for run in paragraph.runs:
-                run.bold = True
-                run.font.size = Pt(11)
-    
-    # Set column widths
-    student_table.columns[0].width = Inches(3.0)
-    student_table.columns[1].width = Inches(1.5)
-    for i in range(2, len(cos) + 2):
-        student_table.columns[i].width = Inches(0.8)
+    # Set appropriate column widths like in the reference table
+    col_widths = [Inches(2.0), Inches(2.0)] + [Inches(0.6)] * len(cos)
+    set_table_column_widths(student_table, col_widths)
     
     # Add all students to table with color coding
     # Sort students by category: advanced first, then medium, then slow
@@ -1556,11 +1570,16 @@ def create_learner_categorization(doc, data):
         row.cells[0].text = student.get("rollNumber", "")
         row.cells[1].text = category
         
+        # Format cells
+        format_cell(row.cells[0], bold=False, alignment=WD_ALIGN_PARAGRAPH.CENTER)
+        format_cell(row.cells[1], bold=False, alignment=WD_ALIGN_PARAGRAPH.CENTER)
+        
         # Add CO scores
         for i, co in enumerate(cos):
             row.cells[i + 2].text = str(student['coScores'].get(co, ""))
+            format_cell(row.cells[i + 2], bold=False, alignment=WD_ALIGN_PARAGRAPH.CENTER)
         
-        # Apply shading to EACH cell in the row individually
+        # Apply shading to each cell in the row individually
         for cell in row.cells:
             # Get cell properties
             tc_pr = cell._tc.get_or_add_tcPr()
@@ -1578,12 +1597,12 @@ def create_learner_categorization(doc, data):
             
             # Add new shading
             tc_pr.append(shading)
-            
-            # Format text in cell
-            for paragraph in cell.paragraphs:
-                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                for run in paragraph.runs:
-                    run.font.size = Pt(10)
+    
+    # Center align the table
+    student_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    
+    # Make sure the table width is controlled
+    student_table.autofit = False
     
     # Add borders to student table
     for row in student_table.rows:
@@ -1593,8 +1612,18 @@ def create_learner_categorization(doc, data):
             set_cell_border(cell, 'left', 4, '000000')
             set_cell_border(cell, 'right', 4, '000000')
     
-    student_table.alignment = WD_TABLE_ALIGNMENT.CENTER
-
+    # Reduce font size for better fit
+    for row in student_table.rows:
+        for cell in row.cells:
+            for paragraph in cell.paragraphs:
+                for run in paragraph.runs:
+                    run.font.size = Pt(9)  # Smaller font size for compact table
+    
+    # Make sure rows don't split across pages
+    prevent_table_row_breaks(student_table)
+    
+    # Add a paragraph after the table to ensure proper spacing
+    doc.add_paragraph()
 # Add this function call after create_co_attainment_analysis(doc, data) and before create_actions_doc(data)
 create_learner_categorization(doc, data)
 

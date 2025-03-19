@@ -805,6 +805,104 @@ app.post('/upload-assignment-pdf', auth, (req, res) => {
     }
   });
 });
+// Add this new route for PDF preview functionality
+app.post("/preview", auth, async (req, res) => {
+  const num = req.body.num;
+
+  if (num === undefined) {
+    console.error("Error: 'num' is missing in the request");
+    return res.status(400).json({ message: "Error in /preview: Missing 'num'" });
+  }
+
+  try {
+    const user = await User.findById(req.user);
+    const directoryPath = path.join(__dirname, "/json/", `${user.number}.json`);
+
+    if (!fs.existsSync(directoryPath)) {
+      return res.status(400).json({ message: "File not found" });
+    }
+
+    fs.readFile(directoryPath, "utf8", (err, data) => {
+      if (err) {
+        console.error("Error reading file:", err);
+        return res.status(500).json({ message: "Error reading files" });
+      }
+
+      try {
+        const jsonData = JSON.parse(data);
+        if (num >= jsonData.length || num < 0) {
+          return res.status(400).json({ message: "Invalid 'num' parameter." });
+        }
+
+        const fileData = jsonData[num];
+        if (fileData["done"] !== 1) {
+          return res.status(400).json({ message: "extraction not yet finished" });
+        }
+        const pythonProcess = spawn('python3', ['./extractor/j2d2p.py']);
+
+        // Write JSON to the Python process's stdin and close it to signal we're done
+        pythonProcess.stdin.write(JSON.stringify(fileData));
+        pythonProcess.stdin.end();
+
+        let pdfFileName = fileData['filename'];
+
+        pythonProcess.stdout.on('data', (data) => {
+          console.log(`Python script output (filename): ${pdfFileName}`);
+        });
+
+        pythonProcess.stderr.on('data', (data) => {
+          console.error(`Python script error: ${data}`);
+        });
+
+        pythonProcess.on('close', (code) => {
+          if (code !== 0) {
+            console.error(`Python script exited with code ${code}`);
+            return res.status(500).json({ message: "Error processing the file" });
+          }
+
+          const pdfFilePath = path.join(__dirname, "download", pdfFileName);
+
+          if (!fs.existsSync(pdfFilePath)) {
+            console.error("PDF file not found:", pdfFilePath);
+            return res.status(500).json({ message: "PDF file not found" });
+          }
+
+          // Instead of triggering download, return the file path
+          res.status(200).json({ 
+            message: "PDF generated successfully",
+            pdfUrl: `/view-pdf/${pdfFileName}`
+          });
+        });
+      } catch (parseError) {
+        console.error("Error parsing JSON data:", parseError);
+        res.status(500).json({ message: "Error parsing JSON data" });
+      }
+    });
+  } catch (error) {
+    console.error("Error in /preview route:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Add a new route to serve the PDF for viewing
+app.get("/view-pdf/:filename", auth, (req, res) => {
+  const { filename } = req.params;
+  const filePath = path.join(__dirname, "download", filename);
+
+  // Check if file exists
+  if (!fs.existsSync(filePath)) {
+    console.error("PDF file not found:", filePath);
+    return res.status(404).json({ message: "PDF file not found" });
+  }
+
+  // Set appropriate headers for PDF viewing
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+  
+  // Stream the file to the client
+  const fileStream = fs.createReadStream(filePath);
+  fileStream.pipe(res);
+});
 
 // Delete endpoint for assignment PDFs
 app.post('/delete-assignment-pdf', auth, async (req, res) => {

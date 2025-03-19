@@ -72,7 +72,7 @@ const FeedbackAndCorrectiveActions = ({ initialData, onSave }) => {
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
       <div className="flex items-center gap-4 mb-6">
         <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-          16
+          21
         </div>
         <h2 className="text-xl font-semibold text-gray-800">
           Feedback (class committee or otherwise) and corrective actions (if any)

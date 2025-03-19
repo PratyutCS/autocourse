@@ -289,7 +289,7 @@ const COAttainmentAnalysis = ({
     <div className="bg-white rounded-lg p-6 border border-black/5 border-opacity-10">
       <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              13
+              14
             </div>
             <h2 className="section-title text-xl font-semibold">
               Course Attainment Analysis

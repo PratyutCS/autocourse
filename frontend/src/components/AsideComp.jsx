@@ -12,6 +12,7 @@ import PropTypes from "prop-types";
 
 const AsideComp = ({ userEmail, isCollapsed, setIsCollapsed, files }) => {
   const [isLoading, setIsLoading] = useState(true);
+  const [hoveredFileId, setHoveredFileId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,7 +46,8 @@ const AsideComp = ({ userEmail, isCollapsed, setIsCollapsed, files }) => {
     }
   };
 
-  const handleDelete = async (fileId) => {
+  const handleDelete = async (fileId, e) => {
+    e.stopPropagation();
     const token = localStorage.getItem("token");
     try {
       await axios.post(
@@ -64,7 +66,8 @@ const AsideComp = ({ userEmail, isCollapsed, setIsCollapsed, files }) => {
     }
   };
 
-  const handleDownload = async (fileId) => {
+  const handleDownload = async (fileId, e) => {
+    e.stopPropagation();
     const token = localStorage.getItem("token");
     try {
       const response = await axios.post(
@@ -96,81 +99,129 @@ const AsideComp = ({ userEmail, isCollapsed, setIsCollapsed, files }) => {
   if (isLoading) {
     return (
       <aside className="w-[20vw] h-full bg-[#323439] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-300"></div>
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-300"></div>
       </aside>
     );
   }
 
   return (
     <aside
-      className={`relative flex flex-col bg-[#323439] h-full transition-all duration-300 ease-in-out ${isCollapsed ? "w-[4vw]" : "w-[20vw]"
-        }`}
+      className={`relative flex flex-col bg-[#323439] h-full shadow-lg transition-all duration-300 ease-in-out ${
+        isCollapsed ? "w-[4vw]" : "w-[20vw]"
+      }`}
     >
+      {/* Collapsible button with improved styling */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute right-[-12px] top-6 bg-[#323439] rounded-full p-1 hover:bg-[#3a3c42] transition-colors z-10"
+        className="absolute right-[-12px] top-6 bg-[#323439] rounded-full p-1.5 hover:bg-[#3a3c42] transition-colors z-10 shadow-md"
+        aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
         <HiMenuAlt3
           size={20}
-          className={`text-gray-300 transform transition-transform duration-300 ${isCollapsed ? "rotate-180" : ""
-            }`}
+          className={`text-gray-300 transform transition-transform duration-300 ${
+            isCollapsed ? "rotate-180" : ""
+          }`}
         />
       </button>
 
-      <div className="flex items-center h-[20%] gap-4 px-4 py-6">
+      {/* Header with logo */}
+      <div className="flex items-center h-[20%] gap-4 px-5 py-6 border-b border-gray-700/30">
         <img
           src="/customer-logo.png"
           alt="BMU Logo"
           className="h-[7vh] w-auto"
         />
         <h1
-          className={`font-['Nunito'] font-light text-[#c3c3c3] text-[2vmin] transition-opacity duration-300 ${isCollapsed ? "opacity-0" : "opacity-100"
-            }`}
+          className={`font-['Nunito'] font-light text-[#c3c3c3] text-[2vmin] transition-opacity duration-300 ${
+            isCollapsed ? "opacity-0 w-0" : "opacity-100"
+          }`}
         >
           Bml Munjal University
         </h1>
       </div>
 
-      <div className="flex-1 overflow-auto">
+      {/* Files section with improved styling */}
+      <div className="flex-1 overflow-auto py-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+        <h2 className={`text-gray-400 font-medium px-5 py-2 text-sm uppercase tracking-wider ${isCollapsed ? "opacity-0" : "opacity-100"}`}>
+          Your Files
+        </h2>
         {files && files.length > 0 ? (
           files.map((file, index) => (
-            <div key={index} className="flex items-center justify-between p-4 border-b border-gray-700">
-              <div className="flex items-center gap-2">
-                <FaRegFilePdf className="text-gray-300" size={20} />
-                <span className={`text-gray-300 transition-opacity duration-300 ${isCollapsed ? "opacity-0" : "opacity-100"}`}>
-                  {file.course_name || file.course_code || file.filename || "Unknown Course"}
-                </span>
-              </div>
-              <div className={`flex gap-2 transition-opacity duration-300 ${isCollapsed ? "opacity-0" : "opacity-100"}`}>
-                <button
-                  onClick={() => handleDownload(file.id)}
-                  className="text-blue-500 hover:text-blue-400"
-                >
-                  <IoMdDownload size={20} />
-                </button>
-                <button
-                  onClick={() => handleDelete(file.id)}
-                  className="text-red-500 hover:text-red-400"
-                >
-                  <AiFillDelete size={20} />
-                </button>
+            <div 
+              key={index} 
+              className="mx-2 my-1 rounded-md hover:bg-[#3a3c42] transition-all duration-200"
+              onMouseEnter={() => setHoveredFileId(file.id)}
+              onMouseLeave={() => setHoveredFileId(null)}
+            >
+              <div className="flex items-center justify-between p-3">
+                <div className="flex items-center gap-3 overflow-hidden">
+                  <div className="flex-shrink-0 bg-[#42444a] p-2 rounded-md">
+                    <FaRegFilePdf className="text-[#e74c3c]" size={isCollapsed ? 16 : 20} />
+                  </div>
+                  <span className={`text-gray-300 font-light truncate transition-opacity duration-300 ${
+                    isCollapsed ? "opacity-0 w-0" : "opacity-100"
+                  }`}>
+                    {file.course_name || file.course_code || file.filename || "Unknown Course"}
+                  </span>
+                </div>
+                <div className={`flex gap-2 transition-opacity duration-300 ${
+                  isCollapsed ? "opacity-0 w-0" : "opacity-100"
+                }`}>
+                  <button
+                    onClick={(e) => handleDownload(file.id, e)}
+                    className="p-1.5 rounded-full hover:bg-[#42444a] transition-colors group"
+                    aria-label="Download file"
+                    title="Download"
+                  >
+                    <IoMdDownload 
+                      size={20} 
+                      className={`${hoveredFileId === file.id ? 'text-emerald-400' : 'text-emerald-600'} 
+                                  group-hover:text-emerald-400 transition-colors`} 
+                    />
+                  </button>
+                  <button
+                    onClick={(e) => handleDelete(file.id, e)}
+                    className="p-1.5 rounded-full hover:bg-[#42444a] transition-colors group"
+                    aria-label="Delete file"
+                    title="Delete"
+                  >
+                    <AiFillDelete 
+                      size={20} 
+                      className={`${hoveredFileId === file.id ? 'text-rose-400' : 'text-rose-600'} 
+                                  group-hover:text-rose-400 transition-colors`} 
+                    />
+                  </button>
+                </div>
               </div>
             </div>
           ))
         ) : (
-          <p className="text-gray-300 px-4 py-2">No files available.</p>
+          <div className="flex flex-col items-center justify-center py-8 px-4">
+            <div className="bg-[#42444a] p-3 rounded-full mb-3">
+              <FaRegFilePdf className="text-gray-400" size={24} />
+            </div>
+            <p className="text-gray-400 text-center text-sm">No files available.</p>
+            <p className={`text-gray-500 text-center text-xs mt-1 ${isCollapsed ? "hidden" : "block"}`}>
+              Upload files to see them here.
+            </p>
+          </div>
         )}
       </div>
 
-      <div className="absolute bottom-4 left-3 w-[90%] text-[#c3c3c3] font-['Lato'] font-thin flex flex-col justify-evenly items-start gap-4">
+      {/* Footer with support and logout */}
+      <div className="mt-auto border-t border-gray-700/30 p-4 space-y-3">
         <button
           type="button"
-          className="flex items-center gap-4 text-[2vmin] hover:text-white transition-colors"
+          className="flex items-center gap-4 w-full px-2 py-2 rounded-md hover:bg-[#3a3c42] transition-colors"
+          aria-label="Get support"
         >
-          <RxQuestionMarkCircled size={24} className="hover:text-white" />
+          <div className="flex-shrink-0 bg-[#42444a] p-2 rounded-full">
+            <RxQuestionMarkCircled size={20} className="text-gray-300" />
+          </div>
           <span
-            className={`transition-opacity font-light text-m duration-300 hover:text-white ${isCollapsed ? "opacity-0" : "opacity-100"
-              }`}
+            className={`text-gray-300 font-light transition-opacity duration-300 ${
+              isCollapsed ? "opacity-0 w-0" : "opacity-100"
+            }`}
           >
             Support
           </span>
@@ -179,16 +230,22 @@ const AsideComp = ({ userEmail, isCollapsed, setIsCollapsed, files }) => {
         <form onSubmit={handleLogout} className="w-full">
           <button
             type="submit"
-            className="flex items-center gap-4 text-[2vmin] hover:text-white transition-colors"
+            className="flex items-center gap-4 w-full px-2 py-2 rounded-md hover:bg-[#3a3c42] transition-colors"
+            aria-label="Logout"
           >
-            <TfiPowerOff size={24} className="hover:text-white" />
+            <div className="flex-shrink-0 bg-[#42444a] p-2 rounded-full">
+              <TfiPowerOff size={20} className="text-[#e74c3c]" />
+            </div>
             <div
-              className={`flex flex-col items-start transition-opacity duration-300 ${isCollapsed ? "opacity-0" : "opacity-100"
-                }`}
+              className={`flex flex-col items-start transition-opacity duration-300 ${
+                isCollapsed ? "opacity-0 w-0" : "opacity-100"
+              }`}
             >
-              <span className="text-m font-light hover:text-white">Logout</span>
+              <span className="text-gray-300 font-light">Logout</span>
               {userEmail && (
-                <p className="font-light text-[#E4F3FF] opacity-[0.3] hover:text-white">{userEmail}</p>
+                <p className="font-light text-[#E4F3FF] opacity-[0.3] text-xs truncate max-w-[150px]">
+                  {userEmail}
+                </p>
               )}
             </div>
           </button>

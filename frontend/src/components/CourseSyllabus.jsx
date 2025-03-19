@@ -95,10 +95,10 @@ const CourseSyllabus = ({ onSave, initialData }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+    <div className="bg-white p-6 rounded-xl  border border-gray-100">
       <div className="flex items-center gap-4 mb-6">
         <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              13
+              16
             </div>
         <h2 className="text-2xl font-semibold text-gray-800">
           Course content and session wise plan

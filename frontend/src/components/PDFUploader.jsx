@@ -190,7 +190,7 @@ const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess, initialFileName })
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
       <div className="flex items-center gap-3 mb-4">
         <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
-          17
+          20
         </div>
         <h2 className="text-xl font-semibold text-gray-800">
           Assignments/Quiz/Projects with Sample Solution
@@ -208,7 +208,7 @@ const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess, initialFileName })
             <div className="flex items-center gap-2">
               <button
                 onClick={handleView}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded transition-colors flex items-center gap-1"
+                className="bg-amber-400 hover:bg-amber-500 text-white px-3 py-1 rounded transition-colors flex items-center gap-1"
                 disabled={uploading}
               >
                 <Eye className="w-4 h-4" /> View

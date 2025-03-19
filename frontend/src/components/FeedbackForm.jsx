@@ -23,6 +23,7 @@ import FeedbackAndCorrectiveActions from './FeedbackAndCorrectiveActions';
 import FacultyCourseReview from './FacultyCourseReview';
 import CourseCodeInput from './CourseCodeInput';
 import AssessmentSelection from './AssessmentSelection';
+import InstructionsCard from './InstructionsCard';
 
 import ExcelToJson from './ExcelToJson';
 
@@ -522,76 +523,94 @@ const FeedbackForm = (props) => {
 
   return (
     <div className="p-5 gap-[2rem] h-screen flex flex-col bg-[#FFFEFD]">
-      <div className="bg-white rounded-xl shadow-md p-5 flex justify-between items-center">
-        <button
-          onClick={() => window.history.back()}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors px-4 py-2 rounded-lg hover:bg-gray-50"
-        >
-          <IoReturnUpBackSharp className="text-xl" />
-          <span className="font-medium">Back to Files</span>
-        </button>
-        <div className="flex items-center gap-4">
-          {!isWeightageValid && (
-            <span className="text-red-600 text-sm flex items-center">
-              <AlertCircle className="w-4 h-4 mr-1" />
-              CO Assessment weightages must add up to 100%
-            </span>
-          )}
-          {!validateCriteria() && (
-            <span className="text-red-600 text-sm flex items-center">
-              <AlertCircle className="w-4 h-4 mr-1" />
-              CO Attainment Criteria fully attained must be greater than partially attained
-            </span>
-          )}
-          <button
-            onClick={postData}
-            className={`${isWeightageValid && validateCriteria() && selectedProgram !== 0 && isCourseCodeValid
-              ? "bg-[#FFB255] hover:bg-[#f5a543]"
-              : "bg-gray-400 cursor-not-allowed"
-              } transition-colors text-white font-semibold rounded-lg px-8 py-3 shadow-sm hover:shadow-md transform hover:-translate-y-0.5`}
-            disabled={!isWeightageValid || !validateCriteria() || selectedProgram === 0 || !isCourseCodeValid}
+      <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col md:flex-row justify-between items-center gap-4 transition-all hover:shadow-xl">
+  {/* Back button with enhanced hover effects */}
+  <button
+    onClick={() => window.history.back()}
+    className="group flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-all duration-300 px-5 py-2.5 rounded-lg hover:bg-gray-100 relative overflow-hidden"
+  >
+    <span className="absolute inset-0 w-0 bg-gray-200 opacity-30 transition-all duration-300 group-hover:w-full"></span>
+    <IoReturnUpBackSharp className="text-xl transform group-hover:-translate-x-1 transition-transform duration-300" />
+    <span className="font-medium relative z-10">Back to Files</span>
+  </button>
+  
+  <div className="flex flex-col md:flex-row items-center gap-4">
+    {/* Validation messages with improved visibility and animations */}
+    {!isWeightageValid && (
+      <span className="text-red-600 text-sm flex items-center bg-red-50 px-3 py-2 rounded-lg animate-pulse">
+        <AlertCircle className="w-4 h-4 mr-2 animate-bounce" />
+        <span>CO Assessment weightages must add up to 100%</span>
+      </span>
+    )}
+    
+    {!validateCriteria() && (
+      <span className="text-red-600 text-sm flex items-center bg-red-50 px-3 py-2 rounded-lg animate-pulse">
+        <AlertCircle className="w-4 h-4 mr-2 animate-bounce" />
+        <span>CO Attainment Criteria fully attained must be greater than partially attained</span>
+      </span>
+    )}
+    
+    {/* Submit button with enhanced interactive effects */}
+    <button
+      onClick={postData}
+      className={`relative overflow-hidden transition-all duration-300 text-white font-semibold rounded-lg px-8 py-3.5
+        ${isWeightageValid && validateCriteria() && selectedProgram !== 0 && isCourseCodeValid
+          ? "bg-[#FFB255] hover:bg-[#f5a543] shadow-md hover:shadow-lg transform hover:-translate-y-1"
+          : "bg-gray-400 cursor-not-allowed opacity-75"
+        }`}
+      disabled={!isWeightageValid || !validateCriteria() || selectedProgram === 0 || !isCourseCodeValid}
+    >
+      <span className={`absolute inset-0 h-full w-full bg-white opacity-10 
+        ${isWeightageValid && validateCriteria() && selectedProgram !== 0 && isCourseCodeValid ? "animate-pulse-slow" : ""}`}>
+      </span>
+      
+      <div className="flex items-center gap-2">
+        <span className="relative z-10">Submit Form</span>
+        {isWeightageValid && validateCriteria() && selectedProgram !== 0 && isCourseCodeValid ? (
+          <svg 
+            className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
           >
-            Submit Form
-          </button>
-        </div>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
+        ) : (
+          <svg 
+            className="w-5 h-5" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m0 0v2m0-2h2m-2 0H9m3-10v1" />
+          </svg>
+        )}
       </div>
+      
+      {/* Visual tooltip that appears on hover when button is disabled */}
+      {(!isWeightageValid || !validateCriteria() || selectedProgram === 0 || !isCourseCodeValid) && (
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 bg-gray-800 bg-opacity-90 text-white text-xs p-2 rounded-lg transition-opacity duration-300">
+          {!isWeightageValid && "Fix weightage values"}
+          {!validateCriteria() && "Fix attainment criteria"}
+          {selectedProgram === 0 && "Select a program"}
+          {!isCourseCodeValid && "Enter a valid course code"}
+        </div>
+      )}
+    </button>
+    
+    {/* Progress indicator for form completion status */}
+    <div className="hidden md:flex items-center gap-1 ml-2">
+      <div className={`h-2 w-2 rounded-full ${isWeightageValid ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+      <div className={`h-2 w-2 rounded-full ${validateCriteria() ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+      <div className={`h-2 w-2 rounded-full ${selectedProgram !== 0 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+      <div className={`h-2 w-2 rounded-full ${isCourseCodeValid ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+    </div>
+  </div>
+</div>
 
       <div className="space-y-6 overflow-scroll">
-        <div className="bg-white rounded-xl shadow-md p-6 border-t border-r border-b border-l-4 border-[#FFB255] ">
-          <div className="flex items-start space-x-4">
-            <div className="flex-shrink-0">
-              <AlertCircle className="h-6 w-6 text-[#FFB255]" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                Important Instructions
-              </h3>
-              <div className="space-y-2 text-gray-600">
-                <p className="flex items-center">
-                  <span className="w-2 h-2 bg-[#FFB255] rounded-full mr-2"></span>
-                  All fields in this form are editable and can be modified as needed.
-                </p>
-                <p className="flex items-center">
-                  <span className="w-2 h-2 bg-[#FFB255] rounded-full mr-2"></span>
-                  The initial data has been automatically extracted from your course handout using AI.
-                </p>
-                <p className="flex items-center">
-                  <span className="w-2 h-2 bg-[#FFB255] rounded-full mr-2"></span>
-                  Please review all information carefully as AI-extracted data may not be 100% accurate.
-                </p>
-                <p className="flex items-center">
-                  <span className="w-2 h-2 bg-[#FFB255] rounded-full mr-2"></span>
-                  You can save your progress at any time using the Submit Form button.
-                </p>
-              </div>
-              <div className="mt-4 p-3 bg-orange-50 rounded-lg border border-orange-100">
-                <p className="text-sm text-orange-700">
-                  <span className="font-semibold">Pro Tip:</span> Take your time to verify each section, especially numerical data and dates, before final submission.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <InstructionsCard/>
+       
 
         <div className="grid grid-cols-2 gap-4">
           {/* Program Section */}
@@ -754,7 +773,7 @@ const FeedbackForm = (props) => {
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              9
+              11
             </div>
             <h2 className="section-title text-xl font-semibold">
               Select Assessments for Partial Semester Slow Learner Analysis
@@ -806,7 +825,7 @@ const FeedbackForm = (props) => {
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
-              14
+              17
             </div>
             <h2 className="text-xl font-semibold text-gray-800">
               Learning Resources
@@ -834,7 +853,7 @@ const FeedbackForm = (props) => {
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              15
+              18
             </div>
             <h2 className="text-xl font-semibold text-gray-800">
               Weekly Time-Table
