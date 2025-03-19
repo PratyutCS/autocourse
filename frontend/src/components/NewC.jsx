@@ -329,7 +329,6 @@ useEffect(() => {
         className={`relative h-full w-full bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border-2 ${getBorderColorClass()}`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        whileHover={{ y: -5 }}
         transition={{ type: 'spring', stiffness: 300 }}
       >
         {/* Status badge */}

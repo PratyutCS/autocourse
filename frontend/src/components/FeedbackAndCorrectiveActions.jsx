@@ -75,7 +75,7 @@ const FeedbackAndCorrectiveActions = ({ initialData, onSave }) => {
           21
         </div>
         <h2 className="text-xl font-semibold text-gray-800">
-          Feedback (class committee or otherwise) and corrective actions (if any)
+          Feedback <span className="text-gray-400">(class committee or otherwise)</span> and corrective actions <span className="text-gray-400">(if any)</span>
         </h2>
       </div>
       

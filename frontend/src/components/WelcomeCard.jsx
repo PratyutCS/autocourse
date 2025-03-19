@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, Sparkles, FileText, Upload, CheckCircle, Eye, BookOpen, Coffee, Clock, Info } from 'lucide-react';
 
 const WelcomeCard = ({ userName }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [sparkleAnimate, setSparkleAnimate] = useState(false);
   const [currentTime, setCurrentTime] = useState('');
   const [greeting, setGreeting] = useState('');
@@ -38,7 +38,7 @@ const WelcomeCard = ({ userName }) => {
   }, []);
 
   return (
-    <div className="bg-gradient-to-br from-white to-orange-50 rounded-2xl shadow-xl p-6 border border-orange-100 transform hover:shadow-2xl transition-all duration-300">
+    <div className="bg-gradient-to-br from-white to-orange-100 rounded-2xl p-6 border border-gray-200 transform  ">
       {/* Header Section with Time and Greeting */}
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-5">
         <div className="flex items-center gap-4">

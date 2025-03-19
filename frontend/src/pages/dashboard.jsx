@@ -183,9 +183,8 @@ const Dashboard = () => {
           <div className="max-w-6xl mx-auto space-y-6">
             {/* Welcome Section */}
             <WelcomeCard userName={userData.name} />
-
             {/* File Cards Section */}
-            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-100 transform hover:shadow-lg transition-all duration-300">
+            <div className="bg-white rounded-lg  p-6 border border-gray-200 transform  ">
               {/* Files Header with Search */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
                 <div className="flex items-center gap-3">
