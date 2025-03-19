@@ -5,12 +5,12 @@ import { Trash2, Upload, FileText, AlertCircle, Check } from 'lucide-react';
 import constants from "../constants";
 
 const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess, initialFileName }) => {
-  // console.log("INIFILENAME: "+initialFileName);
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [currentFileName, setCurrentFileName] = useState(initialFileName || '');
+  const [viewUrl, setViewUrl] = useState('');
 
   const onDrop = useCallback((acceptedFiles) => {
     const selectedFile = acceptedFiles[0];
@@ -79,9 +79,38 @@ const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess, initialFileName })
 
       setSuccess('File deleted successfully!');
       setCurrentFileName('');
+      setViewUrl('');
       if (onDeleteSuccess) onDeleteSuccess();
     } catch (error) {
       setError(error.response?.data?.message || 'Error deleting file');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleView = async () => {
+    if (!currentFileName) {
+      setError('No file available to view');
+      return;
+    }
+    try {
+      setUploading(true);
+      setError('');
+
+      // Fetch the PDF as a blob from the backend
+      const response = await axios.get(constants.url + '/pdf/' + currentFileName, {
+        responseType: 'blob',
+        headers: {
+          'x-auth-token': localStorage.getItem('token'),
+          'ngrok-skip-browser-warning': '69420'
+        }
+      });
+
+      const fileBlob = response.data;
+      const url = URL.createObjectURL(fileBlob);
+      setViewUrl(url);
+    } catch (error) {
+      setError('Error retrieving PDF file');
     } finally {
       setUploading(false);
     }
@@ -94,7 +123,7 @@ const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess, initialFileName })
           17
         </div>
         <h2 className="text-xl font-semibold text-gray-800">
-        Assignments/Quiz/Projects with Sample Solution
+          Assignments/Quiz/Projects with Sample Solution
         </h2>
       </div>
 
@@ -106,13 +135,22 @@ const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess, initialFileName })
               <FileText className="text-[#FFB255] w-5 h-5" />
               <span className="text-gray-700 font-medium">{currentFileName}</span>
             </div>
-            <button
-              onClick={handleDelete}
-              className="text-red-500 hover:text-red-600 p-2 rounded-full hover:bg-red-50 transition-colors"
-              disabled={uploading}
-            >
-              <Trash2 className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleView}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded transition-colors"
+                disabled={uploading}
+              >
+                View
+              </button>
+              <button
+                onClick={handleDelete}
+                className="text-red-500 hover:text-red-600 p-2 rounded-full hover:bg-red-50 transition-colors"
+                disabled={uploading}
+              >
+                <Trash2 className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -130,7 +168,9 @@ const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess, initialFileName })
         ) : (
           <div>
             <p className="text-gray-600 mb-2">Drag and drop your PDF file here, or click to select</p>
-            <p className="text-yellow-600 mb-2 ">(Upload only one pdf which covers all the assignment (s)/Quiz(s) etc. and solutions)</p>
+            <p className="text-yellow-600 mb-2">
+              (Upload only one pdf which covers all the assignment(s)/Quiz(s) etc. and solutions)
+            </p>
             <p className="text-gray-400 text-sm">Maximum file size: 50MB</p>
           </div>
         )}
@@ -172,6 +212,25 @@ const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess, initialFileName })
         <div className="mt-4 p-3 bg-green-50 rounded-lg flex items-center gap-2 text-green-600">
           <Check className="w-5 h-5" />
           <span>{success}</span>
+        </div>
+      )}
+
+      {/* PDF Viewer */}
+      {viewUrl && (
+        <div className="mt-4">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="text-lg font-medium text-gray-800">PDF Preview</h3>
+            <button onClick={() => setViewUrl('')} className="text-gray-500 hover:text-gray-700">
+              Close
+            </button>
+          </div>
+          <iframe
+            src={viewUrl}
+            width="100%"
+            height="600px"
+            title="PDF Preview"
+            className="border rounded"
+          ></iframe>
         </div>
       )}
     </div>

@@ -710,6 +710,25 @@ app.post("/download/xlsx", auth, async (req, res) => {
 });
 
 
+
+// -------------------------------------------------------------------------
+// New Route: Serve PDF for Viewing
+// This route retrieves the PDF from disk and sends it to the client as a blob.
+// Adjust the file path as needed (here we assume the PDFs are stored in ./data/1/)
+app.get("/pdf/:filename", auth, (req, res) => {
+  const { filename } = req.params;
+  const filePath = path.join(__dirname, "data", "1", filename);
+  fs.access(filePath, fs.constants.F_OK, (err) => {
+    if (err) {
+      console.error("File not found:", filePath);
+      return res.status(404).json({ error: 'File not found' });
+    }
+    res.sendFile(filePath);
+  });
+});
+
+
+
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //--------------ADMIN--------------------
 
