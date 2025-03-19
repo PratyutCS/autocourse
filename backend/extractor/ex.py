@@ -516,15 +516,15 @@ Requirements:
 
 -6. Preserve all existing template fields even if not mentioned in the text
 
--7. course_description is the Course Overview and Context in the pdf. There can be more than 1 paragraphs inside it, so include all the paragraphs.
+-7. course_description is the Course Overview and Context in the PDF. There can be more than one paragraph inside it, so include all the paragraphs.
 
--8. In the internal component(component ) it should have component, Duration(duration), Weightage(weightage), Evaluation(evaluation) Week(week) and Remarks(remarks) format:{assessment_format}.
+-8. In the internal component (component) it should have component, Duration (duration), Weightage (weightage), Evaluation (evaluation) Week (week) and Remarks (remarks) format:{assessment_format}.
 
 -9. If there are paragraphs, add a break or start from a new line.
 
--10. For refrenceLinks extract links given if any.
+-10. For referenceLinks, extract links given if any.
 
--11. For The textBooks and referenceLinks, Each should be a simple string in the array and Do not include any additional fields or nested objects.
+-11. For the textBooks and referenceLinks, each should be a simple string in the array and do not include any additional fields or nested objects.
 
 -12. For the mappingData in copoMappingData:
       - First, accurately identify the program type from the document content.
@@ -544,15 +544,29 @@ Requirements:
 -15. Ensure consistency between the Program field (1, 2, or 3) and the corresponding copoMappingData structure.
 
 -16. For course_code field, apply the following validation rules:
-      - The course code must be exactly 7 characters long
-      - The first 3 characters must be letters (alphabetical characters only)
-      - The last 4 characters must be numbers (digits only)
-      - If these conditions are met, convert the first 3 characters to uppercase
+      - The course code must be exactly 7 characters long.
+      - The first 3 characters must be letters (alphabetical characters only).
+      - The last 4 characters must be numbers (digits only).
+      - If these conditions are met, convert the first 3 characters to uppercase.
       - If the extracted course code doesn't meet these requirements, try to:
-        * If longer than 7 characters, use only the first 7 that follow the pattern
-        * If shorter than 7 characters, leave as empty string
-        * If the pattern doesn't match (first 3 letters, last 4 numbers), leave as empty string
-      - Example of valid course codes: CSC1234, MAT5678, PHY9012 (3 letters followed by 4 numbers)
+        * If longer than 7 characters, use only the first 7 that follow the pattern.
+        * If shorter than 7 characters, leave as empty string.
+        * If the pattern doesn't match (first 3 letters, last 4 numbers), leave as empty string.
+      - Example of valid course codes: CSC1234, MAT5678, PHY9012 (3 letters followed by 4 numbers).
+
+Additional Extraction and Validation Restrictions:
+- For **course_name** (courseTitle): If the extracted string is longer than 128 characters, truncate it to 128 characters.
+- For **Module/Semester** (module): If the value is longer than 10 characters, truncate it to 10 characters.
+- For **Session**: If the value is longer than 12 characters, truncate it to 12 characters.
+- For **course_description**: If the value is longer than 4096 characters, truncate it to 4096 characters.
+- For **feedbackData.quantitativeFeedback**: 
+     - Parse the value as a float.
+     - If it is not a valid number, set it to 0.00.
+     - If it is greater than 5.00, set it to 5.00.
+     - If it is less than 0.00, set it to 0.00.
+     - Format the value to two decimal places.
+- For **feedbackData.qualitativeFeedback**: If the value is longer than 4096 characters, truncate it to 4096 characters.
+- For **facultyCourseReview**: If the value is longer than 4096 characters, truncate it to 4096 characters.
 """
     try:
         # Use the OpenAI client to create a chat completion
