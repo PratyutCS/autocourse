@@ -129,9 +129,9 @@ const FeedbackForm = (props) => {
     slowLearners: []
   });
 
-  const handleLearners = (categories) => {
+  const handleLearners = (learnerCategories) => {
     console.log("this ran");
-    setLearnerCategories(categories);
+    setLearnerCategories(learnerCategories);
   };
 
   useEffect(() => {
