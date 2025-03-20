@@ -108,13 +108,9 @@ authRouter.post("/api/signup", async (req, res) => {
     // Option 1: If you expect many users, you might want to fetch only the numbers.
     // Here we fetch all users sorted by the `number` field.
     const users = await User.find({}, { number: 1, _id: 0 }).sort({ number: 1 });
-    console.log(users);
-    console.log(users[0].number);
 
     // Loop from 1 to userCount to find the first missing number
     for (let i = 1; i <= userCount; i++) {
-      console.log(i+" - "+users[i-1].number);
-      console.log(typeof(i)+" - "+typeof(users[i-1].number));
       if (i != users[i-1].number) {
         number = i;
         break;
