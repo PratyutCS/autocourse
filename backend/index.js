@@ -619,9 +619,9 @@ app.post('/upload-pdf', auth, (req, res) => {
       }
 
       if (jsonData[num]["mergePDF"] && jsonData[num]["mergePDF"] != "") {
-        if (fs.existsSync("./data/1/" + jsonData[num]["mergePDF"])) {
-          fs.unlinkSync("./data/1/" + jsonData[num]["mergePDF"]);
-          console.log(`Deleted file: ${"./data/1/" + jsonData[num]["mergePDF"]}`);
+        if (fs.existsSync(`./data/${user.number}/` + jsonData[num]["mergePDF"])) {
+          fs.unlinkSync(`./data/${user.number}/` + jsonData[num]["mergePDF"]);
+          console.log(`Deleted file: ${`./data/${user.number}/` + jsonData[num]["mergePDF"]}`);
         }
       }
 
@@ -663,9 +663,9 @@ app.post("/merge-delete", auth, async (req, res) => {
     }
 
     if (jsonData[num]["mergePDF"] && jsonData[num]["mergePDF"] != "") {
-      if (fs.existsSync("./data/1/" + jsonData[num]["mergePDF"])) {
-        fs.unlinkSync("./data/1/" + jsonData[num]["mergePDF"]);
-        console.log(`Deleted file: ${"./data/1/" + jsonData[num]["mergePDF"]}`);
+      if (fs.existsSync(`./data/${user.number}/` + jsonData[num]["mergePDF"])) {
+        fs.unlinkSync(`./data/${user.number}/` + jsonData[num]["mergePDF"]);
+        console.log(`Deleted file: ${`./data/${user.number}/` + jsonData[num]["mergePDF"]}`);
       }
     }
     else {
@@ -994,9 +994,12 @@ app.get('/assignment-pdf/:filename', auth, (req, res) => {
   
   res.sendFile(filePath);
 });
-app.get("/pdf/:filename", auth, (req, res) => {
+
+
+app.get("/pdf/:filename", auth, async (req, res) => {
   const { filename } = req.params;
-  const filePath = path.join(__dirname, "data", "1", filename);
+  const user = await User.findById(req.user);
+  const filePath = path.join(__dirname, "data", user.number, filename);
   fs.access(filePath, fs.constants.F_OK, (err) => {
     if (err) {
       console.error("File not found:", filePath);
