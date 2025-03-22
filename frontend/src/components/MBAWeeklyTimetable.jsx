@@ -15,7 +15,33 @@ const MBAWeeklyTimetable = ({ onChange, initialData }) => {
     }
   }, [initialData]);
   
-  // Add a new empty entry
+  // Helper: Convert an entry’s time to minutes since midnight (using 24-hour format)
+  const getTimeRange = (entry) => {
+    let hour24;
+    // Convert 12 to 0 for AM, and leave 12 as 12 for PM.
+    if (entry.hour === 12) {
+      hour24 = entry.period === 'AM' ? 0 : 12;
+    } else {
+      hour24 = entry.period === 'AM' ? entry.hour : entry.hour + 12;
+    }
+    const start = hour24 * 60;
+    const end = start + entry.duration * 60;
+    return { start, end };
+  };
+
+  // Helper: Check if newEntry conflicts with any entry in the list (optionally ignoring one by id)
+  const hasConflict = (newEntry, entryList, ignoreId) => {
+    const { start: newStart, end: newEnd } = getTimeRange(newEntry);
+    return entryList.some(entry => {
+      if (ignoreId && entry.id === ignoreId) return false;
+      if (entry.day !== newEntry.day) return false;
+      const { start, end } = getTimeRange(entry);
+      // Check for overlap: intervals [newStart,newEnd) and [start,end)
+      return newStart < end && newEnd > start;
+    });
+  };
+
+  // Add a new empty entry (after checking for conflicts)
   const addEntry = () => {
     const newEntry = {
       id: Date.now(), // Unique identifier
@@ -24,28 +50,62 @@ const MBAWeeklyTimetable = ({ onChange, initialData }) => {
       period: 'AM',
       duration: 1
     };
+
+    // Prevent adding if new entry conflicts with an existing entry
+    if (hasConflict(newEntry, entries)) {
+      alert("Time slot conflicts with an existing class. Please choose a different time.");
+      return;
+    }
     
     const updatedEntries = [...entries, newEntry];
     setEntries(updatedEntries);
     onChange?.({ entries: updatedEntries });
   };
-  
-  // Remove an entry
-  const removeEntry = (id) => {
-    const updatedEntries = entries.filter(entry => entry.id !== id);
-    setEntries(updatedEntries);
-    onChange?.({ entries: updatedEntries });
-  };
-  
-  // Handle changes to an entry
+
+  // Handle changes to an entry with conflict checking
   const handleEntryChange = (id, field, value) => {
-    const updatedEntries = entries.map(entry => {
+    // Create candidate update for the target entry
+    const candidateEntries = entries.map(entry => {
       if (entry.id === id) {
         return { ...entry, [field]: value };
       }
       return entry;
     });
+    const updatedEntry = candidateEntries.find(entry => entry.id === id);
+
+    // Check conflict with other entries on the same day
+    if (hasConflict(updatedEntry, candidateEntries, id)) {
+      alert("Time slot conflicts with an existing class. Please choose a different time.");
+      return;
+    }
     
+    setEntries(candidateEntries);
+    onChange?.({ entries: candidateEntries });
+  };
+
+  // Helper: Calculate end time using 24-hour arithmetic then convert to 12-hour format.
+  const getEndTime = (startHour, period, duration) => {
+    let hour24;
+    if (startHour === 12) {
+      hour24 = period === 'AM' ? 0 : 12;
+    } else {
+      hour24 = period === 'AM' ? startHour : startHour + 12;
+    }
+    const startMinutes = hour24 * 60;
+    const durationMinutes = Math.round(duration * 60);
+    let endMinutes = (startMinutes + durationMinutes) % (24 * 60);
+    const endHour24 = Math.floor(endMinutes / 60);
+    const endMinute = endMinutes % 60;
+    const endPeriod = endHour24 >= 12 ? 'PM' : 'AM';
+    let endHour = endHour24 % 12;
+    if (endHour === 0) endHour = 12;
+    const minuteStr = endMinute.toString().padStart(2, '0');
+    return `${endHour}:${minuteStr} ${endPeriod}`;
+  };
+
+  // Remove an entry
+  const removeEntry = (id) => {
+    const updatedEntries = entries.filter(entry => entry.id !== id);
     setEntries(updatedEntries);
     onChange?.({ entries: updatedEntries });
   };
@@ -191,14 +251,23 @@ const MBAWeeklyTimetable = ({ onChange, initialData }) => {
                         {entries
                           .filter(entry => entry.day === day)
                           .sort((a, b) => {
-                            if (a.period === b.period) {
-                              return a.hour - b.hour;
-                            }
-                            return a.period === 'AM' ? -1 : 1;
+                            // Sort by converting time to minutes (AM/PM)
+                            const getMinutes = (entry) => {
+                              let hr = entry.hour;
+                              if (entry.hour === 12) {
+                                hr = entry.period === 'AM' ? 0 : 12;
+                              } else {
+                                hr = entry.period === 'AM' ? entry.hour : entry.hour + 12;
+                              }
+                              return hr * 60;
+                            };
+                            return getMinutes(a) - getMinutes(b);
                           })
                           .map(entry => (
                             <div key={entry.id} className="p-2 bg-[#FFB255] bg-opacity-20 rounded border-l-4 border-[#FFB255] text-xs">
-                              <div className="font-medium">{entry.hour}:00 {entry.period} - {getEndTime(entry.hour, entry.period, entry.duration)}</div>
+                              <div className="font-medium">
+                                {entry.hour}:00 {entry.period} - {getEndTime(entry.hour, entry.period, entry.duration)}
+                              </div>
                               <div>Duration: {entry.duration} hr{entry.duration !== 1 ? 's' : ''}</div>
                             </div>
                           ))}
@@ -214,30 +283,5 @@ const MBAWeeklyTimetable = ({ onChange, initialData }) => {
     </div>
   );
 };
-
-// Helper function to calculate end time
-function getEndTime(startHour, period, duration) {
-  let hour = startHour;
-  let endPeriod = period;
-  
-  const hourPart = Math.floor(duration);
-  const minutePart = (duration - hourPart) * 60;
-  
-  hour += hourPart;
-  let minutes = minutePart;
-  
-  // Handle period change
-  if (hour >= 12) {
-    if (hour > 12) {
-      hour = hour - 12;
-    }
-    if (period === 'AM') {
-      endPeriod = 'PM';
-    }
-  }
-  
-  // Format the time
-  return `${hour}:${minutes > 0 ? minutes : '00'} ${endPeriod}`;
-}
 
 export default MBAWeeklyTimetable;
