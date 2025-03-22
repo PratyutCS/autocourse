@@ -4,18 +4,27 @@ const mongoose = require("mongoose");
 const User = require("./models/user");
 
 const getDestination = async (req, file, cb) => {
-  const user = await User.findById(req.user);
-  if (!user) {
-    return cb(new Error('User not found'), null);
+  try {
+    const user = await User.findById(req.user);
+    if (!user) {
+      return cb(new Error('User not found'), null);
+    }
+    const folderName = path.join(__dirname, '/data/', user.number, '/');
+    cb(null, folderName);
+  } catch (error) {
+    cb(error, null);
   }
-  const folderName = path.join(__dirname, '/data/'+ user.number+'/');
-  cb(null, `${folderName}`);
 };
 
 const storage = multer.diskStorage({
   destination: getDestination,
   filename: (req, file, cb) => {
-    cb(null, Math.floor(new Date().getTime() / 1000)+file.originalname);
+    const timestamp = Math.floor(Date.now() / 1000);
+    const originalName = file.originalname;
+    const extIndex = originalName.lastIndexOf('.');
+    const name = extIndex !== -1 ? originalName.substring(0, extIndex).substring(0, 32) : originalName.substring(0, 32);
+    const ext = extIndex !== -1 ? originalName.substring(extIndex) : '';
+    cb(null, `${timestamp}_${name}${ext}`);
   },
 });
 const imageUpload = multer({
@@ -41,14 +50,13 @@ const imageUpload = multer({
 
 module.exports = imageUpload;
 
-
 const upload = multer({
-  limits: { fileSize: 5 * 1024 * 1024 }, //5 MB
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
   fileFilter: (req, file, cb) => {
     if (file.mimetype === 'application/pdf') {
       cb(null, true);
     } else {
-      cb(new Error('Invalid file type. Only pdf files are allowed.'), false);
+      cb(new Error('Invalid file type. Only PDF files are allowed.'), false);
     }
   },
   storage: storage,
