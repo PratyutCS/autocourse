@@ -549,7 +549,7 @@ The response must exactly match this structure, with no truncation:
 {json.dumps(initial_template, indent=2)}
 
 Extract relevant information from this text and fill the template:
-{text}
+{text[:50000]}
 
 Requirements:
 -0. Program field must be exactly one of these values:
