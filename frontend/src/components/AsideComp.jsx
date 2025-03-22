@@ -141,18 +141,24 @@ const AsideComp = ({ userEmail, isCollapsed, setIsCollapsed, files }) => {
       </div>
 
       {/* Files section with improved styling */}
-      <div className="flex-1 overflow-auto py-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
-        <h2 className={`text-gray-400 font-medium px-5 py-2 text-sm uppercase tracking-wider ${isCollapsed ? "opacity-0" : "opacity-100"}`}>
-          Your Files
-        </h2>
+      <div className={`flex-1 py-2 ${
+  isCollapsed 
+    ? "overflow-hidden" 
+    : "overflow-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800"
+}`}>
+  <h2 className={`text-gray-400 font-medium px-5 py-2 text-sm uppercase tracking-wider ${isCollapsed ? "opacity-0" : "opacity-100"}`}>
+    Your Files
+  </h2>
         {files && files.length > 0 ? (
           files.map((file, index) => (
             <div 
-              key={index} 
-              className="mx-2 my-1 rounded-md hover:bg-[#3a3c42] transition-all duration-200"
-              onMouseEnter={() => setHoveredFileId(file.id)}
-              onMouseLeave={() => setHoveredFileId(null)}
-            >
+      key={index} 
+      className={`mx-2 my-1 rounded-md hover:bg-[#3a3c42] transition-all duration-200 ${
+        isCollapsed ? "flex justify-center" : ""
+      }`}
+      onMouseEnter={() => setHoveredFileId(file.id)}
+      onMouseLeave={() => setHoveredFileId(null)}
+    >
               <div className="flex items-center justify-between p-3">
                 <div className="flex items-center gap-3 overflow-hidden">
                   <div className="flex-shrink-0 bg-[#42444a] p-2 rounded-md">

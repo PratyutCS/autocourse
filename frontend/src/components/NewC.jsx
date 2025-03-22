@@ -332,7 +332,7 @@ useEffect(() => {
         transition={{ type: 'spring', stiffness: 300 }}
       >
         {/* Status badge */}
-        <div className="absolute top-3 right-3 z-10">
+        <div className="absolute top-3 right-3 z-1">
           {props.done === 1 ? (
             <div className="bg-green-100 text-green-700 text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
               <IoCheckmarkCircle className="w-3.5 h-3.5" />
