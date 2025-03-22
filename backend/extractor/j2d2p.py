@@ -856,6 +856,7 @@ def create_co_attainment_analysis(doc, data):
     doc.add_paragraph()
     
     summary_table = doc.add_table(rows=6, cols=len(cos) + 1)
+    doc.add_paragraph()
     
     # Header row
     header_cells = summary_table.rows[0].cells
@@ -916,7 +917,7 @@ def create_co_attainment_analysis(doc, data):
     
     # Set narrower column widths similar to attendance report table
     # First column wider for labels, subsequent columns narrower for data
-    col_widths = [Inches(3)] + [Inches(2)] * len(cos)
+    col_widths = [Inches(2)] + [Inches(1)] * len(cos)
     set_table_column_widths(summary_table, col_widths)
     
     # Center align the table
@@ -988,6 +989,8 @@ def create_co_attainment_analysis(doc, data):
         
         program_table.alignment = WD_TABLE_ALIGNMENT.CENTER
         prevent_table_row_breaks(program_table)
+        doc.add_paragraph()
+        doc.add_paragraph()
         
         # Add program attainment chart
         add_program_attainment_chart(doc, result, pos)
@@ -1047,6 +1050,8 @@ def create_co_attainment_analysis(doc, data):
                 set_cell_border(cell, 'right', 4, '000000')
         
         student_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        doc.add_paragraph()
+        doc.add_paragraph()
         
         add_course_attainment_chart(doc, result, cos)
         doc.add_paragraph()
