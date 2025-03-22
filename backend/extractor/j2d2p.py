@@ -1757,6 +1757,7 @@ except Timeout:
     print("Could not acquire lock for conversion. Another process may be converting.")
     sys.exit(1)
 
+# The PDF is generated with the same unique suffix
 pdf_path = output_doc.replace('.docx', '.pdf')
 
 # Remove the DOCX file after conversion
@@ -1767,6 +1768,7 @@ except Exception as e:
     print("Error removing DOCX file:", e)
 
 # Prepare PDF list for merging
+# If an assignmentPDF is provided, include it; otherwise, just use our generated PDF.
 if data.get('assignmentPDF'):
     pdf_list = [pdf_path, "./data/assignments/" + data['assignmentPDF']]
 else:
@@ -1776,7 +1778,27 @@ merger = PdfMerger()
 for pdf in pdf_list:
     print("Appending PDF:", pdf)
     merger.append(pdf)
+
+# Merge PDFs into the final compiled PDF
 final_pdf_path = "./download/" + data['filename']
 merger.write(final_pdf_path)
 merger.close()
 print("Final PDF generated:", final_pdf_path)
+
+# Cleanup: Remove any and every other file (temporary PDFs) that are not the final compiled PDF.
+for pdf in pdf_list:
+    # Only remove temporary files that are in the './download' folder.
+    if pdf != final_pdf_path and pdf.startswith("./download/") and os.path.exists(pdf):
+        try:
+            os.remove(pdf)
+            print("Removed temporary PDF:", pdf)
+        except Exception as e:
+            print("Error removing temporary PDF file:", e)
+
+# Optionally: Remove the lock file if it exists (this is typically cleaned up automatically)
+if os.path.exists(lock_path):
+    try:
+        os.remove(lock_path)
+        print("Removed lock file:", lock_path)
+    except Exception as e:
+        print("Error removing lock file:", e)
