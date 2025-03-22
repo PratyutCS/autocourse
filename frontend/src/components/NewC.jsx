@@ -85,7 +85,7 @@ export default function NewC(props) {
     }
   }
 
-  // Modified Preview function to open a new tab immediately and update its location later
+  // Modified Preview function that opens a new tab immediately within a local variable (isolated for this call)
   const Preview = async (num) => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -98,9 +98,9 @@ export default function NewC(props) {
       return;
     }
   
-    // Open new tab immediately (it might open as a blank page)
-    const newTab = window.open('', '_blank');
-    if (!newTab) {
+    // Open a new tab immediately. This tab is independent for each preview call.
+    const previewTab = window.open('', '_blank');
+    if (!previewTab) {
       showNotification('error', 'Popup blocked! Please disable your popup blocker.');
       return;
     }
@@ -120,7 +120,8 @@ export default function NewC(props) {
       if (response.status === 200) {
         const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
         const url = window.URL.createObjectURL(pdfBlob);
-        newTab.location.href = url;  // Update new tab's location to the blob URL so the PDF is displayed
+        // Update new tab's location with the blob URL so that the PDF is displayed
+        previewTab.location.href = url;
         showNotification('success', 'Preview opened in a new tab!');
       }
     } catch (error) {
@@ -130,7 +131,7 @@ export default function NewC(props) {
       } else {
         showNotification('error', 'Preview failed. Please try again.');
       }
-      newTab.close(); // close the blank tab if error
+      previewTab.close(); // Close the tab if there's an error
     } finally {
       setIsLoadingPreview(false);
     }

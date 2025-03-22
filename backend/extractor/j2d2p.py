@@ -1,9 +1,11 @@
 import json
 import sys
 import os
+import uuid
+from filelock import FileLock, Timeout
 from docx import Document
 from docx.shared import Pt, RGBColor, Inches
-from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_PARAGRAPH_ALIGNMENT
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml.ns import qn
@@ -304,7 +306,9 @@ def create_learning_resources_doc(data):
             para.paragraph_format.left_indent = Inches(1)
             bullet = para.add_run("✓ ")
             bullet.font.size = Pt(12)
-            text = para.add_run(book)
+            # Clean the book text to remove any problematic unicode characters.
+            safe_book = book.encode('utf-8', 'replace').decode('utf-8')
+            text = para.add_run(safe_book)
             text.font.size = Pt(12)
 
     doc.add_paragraph()
@@ -321,7 +325,9 @@ def create_learning_resources_doc(data):
             para.paragraph_format.left_indent = Inches(1)
             bullet = para.add_run("• ")
             bullet.font.size = Pt(12)
-            link_run = para.add_run(link)
+            # Clean the link text similarly.
+            safe_link = link.encode('utf-8', 'replace').decode('utf-8')
+            link_run = para.add_run(safe_link)
             link_run.font.size = Pt(12)
             link_run.font.color.rgb = RGBColor(0, 0, 255)
             link_run.underline = True
@@ -1730,23 +1736,47 @@ create_faculty_review_section(doc, data)
 
 #######################################################################################################################
 # Saving the Document and Converting to PDF
-output_doc = './download/' + data['filename'][:-4] + '_del' + '.docx'
+unique_suffix = uuid.uuid4().hex
+output_doc = './download/' + data['filename'][:-4] + "_" + unique_suffix + '.docx'
 doc.save(output_doc)
-print("Document updated and saved.")
-convert(output_doc)
-os.remove(output_doc)
+print("Document updated and saved:", output_doc)
 
-if(data.get('assignmentPDF')):
-    pdf_list = [output_doc.replace('.docx', '.pdf'), "./data/assignments/" + data['assignmentPDF']]
+# Use a file lock to serialize the conversion process
+lock_path = "./download/conversion.lock"
+lock = FileLock(lock_path, timeout=60)  # waits up to 60 seconds for the lock
+try:
+    with lock:
+        print("Acquired lock for conversion.")
+        try:
+            convert(output_doc)
+        except Exception as e:
+            print("Conversion error:", e)
+            sys.exit(1)
+        print("Conversion completed for:", output_doc)
+except Timeout:
+    print("Could not acquire lock for conversion. Another process may be converting.")
+    sys.exit(1)
+
+pdf_path = output_doc.replace('.docx', '.pdf')
+
+# Remove the DOCX file after conversion
+try:
+    os.remove(output_doc)
+    print("Removed temporary DOCX:", output_doc)
+except Exception as e:
+    print("Error removing DOCX file:", e)
+
+# Prepare PDF list for merging
+if data.get('assignmentPDF'):
+    pdf_list = [pdf_path, "./data/assignments/" + data['assignmentPDF']]
 else:
-    pdf_list = [output_doc.replace('.docx', '.pdf')]
+    pdf_list = [pdf_path]
+
 merger = PdfMerger()
 for pdf in pdf_list:
-    print(pdf)
+    print("Appending PDF:", pdf)
     merger.append(pdf)
-
-# Optionally remove the temporary PDF file:
-# os.remove(output_doc.replace('.docx', '.pdf'))
-
-merger.write("./download/" + data['filename'])
+final_pdf_path = "./download/" + data['filename']
+merger.write(final_pdf_path)
 merger.close()
+print("Final PDF generated:", final_pdf_path)
