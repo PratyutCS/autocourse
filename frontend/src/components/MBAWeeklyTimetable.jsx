@@ -8,6 +8,12 @@ const MBAWeeklyTimetable = ({ onChange, initialData }) => {
   // Initialize timetable entries state
   const [entries, setEntries] = useState([]);
   
+  // Popup state
+  const [popup, setPopup] = useState({
+    show: false,
+    message: ''
+  });
+  
   // Load initial data if provided
   useEffect(() => {
     if (initialData && initialData.entries) {
@@ -15,7 +21,7 @@ const MBAWeeklyTimetable = ({ onChange, initialData }) => {
     }
   }, [initialData]);
   
-  // Helper: Convert an entry’s time to minutes since midnight (using 24-hour format)
+  // Helper: Convert an entry's time to minutes since midnight (using 24-hour format)
   const getTimeRange = (entry) => {
     let hour24;
     // Convert 12 to 0 for AM, and leave 12 as 12 for PM.
@@ -41,6 +47,22 @@ const MBAWeeklyTimetable = ({ onChange, initialData }) => {
     });
   };
 
+  // Show popup message
+  const showPopup = (message) => {
+    setPopup({
+      show: true,
+      message
+    });
+    
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+      setPopup({
+        show: false,
+        message: ''
+      });
+    }, 3000);
+  };
+
   // Add a new empty entry (after checking for conflicts)
   const addEntry = () => {
     const newEntry = {
@@ -53,7 +75,7 @@ const MBAWeeklyTimetable = ({ onChange, initialData }) => {
 
     // Prevent adding if new entry conflicts with an existing entry
     if (hasConflict(newEntry, entries)) {
-      alert("Time slot conflicts with an existing class. Please choose a different time.");
+      showPopup("Time slot conflicts with an existing class. Please choose a different time.");
       return;
     }
     
@@ -75,7 +97,7 @@ const MBAWeeklyTimetable = ({ onChange, initialData }) => {
 
     // Check conflict with other entries on the same day
     if (hasConflict(updatedEntry, candidateEntries, id)) {
-      alert("Time slot conflicts with an existing class. Please choose a different time.");
+      showPopup("Time slot conflicts with an existing class. Please choose a different time.");
       return;
     }
     
@@ -111,7 +133,37 @@ const MBAWeeklyTimetable = ({ onChange, initialData }) => {
   };
   
   return (
-    <div className="bg-white rounded-lg">
+    <div className="bg-white rounded-lg relative">
+      {/* Custom Popup Component */}
+      {popup.show && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm mx-auto animate-fade-in transform transition-all">
+            <div className="flex items-start">
+              <div className="flex-shrink-0 text-[#FFB255]">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-lg font-medium text-gray-800">Schedule Conflict</h3>
+                <div className="mt-2 text-sm text-gray-600">
+                  {popup.message}
+                </div>
+                <div className="mt-4">
+                  <button
+                    type="button"
+                    onClick={() => setPopup({ show: false, message: '' })}
+                    className="bg-[#FFB255] hover:bg-[#f5a543] text-white px-4 py-2 rounded-md transition-colors text-sm"
+                  >
+                    Okay
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-medium text-gray-800">MBA Weekly Schedule</h3>
         <button

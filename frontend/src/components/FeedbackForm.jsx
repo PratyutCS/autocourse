@@ -604,17 +604,6 @@ const FeedbackForm = (props) => {
                 </svg>
               )}
             </div>
-
-            {/* Visual tooltip that appears on hover when button is disabled */}
-            {(!isWeightageValid || !validateCriteria() || !validateTargetAttainment() || selectedProgram === 0 || !isCourseCodeValid) && (
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 bg-gray-800 bg-opacity-90 text-white text-xs p-2 rounded-lg transition-opacity duration-300">
-                {!isWeightageValid && "Fix weightage values"}
-                {!validateCriteria() && "Fix attainment criteria"}
-                {!validateTargetAttainment() && "Fix attainment criteria"}
-                {selectedProgram === 0 && "Select a program"}
-                {!isCourseCodeValid && "Enter a valid course code"}
-              </div>
-            )}
           </button>
 
           {/* Progress indicator for form completion status */}
