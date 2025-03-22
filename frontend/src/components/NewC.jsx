@@ -358,7 +358,7 @@ useEffect(() => {
                 {props.name}
               </h3>
               <p className="text-xs text-gray-500">
-                Last modified: {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              Last modified: {props.last_modified}
               </p>
             </div>
           </div>

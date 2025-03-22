@@ -41,6 +41,7 @@ export default function Box(props) {
                   name={file.course_name || file.course_code || file.filename || "Unknown Course"} 
                   num={index} 
                   userData={props.userData} 
+                  last_modified={file.last_modified}
                   done={file.done}
                 />
               </motion.div>

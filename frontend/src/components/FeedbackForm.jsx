@@ -463,6 +463,18 @@ const FeedbackForm = (props) => {
 
 
   const postData = async () => {
+    // Correct assignment: removed extra curly braces.
+    let last_modified = new Date().toLocaleString('en-IN', { 
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true
+    }) + ', ' + new Date().toLocaleString('en-IN', { 
+      day: 'numeric', 
+      month: 'short', 
+      year: 'numeric'
+    });
+    
+    
     if (!isWeightageValid) {
       alert("Please ensure all CO Assessment weightages add up to 100% before submitting.");
       return;
@@ -479,15 +491,17 @@ const FeedbackForm = (props) => {
       alert("Please enter a valid course code (3 letters followed by 4 numbers).");
       return;
     }
+    
     if (num !== undefined) {
       if (selectedProgram === 0) {
         alert("Please select a valid program option before submitting.");
         return;
       }
+      
       try {
         setIsLoading(true);
-        // console.log("Preparing to save data:", {weeklyTimetableData,});
-
+        // console.log("Preparing to save data:", { weeklyTimetableData });
+        
         const response = await axios.post(
           constants.url + "/form",
           {
@@ -513,6 +527,7 @@ const FeedbackForm = (props) => {
             learnerCategories,
             selectedAssessments,
             par_sem_slowLearner,
+            last_modified,
           },
           {
             headers: {
@@ -521,12 +536,12 @@ const FeedbackForm = (props) => {
             }
           }
         );
-
-        console.log("Server response:", response.data);
-        window.location.reload();
+        
+        // Process the response as needed
+        console.log("Form submitted successfully:", response.data);
       } catch (error) {
-        console.error("Error submitting form data:", error);
-        alert("Error saving data. Please check console for details.");
+        console.error("Error submitting form:", error);
+        alert("An error occurred while submitting the form.");
       } finally {
         setIsLoading(false);
       }

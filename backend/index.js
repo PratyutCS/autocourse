@@ -116,6 +116,7 @@ app.get("/files", auth, async (req, res) => {
           if ('course_code' in item) filtered.course_code = item.course_code;
           if ('done' in item) filtered.done = item.done;
           if ('course_name' in item) filtered.course_name = item.course_name;
+          if('last_modified' in item) filtered.last_modified = item.last_modified;
 
           return filtered;
         });
@@ -524,6 +525,7 @@ app.post("/form", auth, async (req, res) => {
         jsonData[num]["coAttainmentCriteria"] = req.body.coAttainmentCriteria || "";
         jsonData[num]["targetAttainment"] = req.body.targetAttainment || "";
         jsonData[num]["studentData"] = req.body.studentData || "";
+        jsonData[num]["last_modified"] = req.body.last_modified || "";
 
 
         let feedbackData = req.body.feedbackData || {};
