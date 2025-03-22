@@ -7,7 +7,7 @@ import { IoReturnUpBackSharp } from "react-icons/io5";
 import COPOMapping from "./COPOMapping";
 import InternalAssessmentTable from "./InternalAssessmentTable";
 import ActionsForWeakStudents from "./ActionsForWeakStudents";
-import MBAWeeklyTimetable from "./MBAWeeklyTimetable";
+import MBAWeeklyTimetable from './MBAWeeklyTimetable';
 import EditableCourseDescription from "./EditableCourseDescription";
 import CourseSyllabus from "./CourseSyllabus";
 import AddField from "./AddFiled";
@@ -15,23 +15,23 @@ import WeeklyTimetable from "./WeeklyTimetable";
 import { AlertCircle } from "lucide-react";
 import COAttainmentAnalysis from "./COAttainmentAnalysis";
 import COAssessmentWeightage from "./COAssessmentWeightage";
-import COAttainmentCriteria from "./COAttainmentCriteria";
-import PDFUploader from "./PDFUploader";
-import TargetAttainment from "./TargetAttainment";
-import AdvanceAndWeakStudentIdentification from "./AdvanceAndWeakStudentIdentification";
-import FeedbackAndCorrectiveActions from "./FeedbackAndCorrectiveActions";
-import FacultyCourseReview from "./FacultyCourseReview";
-import CourseCodeInput from "./CourseCodeInput";
-import AssessmentSelection from "./AssessmentSelection";
-import InstructionsCard from "./InstructionsCard";
-import ExcelToJson from "./ExcelToJson";
+import COAttainmentCriteria from './COAttainmentCriteria';
+import PDFUploader from './PDFUploader';
+import TargetAttainment from './TargetAttainment';
+import AdvanceAndWeakStudentIdentification from './AdvanceAndWeakStudentIdentification';
+import FeedbackAndCorrectiveActions from './FeedbackAndCorrectiveActions';
+import FacultyCourseReview from './FacultyCourseReview';
+import CourseCodeInput from './CourseCodeInput';
+import AssessmentSelection from './AssessmentSelection';
+import InstructionsCard from './InstructionsCard';
+
+import ExcelToJson from './ExcelToJson';
 
 const FeedbackForm = (props) => {
   const token = localStorage.getItem("token");
 
   let num = props.num;
   const [isLoading, setIsLoading] = useState(false);
-  
   const [coursecode, setCourseCode] = useState("");
   const [coursetitle, setCourseTitle] = useState("");
   const [module, setModule] = useState("");
@@ -51,7 +51,8 @@ const FeedbackForm = (props) => {
     referenceLinks: [],
   });
 
-  const [EditableCourseDescriptionData, setEditableCourseDescriptionData] = useState("");
+  const [EditableCourseDescriptionData, setEditableCourseDescriptionData] =
+    useState("");
   const [copoMappingData, setCopoMappingData] = useState({
     courseOutcomes: {},
     mappingData: {},
@@ -60,7 +61,9 @@ const FeedbackForm = (props) => {
   const [internalAssessmentData, setInternalAssessmentData] = useState({
     components: [],
   });
-  const [actionsForWeakStudentsData, setActionsForWeakStudentsData] = useState([]);
+  const [actionsForWeakStudentsData, setActionsForWeakStudentsData] = useState(
+    []
+  );
   const [weeklyTimetableData, setWeeklyTimetableData] = useState(null);
 
   const handleWeakStudentsChange = (updatedData) => {
@@ -109,6 +112,8 @@ const FeedbackForm = (props) => {
   const [coWeightages, setCoWeightages] = useState(props.coWeightages || {});
   const [isWeightageValid, setIsWeightageValid] = useState(false);
 
+
+
   const [coAttainmentCriteria, setCoAttainmentCriteria] = useState({});
   const [targetAttainment, setTargetAttainment] = useState({});
 
@@ -131,16 +136,15 @@ const FeedbackForm = (props) => {
   };
 
   useEffect(() => {
-    setLearnerCategories(
-      props.learnerCategories || {
-        advancedLearners: [],
-        mediumLearners: [],
-        slowLearners: []
-      }
-    );
+    setLearnerCategories(props.learnerCategories || {
+      advancedLearners: [],
+      mediumLearners: [],
+      slowLearners: []
+    });
   }, [props.learnerCategories]);
 
   const [studentData, setStudentData] = useState([]);
+
   const handleStudentDataSave = (data) => {
     setStudentData(data);
   };
@@ -151,12 +155,10 @@ const FeedbackForm = (props) => {
   });
 
   useEffect(() => {
-    setFeedbackData(
-      props.feedbackData || {
-        quantitativeFeedback: "",
-        qualitativeFeedback: ""
-      }
-    );
+    setFeedbackData(props.feedbackData || {
+      quantitativeFeedback: "",
+      qualitativeFeedback: ""
+    });
   }, [props.feedbackData]);
 
   const handleFeedbackChange = (data) => {
@@ -164,6 +166,7 @@ const FeedbackForm = (props) => {
   };
 
   const [facultyCourseReview, setFacultyCourseReview] = useState("");
+
   useEffect(() => {
     setFacultyCourseReview(props.facultyCourseReview || "");
   }, [props.facultyCourseReview]);
@@ -195,24 +198,31 @@ const FeedbackForm = (props) => {
   };
 
   const [selectedAssessments, setSelectedAssessments] = useState(props.selectedAssessments || []);
+
   useEffect(() => {
     setSelectedAssessments(props.selectedAssessments || []);
   }, [props.selectedAssessments]);
 
+
+
   const [par_sem_slowLearner, setPar_sem_slowLearner] = useState(props.par_sem_slowLearner || []);
+
   useEffect(() => {
     setPar_sem_slowLearner(props.par_sem_slowLearner || []);
   }, [props.par_sem_slowLearner]);
 
+
   /////////////////////////////////////////**Use Effect**//////////////////////////
 
   const [isCourseCodeValid, setIsCourseCodeValid] = useState(false);
+
   useEffect(() => {
     validateCourseCode(coursecode);
   }, [coursecode]);
 
   useEffect(() => {
     setStudentData(props.studentData || {});
+    // console.log("SAVED STUDENT DATA", studentData);
   }, [props.studentData]);
 
   useEffect(() => {
@@ -226,6 +236,7 @@ const FeedbackForm = (props) => {
   useEffect(() => {
     setCourseCode(props.coursecode || "");
   }, [props.coursecode]);
+
 
   useEffect(() => {
     setCoWeightages(props.coWeightages || {});
@@ -298,7 +309,32 @@ const FeedbackForm = (props) => {
     setWeeklyTimetableData(props.weeklyTimetableData || null);
   }, [props.weeklyTimetableData]);
 
+
+  useEffect(() => {
+    const loadSavedData = () => {
+      try {
+        if (props.weeklyTimetableData) {
+          setWeeklyTimetableData(props.weeklyTimetableData);
+          return;
+        }
+
+        const savedData = localStorage.getItem(`formData_${num}`);
+        if (savedData) {
+          const parsedData = JSON.parse(savedData);
+          if (parsedData.weeklyTimetableData) {
+            setWeeklyTimetableData(parsedData.weeklyTimetableData);
+          }
+        }
+      } catch (error) {
+        console.error("Error loading saved data:", error);
+      }
+    };
+
+    loadSavedData();
+  }, [num, props.weeklyTimetableData]);
+
   const [selectedProgram, setSelectedProgram] = useState(0);
+
   useEffect(() => {
     const programNumber = parseInt(props.program);
     if (programOptions[programNumber]) {
@@ -309,20 +345,20 @@ const FeedbackForm = (props) => {
   }, [props.program]);
 
   const programOptions = {
-    1: "Computer Science Engineering",
-    2: "Mechanical Engineering",
-    3: "Electronics and Computer Engineering",
-    4: "Bachelor of Business Administration (BBA)",
-    5: "Bachelor of Commerce BCOM(Hons)",
-    6: "Integrated BBA MBA",
-    7: "BA (Hons) Libreral Arts",
-    8: "BA LLB (Hons)",
-    9: "BBA LLB (Hons)",
-    10: "MBA"
+    1: 'Computer Science Engineering',
+    2: 'Mechanical Engineering',
+    3: 'Electronics and Computer Engineering',
+    4: 'Bachelor of Business Administration (BBA)',
+    5: 'Bachelor of Commerce BCOM(Hons)',
+    6: 'Integrated BBA MBA',
+    7: 'BA (Hons) Libreral Arts',
+    8: 'BA LLB (Hons)',
+    9: 'BBA LLB (Hons)',
+    10: 'MBA'
   };
 
   const SearchableDropdown = ({ options, value, onChange }) => {
-    const [searchTerm, setSearchTerm] = useState("");
+    const [searchTerm, setSearchTerm] = useState('');
     const [isOpen, setIsOpen] = useState(false);
 
     // Filter options based on search term
@@ -335,16 +371,18 @@ const FeedbackForm = (props) => {
 
     return (
       <div className="relative w-full">
+        {/* Search input with selected value prominently displayed */}
         <div
-          className={`flex items-center border ${
-            value ? "border-[#FFB255]" : "border-gray-300"
-          } rounded-md overflow-hidden`}
+          className={`flex items-center border ${value ? 'border-[#FFB255]' : 'border-gray-300'} rounded-md overflow-hidden`}
           onClick={() => setIsOpen(!isOpen)}
         >
           <div className="p-2 flex-grow cursor-pointer flex items-center justify-between">
-            <span className={value ? "font-medium text-gray-800" : "text-gray-500"}>
+            {/* Show selected value prominently */}
+            <span className={value ? 'font-medium text-gray-800' : 'text-gray-500'}>
               {selectedLabel}
             </span>
+
+            {/* Status indicator for selected items */}
             {value > 0 && (
               <span className="ml-2 bg-[#FFB255] text-white text-xs px-2 py-0.5 rounded-full">
                 Selected
@@ -352,16 +390,17 @@ const FeedbackForm = (props) => {
             )}
           </div>
           <button
-            className={`p-2 ${value ? "bg-[#FFB255] text-white" : "bg-gray-100 text-gray-700"}`}
+            className={`p-2 ${value ? 'bg-[#FFB255] text-white' : 'bg-gray-100 text-gray-700'}`}
             onClick={(e) => {
               e.stopPropagation();
               setIsOpen(!isOpen);
             }}
           >
-            {isOpen ? "▲" : "▼"}
+            {isOpen ? '▲' : '▼'}
           </button>
         </div>
 
+        {/* Search field appears when dropdown is open */}
         {isOpen && (
           <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg overflow-hidden">
             <input
@@ -373,26 +412,26 @@ const FeedbackForm = (props) => {
               onClick={(e) => e.stopPropagation()}
               autoFocus
             />
+
             <div className="max-h-60 overflow-y-auto">
               {filteredOptions.length > 0 ? (
                 filteredOptions.map(([programValue, label]) => (
                   <div
                     key={programValue}
-                    className={`p-3 cursor-pointer flex items-center justify-between ${
-                      parseInt(programValue) === value
+                    className={`p-3 cursor-pointer flex items-center justify-between
+                      ${parseInt(programValue) === value
                         ? "bg-[#FFB255] bg-opacity-20 border-l-4 border-[#FFB255] text-[#FFB255] font-medium"
-                        : "hover:bg-gray-100"
-                    }`}
+                        : "hover:bg-gray-100"}`}
                     onClick={() => {
                       onChange(parseInt(programValue));
                       setIsOpen(false);
-                      setSearchTerm("");
+                      setSearchTerm('');
                     }}
                   >
                     <span>{label}</span>
                     {parseInt(programValue) === value && (
-                      <svg className="w-5 h-5 text-[#FFB255]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                      <svg className="w-5 h-5 text-[#FFB255]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                       </svg>
                     )}
                   </div>
@@ -408,62 +447,61 @@ const FeedbackForm = (props) => {
   };
 
   const validateCriteria = () => {
-    return Object.keys(coAttainmentCriteria).every((co) => {
+    return Object.keys(coAttainmentCriteria).every(co => {
       const { full, partial } = coAttainmentCriteria[co];
       return parseFloat(full) > parseFloat(partial);
     });
   };
 
   const validateTargetAttainment = () => {
-    return Object.keys(targetAttainment).every((co) => {
+    return Object.keys(targetAttainment).every(co => {
       const { full, partial } = targetAttainment[co];
+      // Adjust the operator if you need 'greater than or equal to'
       return parseFloat(full) > parseFloat(partial);
     });
   };
 
-  const postData = async () => {
-    let last_modified =
-      new Date().toLocaleString("en-IN", {
-        hour: "numeric",
-        minute: "numeric",
-        hour12: true,
-      }) +
-      ", " +
-      new Date().toLocaleString("en-IN", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      });
 
+  const postData = async () => {
+    // Correct assignment: removed extra curly braces.
+    let last_modified = new Date().toLocaleString('en-IN', { 
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true
+    }) + ', ' + new Date().toLocaleString('en-IN', { 
+      day: 'numeric', 
+      month: 'short', 
+      year: 'numeric'
+    });
+    
+    
     if (!isWeightageValid) {
       alert("Please ensure all CO Assessment weightages add up to 100% before submitting.");
       return;
     }
     if (!validateCriteria()) {
-      alert(
-        "Please ensure that the 'Min. % marks (fully attained)' are greater than or equal to 'Min. % marks (partially attained)' for all COs."
-      );
+      alert("Please ensure that the 'Min. % marks (fully attained)' are greater than or equal to 'Min. % marks (partially attained)' for all COs.");
       return;
     }
     if (!validateTargetAttainment()) {
-      alert(
-        "Please ensure that in Target Attainment, the 'Min. % students (fully attained)' are greater than or equal to 'Min. % students (partially attained)' for all COs."
-      );
+      alert("Please ensure that in Target Attainment, the 'Min. % students (fully attained)' are greater than or equal to 'Min. % students (partially attained)' for all COs.");
       return;
     }
     if (!isCourseCodeValid) {
       alert("Please enter a valid course code (3 letters followed by 4 numbers).");
       return;
     }
-
+    
     if (num !== undefined) {
       if (selectedProgram === 0) {
         alert("Please select a valid program option before submitting.");
         return;
       }
-
+      
       try {
         setIsLoading(true);
+        // console.log("Preparing to save data:", { weeklyTimetableData });
+        
         const response = await axios.post(
           constants.url + "/form",
           {
@@ -494,10 +532,12 @@ const FeedbackForm = (props) => {
           {
             headers: {
               "x-auth-token": token,
-              "ngrok-skip-browser-warning": "69420",
-            },
+              "ngrok-skip-browser-warning": "69420"
+            }
           }
         );
+        
+        // Process the response as needed
         console.log("Form submitted successfully:", response.data);
       } catch (error) {
         console.error("Error submitting form:", error);
@@ -511,6 +551,7 @@ const FeedbackForm = (props) => {
   return (
     <div className="p-5 gap-[2rem] h-screen flex flex-col bg-[#FFFEFD]">
       <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col md:flex-row justify-between items-center gap-4 transition-all hover:shadow-xl">
+        {/* Back button with enhanced hover effects */}
         <button
           onClick={() => window.history.back()}
           className="group flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-all duration-300 px-5 py-2.5 rounded-lg hover:bg-gray-100 relative overflow-hidden"
@@ -521,73 +562,72 @@ const FeedbackForm = (props) => {
         </button>
 
         <div className="flex flex-col md:flex-row items-center gap-4">
+          {/* Validation messages with improved visibility and animations */}
           {!isWeightageValid && (
             <span className="text-red-600 text-sm flex items-center bg-red-50 px-3 py-2 rounded-lg animate-pulse">
               <AlertCircle className="w-4 h-4 mr-2 animate-bounce" />
               <span>CO Assessment weightages must add up to 100%</span>
             </span>
           )}
+
           {!validateCriteria() && (
             <span className="text-red-600 text-sm flex items-center bg-red-50 px-3 py-2 rounded-lg animate-pulse">
               <AlertCircle className="w-4 h-4 mr-2 animate-bounce" />
-              <span>CO Attainment Criteria: Fully attained must be greater than partially attained</span>
+              <span>CO Attainment Criteria fully attained must be greater than partially attained</span>
             </span>
           )}
           {!validateTargetAttainment() && (
             <span className="text-red-600 text-sm flex items-center bg-red-50 px-3 py-2 rounded-lg animate-pulse">
               <AlertCircle className="w-4 h-4 mr-2 animate-bounce" />
-              <span>Target Attainment: Fully attained must be greater than or equal to partially attained</span>
+              <span>Target Attainment fully attained must be greater than or equal to partially attained</span>
             </span>
           )}
+
+          {/* Submit button with enhanced interactive effects */}
           <button
             onClick={postData}
-            className={`relative overflow-hidden transition-all duration-300 text-white font-semibold rounded-lg px-8 py-3.5 ${
-              isWeightageValid &&
-              validateCriteria() &&
-              validateTargetAttainment() &&
-              selectedProgram !== 0 &&
-              isCourseCodeValid
+            className={`relative overflow-hidden transition-all duration-300 text-white font-semibold rounded-lg px-8 py-3.5
+        ${isWeightageValid && validateCriteria() && validateTargetAttainment() && selectedProgram !== 0 && isCourseCodeValid
                 ? "bg-[#FFB255] hover:bg-[#f5a543] shadow-md hover:shadow-lg transform hover:-translate-y-1"
                 : "bg-gray-400 cursor-not-allowed opacity-75"
-            }`}
-            disabled={
-              !isWeightageValid ||
-              !validateCriteria() ||
-              !validateTargetAttainment() ||
-              selectedProgram === 0 ||
-              !isCourseCodeValid
-            }
-          >
-            <span
-              className={`absolute inset-0 h-full w-full bg-white opacity-10 ${
-                isWeightageValid &&
-                validateCriteria() &&
-                validateTargetAttainment() &&
-                selectedProgram !== 0 &&
-                isCourseCodeValid
-                  ? "animate-pulse-slow"
-                  : ""
               }`}
-            ></span>
+            disabled={!isWeightageValid || !validateCriteria() || !validateTargetAttainment() || selectedProgram === 0 || !isCourseCodeValid}
+          >
+            <span className={`absolute inset-0 h-full w-full bg-white opacity-10 
+        ${isWeightageValid && validateCriteria() && validateTargetAttainment() && selectedProgram !== 0 && isCourseCodeValid ? "animate-pulse-slow" : ""}`}>
+            </span>
+
             <div className="flex items-center gap-2">
               <span className="relative z-10">Submit Form</span>
               {isWeightageValid && validateCriteria() && validateTargetAttainment() && selectedProgram !== 0 && isCourseCodeValid ? (
-                <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg
+                  className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               ) : (
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m0 0v2m0-2h2m-2 0H9m3-10v1" />
                 </svg>
               )}
             </div>
           </button>
+
+          {/* Progress indicator for form completion status */}
           <div className="hidden md:flex items-center gap-1 ml-2">
-            <div className={`h-2 w-2 rounded-full ${isWeightageValid ? "bg-green-500" : "bg-gray-300"}`}></div>
-            <div className={`h-2 w-2 rounded-full ${validateCriteria() ? "bg-green-500" : "bg-gray-300"}`}></div>
-            <div className={`h-2 w-2 rounded-full ${validateTargetAttainment() ? "bg-green-500" : "bg-gray-300"}`}></div>
-            <div className={`h-2 w-2 rounded-full ${selectedProgram !== 0 ? "bg-green-500" : "bg-gray-300"}`}></div>
-            <div className={`h-2 w-2 rounded-full ${isCourseCodeValid ? "bg-green-500" : "bg-gray-300"}`}></div>
+            <div className={`h-2 w-2 rounded-full ${isWeightageValid ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+            <div className={`h-2 w-2 rounded-full ${validateCriteria() ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+            <div className={`h-2 w-2 rounded-full ${validateTargetAttainment() ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+            <div className={`h-2 w-2 rounded-full ${selectedProgram !== 0 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+            <div className={`h-2 w-2 rounded-full ${isCourseCodeValid ? 'bg-green-500' : 'bg-gray-300'}`}></div>
           </div>
         </div>
       </div>
@@ -595,17 +635,18 @@ const FeedbackForm = (props) => {
       <div className="space-y-6 overflow-scroll">
         <InstructionsCard />
 
+
         <div className="grid grid-cols-2 gap-4">
           {/* Program Section */}
-          <div className={`bg-white p-6 rounded-lg shadow-sm border ${
-            selectedProgram === 0 ? "border-red-600" : "border-gray-100"
-          }`}>
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
                 1
               </div>
               <h2 className="text-xl font-semibold text-gray-800">Program</h2>
             </div>
+
+            {/* Replace the original select with the SearchableDropdown */}
             <SearchableDropdown
               options={programOptions}
               value={selectedProgram}
@@ -614,15 +655,16 @@ const FeedbackForm = (props) => {
           </div>
 
           {/* Course Code Section */}
-          <div className={`bg-white p-6 rounded-lg shadow-sm border ${
-            !isCourseCodeValid ? "border-red-600" : "border-gray-100"
-          }`}>
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
                 2
               </div>
-              <h2 className="text-xl font-semibold text-gray-800">Course Code</h2>
+              <h2 className="text-xl font-semibold text-gray-800">
+                Course Code
+              </h2>
             </div>
+
             <CourseCodeInput
               value={coursecode}
               onChange={(value) => setCourseCode(value)}
@@ -635,7 +677,9 @@ const FeedbackForm = (props) => {
               <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
                 3
               </div>
-              <h2 className="text-xl font-semibold text-gray-800">Course Title</h2>
+              <h2 className="text-xl font-semibold text-gray-800">
+                Course Title
+              </h2>
             </div>
             <textarea
               className="w-full p-3 border border-gray-200 rounded-md transition-all resize-none text-gray-700"
@@ -652,7 +696,9 @@ const FeedbackForm = (props) => {
               <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
                 4
               </div>
-              <h2 className="text-xl font-semibold text-gray-800">Module/Semester</h2>
+              <h2 className="text-xl font-semibold text-gray-800">
+                Module/Semester
+              </h2>
             </div>
             <textarea
               className="w-full p-3 border border-gray-200 rounded-md transition-all resize-none text-gray-700"
@@ -662,7 +708,6 @@ const FeedbackForm = (props) => {
               rows="2"
             />
           </div>
-
           {/* Session Section */}
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
             <div className="flex items-center gap-3 mb-4">
@@ -708,10 +753,10 @@ const FeedbackForm = (props) => {
             </h2>
           </div>
           <COPOMapping
-            program={selectedProgram.toString()}
+            program={selectedProgram.toString()} // Pass the selected program directly
             onSave={handleCOPOMappingChange}
             initialData={copoMappingData}
-            key={`copo-${selectedProgram}`}
+            key={`copo-${selectedProgram}`} // Add a key that changes when program changes to force re-mount
           />
         </div>
 
@@ -731,23 +776,23 @@ const FeedbackForm = (props) => {
           />
         </div>
 
-        {/* Excel to JSON to extract student data */}
-        <ExcelToJson onSave={handleStudentDataSave} initialData={studentData} />
+        {/* Excel to json to extract student data*/}
+        <ExcelToJson
+          onSave={handleStudentDataSave}
+          initialData={studentData}
+        />
 
         {/* CO Assessment weightage Section */}
-        <div className={`bg-white p-6 rounded-xl shadow-sm border ${
-          !isWeightageValid ? "border-red-600" : "border-gray-100"
-        } mt-8`}>
-          <COAssessmentWeightage
-            copoMappingData={copoMappingData}
-            studentData={studentData}
-            initialWeightages={coWeightages}
-            onChange={(weightages) => {
-              setCoWeightages(weightages);
-            }}
-            onValidationChange={(isValid) => setIsWeightageValid(isValid)}
-          />
-        </div>
+        <COAssessmentWeightage
+          copoMappingData={copoMappingData}
+          studentData={studentData}
+          initialWeightages={coWeightages}
+          onChange={(weightages) => {
+            setCoWeightages(weightages);
+            // console.log('Updated weightages:', weightages);
+          }}
+          onValidationChange={(isValid) => setIsWeightageValid(isValid)}
+        />
 
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
@@ -765,27 +810,18 @@ const FeedbackForm = (props) => {
           />
         </div>
 
-        {/* CO Attainment Criteria Section with error border if invalid */}
-        <div className={`bg-white p-6 rounded-lg shadow-sm border ${
-          !validateCriteria() ? "border-red-600" : "border-gray-100"
-        }`}>
-          <COAttainmentCriteria
-            copoMappingData={copoMappingData}
-            initialCriteria={coAttainmentCriteria}
-            onSave={handleCoAttainmentCriteriaSave}
-          />
-        </div>
+        <COAttainmentCriteria
+          copoMappingData={copoMappingData}
+          initialCriteria={coAttainmentCriteria}
+          onSave={handleCoAttainmentCriteriaSave}
+        />
 
-        {/* Target Attainment Section with error border if invalid */}
-        <div className={`bg-white p-6 rounded-lg shadow-sm border ${
-          !validateTargetAttainment() ? "border-red-600" : "border-gray-100"
-        }`}>
-          <TargetAttainment
-            copoMappingData={copoMappingData}
-            initialCriteria={targetAttainment}
-            onSave={handleTargetAttainmentSave}
-          />
-        </div>
+        <TargetAttainment
+          copoMappingData={copoMappingData}
+          initialCriteria={targetAttainment}
+          onSave={handleTargetAttainmentSave}
+        />
+
 
         <COAttainmentAnalysis
           coWeightages={coWeightages}
@@ -804,7 +840,10 @@ const FeedbackForm = (props) => {
         />
 
         {/* Course Syllabus Section */}
-        <CourseSyllabus onSave={handleCourseSyllabusChange} initialData={courseSyllabus} />
+        <CourseSyllabus
+          onSave={handleCourseSyllabusChange}
+          initialData={courseSyllabus}
+        />
 
         {/* Learning Resources Section */}
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
@@ -812,7 +851,9 @@ const FeedbackForm = (props) => {
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
               17
             </div>
-            <h2 className="text-xl font-semibold text-gray-800">Learning Resources</h2>
+            <h2 className="text-xl font-semibold text-gray-800">
+              Learning Resources
+            </h2>
           </div>
           <div className="space-y-6">
             <AddField
@@ -838,10 +879,12 @@ const FeedbackForm = (props) => {
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
               18
             </div>
-            <h2 className="text-xl font-semibold text-gray-800">Weekly Time-Table</h2>
+            <h2 className="text-xl font-semibold text-gray-800">
+              Weekly Time-Table
+            </h2>
           </div>
           <div className="p-4 rounded-lg">
-            {selectedProgram === 6 || selectedProgram === 10 ? (
+            {selectedProgram === 6 || selectedProgram === 10 ? ( // 6 is Integrated BBA MBA
               <MBAWeeklyTimetable
                 initialData={weeklyTimetableData}
                 onChange={(newTimetable) => {
@@ -865,20 +908,20 @@ const FeedbackForm = (props) => {
           initialData={actionsForWeakStudentsData}
           onSave={handleWeakStudentsChange}
         />
-
-        {/* PDF Uploader */}
+        {/* Add the component inside your return statement, where you want it to appear*/}
         <PDFUploader
           num={num}
           onUploadSuccess={(filename) => {
-            console.log("File uploaded:", filename);
+            // Handle successful upload
+            console.log('File uploaded:', filename);
           }}
           onDeleteSuccess={() => {
-            console.log("File deleted");
+            // Handle successful deletion
+            console.log('File deleted');
           }}
-          initialFileName={props.mergePDF}
+          initialFileName={props.mergePDF} // Pass the initial filename if available
         />
 
-        {/* Feedback and Corrective Actions */}
         <FeedbackAndCorrectiveActions
           initialData={feedbackData}
           onSave={handleFeedbackChange}
@@ -890,6 +933,7 @@ const FeedbackForm = (props) => {
           onSave={(data) => setFacultyCourseReview(data)}
         />
 
+        {/* Loading Spinner */}
         {isLoading && <LoadingSpinner />}
       </div>
     </div>
