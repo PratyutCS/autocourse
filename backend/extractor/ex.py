@@ -325,26 +325,81 @@ def extract(file):
 
 def get_mapping_template(program):
     """
-    Return the appropriate mapping template based on program
+    Return the appropriate mapping template based on program.
+    Each mapping key is initialized with an empty string.
     """
-    if program == 2:  # Mechanical Engineering
+    if program == 1:  # Computer Science Engineering
         return {
-            "PO1": "", "PO2": "", "PO3": "", "PO4": "", "PO5": "",
-            "PO6": "", "PO7": "", "PO8": "", "PO9": "", "PO10": "",
-            "PO11": "", "PSO1": "", "PSO2": ""
+            "CO/PO": "",
+            "PO1": "", "PO2": "", "PO3": "", "PO4": "", "PO5": "", "PO6": "",
+            "PO7": "", "PO8": "", "PO9": "", "PO10": "", "PO11": "", "PO12": "",
+            "PSO1": "", "PSO2": "", "PSO3": "", "PSO4": ""
+        }
+    elif program == 2:  # Mechanical Engineering
+        return {
+            "CO/PO": "",
+            "PO1": "", "PO2": "", "PO3": "", "PO4": "", "PO5": "", "PO6": "",
+            "PO7": "", "PO8": "", "PO9": "", "PO10": "", "PO11": "", "PO12": "",
+            "PSO1": "", "PSO2": ""
         }
     elif program == 3:  # Electronics and Computer Engineering
         return {
-            "PO1": "", "PO2": "", "PO3": "", "PO4": "", "PO5": "",
-            "PO6": "", "PO7": "", "PO8": "", "PO9": "", "PO10": "",
-            "PO11": "", "PO12": "", "PO13": "", "PSO1": "", "PSO2": "", "PSO3": ""
+            "CO/PO": "",
+            "PO1": "", "PO2": "", "PO3": "", "PO4": "", "PO5": "", "PO6": "",
+            "PO7": "", "PO8": "", "PO9": "", "PO10": "", "PO11": "", "PO12": "",
+            "PSO1": "", "PSO2": ""
+        }
+    elif program == 4:  # BBA
+        return {
+            "CO/PO": "",
+            "PO1": "", "PO2": "", "PO3": "", "PO4": "", "PO5": "", "PO6": "",
+            "PSFA1": "", "PSFA2": ""
+        }
+    elif program == 5:  # BCOM(Hons)
+        return {
+            "CO/PO": "",
+            "PO1": "", "PO2": "", "PO3": "", "PO4": "", "PO5": "", "PO6": "",
+            "PO7": "", "PO8": ""
+        }
+    elif program == 6:  # Integrated BBA/MBA
+        return {
+            "CO/PO": "",
+            "PO1": "", "PO2": "", "PO3": "", "PO4": "", "PO5": "", "PO6": "",
+            "PSFB1": "", "PSFB2": "", "PSFB3": ""
+        }
+    elif program == 7:  # BA (Hons) Liberal Arts
+        return {
+            "CO/PO": "",
+            "PO1": "", "PO2": "", "PO3": "", "PO4": "", "PO5": "", "PO6": "",
+            "PO7": ""
+        }
+    elif program == 8:  # BA LLB (Hons)
+        return {
+            "CO/PO": "",
+            "PO1": "", "PO2": "", "PO3": "", "PO4": "", "PO5": "", "PO6": "",
+            "PO7": "",
+            "PSO1": "", "PSO2": ""
+        }
+    elif program == 9:  # BBA LLB (Hons)
+        return {
+            "CO/PO": "",
+            "PO1": "", "PO2": "", "PO3": "", "PO4": "", "PO5": "", "PO6": "",
+            "PO7": "",
+            "PSO1": "", "PSO2": ""
+        }
+    elif program == 10:  # BBA LLB (Hons) or similar
+        return {
+            "CO/PO": "",
+            "PO1": "", "PO2": "", "PO3": "", "PO4": "", "PO5": "", "PO6": ""
         }
     else:  # Default to Computer Science Engineering (Program 1)
         return {
-            "PO1": "", "PO2": "", "PO3": "", "PO4": "", "PO5": "",
-            "PO6": "", "PO7": "", "PO8": "", "PO9": "", "PO10": "",
-            "PO11": "", "PO12": "", "PSO1": "", "PSO2": "", "PSO3": "", "PSO4": ""
+            "CO/PO": "",
+            "PO1": "", "PO2": "", "PO3": "", "PO4": "", "PO5": "", "PO6": "",
+            "PO7": "", "PO8": "", "PO9": "", "PO10": "", "PO11": "", "PO12": "",
+            "PSO1": "", "PSO2": "", "PSO3": "", "PSO4": ""
         }
+
 
 def create_empty_template():
     # Default to program 1 initially
@@ -499,9 +554,16 @@ Extract relevant information from this text and fill the template:
 
 Requirements:
 -0. Program field must be exactly one of these values:
-   * 1 for 'Computer Science Engineering' 
-   * 2 for 'Mechanical Engineering' 
+   * 1 for 'Computer Science Engineering'
+   * 2 for 'Mechanical Engineering'
    * 3 for 'Electronics and Computer Engineering'
+   * 4 for 'BBA'
+   * 5 for 'BCOM(Hons)'
+   * 6 for 'Integrated BBA/MBA'
+   * 7 for 'BA (Hons) Liberal Arts'
+   * 8 for 'BA LLB (Hons)'
+   * 9 for 'BBA LLB (Hons)'
+   * 10 for 'BBA LLB (Hons)' (if applicable)
    Based on your analysis of the document, determine which program is most appropriate and provide ONLY the number.
 
 -1. Response must be ONLY the JSON object, no other text
@@ -529,10 +591,29 @@ Requirements:
 -12. For the mappingData in copoMappingData:
       - First, accurately identify the program type from the document content.
       - Use the following PO/PSO structure based on the identified program:
-         * For Program 1 (Computer Science): 12 POs (PO1-PO12) and 4 PSOs (PSO1-PSO4)
-         * For Program 2 (Mechanical): 11 POs (PO1-PO11) and 2 PSOs (PSO1-PSO2)
-         * For Program 3 (Electronics and Computer): 13 POs (PO1-PO13) and 3 PSOs (PSO1-PSO3)
+          * For Program 1 (Computer Science Engineering): the mapping keys must be:
+              ["CO/PO", "PO1", "PO2", "PO3", "PO4", "PO5", "PO6", "PO7", "PO8", "PO9", "PO10", "PO11", "PO12", "PSO1", "PSO2", "PSO3", "PSO4"]
+          * For Program 2 (Mechanical Engineering): the mapping keys must be:
+              ["CO/PO", "PO1", "PO2", "PO3", "PO4", "PO5", "PO6", "PO7", "PO8", "PO9", "PO10", "PO11", "PO12", "PSO1", "PSO2"]
+          * For Program 3 (Electronics and Computer Engineering): the mapping keys must be:
+              ["CO/PO", "PO1", "PO2", "PO3", "PO4", "PO5", "PO6", "PO7", "PO8", "PO9", "PO10", "PO11", "PO12", "PSO1", "PSO2"]
+          * For Program 4 (BBA): the mapping keys must be:
+              ["CO/PO", "PO1", "PO2", "PO3", "PO4", "PO5", "PO6", "PSFA1", "PSFA2"]
+          * For Program 5 (BCOM(Hons)): the mapping keys must be:
+              ["CO/PO", "PO1", "PO2", "PO3", "PO4", "PO5", "PO6", "PO7", "PO8"]
+          * For Program 6 (Integrated BBA/MBA): the mapping keys must be:
+              ["CO/PO", "PO1", "PO2", "PO3", "PO4", "PO5", "PO6", "PSFB1", "PSFB2", "PSFB3"]
+          * For Program 7 (BA (Hons) Liberal Arts): the mapping keys must be:
+              ["CO/PO", "PO1", "PO2", "PO3", "PO4", "PO5", "PO6", "PO7"]
+          * For Program 8 (BA LLB (Hons)): the mapping keys must be:
+              ["CO/PO", "PO1", "PO2", "PO3", "PO4", "PO5", "PO6", "PO7", "PSO1", "PSO2"]
+          * For Program 9 (BBA LLB (Hons)): the mapping keys must be:
+              ["CO/PO", "PO1", "PO2", "PO3", "PO4", "PO5", "PO6", "PO7", "PSO1", "PSO2"]
+          * For Program 10 (BBA LLB (Hons) or similar): the mapping keys must be:
+              ["CO/PO", "PO1", "PO2", "PO3", "PO4", "PO5", "PO6"]
+          * For any other program, default to Program 1's structure.
       - Extract the exact mapping values from the table.
+      - All mapping values must be numerical and must be between 0 and 3 (inclusive). If a mapping value falls outside this range or is non-numerical, treat it as invalid and default to an empty string "".
       - Preserve empty cells as empty strings "".
       - Ensure the mapping matches the course outcomes exactly as present in the document.
       - The Program field value must match the structure used in the mappingData.
@@ -541,7 +622,7 @@ Requirements:
 
 -14. The mapping data must match course outcomes
 
--15. Ensure consistency between the Program field (1, 2, or 3) and the corresponding copoMappingData structure.
+-15. Ensure consistency between the Program field and the corresponding copoMappingData structure.
 
 -16. For course_code field, apply the following validation rules:
       - The course code must be exactly 7 characters long.
@@ -568,6 +649,7 @@ Additional Extraction and Validation Restrictions:
 - For **feedbackData.qualitativeFeedback**: If the value is longer than 4096 characters, truncate it to 4096 characters.
 - For **facultyCourseReview**: If the value is longer than 4096 characters, truncate it to 4096 characters.
 """
+
     try:
         # Use the OpenAI client to create a chat completion
         completion = client.chat.completions.create(
@@ -638,7 +720,8 @@ if __name__ == '__main__':
         extracted_text = extract(fn)
         if not extracted_text:
             print("Error: No text extracted from PDF")
-        print("EXTRACTED TEXT IS: {}".format(extracted_text))
+        # print("EXTRACTED TEXT IS: {}".format(extracted_text))
+        extracted_text = extracted_text.encode("utf-8", "ignore").decode("utf-8")
         response = ai(extracted_text)
         with open(jfn, 'r', encoding="utf-8") as file:
             data = json.load(file)
