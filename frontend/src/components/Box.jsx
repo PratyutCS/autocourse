@@ -8,7 +8,6 @@ import { FcDocument } from "react-icons/fc";
 export default function Box(props) {
   return (
     <div className="box1">
-      {/* Files grid */}
       {props.files && props.files.length > 0 ? (
         <AnimatePresence>
           <motion.div 
@@ -26,7 +25,7 @@ export default function Box(props) {
             >
               <Cards />
             </motion.div>
-            
+
             {/* File cards */}
             {props.files.map((file, index) => (
               <motion.div 
@@ -42,6 +41,7 @@ export default function Box(props) {
                   num={index} 
                   userData={props.userData} 
                   done={file.done}
+                  viewDocument={props.viewDocument} // Pass viewDocument function
                 />
               </motion.div>
             ))}
@@ -51,7 +51,7 @@ export default function Box(props) {
         // When there are no files, show upload card plus empty state message
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <Cards />
-          
+
           <div className="sm:col-span-1 md:col-span-3 flex flex-col items-center justify-center py-16 px-4 bg-white rounded-xl shadow-sm border border-gray-100">
             <div className="bg-gray-100 rounded-full p-6 mb-4">
               <FcDocument className="w-16 h-16" />

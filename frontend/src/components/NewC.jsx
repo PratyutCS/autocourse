@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { AiFillDelete } from "react-icons/ai";
 import { IoMdDownload } from "react-icons/io";
 import { FcDocument } from "react-icons/fc";
@@ -9,7 +8,6 @@ import axios from 'axios';
 import constants from "../constants";
 
 export default function NewC(props) {
-  const navigate = useNavigate();
   const [notification, setNotification] = useState({ visible: false, type: '', message: '' });
   const [isHovered, setIsHovered] = useState(false);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
@@ -18,42 +16,38 @@ export default function NewC(props) {
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);
   const pdfModalRef = useRef(null);
 
-  // Close modal when clicking outside
   // Clean up blob URLs when component unmounts
-useEffect(() => {
-  return () => {
-    if (pdfUrl && pdfUrl.startsWith('blob:')) {
-      URL.revokeObjectURL(pdfUrl);
-    }
-  };
-}, [pdfUrl]);
-  // Close modal when clicking outside
-useEffect(() => {
-  function handleClickOutside(event) {
-    if (pdfModalRef.current && !pdfModalRef.current.contains(event.target)) {
-      // Revoke the object URL to prevent memory leaks
+  useEffect(() => {
+    return () => {
       if (pdfUrl && pdfUrl.startsWith('blob:')) {
         URL.revokeObjectURL(pdfUrl);
       }
-      setPdfUrl(null);
-      setShowPreview(false);
+    };
+  }, [pdfUrl]);
+  
+  // Close modal when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (pdfModalRef.current && !pdfModalRef.current.contains(event.target)) {
+        // Revoke the object URL to prevent memory leaks
+        if (pdfUrl && pdfUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(pdfUrl);
+        }
+        setPdfUrl(null);
+        setShowPreview(false);
+      }
     }
-  }
 
-  if (showPreview) {
-    document.addEventListener("mousedown", handleClickOutside);
-  } else {
-    document.removeEventListener("mousedown", handleClickOutside);
-  }
+    if (showPreview) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
 
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
-}, [showPreview, pdfUrl]);
-
-  const form = (num, userData) => {
-    navigate('/form', { state: { num: num, userData: userData } });
-  }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showPreview, pdfUrl]);
 
   const Delete = async (num) => {
     if (!isConfirmingDelete) {
@@ -130,7 +124,7 @@ useEffect(() => {
     }
   }
 
-  // NEW: Preview function that triggers PDF generation for viewing
+  // Preview function that triggers PDF generation for viewing
   const Preview = async (num) => {
     const token = localStorage.getItem('token');
     
@@ -318,6 +312,7 @@ useEffect(() => {
       </div>
     );
   };
+
   return (
     <>
       <AnimatePresence>
@@ -365,16 +360,16 @@ useEffect(() => {
 
           {/* Action buttons */}
           <div className="w-full flex flex-col gap-3 mt-6">
-            {/* View document button */}
+            {/* View document button - MODIFIED to use passed viewDocument function */}
             <button
-              onClick={() => form(props.num, props.userData)}
+              onClick={() => props.viewDocument(props.num)}
               className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FFB255] hover:bg-[#ffa133] text-white rounded-md transition-all duration-200 font-medium shadow-sm hover:shadow"
             >
               <IoEye className="w-4 h-4" />
               <span>View Document</span>
             </button>
             
-            {/* Preview PDF button - NEW */}
+            {/* Preview PDF button */}
             <button
               onClick={() => Preview(props.num)}
               disabled={props.done !== 1 || isLoadingPreview}
