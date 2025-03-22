@@ -109,9 +109,7 @@ if data.get('course_description'):
     course_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
 
     doc.add_paragraph()
-    course_description = data['course_description'].encode('utf-8', 'ignore').decode('utf-8')
-    course_description_paragraph = doc.add_paragraph(course_description)
-    # course_description_paragraph = doc.add_paragraph(data['course_description'])
+    course_description_paragraph = doc.add_paragraph(data['course_description'])
     course_description_paragraph.paragraph_format.left_indent = Inches(0.7)
     course_description_paragraph.paragraph_format.right_indent = Inches(0.5)
     course_description_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
@@ -1731,8 +1729,8 @@ print("Document updated and saved.")
 convert(output_doc)
 os.remove(output_doc)
 
-if(data.get('assignmentPDF')):
-    pdf_list = [output_doc.replace('.docx', '.pdf'), "./data/assignments/" + data['assignmentPDF']]
+if(data.get('mergePDF')):
+    pdf_list = [output_doc.replace('.docx', '.pdf'), "./data/1/" + data['mergePDF']]
 else:
     pdf_list = [output_doc.replace('.docx', '.pdf')]
 merger = PdfMerger()
