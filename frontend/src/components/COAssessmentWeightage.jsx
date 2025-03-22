@@ -9,7 +9,9 @@ const COAssessmentWeightage = ({
   onValidationChange
 }) => {
   const [weightages, setWeightages] = useState(initialWeightages || {});
+  const [inputValues, setInputValues] = useState({}); // For tracking user inputs
   const [validationErrors, setValidationErrors] = useState([]);
+  const [focusedField, setFocusedField] = useState(null);
 
   // Transform max marks data into assessment components, excluding the last column
   const getAssessmentComponents = () => {
@@ -56,29 +58,85 @@ const COAssessmentWeightage = ({
     const assessments = getAssessmentComponents();
 
     const newWeightages = {};
+    const newInputValues = {};
 
     courseOutcomes.forEach(co => {
       newWeightages[co] = {};
+      newInputValues[co] = {};
+      
       assessments.forEach(assessment => {
         const existingValue = weightages[co]?.[assessment.name];
         const initialValue = initialWeightages?.[co]?.[assessment.name];
 
-        newWeightages[co][assessment.name] =
-          (existingValue !== undefined ? existingValue :
-            initialValue !== undefined ? initialValue :
-              "0").toString();
+        const numericValue = 
+          existingValue !== undefined ? existingValue :
+          initialValue !== undefined ? initialValue :
+          "0";
+          
+        newWeightages[co][assessment.name] = numericValue;
+        newInputValues[co][assessment.name] = numericValue;
       });
     });
 
     if (JSON.stringify(weightages) !== JSON.stringify(newWeightages)) {
       setWeightages(newWeightages);
+      setInputValues(newInputValues);
       onChange?.(newWeightages);
     }
   }, [copoMappingData, studentData, initialWeightages]);
 
-  const handleWeightageChange = (co, assessmentName, value) => {
-    const numValue = Math.min(100, Math.max(0, Number(value) || 0));
-
+  const handleInputChange = (co, assessmentName, value) => {
+    // Allow empty string during typing
+    const newInputValues = {
+      ...inputValues,
+      [co]: {
+        ...inputValues[co],
+        [assessmentName]: value
+      }
+    };
+    setInputValues(newInputValues);
+    
+    // If the value is a valid number, update the weightages too
+    if (value !== '' && !isNaN(Number(value))) {
+      const numValue = Math.min(100, Math.max(0, Number(value)));
+      
+      const newWeightages = {
+        ...weightages,
+        [co]: {
+          ...weightages[co],
+          [assessmentName]: numValue.toString()
+        }
+      };
+      
+      setWeightages(newWeightages);
+      onChange?.(newWeightages);
+    } else if (value === '') {
+      // When the value is empty, set weightage to 0 but keep display empty
+      const newWeightages = {
+        ...weightages,
+        [co]: {
+          ...weightages[co],
+          [assessmentName]: "0"
+        }
+      };
+      
+      setWeightages(newWeightages);
+      onChange?.(newWeightages);
+    }
+  };
+  
+  const handleBlur = (co, assessmentName, value) => {
+    const numValue = value === '' ? 0 : Math.min(100, Math.max(0, Number(value) || 0));
+    
+    // Update both input values and weightages with the validated number
+    const newInputValues = {
+      ...inputValues,
+      [co]: {
+        ...inputValues[co],
+        [assessmentName]: numValue.toString()
+      }
+    };
+    
     const newWeightages = {
       ...weightages,
       [co]: {
@@ -86,9 +144,11 @@ const COAssessmentWeightage = ({
         [assessmentName]: numValue.toString()
       }
     };
-
+    
+    setInputValues(newInputValues);
     setWeightages(newWeightages);
     onChange?.(newWeightages);
+    setFocusedField(null);
   };
 
   const getColumnTotal = (assessmentName) => {
@@ -102,6 +162,11 @@ const COAssessmentWeightage = ({
       return total + (Number(value) || 0);
     }, 0);
   };
+  
+  const getColumnClass = (assessmentName) => {
+    const total = getColumnTotal(assessmentName);
+    return total === 100 ? 'text-green-600 font-medium' : 'text-red-600 font-medium';
+  };
 
   const assessments = getAssessmentComponents();
   const courseOutcomes = getCourseOutcomes();
@@ -111,7 +176,7 @@ const COAssessmentWeightage = ({
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
         <div className="flex items-center gap-3 mb-6">
           <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold">
-            9
+            10
           </div>
           <h2 className="text-xl font-semibold text-gray-800">
             CO Assessment Weightage Matrix
@@ -137,7 +202,7 @@ const COAssessmentWeightage = ({
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
       <div className="flex items-center gap-3 mb-6">
         <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold">
           10
@@ -158,79 +223,108 @@ const COAssessmentWeightage = ({
         </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+      <div className="overflow-x-auto border border-black/10 rounded-lg  ">
+        <table className="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
+          <thead>
+            <tr className="bg-gray-50">
+              <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
                 CO / Assessment
               </th>
               {assessments.map((assessment) => (
                 <th
                   key={assessment.id}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-r border-gray-200"
                 >
-                  {assessment.name}
-                  <div className="text-xs text-gray-400 normal-case">
-                    (Max Marks: {assessment.weightage})
+                  <div className="flex flex-col">
+                    <span>{assessment.name}</span>
+                    <span className="text-xs font-normal text-gray-500 normal-case mt-1">
+                      Max Marks: {assessment.weightage}
+                    </span>
                   </div>
                 </th>
               ))}
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
                 Total
               </th>
             </tr>
           </thead>
 
           <tbody className="bg-white divide-y divide-gray-200">
-            {courseOutcomes.map((co) => (
-              <tr key={co}>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{co}</div>
+            {courseOutcomes.map((co, rowIndex) => (
+              <tr key={co} className={rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                <td className="px-6 py-4 whitespace-nowrap border-r border-gray-200">
+                  <div className="text-sm font-medium text-gray-800">{co}</div>
                 </td>
                 {assessments.map((assessment) => (
-                  <td key={`${co}_${assessment.name}`} className="px-6 py-4 whitespace-nowrap">
-                    <input
-                      type="number"
-                      min="0"
-                      max="100"
-                      value={weightages[co]?.[assessment.name] || "0"}
-                      onChange={(e) => handleWeightageChange(co, assessment.name, e.target.value)}
-                      className={`w-20 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#FFB255]/20 focus:border-[#FFB255] ${weightages[co]?.[assessment.name] !== initialWeightages?.[co]?.[assessment.name]
-                          ? 'border-amber-300 bg-amber-50'
-                          : 'border-gray-300'
-                        }`}
-                    />
+                  <td key={`${co}_${assessment.name}`} className="px-6 py-4 whitespace-nowrap border-r border-gray-200">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        value={inputValues[co]?.[assessment.name] || ""}
+                        onChange={(e) => handleInputChange(co, assessment.name, e.target.value)}
+                        onFocus={() => setFocusedField(`${co}_${assessment.name}`)}
+                        onBlur={(e) => handleBlur(co, assessment.name, e.target.value)}
+                        className={`w-20 px-3 py-2 border rounded-md transition-all duration-200
+                          ${focusedField === `${co}_${assessment.name}` 
+                            ? 'border-[#FFB255] ring-2 ring-[#FFB255] ring-opacity-20' 
+                            : inputValues[co]?.[assessment.name] !== initialWeightages?.[co]?.[assessment.name]
+                                ? 'border-amber-300 bg-amber-50 hover:border-amber-400'
+                                : 'border-gray-300 hover:border-gray-400'
+                          }`}
+                      />
+                      
+                    </div>
                   </td>
                 ))}
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {getRowTotal(co)}%
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm font-medium text-gray-700">{getRowTotal(co)}%</div>
                 </td>
               </tr>
             ))}
 
-            <tr className="bg-gray-50">
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                Total
+            <tr className="bg-gray-100 border-t-2 border-gray-300">
+              <td className="px-6 py-4 whitespace-nowrap border-r border-gray-200">
+                <div className="text-sm font-semibold text-gray-800">Total</div>
               </td>
-              {assessments.map((assessment) => (
-                <td key={`total_${assessment.name}`} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {getColumnTotal(assessment.name)}%
-                </td>
-              ))}
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" />
+              {assessments.map((assessment) => {
+                const total = getColumnTotal(assessment.name);
+                return (
+                  <td 
+                    key={`total_${assessment.name}`} 
+                    className="px-6 py-4 whitespace-nowrap border-r border-gray-200"
+                  >
+                    <div className={`text-sm ${getColumnClass(assessment.name)}`}>
+                      {total}%
+                    </div>
+                  </td>
+                );
+              })}
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="text-sm text-gray-500"></div>
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <div className="mt-4 space-y-2">
-        {validationErrors.map((error, index) => (
-          <p key={index} className="text-sm text-red-600 flex items-center">
-            <AlertCircle className="w-4 h-4 mr-2" />
-            {error}
-          </p>
-        ))}
+      {validationErrors.length > 0 && (
+        <div className="mt-4 p-4 bg-red-50 border border-red-100 rounded-lg space-y-2">
+          <div className="font-medium text-red-800 flex items-center">
+            <AlertCircle className="w-5 h-5 mr-2" />
+            Validation Errors
+          </div>
+          {validationErrors.map((error, index) => (
+            <p key={index} className="text-sm text-red-700 ml-7">
+              • {error}
+            </p>
+          ))}
+        </div>
+      )}
+      
+      <div className="mt-4 text-xs text-gray-500">
+        Note: Each assessment column should sum to exactly 100%.
       </div>
     </div>
   );
