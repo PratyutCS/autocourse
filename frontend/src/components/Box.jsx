@@ -49,11 +49,15 @@ export default function Box(props) {
           </motion.div>
         </AnimatePresence>
       ) : (
-        // When there are no files, show upload card plus empty state message
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <Cards />
+        // When there are no files, show upload card and empty state message side by side
+        <div className="flex flex-col sm:flex-row gap-6">
+          {/* Upload card */}
+          <div className="w-full sm:w-1/2 lg:w-1/3">
+            <Cards />
+          </div>
           
-          <div className="sm:col-span-1 md:col-span-3 flex flex-col items-center justify-center py-16 px-4 bg-white rounded-xl shadow-sm border border-gray-100">
+          {/* Empty state message */}
+          <div className="w-full sm:w-1/2 lg:w-2/3 flex flex-col items-center justify-center py-6 px-4 bg-white rounded-xl shadow-sm border border-gray-100">
             <div className="bg-gray-100 rounded-full p-6 mb-4">
               <FcDocument className="w-16 h-16" />
             </div>
