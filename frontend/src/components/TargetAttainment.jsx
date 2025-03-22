@@ -3,15 +3,23 @@ import React, { useState, useEffect } from 'react';
 const TargetAttainment = ({ copoMappingData, initialCriteria, onSave }) => {
   const [criteria, setCriteria] = useState({});
 
+  // Clamp the value between 0 and 100
+  const clampValue = (value) => {
+    let num = value === '' ? 0 : Number(value);
+    if (num < 0) num = 0;
+    if (num > 100) num = 100;
+    return num;
+  };
+
   useEffect(() => {
     const initialData = initialCriteria || {};
     const newCriteria = {};
 
-    // Preserve only the existing COs and set default values to 0 if they are empty or undefined.
+    // Initialize only for existing COs and use clamped values
     Object.keys(copoMappingData.courseOutcomes).forEach((co) => {
       newCriteria[co] = {
-        full: initialData[co]?.full || 0,
-        partial: initialData[co]?.partial || 0,
+        full: clampValue(initialData[co]?.full || 0),
+        partial: clampValue(initialData[co]?.partial || 0),
       };
     });
 
@@ -22,8 +30,7 @@ const TargetAttainment = ({ copoMappingData, initialCriteria, onSave }) => {
   }, [copoMappingData, initialCriteria]);
 
   const handleChange = (co, type, value) => {
-    // Convert empty values to 0, otherwise convert the string to a number.
-    const numericValue = value === '' ? 0 : Number(value);
+    const numericValue = clampValue(value);
     const newCriteria = {
       ...criteria,
       [co]: {

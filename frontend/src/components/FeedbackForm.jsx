@@ -453,6 +453,15 @@ const FeedbackForm = (props) => {
     });
   };
 
+  const validateTargetAttainment = () => {
+    return Object.keys(targetAttainment).every(co => {
+      const { full, partial } = targetAttainment[co];
+      // Adjust the operator if you need 'greater than or equal to'
+      return parseFloat(full) > parseFloat(partial);
+    });
+  };
+
+
   const postData = async () => {
     if (!isWeightageValid) {
       alert("Please ensure all CO Assessment weightages add up to 100% before submitting.");
@@ -462,7 +471,10 @@ const FeedbackForm = (props) => {
       alert("Please ensure that the 'Min. % marks (fully attained)' are greater than or equal to 'Min. % marks (partially attained)' for all COs.");
       return;
     }
-
+    if (!validateTargetAttainment()) {
+      alert("Please ensure that in Target Attainment, the 'Min. % students (fully attained)' are greater than or equal to 'Min. % students (partially attained)' for all COs.");
+      return;
+    }
     if (!isCourseCodeValid) {
       alert("Please enter a valid course code (3 letters followed by 4 numbers).");
       return;
@@ -524,93 +536,101 @@ const FeedbackForm = (props) => {
   return (
     <div className="p-5 gap-[2rem] h-screen flex flex-col bg-[#FFFEFD]">
       <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col md:flex-row justify-between items-center gap-4 transition-all hover:shadow-xl">
-  {/* Back button with enhanced hover effects */}
-  <button
-    onClick={() => window.history.back()}
-    className="group flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-all duration-300 px-5 py-2.5 rounded-lg hover:bg-gray-100 relative overflow-hidden"
-  >
-    <span className="absolute inset-0 w-0 bg-gray-200 opacity-30 transition-all duration-300 group-hover:w-full"></span>
-    <IoReturnUpBackSharp className="text-xl transform group-hover:-translate-x-1 transition-transform duration-300" />
-    <span className="font-medium relative z-10">Back to Files</span>
-  </button>
-  
-  <div className="flex flex-col md:flex-row items-center gap-4">
-    {/* Validation messages with improved visibility and animations */}
-    {!isWeightageValid && (
-      <span className="text-red-600 text-sm flex items-center bg-red-50 px-3 py-2 rounded-lg animate-pulse">
-        <AlertCircle className="w-4 h-4 mr-2 animate-bounce" />
-        <span>CO Assessment weightages must add up to 100%</span>
-      </span>
-    )}
-    
-    {!validateCriteria() && (
-      <span className="text-red-600 text-sm flex items-center bg-red-50 px-3 py-2 rounded-lg animate-pulse">
-        <AlertCircle className="w-4 h-4 mr-2 animate-bounce" />
-        <span>CO Attainment Criteria fully attained must be greater than partially attained</span>
-      </span>
-    )}
-    
-    {/* Submit button with enhanced interactive effects */}
-    <button
-      onClick={postData}
-      className={`relative overflow-hidden transition-all duration-300 text-white font-semibold rounded-lg px-8 py-3.5
-        ${isWeightageValid && validateCriteria() && selectedProgram !== 0 && isCourseCodeValid
-          ? "bg-[#FFB255] hover:bg-[#f5a543] shadow-md hover:shadow-lg transform hover:-translate-y-1"
-          : "bg-gray-400 cursor-not-allowed opacity-75"
-        }`}
-      disabled={!isWeightageValid || !validateCriteria() || selectedProgram === 0 || !isCourseCodeValid}
-    >
-      <span className={`absolute inset-0 h-full w-full bg-white opacity-10 
-        ${isWeightageValid && validateCriteria() && selectedProgram !== 0 && isCourseCodeValid ? "animate-pulse-slow" : ""}`}>
-      </span>
-      
-      <div className="flex items-center gap-2">
-        <span className="relative z-10">Submit Form</span>
-        {isWeightageValid && validateCriteria() && selectedProgram !== 0 && isCourseCodeValid ? (
-          <svg 
-            className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300" 
-            fill="none" 
-            viewBox="0 0 24 24" 
-            stroke="currentColor"
+        {/* Back button with enhanced hover effects */}
+        <button
+          onClick={() => window.history.back()}
+          className="group flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-all duration-300 px-5 py-2.5 rounded-lg hover:bg-gray-100 relative overflow-hidden"
+        >
+          <span className="absolute inset-0 w-0 bg-gray-200 opacity-30 transition-all duration-300 group-hover:w-full"></span>
+          <IoReturnUpBackSharp className="text-xl transform group-hover:-translate-x-1 transition-transform duration-300" />
+          <span className="font-medium relative z-10">Back to Files</span>
+        </button>
+
+        <div className="flex flex-col md:flex-row items-center gap-4">
+          {/* Validation messages with improved visibility and animations */}
+          {!isWeightageValid && (
+            <span className="text-red-600 text-sm flex items-center bg-red-50 px-3 py-2 rounded-lg animate-pulse">
+              <AlertCircle className="w-4 h-4 mr-2 animate-bounce" />
+              <span>CO Assessment weightages must add up to 100%</span>
+            </span>
+          )}
+
+          {!validateCriteria() && (
+            <span className="text-red-600 text-sm flex items-center bg-red-50 px-3 py-2 rounded-lg animate-pulse">
+              <AlertCircle className="w-4 h-4 mr-2 animate-bounce" />
+              <span>CO Attainment Criteria fully attained must be greater than partially attained</span>
+            </span>
+          )}
+          {!validateTargetAttainment() && (
+            <span className="text-red-600 text-sm flex items-center bg-red-50 px-3 py-2 rounded-lg animate-pulse">
+              <AlertCircle className="w-4 h-4 mr-2 animate-bounce" />
+              <span>Target Attainment fully attained must be greater than or equal to partially attained</span>
+            </span>
+          )}
+
+          {/* Submit button with enhanced interactive effects */}
+          <button
+            onClick={postData}
+            className={`relative overflow-hidden transition-all duration-300 text-white font-semibold rounded-lg px-8 py-3.5
+        ${isWeightageValid && validateCriteria() && validateTargetAttainment() && selectedProgram !== 0 && isCourseCodeValid
+                ? "bg-[#FFB255] hover:bg-[#f5a543] shadow-md hover:shadow-lg transform hover:-translate-y-1"
+                : "bg-gray-400 cursor-not-allowed opacity-75"
+              }`}
+            disabled={!isWeightageValid || !validateCriteria() || !validateTargetAttainment() || selectedProgram === 0 || !isCourseCodeValid}
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-          </svg>
-        ) : (
-          <svg 
-            className="w-5 h-5" 
-            fill="none" 
-            viewBox="0 0 24 24" 
-            stroke="currentColor"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m0 0v2m0-2h2m-2 0H9m3-10v1" />
-          </svg>
-        )}
-      </div>
-      
-      {/* Visual tooltip that appears on hover when button is disabled */}
-      {(!isWeightageValid || !validateCriteria() || selectedProgram === 0 || !isCourseCodeValid) && (
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 bg-gray-800 bg-opacity-90 text-white text-xs p-2 rounded-lg transition-opacity duration-300">
-          {!isWeightageValid && "Fix weightage values"}
-          {!validateCriteria() && "Fix attainment criteria"}
-          {selectedProgram === 0 && "Select a program"}
-          {!isCourseCodeValid && "Enter a valid course code"}
+            <span className={`absolute inset-0 h-full w-full bg-white opacity-10 
+        ${isWeightageValid && validateCriteria() && validateTargetAttainment() && selectedProgram !== 0 && isCourseCodeValid ? "animate-pulse-slow" : ""}`}>
+            </span>
+
+            <div className="flex items-center gap-2">
+              <span className="relative z-10">Submit Form</span>
+              {isWeightageValid && validateCriteria() && validateTargetAttainment() && selectedProgram !== 0 && isCourseCodeValid ? (
+                <svg
+                  className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              ) : (
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m0 0v2m0-2h2m-2 0H9m3-10v1" />
+                </svg>
+              )}
+            </div>
+
+            {/* Visual tooltip that appears on hover when button is disabled */}
+            {(!isWeightageValid || !validateCriteria() || !validateTargetAttainment() || selectedProgram === 0 || !isCourseCodeValid) && (
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 bg-gray-800 bg-opacity-90 text-white text-xs p-2 rounded-lg transition-opacity duration-300">
+                {!isWeightageValid && "Fix weightage values"}
+                {!validateCriteria() && "Fix attainment criteria"}
+                {!validateTargetAttainment() && "Fix attainment criteria"}
+                {selectedProgram === 0 && "Select a program"}
+                {!isCourseCodeValid && "Enter a valid course code"}
+              </div>
+            )}
+          </button>
+
+          {/* Progress indicator for form completion status */}
+          <div className="hidden md:flex items-center gap-1 ml-2">
+            <div className={`h-2 w-2 rounded-full ${isWeightageValid ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+            <div className={`h-2 w-2 rounded-full ${validateCriteria() ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+            <div className={`h-2 w-2 rounded-full ${validateTargetAttainment() ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+            <div className={`h-2 w-2 rounded-full ${selectedProgram !== 0 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+            <div className={`h-2 w-2 rounded-full ${isCourseCodeValid ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+          </div>
         </div>
-      )}
-    </button>
-    
-    {/* Progress indicator for form completion status */}
-    <div className="hidden md:flex items-center gap-1 ml-2">
-      <div className={`h-2 w-2 rounded-full ${isWeightageValid ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-      <div className={`h-2 w-2 rounded-full ${validateCriteria() ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-      <div className={`h-2 w-2 rounded-full ${selectedProgram !== 0 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-      <div className={`h-2 w-2 rounded-full ${isCourseCodeValid ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-    </div>
-  </div>
-</div>
+      </div>
 
       <div className="space-y-6 overflow-scroll">
-        <InstructionsCard/>
-       
+        <InstructionsCard />
+
 
         <div className="grid grid-cols-2 gap-4">
           {/* Program Section */}
