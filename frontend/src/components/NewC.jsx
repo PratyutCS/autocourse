@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AiFillDelete } from "react-icons/ai";
 import { IoMdDownload } from "react-icons/io";
@@ -13,43 +13,7 @@ export default function NewC(props) {
   const [notification, setNotification] = useState({ visible: false, type: '', message: '' });
   const [isHovered, setIsHovered] = useState(false);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
-  const [pdfUrl, setPdfUrl] = useState(null);
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);
-  const pdfModalRef = useRef(null);
-
-  // Close modal when clicking outside
-  // Clean up blob URLs when component unmounts
-useEffect(() => {
-  return () => {
-    if (pdfUrl && pdfUrl.startsWith('blob:')) {
-      URL.revokeObjectURL(pdfUrl);
-    }
-  };
-}, [pdfUrl]);
-  // Close modal when clicking outside
-useEffect(() => {
-  function handleClickOutside(event) {
-    if (pdfModalRef.current && !pdfModalRef.current.contains(event.target)) {
-      // Revoke the object URL to prevent memory leaks
-      if (pdfUrl && pdfUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(pdfUrl);
-      }
-      setPdfUrl(null);
-      setShowPreview(false);
-    }
-  }
-
-  if (showPreview) {
-    document.addEventListener("mousedown", handleClickOutside);
-  } else {
-    document.removeEventListener("mousedown", handleClickOutside);
-  }
-
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
-}, [showPreview, pdfUrl]);
 
   const form = (num, userData) => {
     navigate('/form', { state: { num: num, userData: userData } });
@@ -71,7 +35,6 @@ useEffect(() => {
       });
       if (response.status === 200) {
         showNotification('success', 'Document deleted successfully!');
-        // Refresh with a slight delay to show the notification
         setTimeout(() => {
           window.location.reload();
         }, 1000);
@@ -85,8 +48,6 @@ useEffect(() => {
 
   const showNotification = (type, message) => {
     setNotification({ visible: true, type, message });
-    
-    // Auto-hide notification after 3 seconds
     setTimeout(() => {
       setNotification(prev => ({ ...prev, visible: false }));
     }, 3000);
@@ -98,10 +59,7 @@ useEffect(() => {
 
   const Download = async (num) => {
     const token = localStorage.getItem('token');
-    
-    // Show download start notification
     showNotification('loading', 'Preparing your download...');
-    
     try {
       const response = await axios.post(constants.url + '/download', { num }, {
         headers: {
@@ -119,30 +77,31 @@ useEffect(() => {
         document.body.appendChild(link);
         link.click();
         link.parentNode.removeChild(link);
-        
-        // Show success notification
         showNotification('success', 'File downloaded successfully!');
       }
     } catch (error) {
       console.error("Error downloading file:", error);
-      // Show error notification
       showNotification('error', 'Download failed. Please try again.');
     }
   }
 
-  // NEW: Preview function that triggers PDF generation for viewing
+  // Modified Preview function to open a new tab immediately and update its location later
   const Preview = async (num) => {
     const token = localStorage.getItem('token');
-    
-    // Check if token exists
     if (!token) {
       showNotification('error', 'You need to be logged in. Please log in again.');
       return;
     }
     
-    // Don't show preview for incomplete documents
     if (props.done !== 1) {
       showNotification('error', 'Cannot preview incomplete documents');
+      return;
+    }
+  
+    // Open new tab immediately (it might open as a blank page)
+    const newTab = window.open('', '_blank');
+    if (!newTab) {
+      showNotification('error', 'Popup blocked! Please disable your popup blocker.');
       return;
     }
   
@@ -150,7 +109,6 @@ useEffect(() => {
     showNotification('loading', 'Generating PDF for preview...');
     
     try {
-      // First, generate the PDF
       const response = await axios.post(constants.url + '/download', { num }, {
         headers: {
           'x-auth-token': token,
@@ -160,14 +118,10 @@ useEffect(() => {
       });
   
       if (response.status === 200) {
-        // Create a blob URL from the PDF data
         const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
         const url = window.URL.createObjectURL(pdfBlob);
-        
-        // Set the URL and show the modal
-        setPdfUrl(url);
-        setShowPreview(true);
-        showNotification('success', 'Preview ready!');
+        newTab.location.href = url;  // Update new tab's location to the blob URL so the PDF is displayed
+        showNotification('success', 'Preview opened in a new tab!');
       }
     } catch (error) {
       console.error("Error previewing file:", error);
@@ -176,23 +130,20 @@ useEffect(() => {
       } else {
         showNotification('error', 'Preview failed. Please try again.');
       }
+      newTab.close(); // close the blank tab if error
     } finally {
       setIsLoadingPreview(false);
     }
   };
 
-  // Reset confirm state when mouse leaves
   useEffect(() => {
     if (!isHovered && isConfirmingDelete) {
       setIsConfirmingDelete(false);
     }
   }, [isHovered, isConfirmingDelete]);
 
-  // Notification component with animation
   const Notification = () => {
     if (!notification.visible) return null;
-    
-    // Determine icon and color based on notification type
     let icon;
     let bgColor;
     let textColor = "text-white";
@@ -241,7 +192,6 @@ useEffect(() => {
     );
   }
 
-  // Get highlight border color based on completion status
   const getBorderColorClass = () => {
     if (props.done === 1) {
       return isHovered ? 'border-green-500' : 'border-green-300';
@@ -249,80 +199,10 @@ useEffect(() => {
     return isHovered ? 'border-red-500' : 'border-red-300';
   };
 
-  // PDF Preview Modal
-  const PDFPreviewModal = () => {
-    if (!showPreview) return null;
-  
-    // Function to handle closing the preview and cleaning up the URL
-    const handleClosePreview = () => {
-      if (pdfUrl) {
-        // Revoke the object URL to prevent memory leaks
-        URL.revokeObjectURL(pdfUrl);
-      }
-      setPdfUrl(null);
-      setShowPreview(false);
-    };
-  
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-        <motion.div 
-          ref={pdfModalRef}
-          className="bg-white rounded-lg w-full max-w-6xl h-[90vh] flex flex-col overflow-hidden shadow-2xl"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.9 }}
-          transition={{ type: 'spring', stiffness: 300 }}
-        >
-          <div className="flex items-center justify-between px-4 py-3 border-b">
-            <h3 className="text-lg font-medium text-gray-900">
-              Document Preview: {props.name}
-            </h3>
-            <button 
-              onClick={handleClosePreview}
-              className="p-1 rounded-full hover:bg-gray-100 transition-colors"
-            >
-              <IoClose className="w-6 h-6 text-gray-500" />
-            </button>
-          </div>
-          <div className="flex-1 w-full h-full bg-gray-100">
-            {pdfUrl ? (
-              <object 
-                data={pdfUrl}
-                type="application/pdf"
-                className="w-full h-full"
-              >
-                <div className="flex items-center justify-center h-full">
-                  <p className="text-gray-600">
-                    It appears your browser doesn't support embedded PDFs. 
-                    <a 
-                      href={pdfUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-blue-500 ml-1 underline"
-                    >
-                      Click here to view the PDF.
-                    </a>
-                  </p>
-                </div>
-              </object>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-12 h-12 border-4 border-[#FFB255] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                  <p className="text-gray-600">Loading preview...</p>
-                </div>
-              </div>
-            )}
-          </div>
-        </motion.div>
-      </div>
-    );
-  };
   return (
     <>
       <AnimatePresence>
         {notification.visible && <Notification />}
-        <PDFPreviewModal />
       </AnimatePresence>
       
       <motion.div 
@@ -331,7 +211,6 @@ useEffect(() => {
         onMouseLeave={() => setIsHovered(false)}
         transition={{ type: 'spring', stiffness: 300 }}
       >
-        {/* Status badge */}
         <div className="absolute top-3 right-3 z-1">
           {props.done === 1 ? (
             <div className="bg-green-100 text-green-700 text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
@@ -347,7 +226,6 @@ useEffect(() => {
         </div>
 
         <div className="flex h-full flex-col items-center justify-between p-6">
-          {/* Document icon and title */}
           <div className="w-full flex flex-col items-center gap-4">
             <div className={`rounded-full p-4 transition-colors duration-300 shadow-sm ${props.done === 1 ? 'bg-green-50' : 'bg-red-50'}`}>
               <FcDocument className="w-10 h-10" />
@@ -358,14 +236,12 @@ useEffect(() => {
                 {props.name}
               </h3>
               <p className="text-xs text-gray-500">
-              Last modified: {props.last_modified}
+                Last modified: {props.last_modified}
               </p>
             </div>
           </div>
 
-          {/* Action buttons */}
           <div className="w-full flex flex-col gap-3 mt-6">
-            {/* View document button */}
             <button
               onClick={() => form(props.num, props.userData)}
               className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FFB255] hover:bg-[#ffa133] text-white rounded-md transition-all duration-200 font-medium shadow-sm hover:shadow"
@@ -374,7 +250,6 @@ useEffect(() => {
               <span>View Document</span>
             </button>
             
-            {/* Preview PDF button - NEW */}
             <button
               onClick={() => Preview(props.num)}
               disabled={props.done !== 1 || isLoadingPreview}
@@ -401,7 +276,6 @@ useEffect(() => {
             </button>
             
             <div className="flex justify-between gap-2">
-              {/* Delete button */}
               <button
                 onClick={() => Delete(props.num)}
                 className={`flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-md transition-all duration-200 border font-medium ${
@@ -415,7 +289,6 @@ useEffect(() => {
                 {isConfirmingDelete && <span className="text-xs">Confirm</span>}
               </button>
               
-              {/* Download button */}
               <button
                 onClick={() => Download(props.num)}
                 className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white hover:bg-blue-50 text-blue-500 rounded-md transition-all duration-200 border border-blue-200 hover:border-blue-300 font-medium"
@@ -427,7 +300,6 @@ useEffect(() => {
           </div>
         </div>
 
-        {/* Subtle hover effect overlay */}
         <motion.div 
           className="absolute inset-0 bg-gray-900 pointer-events-none"
           initial={{ opacity: 0 }}
