@@ -1336,5 +1336,321 @@
     "actionsForWeakStudentsData": [
       ""
     ]
+  },
+  {
+    "filename": "1742653620_Cyber Forensics_CSE4708.pdf",
+    "done": 1,
+    "Program": 1,
+    "course_code": "CSE4708",
+    "course_name": "Cyber Forensics",
+    "Module/Semester": "7th Sem",
+    "course_description": "The goal of this course \u201cCyber Forensics\u201d is to understand the principles and practice of security attacks and fundamentals of security protocols and its defense. It covers operating system security, database security, network-based security threats and their social and legal aspect. Cyber Forensics is a core elective course in computer science and engineering and computer science undergraduate program. This course focuses on to understand Computer Forensics, Computing Investigations, Enforcement Agency Investigations. This course will provide overview of types of computer forensics, data recovery, electronic evidence, threats, surveillance.",
+    "Course Syllabus": [
+      {
+        "srNo": 1,
+        "content": "Computer Forensics Fundamentals.",
+        "co": "1",
+        "sessions": 3
+      },
+      {
+        "srNo": 2,
+        "content": "Types of Computer Forensics Technology",
+        "co": "1",
+        "sessions": 3
+      },
+      {
+        "srNo": 3,
+        "content": "Types of Vendor and Computer Forensics Services.",
+        "co": "1",
+        "sessions": 2
+      },
+      {
+        "srNo": 4,
+        "content": "Data Recovery",
+        "co": "2",
+        "sessions": 2
+      },
+      {
+        "srNo": 5,
+        "content": "Evidence Collection and Data Seizure",
+        "co": "3",
+        "sessions": 2
+      },
+      {
+        "srNo": 6,
+        "content": "Duplication and Preservation of Digital Evidence",
+        "co": "2",
+        "sessions": 2
+      },
+      {
+        "srNo": 7,
+        "content": "Computer Image Verification and Authentication.",
+        "co": "3",
+        "sessions": 2
+      },
+      {
+        "srNo": 8,
+        "content": "Discover of Electronic Evidence",
+        "co": "3",
+        "sessions": 2
+      },
+      {
+        "srNo": 9,
+        "content": "Identification of Data",
+        "co": "3",
+        "sessions": 3
+      },
+      {
+        "srNo": 10,
+        "content": "Reconstructing Past Events",
+        "co": "3",
+        "sessions": 2
+      },
+      {
+        "srNo": 11,
+        "content": "Networks.",
+        "co": "2",
+        "sessions": 1
+      },
+      {
+        "srNo": 12,
+        "content": "Fighting against Macro Threats",
+        "co": "3",
+        "sessions": 2
+      },
+      {
+        "srNo": 13,
+        "content": "Information Warfare Arsenal",
+        "co": "4",
+        "sessions": 2
+      },
+      {
+        "srNo": 14,
+        "content": "Tactics of the Military",
+        "co": "3",
+        "sessions": 2
+      },
+      {
+        "srNo": 15,
+        "content": "Tactics of Terrorist and Rogues",
+        "co": "4",
+        "sessions": 2
+      },
+      {
+        "srNo": 16,
+        "content": "Tactics of Private Companies.",
+        "co": "3",
+        "sessions": 2
+      },
+      {
+        "srNo": 17,
+        "content": "The Future \u2013 Arsenal",
+        "co": "4",
+        "sessions": 2
+      },
+      {
+        "srNo": 18,
+        "content": "Surveillance Tools",
+        "co": "4",
+        "sessions": 1
+      },
+      {
+        "srNo": 19,
+        "content": "Victims and Refugees",
+        "co": "4",
+        "sessions": 2
+      },
+      {
+        "srNo": 20,
+        "content": "Advanced Computer Forensics.",
+        "co": "4",
+        "sessions": 2
+      },
+      {
+        "srNo": 21,
+        "content": "Payload, Key Management",
+        "co": "4",
+        "sessions": 2
+      }
+    ],
+    "Learning Resources": {
+      "textBooks": [
+        "John R. Vacca, \u201cComputer Forensics\u201d, Firewall Media, 2004",
+        "Chad Steel, \u201cWindows Forensics\u201d, Wiley India, 2006",
+        "Majid Yar, \u201cCybercrime and Society\u201d, Sage Publications, 2006",
+        "Robert M Slade, \u201cSoftware Forensics\u201d, Tata McGraw Hill, 2004"
+      ],
+      "referenceLinks": []
+    },
+    "internalAssessmentData": {
+      "components": {
+        "component1": {
+          "component": "",
+          "duration": "",
+          "weightage": "",
+          "evaluationWeek": "",
+          "remarks": ""
+        }
+      }
+    },
+    "copoMappingData": {
+      "courseOutcomes": {
+        "CO1": {
+          "description": "Understand a brief overview of Computer Forensics Fundamentals.",
+          "bullets": []
+        },
+        "CO2": {
+          "description": "Identify the features of Data Recovery.",
+          "bullets": []
+        },
+        "CO3": {
+          "description": "Understanding of Reconstructing Past Events.",
+          "bullets": []
+        },
+        "CO4": {
+          "description": "Work with cyber forensics tools.",
+          "bullets": []
+        }
+      },
+      "mappingData": {
+        "CO1": {
+          "CO/PO": "",
+          "PO1": "3",
+          "PO2": "2",
+          "PO3": "2",
+          "PO4": "2",
+          "PO5": "2",
+          "PO6": "0",
+          "PO7": "0",
+          "PO8": "0",
+          "PO9": "0",
+          "PO10": "0",
+          "PO11": "0",
+          "PO12": "0",
+          "PSO1": "0",
+          "PSO2": "0",
+          "PSO3": "0",
+          "PSO4": "0"
+        },
+        "CO2": {
+          "CO/PO": "",
+          "PO1": "0",
+          "PO2": "3",
+          "PO3": "0",
+          "PO4": "0",
+          "PO5": "0",
+          "PO6": "0",
+          "PO7": "0",
+          "PO8": "",
+          "PO9": "",
+          "PO10": "",
+          "PO11": "",
+          "PO12": "",
+          "PSO1": "0",
+          "PSO2": "0",
+          "PSO3": "",
+          "PSO4": ""
+        },
+        "CO3": {
+          "CO/PO": "",
+          "PO1": "0",
+          "PO2": "0",
+          "PO3": "3",
+          "PO4": "3",
+          "PO5": "0",
+          "PO6": "0",
+          "PO7": "0",
+          "PO8": "",
+          "PO9": "",
+          "PO10": "",
+          "PO11": "",
+          "PO12": "",
+          "PSO1": "0",
+          "PSO2": "0",
+          "PSO3": "",
+          "PSO4": ""
+        },
+        "CO4": {
+          "CO/PO": "",
+          "PO1": "0",
+          "PO2": "0",
+          "PO3": "0",
+          "PO4": "3",
+          "PO5": "0",
+          "PO6": "0",
+          "PO7": "0",
+          "PO8": "",
+          "PO9": "",
+          "PO10": "",
+          "PO11": "",
+          "PO12": "",
+          "PSO1": "0",
+          "PSO2": "0",
+          "PSO3": "",
+          "PSO4": ""
+        }
+      }
+    },
+    "weeklyTimetableData": {
+      "Monday": {
+        "9:15-10:10": false,
+        "10:15-11:10": false,
+        "11:15-12:10": false,
+        "12:15-13:10": false,
+        "13:15-14:10": false,
+        "14:15-15:10": false,
+        "15:15-16:10": false,
+        "16:15-17:10": false,
+        "17:15-18:10": false
+      },
+      "Tuesday": {
+        "9:15-10:10": false,
+        "10:15-11:10": false,
+        "11:15-12:10": false,
+        "12:15-13:10": false,
+        "13:15-14:10": false,
+        "14:15-15:10": false,
+        "15:15-16:10": false,
+        "16:15-17:10": false,
+        "17:15-18:10": false
+      },
+      "Wednesday": {
+        "9:15-10:10": false,
+        "10:15-11:10": false,
+        "11:15-12:10": false,
+        "12:15-13:10": false,
+        "13:15-14:10": false,
+        "14:15-15:10": false,
+        "15:15-16:10": false,
+        "16:15-17:10": false,
+        "17:15-18:10": false
+      },
+      "Thursday": {
+        "9:15-10:10": false,
+        "10:15-11:10": false,
+        "11:15-12:10": false,
+        "12:15-13:10": false,
+        "13:15-14:10": false,
+        "14:15-15:10": false,
+        "15:15-16:10": false,
+        "16:15-17:10": false,
+        "17:15-18:10": false
+      },
+      "Friday": {
+        "9:15-10:10": false,
+        "10:15-11:10": false,
+        "11:15-12:10": false,
+        "12:15-13:10": false,
+        "13:15-14:10": false,
+        "14:15-15:10": false,
+        "15:15-16:10": false,
+        "16:15-17:10": false,
+        "17:15-18:10": false
+      }
+    },
+    "actionsForWeakStudentsData": [
+      ""
+    ],
+    "last_modified": "07:57 PM, 22/03/2025"
   }
 ]

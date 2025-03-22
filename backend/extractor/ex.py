@@ -293,12 +293,11 @@
 
 
 ########################################################################################################################################
-
-
 import pdfplumber
 import sys
 import json
 import re
+from datetime import datetime
 from openai import OpenAI
 
 # Initialize OpenAI client
@@ -309,14 +308,14 @@ jfn = sys.argv[2]
 
 def extract(file):
     """
-    Extract text from PDF using pdfplumber with enhanced error handling and text processing
+    Extract text from PDF using pdfplumber with enhanced error handling and text processing.
     """
     try:
         with pdfplumber.open(file) as pdf:
             eText = []
             for page in pdf.pages:
-                # Extract text with better handling of whitespace and formatting
-                text = page.extract_text(x_tolerance=3)  # Adjust tolerance for better word spacing
+                # Extract text with better handling of whitespace and formatting.
+                text = page.extract_text(x_tolerance=3)  # Adjust tolerance for better word spacing.
                 eText.append(text)
             return '\n\n'.join(filter(None, eText))
     except Exception as e:
@@ -400,7 +399,6 @@ def get_mapping_template(program):
             "PSO1": "", "PSO2": "", "PSO3": "", "PSO4": ""
         }
 
-
 def create_empty_template():
     # Default to program 1 initially
     program = 1
@@ -417,8 +415,8 @@ def create_empty_template():
                 "content": "Topic Name with Details",
                 "co": "1",
                 "sessions": 1
-            },
-            ],
+            }
+        ],
         "Learning Resources": {
             "textBooks": [],
             "referenceLinks": []
@@ -445,7 +443,6 @@ def create_empty_template():
                 "CO1": get_mapping_template(program)
             }
         },
-        
         "weeklyTimetableData": {
             "Monday": {
                 "9:15-10:10": False,
@@ -503,7 +500,8 @@ def create_empty_template():
                 "17:15-18:10": False
             }
         },
-        "actionsForWeakStudentsData": [""]
+        "actionsForWeakStudentsData": [""],
+        "last_modified": ""  # This field will store the extraction timestamp.
     }
 
 def clean_json_response(response):
@@ -543,6 +541,7 @@ def ai(text):
         ]
     }, indent=2)
     
+    # Instruction added for last_modified field.
     prompt = f"""
 You must respond with ONLY a raw JSON object - no markdown, no code blocks, no other text.
 All string values must be properly escaped and valid JSON.
@@ -635,6 +634,8 @@ Requirements:
         * If the pattern doesn't match (first 3 letters, last 4 numbers), leave as empty string.
       - Example of valid course codes: CSC1234, MAT5678, PHY9012 (3 letters followed by 4 numbers).
 
+-17. Add a field "last_modified" that records the date and time when the details were extracted. The format must be 12-hour (en-IN) with the time in front followed by the date, without seconds. For example: "08:30 AM, 22/03/2025".
+
 Additional Extraction and Validation Restrictions:
 - For **course_name** (courseTitle): If the extracted string is longer than 128 characters, truncate it to 128 characters.
 - For **Module/Semester** (module): If the value is longer than 10 characters, truncate it to 10 characters.
@@ -651,36 +652,43 @@ Additional Extraction and Validation Restrictions:
 """
 
     try:
-        # Use the OpenAI client to create a chat completion
+        # Use the OpenAI client to create a chat completion.
         completion = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}]
         )
 
-        # Get the response content from the completion object
+        # Get the response content from the completion object.
         response_content = completion.choices[0].message.content
         cleaned_response = clean_json_response(response_content)
         
         if cleaned_response:
-            # Update the mapping template based on the identified program
+            # Update the mapping template based on the identified program.
             program = cleaned_response.get("Program", 1)
             if "copoMappingData" in cleaned_response and "mappingData" in cleaned_response["copoMappingData"]:
                 for co in cleaned_response["copoMappingData"]["mappingData"]:
-                    # Replace the mapping template with the appropriate one for the detected program
+                    # Replace the mapping template with the appropriate one for the detected program.
                     mapping_template = get_mapping_template(program)
-                    # Preserve any values from the cleaned response
+                    # Preserve any values from the cleaned response.
                     for po, value in cleaned_response["copoMappingData"]["mappingData"][co].items():
                         if po in mapping_template:
                             mapping_template[po] = value
                     cleaned_response["copoMappingData"]["mappingData"][co] = mapping_template
             
-            # Validate and format course code
+            # Validate and format course code.
             if "course_code" in cleaned_response:
                 course_code = cleaned_response["course_code"]
                 validated_code = validate_course_code(course_code)
                 cleaned_response["course_code"] = validated_code
-                
+            
+            # Add the last_modified field with the current timestamp in the required format.
+            # Format: "hh:mm AM/PM, dd/mm/yyyy" (12-hour format without seconds, en-IN locale)
+            current_timestamp = datetime.now().strftime("%I:%M %p, %d/%m/%Y")
+            cleaned_response["last_modified"] = current_timestamp
+
             return json.dumps(cleaned_response)
+        # If no cleaned response, update the template with last_modified.
+        initial_template["last_modified"] = datetime.now().strftime("%I:%M %p, %d/%m/%Y")
         return json.dumps(initial_template)
 
     except Exception as e:
@@ -690,23 +698,23 @@ Additional Extraction and Validation Restrictions:
 def validate_course_code(code):
     """
     Validate course code according to specified rules:
-    - Must be exactly 7 characters
-    - First 3 characters must be letters
-    - Last 4 characters must be numbers
-    - If valid, convert first 3 letters to uppercase
+    - Must be exactly 7 characters.
+    - First 3 characters must be letters.
+    - Last 4 characters must be numbers.
+    - If valid, convert first 3 letters to uppercase.
     """
     if not code:
         return ""
         
-    # Handle if code is longer than 7 characters
+    # Handle if code is longer than 7 characters.
     if len(code) > 7:
         code = code[:7]
     
-    # Return empty if code is less than 7 characters
+    # Return empty if code is less than 7 characters.
     if len(code) < 7:
         return ""
         
-    # Check if first 3 characters are letters and last 4 are numbers
+    # Check if first 3 characters are letters and last 4 are numbers.
     first_three = code[:3]
     last_four = code[3:]
     
@@ -720,7 +728,7 @@ if __name__ == '__main__':
         extracted_text = extract(fn)
         if not extracted_text:
             print("Error: No text extracted from PDF")
-        # print("EXTRACTED TEXT IS: {}".format(extracted_text))
+        # Ensure text is properly encoded.
         extracted_text = extracted_text.encode("utf-8", "ignore").decode("utf-8")
         response = ai(extracted_text)
         with open(jfn, 'r', encoding="utf-8") as file:
