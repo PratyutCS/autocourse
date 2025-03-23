@@ -130,6 +130,12 @@ const FeedbackForm = (props) => {
     console.log("this ran");
     setLearnerCategories(learnerCategories);
   };
+  
+  const handlePar_sem_slowLearner = (learnerCategories) => {
+    console.log("this ran1");
+    setPar_sem_slowLearner(learnerCategories);
+  };
+  
 
   useEffect(() => {
     setLearnerCategories(
@@ -775,6 +781,8 @@ const FeedbackForm = (props) => {
           coWeightages={coWeightages}
           studentData={studentData}
           coAttainmentCriteria={coAttainmentCriteria}
+          learnerCategories={par_sem_slowLearner}
+          onSave={handlePar_sem_slowLearner}
         />
 
         {/* Target Attainment Section with error border if invalid */}

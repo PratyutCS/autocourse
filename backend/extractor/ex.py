@@ -501,7 +501,8 @@ def create_empty_template():
             }
         },
         "actionsForWeakStudentsData": [""],
-        "last_modified": ""  # This field will store the extraction timestamp.
+        "last_modified": "",
+        "learnerCategories": [[],[]]
     }
 
 def clean_json_response(response):
