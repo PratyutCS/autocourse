@@ -295,8 +295,8 @@
       "qualitativeFeedback": "course was good"
     },
     "facultyCourseReview": "lol this field never was suppose to even work how did it work good question!!!!!",
-    "learnerCategories": {
-      "advancedLearners": [
+    "learnerCategories": [
+      [
         {
           "id": 240334,
           "rollNumber": "Aditya Goel",
@@ -348,7 +348,7 @@
           "rowAverage": 3
         }
       ],
-      "slowLearners": [
+      [
         {
           "id": 240338,
           "rollNumber": "EENA CHAUDHARY",
@@ -360,12 +360,12 @@
           "rowAverage": 1
         }
       ]
-    },
+    ],
     "selectedAssessments": [
       "Quiz(30)",
       "End Term(40)"
     ],
     "par_sem_slowLearner": [],
-    "last_modified": "2:26 pm, 23 Mar 2025"
+    "last_modified": "3:19 pm, 23 Mar 2025"
   }
 ]

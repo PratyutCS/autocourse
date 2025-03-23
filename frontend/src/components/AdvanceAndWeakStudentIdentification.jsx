@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AlertCircle, Trash2 } from 'lucide-react';
+import { AlertCircle, Trash2, Plus } from 'lucide-react';
 
 const AdvanceAndWeakStudentIdentification = ({
   coWeightages,
@@ -126,9 +126,8 @@ const AdvanceAndWeakStudentIdentification = ({
     return "Regular";
   };
 
-  // Initiate removal confirmation popup.
+  // Initiate removal confirmation popup for deletion from learner categories.
   const handleRemoveClick = (student, categoryType) => {
-    // categoryType is either "Advanced" or "Weak"
     setStudentToRemove({ student, categoryType });
     setShowConfirmation(true);
   };
@@ -144,7 +143,7 @@ const AdvanceAndWeakStudentIdentification = ({
         updatedCategories[1] = updatedCategories[1].filter(s => s.id !== student.id);
       }
       setLocalLearnerCategories(updatedCategories);
-      // Call onSave only when the learnerCategories (localLearnerCategories) has been modified.
+      // Call onSave only when the learnerCategories has been modified.
       if (onSave) {
         onSave(updatedCategories);
       }
@@ -158,6 +157,25 @@ const AdvanceAndWeakStudentIdentification = ({
     setStudentToRemove(null);
   };
 
+  // Add a learner from unmatched data into learnerCategories.
+  const addLearner = (student, categoryType) => {
+    let updatedCategories = [...localLearnerCategories];
+    if (categoryType === "Advanced") {
+      // Avoid duplicate addition.
+      if (!updatedCategories[0].some(s => s.id === student.id)) {
+        updatedCategories[0] = [...updatedCategories[0], student];
+      }
+    } else if (categoryType === "Weak") {
+      if (!updatedCategories[1].some(s => s.id === student.id)) {
+        updatedCategories[1] = [...updatedCategories[1], student];
+      }
+    }
+    setLocalLearnerCategories(updatedCategories);
+    if (onSave) {
+      onSave(updatedCategories);
+    }
+  };
+
   // Compute unmatched learners.
   // For each category in system-identified learners, find those not in localLearnerCategories.
   const unmatchedAdvanced = systemIdentified.advanced.filter(
@@ -167,8 +185,9 @@ const AdvanceAndWeakStudentIdentification = ({
     student => !localLearnerCategories[1].some(s => s.id === student.id)
   );
 
-  // Helper function to render a table for a given list of students.
-  const renderTable = (students, categoryType) => {
+  // Render table function with mode parameter to decide on action button.
+  // mode: "local" for learnerCategories (delete button) and "unmatched" for unmatched table (add button)
+  const renderTable = (students, categoryType, mode = "local") => {
     const totalColumns = Object.keys(coWeightages).length + 2; // Name column + CO score columns + Action column
     return (
       <div className="overflow-x-auto mb-6">
@@ -212,13 +231,23 @@ const AdvanceAndWeakStudentIdentification = ({
                     </td>
                   ))}
                   <td className="border border-gray-200 p-3 text-center">
-                    <button 
-                      onClick={() => handleRemoveClick(student, categoryType)}
-                      className="p-2 rounded-full hover:bg-gray-200 transition-colors duration-200 focus:outline-none"
-                      title={`Remove from ${categoryType} Learner list`}
-                    >
-                      <Trash2 className="w-5 h-5 text-gray-600" />
-                    </button>
+                    {mode === "local" ? (
+                      <button 
+                        onClick={() => handleRemoveClick(student, categoryType)}
+                        className="p-2 rounded-full hover:bg-gray-200 transition-colors duration-200 focus:outline-none"
+                        title={`Remove from ${categoryType} Learner list`}
+                      >
+                        <Trash2 className="w-5 h-5 text-gray-600" />
+                      </button>
+                    ) : (
+                      <button 
+                        onClick={() => addLearner(student, categoryType)}
+                        className="p-2 rounded-full hover:bg-green-200 transition-colors duration-200 focus:outline-none"
+                        title={`Add to ${categoryType} Learner list`}
+                      >
+                        <Plus className="w-5 h-5 text-green-700" />
+                      </button>
+                    )}
                   </td>
                 </tr>
               );
@@ -304,13 +333,13 @@ const AdvanceAndWeakStudentIdentification = ({
         <div>
           <h4 className="text-md font-medium mb-2">Advanced Learners</h4>
           {localLearnerCategories[0].length > 0 ? 
-            renderTable(localLearnerCategories[0], "Advanced")
+            renderTable(localLearnerCategories[0], "Advanced", "local")
             : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">No Advanced Learners</div>}
         </div>
         <div>
           <h4 className="text-md font-medium mb-2">Weak Learners</h4>
           {localLearnerCategories[1].length > 0 ? 
-            renderTable(localLearnerCategories[1], "Weak")
+            renderTable(localLearnerCategories[1], "Weak", "local")
             : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">No Weak Learners</div>}
         </div>
       </div>
@@ -321,14 +350,18 @@ const AdvanceAndWeakStudentIdentification = ({
         <div>
           <h4 className="text-md font-medium mb-2">Unmatched Advanced Learners</h4>
           {unmatchedAdvanced.length > 0 ? 
-            renderTable(unmatchedAdvanced, "Advanced")
-            : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">All Advanced Learners are in the Learner Categories</div>}
+            renderTable(unmatchedAdvanced, "Advanced", "unmatched")
+            : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">
+                All Advanced Learners are in the Learner Categories
+              </div>}
         </div>
         <div>
           <h4 className="text-md font-medium mb-2">Unmatched Weak Learners</h4>
           {unmatchedWeak.length > 0 ? 
-            renderTable(unmatchedWeak, "Weak")
-            : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">All Weak Learners are in the Learner Categories</div>}
+            renderTable(unmatchedWeak, "Weak", "unmatched")
+            : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">
+                All Weak Learners are in the Learner Categories
+              </div>}
         </div>
       </div>
 
