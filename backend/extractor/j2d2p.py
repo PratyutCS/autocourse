@@ -1421,7 +1421,6 @@ create_co_attainment_analysis(doc, data)
 
 #########################################################################################################################
 
-# Function to create learner categorization table
 def create_learner_categorization(doc, data):
     # Add page break and section heading
     doc.add_page_break()
@@ -1431,50 +1430,34 @@ def create_learner_categorization(doc, data):
     run.font.size = Pt(16)
     run.font.color.rgb = RGBColor(28, 132, 196)
     heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
-    
     doc.add_paragraph()
     
-    # Get calculated student performance data
-    student_performance = []
-    cos = []
+    # Extract full student data and learner categories from input data
+    student_data = data.get("studentData", {}).get("data", [])
+    learner_categories = data.get("learnerCategories", [])
     
-    # Extract data from CO attainment calculation or recalculate if needed
-    if data.get('coWeightages'):
-        cos = list(data['coWeightages'].keys())
-        
-        # Calculate student categorization
-        result = calculate_co_attainment(data)
-        if result and "student_performance" in result:
-            student_performance = result["student_performance"]
+    # Identify student IDs in the learnerCategories arrays:
+    advanced_ids = {student["id"] for student in learner_categories[0]} if len(learner_categories) > 0 else set()
+    slow_ids = {student["id"] for student in learner_categories[1]} if len(learner_categories) > 1 else set()
     
-    if not student_performance or not cos:
-        paragraph = doc.add_paragraph("No student performance data available.")
-        return
-    
-    # Categorize students
+    # Categorize each student from student_data into advanced, slow or medium
     advanced_learners = []
     slow_learners = []
     medium_learners = []
-    
-    for student in student_performance:
-        # Get all CO scores for the student
-        scores = [student['coScores'].get(co, 0) for co in cos]
-        avg_score = sum(scores) / len(scores) if scores else 0
-        
-        # Categorize based on average score
-        if all(score >= 3 for score in scores):
+    for student in student_data:
+        unique_id = student.get("Unique Id.")
+        if unique_id in advanced_ids:
             advanced_learners.append(student)
-        elif all(score <= 1 for score in scores):
+        elif unique_id in slow_ids:
             slow_learners.append(student)
         else:
             medium_learners.append(student)
-    
+            
     # 1. Create summary table
     summary_heading = doc.add_heading('Learner Categories Summary', level=2)
     summary_heading.runs[0].font.size = Pt(14)
     doc.add_paragraph()
     
-    # Create the summary table with proper alignment
     summary_table = doc.add_table(rows=4, cols=2)
     summary_table.autofit = False
     
@@ -1482,161 +1465,107 @@ def create_learner_categorization(doc, data):
     header_cells = summary_table.rows[0].cells
     header_cells[0].text = "Learner Category"
     header_cells[1].text = "Number of Students"
-    
-    # Format header cells using the format_cell helper function
     format_cell(header_cells[0], bold=True, alignment=WD_ALIGN_PARAGRAPH.CENTER)
     format_cell(header_cells[1], bold=True, alignment=WD_ALIGN_PARAGRAPH.CENTER)
     
-    # Data rows
     categories = [
         ("Advanced Learners", len(advanced_learners)),
         ("Medium Learners", len(medium_learners)),
         ("Slow Learners", len(slow_learners))
     ]
-    
     for idx, (category, count) in enumerate(categories):
         row = summary_table.rows[idx + 1]
         row.cells[0].text = category
         row.cells[1].text = str(count)
-        
-        # Format cells using the format_cell helper function
         format_cell(row.cells[0], bold=False, alignment=WD_ALIGN_PARAGRAPH.CENTER)
         format_cell(row.cells[1], bold=False, alignment=WD_ALIGN_PARAGRAPH.CENTER)
-    
-    # Set column widths like in the reference table
+        
     col_widths = [Inches(3), Inches(3)]
     set_table_column_widths(summary_table, col_widths)
-    
-    # Center align the table
     summary_table.alignment = WD_TABLE_ALIGNMENT.CENTER
-    
-    # Make sure the table width is controlled
     summary_table.autofit = False
-    
-    # Add borders to summary table
     for row in summary_table.rows:
         for cell in row.cells:
             set_cell_border(cell, 'top', 4, '000000')
             set_cell_border(cell, 'bottom', 4, '000000')
             set_cell_border(cell, 'left', 4, '000000')
             set_cell_border(cell, 'right', 4, '000000')
-    
-    # Reduce font size for better fit
+    # Reduce font size
     for row in summary_table.rows:
         for cell in row.cells:
             for paragraph in cell.paragraphs:
                 for run in paragraph.runs:
-                    run.font.size = Pt(9)  # Smaller font size for compact table
-    
-    # Make sure rows don't split across pages
+                    run.font.size = Pt(9)
     prevent_table_row_breaks(summary_table)
-    
     doc.add_paragraph().add_run().add_break()
     
-    # 2. Create detailed student table with color coding
+    # 2. Create detailed student table with appropriate color coding
     detailed_heading = doc.add_heading('Student Learning Classification', level=2)
     detailed_heading.runs[0].font.size = Pt(14)
     doc.add_paragraph()
     
-    # Create table with all students
-    student_count = len(student_performance)
-    student_table = doc.add_table(rows=student_count + 1, cols=len(cos) + 2)
+    total_students = len(student_data)
+    student_table = doc.add_table(rows=total_students + 1, cols=2)
     student_table.autofit = False
     
-    # Header row
+    # Header
     header_cells = student_table.rows[0].cells
     header_cells[0].text = "Student Name"
     header_cells[1].text = "Category"
-    
-    # Format header cells using the format_cell helper function
     format_cell(header_cells[0], bold=True, alignment=WD_ALIGN_PARAGRAPH.CENTER)
     format_cell(header_cells[1], bold=True, alignment=WD_ALIGN_PARAGRAPH.CENTER)
-    
-    for i, co in enumerate(cos):
-        header_cells[i + 2].text = co
-        format_cell(header_cells[i + 2], bold=True, alignment=WD_ALIGN_PARAGRAPH.CENTER)
-    
-    # Set appropriate column widths like in the reference table
-    col_widths = [Inches(2.0), Inches(2.0)] + [Inches(0.6)] * len(cos)
+    col_widths = [Inches(3), Inches(3)]
     set_table_column_widths(student_table, col_widths)
     
-    # Add all students to table with color coding
-    # Sort students by category: advanced first, then medium, then slow
+    # Combine students in order: advanced, medium, then slow
     all_students = advanced_learners + medium_learners + slow_learners
-    
     for idx, student in enumerate(all_students):
         row = student_table.rows[idx + 1]
-        
-        # Determine student category and color
-        scores = [student['coScores'].get(co, 0) for co in cos]
-        if all(score >= 3 for score in scores):
+        name = student.get("Student Name", "")
+        unique_id = student.get("Unique Id.")
+        if unique_id in advanced_ids:
             category = "Advanced Learner"
-            color = "C6E0B4"  # Light green
-        elif all(score <= 1 for score in scores):
+            color = "C6E0B4"  # green
+        elif unique_id in slow_ids:
             category = "Slow Learner"
-            color = "FFEB9C"  # Light yellow
+            color = "FFEB9C"  # yellow
         else:
             category = "Medium Learner"
-            color = "F2F2F2"  # Light grey
-        
-        # Add student data
-        row.cells[0].text = student.get("rollNumber", "")
+            color = "F2F2F2"  # grey
+
+        row.cells[0].text = name
         row.cells[1].text = category
-        
-        # Format cells
         format_cell(row.cells[0], bold=False, alignment=WD_ALIGN_PARAGRAPH.CENTER)
         format_cell(row.cells[1], bold=False, alignment=WD_ALIGN_PARAGRAPH.CENTER)
         
-        # Add CO scores
-        for i, co in enumerate(cos):
-            row.cells[i + 2].text = str(student['coScores'].get(co, ""))
-            format_cell(row.cells[i + 2], bold=False, alignment=WD_ALIGN_PARAGRAPH.CENTER)
-        
-        # Apply shading to each cell in the row individually
+        # Apply shading (color fill) to each cell in the row
         for cell in row.cells:
-            # Get cell properties
             tc_pr = cell._tc.get_or_add_tcPr()
-            
-            # Create shading element
             shading = OxmlElement('w:shd')
-            shading.set(qn('w:val'), 'clear')  # The shading type
-            shading.set(qn('w:color'), 'auto')  # Auto for the text color
-            shading.set(qn('w:fill'), color)    # Fill color code
-            
-            # Remove any existing shading
+            shading.set(qn('w:val'), 'clear')
+            shading.set(qn('w:color'), 'auto')
+            shading.set(qn('w:fill'), color)
             existing_shading = tc_pr.find(qn('w:shd'))
             if existing_shading is not None:
                 tc_pr.remove(existing_shading)
-            
-            # Add new shading
             tc_pr.append(shading)
     
-    # Center align the table
     student_table.alignment = WD_TABLE_ALIGNMENT.CENTER
-    
-    # Make sure the table width is controlled
     student_table.autofit = False
-    
-    # Add borders to student table
     for row in student_table.rows:
         for cell in row.cells:
             set_cell_border(cell, 'top', 4, '000000')
             set_cell_border(cell, 'bottom', 4, '000000')
             set_cell_border(cell, 'left', 4, '000000')
             set_cell_border(cell, 'right', 4, '000000')
-    
-    # Reduce font size for better fit
     for row in student_table.rows:
         for cell in row.cells:
             for paragraph in cell.paragraphs:
                 for run in paragraph.runs:
-                    run.font.size = Pt(9)  # Smaller font size for compact table
-    
-    # Make sure rows don't split across pages
+                    run.font.size = Pt(9)
     prevent_table_row_breaks(student_table)
-    
-    # Add a paragraph after the table to ensure proper spacing
     doc.add_paragraph()
+    
 # Add this function call after create_co_attainment_analysis(doc, data) and before create_actions_doc(data)
 create_learner_categorization(doc, data)
 
