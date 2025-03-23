@@ -502,6 +502,7 @@ def create_empty_template():
         },
         "actionsForWeakStudentsData": [""],
         "last_modified": "",
+        "par_sem_slowLearner": [[],[]],
         "learnerCategories": [[],[]]
     }
 

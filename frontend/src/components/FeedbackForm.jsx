@@ -128,11 +128,7 @@ const FeedbackForm = (props) => {
     setTargetAttainment(criteria);
   };
 
-  const [learnerCategories, setLearnerCategories] = useState({
-    advancedLearners: [],
-    mediumLearners: [],
-    slowLearners: []
-  });
+  const [learnerCategories, setLearnerCategories] = useState([[],[]]);
 
   const handleLearners = (learnerCategories) => {
     console.log("this ran");
@@ -147,11 +143,7 @@ const FeedbackForm = (props) => {
 
   useEffect(() => {
     setLearnerCategories(
-      props.learnerCategories || {
-        advancedLearners: [],
-        mediumLearners: [],
-        slowLearners: []
-      }
+      props.learnerCategories || [[],[]]
     );
   }, [props.learnerCategories]);
 
@@ -217,9 +209,9 @@ const FeedbackForm = (props) => {
     setSelectedAssessments(props.selectedAssessments || []);
   }, [props.selectedAssessments]);
 
-  const [par_sem_slowLearner, setPar_sem_slowLearner] = useState(props.par_sem_slowLearner || []);
+  const [par_sem_slowLearner, setPar_sem_slowLearner] = useState(props.par_sem_slowLearner || [[],[]]);
   useEffect(() => {
-    setPar_sem_slowLearner(props.par_sem_slowLearner || []);
+    setPar_sem_slowLearner(props.par_sem_slowLearner || [[],[]]);
   }, [props.par_sem_slowLearner]);
 
   /////////////////////////////////////////**Use Effect**//////////////////////////

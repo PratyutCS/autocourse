@@ -1421,6 +1421,151 @@ create_co_attainment_analysis(doc, data)
 
 #########################################################################################################################
 
+def create_learner_categorization_partial_sem(doc, data):
+    # Add page break and section heading
+    doc.add_page_break()
+    heading = doc.add_heading(level=1)
+    run = heading.add_run('13. Student Learning Categories for Partial Semester')
+    run.font.name = 'Carlito'
+    run.font.size = Pt(16)
+    run.font.color.rgb = RGBColor(28, 132, 196)
+    heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    doc.add_paragraph()
+    
+    # Get full student data and learner categories from input data
+    student_data = data.get("studentData", {}).get("data", [])
+    # "par_sem_slowLearner" is a list of two lists: first for advanced, second for slow learners
+    par_sem = data.get("par_sem_slowLearner", [])
+    advanced_ids = {stud["id"] for stud in par_sem[0]} if len(par_sem) > 0 else set()
+    slow_ids = {stud["id"] for stud in par_sem[1]} if len(par_sem) > 1 else set()
+    
+    # Classify each student based on their Unique Id.
+    advanced_learners = []
+    slow_learners = []
+    medium_learners = []
+    for student in student_data:
+        unique_id = student.get("Unique Id.")
+        if unique_id in advanced_ids:
+            advanced_learners.append(student)
+        elif unique_id in slow_ids:
+            slow_learners.append(student)
+        else:
+            medium_learners.append(student)
+            
+    # 1. Create summary table with updated heading
+    summary_heading = doc.add_heading('Learner Categories Summary for Partial Semester', level=2)
+    summary_heading.runs[0].font.size = Pt(14)
+    doc.add_paragraph()
+    
+    summary_table = doc.add_table(rows=4, cols=2)
+    summary_table.autofit = False
+    
+    # Header row
+    header_cells = summary_table.rows[0].cells
+    header_cells[0].text = "Learner Category"
+    header_cells[1].text = "Number of Students"
+    format_cell(header_cells[0], bold=True, alignment=WD_ALIGN_PARAGRAPH.CENTER)
+    format_cell(header_cells[1], bold=True, alignment=WD_ALIGN_PARAGRAPH.CENTER)
+    
+    categories = [
+        ("Advanced Learners", len(advanced_learners)),
+        ("Medium Learners", len(medium_learners)),
+        ("Slow Learners", len(slow_learners))
+    ]
+    for idx, (category, count) in enumerate(categories):
+        row = summary_table.rows[idx + 1]
+        row.cells[0].text = category
+        row.cells[1].text = str(count)
+        format_cell(row.cells[0], bold=False, alignment=WD_ALIGN_PARAGRAPH.CENTER)
+        format_cell(row.cells[1], bold=False, alignment=WD_ALIGN_PARAGRAPH.CENTER)
+        
+    col_widths = [Inches(3), Inches(3)]
+    set_table_column_widths(summary_table, col_widths)
+    summary_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    summary_table.autofit = False
+    for row in summary_table.rows:
+        for cell in row.cells:
+            set_cell_border(cell, 'top', 4, '000000')
+            set_cell_border(cell, 'bottom', 4, '000000')
+            set_cell_border(cell, 'left', 4, '000000')
+            set_cell_border(cell, 'right', 4, '000000')
+            
+    for row in summary_table.rows:
+        for cell in row.cells:
+            for paragraph in cell.paragraphs:
+                for run in paragraph.runs:
+                    run.font.size = Pt(9)
+    prevent_table_row_breaks(summary_table)
+    doc.add_paragraph().add_run().add_break()
+    
+    # 2. Create detailed student table with appropriate color coding and updated heading
+    detailed_heading = doc.add_heading('Student Learning Classification for Partial Semester', level=2)
+    detailed_heading.runs[0].font.size = Pt(14)
+    doc.add_paragraph()
+    
+    total_students = len(student_data)
+    student_table = doc.add_table(rows=total_students + 1, cols=2)
+    student_table.autofit = False
+    
+    # Table header
+    header_cells = student_table.rows[0].cells
+    header_cells[0].text = "Student Name"
+    header_cells[1].text = "Category"
+    format_cell(header_cells[0], bold=True, alignment=WD_ALIGN_PARAGRAPH.CENTER)
+    format_cell(header_cells[1], bold=True, alignment=WD_ALIGN_PARAGRAPH.CENTER)
+    set_table_column_widths(student_table, [Inches(3), Inches(3)])
+    
+    # Combine students: advanced, medium, then slow
+    all_students = advanced_learners + medium_learners + slow_learners
+    for idx, student in enumerate(all_students):
+        row = student_table.rows[idx + 1]
+        name = student.get("Student Name", "")
+        unique_id = student.get("Unique Id.")
+        if unique_id in advanced_ids:
+            category = "Advanced Learner"
+            color = "C6E0B4"  # green
+        elif unique_id in slow_ids:
+            category = "Slow Learner"
+            color = "FFEB9C"  # yellow
+        else:
+            category = "Medium Learner"
+            color = "F2F2F2"  # grey
+
+        row.cells[0].text = name
+        row.cells[1].text = category
+        format_cell(row.cells[0], bold=False, alignment=WD_ALIGN_PARAGRAPH.CENTER)
+        format_cell(row.cells[1], bold=False, alignment=WD_ALIGN_PARAGRAPH.CENTER)
+        for cell in row.cells:
+            tc_pr = cell._tc.get_or_add_tcPr()
+            shading = OxmlElement('w:shd')
+            shading.set(qn('w:val'), 'clear')
+            shading.set(qn('w:color'), 'auto')
+            shading.set(qn('w:fill'), color)
+            existing_shading = tc_pr.find(qn('w:shd'))
+            if existing_shading is not None:
+                tc_pr.remove(existing_shading)
+            tc_pr.append(shading)
+    
+    student_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    student_table.autofit = False
+    for row in student_table.rows:
+        for cell in row.cells:
+            set_cell_border(cell, 'top', 4, '000000')
+            set_cell_border(cell, 'bottom', 4, '000000')
+            set_cell_border(cell, 'left', 4, '000000')
+            set_cell_border(cell, 'right', 4, '000000')
+    for row in student_table.rows:
+        for cell in row.cells:
+            for paragraph in cell.paragraphs:
+                for run in paragraph.runs:
+                    run.font.size = Pt(9)
+    prevent_table_row_breaks(student_table)
+    doc.add_paragraph()
+    
+# Call this function after create_co_attainment_analysis(doc, data) and before create_actions_doc(data)
+create_learner_categorization_partial_sem(doc, data)
+
+#########################################################################################################################
 def create_learner_categorization(doc, data):
     # Add page break and section heading
     doc.add_page_break()
