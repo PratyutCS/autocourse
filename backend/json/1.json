@@ -14,7 +14,7 @@
       },
       {
         "srNo": 2,
-        "content": "Recursion: Factorial, Fibonacci, isArraySorted, SumofArray, Print Numbers \u2013 1) Increasing Order 2) Decreasing Order, MergeSort, Subsequence, Rat in Maze, N_Stairs, Subset Sum",
+        "content": "Recursion: Factorial, Fibonacci, isArraySorted, SumofArray, Print Numbers – 1) Increasing Order 2) Decreasing Order, MergeSort, Subsequence, Rat in Maze, N_Stairs, Subset Sum",
         "co": "2",
         "sessions": 1
       },
@@ -126,28 +126,19 @@
     "Session": "2024-25",
     "coWeightages": {
       "CO1": {
-        "assignment": "30",
-        "end term examination": "40",
-        "group presentation": "30",
-        "individual class participation": "30",
-        "mid term exam": "100",
-        "role play": "100"
+        "quiz(30)": "70",
+        "project(30)": "0",
+        "end term(40)": "10"
       },
       "CO2": {
-        "assignment": "30",
-        "end term examination": "30",
-        "group presentation": "30",
-        "individual class participation": "30",
-        "mid term exam": "0",
-        "role play": "0"
+        "quiz(30)": "30",
+        "project(30)": "65",
+        "end term(40)": "20"
       },
       "CO3": {
-        "assignment": "40",
-        "end term examination": "30",
-        "group presentation": "40",
-        "individual class participation": "40",
-        "mid term exam": "0",
-        "role play": "0"
+        "quiz(30)": "0",
+        "project(30)": "35",
+        "end term(40)": "70"
       }
     },
     "coAttainmentCriteria": {
@@ -166,364 +157,121 @@
     },
     "studentData": {
       "maxMarks": {
-        "Assignment": "10",
-        "End term examination": "40",
-        "Group Presentation": "10",
-        "Individual Class Participation": "10",
-        "Mid Term Exam": "20",
-        "Role Play": "10",
+        "Quiz(30)": 30,
+        "project(30)": 30,
+        "End Term(40)": 40,
         "Total Marks(100.0)": 100
       },
       "data": [
         {
-          "Sr.No": 1,
-          "Unique Id.": "240334",
-          "Student Name": "Aditya  Goel",
-          "Assignment": "8.5",
-          "End term examination": "0.0",
-          "Group Presentation": "9.0",
-          "Individual Class Participation": "0.0",
-          "Mid Term Exam": "6.5",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "32.00",
-          "Grading": "F",
-          "Attendance": "75.00"
+          "Sr No.": 1,
+          "Unique Id.": 240334,
+          "Student Name": "Aditya Goel",
+          "Quiz(30)": 28,
+          "project(30)": 27,
+          "End Term(40)": 28,
+          "Total Marks(100.0)": 83,
+          "Grading": "a+",
+          "Attendance": 88
         },
         {
-          "Sr.No": 2,
-          "Unique Id.": "240335",
-          "Student Name": "Anisha  Chhanpadia",
-          "Assignment": "8.5",
-          "End term examination": "21.0",
-          "Group Presentation": "9.0",
-          "Individual Class Participation": "9.0",
-          "Mid Term Exam": "10.5",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "66.00",
-          "Grading": "B+",
-          "Attendance": "85.19"
+          "Sr No.": 2,
+          "Unique Id.": 240335,
+          "Student Name": "Anisha Chhanpadia",
+          "Quiz(30)": 23,
+          "project(30)": 23,
+          "End Term(40)": 30,
+          "Total Marks(100.0)": 76,
+          "Grading": "a+",
+          "Attendance": 87
         },
         {
-          "Sr.No": 3,
-          "Unique Id.": "240336",
-          "Student Name": "Dhruv  Singla",
-          "Assignment": "8.5",
-          "End term examination": "24.0",
-          "Group Presentation": "9.0",
-          "Individual Class Participation": "1.0",
-          "Mid Term Exam": "6.0",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "56.50",
-          "Grading": "C",
-          "Attendance": "71.43"
+          "Sr No.": 3,
+          "Unique Id.": 240336,
+          "Student Name": "Dhruv Singla",
+          "Quiz(30)": 25,
+          "project(30)": 22,
+          "End Term(40)": 33,
+          "Total Marks(100.0)": 80,
+          "Grading": "a+",
+          "Attendance": 93
         },
         {
-          "Sr.No": 4,
-          "Unique Id.": "240337",
-          "Student Name": "Dorjee Phinjo Sona  ",
-          "Assignment": "8.5",
-          "End term examination": "18.5",
-          "Group Presentation": "9.0",
-          "Individual Class Participation": "7.0",
-          "Mid Term Exam": "3.0",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "54.00",
-          "Grading": "C",
-          "Attendance": "89.29"
+          "Sr No.": 4,
+          "Unique Id.": 240337,
+          "Student Name": "Dorjee Phinjo Sona",
+          "Quiz(30)": 24,
+          "project(30)": 30,
+          "End Term(40)": 20,
+          "Total Marks(100.0)": 74,
+          "Grading": "a+",
+          "Attendance": 88
         },
         {
-          "Sr.No": 5,
-          "Unique Id.": "240338",
-          "Student Name": "EENA  CHAUDHARY",
-          "Assignment": "9.0",
-          "End term examination": "29.0",
-          "Group Presentation": "9.0",
-          "Individual Class Participation": "8.5",
-          "Mid Term Exam": "8.0",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "71.50",
-          "Grading": "B+",
-          "Attendance": "100.00"
+          "Sr No.": 5,
+          "Unique Id.": 240338,
+          "Student Name": "EENA CHAUDHARY",
+          "Quiz(30)": 21,
+          "project(30)": 24,
+          "End Term(40)": 20,
+          "Total Marks(100.0)": 65,
+          "Grading": "a+",
+          "Attendance": 77
         },
         {
-          "Sr.No": 6,
-          "Unique Id.": "240339",
-          "Student Name": "Eshaan  Chandra",
-          "Assignment": "7.5",
-          "End term examination": "26.0",
-          "Group Presentation": "8.5",
-          "Individual Class Participation": "6.0",
-          "Mid Term Exam": "8.0",
-          "Role Play": "7.5",
-          "Total Marks(100.0)": "63.50",
-          "Grading": "B",
-          "Attendance": "85.71"
+          "Sr No.": 6,
+          "Unique Id.": 240339,
+          "Student Name": "Eshaan Chandra",
+          "Quiz(30)": 26,
+          "project(30)": 29,
+          "End Term(40)": 26,
+          "Total Marks(100.0)": 81,
+          "Grading": "a+",
+          "Attendance": 88
         },
         {
-          "Sr.No": 7,
-          "Unique Id.": "240340",
-          "Student Name": "Hardik  Rustagi",
-          "Assignment": "9.0",
-          "End term examination": "21.0",
-          "Group Presentation": "8.5",
-          "Individual Class Participation": "7.5",
-          "Mid Term Exam": "4.5",
-          "Role Play": "7.5",
-          "Total Marks(100.0)": "58.00",
-          "Grading": "C+",
-          "Attendance": "78.57"
+          "Sr No.": 7,
+          "Unique Id.": 240340,
+          "Student Name": "Hardik Rustagi",
+          "Quiz(30)": 24,
+          "project(30)": 27,
+          "End Term(40)": 20,
+          "Total Marks(100.0)": 71,
+          "Grading": "a+",
+          "Attendance": 99
         },
         {
-          "Sr.No": 8,
-          "Unique Id.": "240341",
-          "Student Name": "Harsh  Gupta",
-          "Assignment": "8.0",
-          "End term examination": "20.0",
-          "Group Presentation": "7.5",
-          "Individual Class Participation": "0.0",
-          "Mid Term Exam": "7.5",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "51.00",
-          "Grading": "C",
-          "Attendance": "82.14"
+          "Sr No.": 8,
+          "Unique Id.": 240341,
+          "Student Name": "Harsh Gupta",
+          "Quiz(30)": 30,
+          "project(30)": 29,
+          "End Term(40)": 33,
+          "Total Marks(100.0)": 92,
+          "Grading": "a+",
+          "Attendance": 81
         },
         {
-          "Sr.No": 9,
-          "Unique Id.": "240342",
-          "Student Name": "Jiya  Gera",
-          "Assignment": "8.5",
-          "End term examination": "26.5",
-          "Group Presentation": "8.5",
-          "Individual Class Participation": "7.5",
-          "Mid Term Exam": "8.5",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "67.50",
-          "Grading": "B+",
-          "Attendance": "92.86"
+          "Sr No.": 9,
+          "Unique Id.": 240342,
+          "Student Name": "Jiya Gera",
+          "Quiz(30)": 25,
+          "project(30)": 20,
+          "End Term(40)": 20,
+          "Total Marks(100.0)": 65,
+          "Grading": "a+",
+          "Attendance": 92
         },
         {
-          "Sr.No": 10,
-          "Unique Id.": "240343",
-          "Student Name": "Keshav  Gupta",
-          "Assignment": "7.5",
-          "End term examination": "5.0",
-          "Group Presentation": "8.5",
-          "Individual Class Participation": "0.0",
-          "Mid Term Exam": "4.0",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "33.00",
-          "Grading": "F",
-          "Attendance": "75.00"
-        },
-        {
-          "Sr.No": 11,
-          "Unique Id.": "240345",
-          "Student Name": "Luvisha  Verma",
-          "Assignment": "8.0",
-          "End term examination": "20.0",
-          "Group Presentation": "7.5",
-          "Individual Class Participation": "9.5",
-          "Mid Term Exam": "7.5",
-          "Role Play": "7.0",
-          "Total Marks(100.0)": "59.50",
-          "Grading": "B",
-          "Attendance": "92.86"
-        },
-        {
-          "Sr.No": 12,
-          "Unique Id.": "240346",
-          "Student Name": "Mehal  Raghav",
-          "Assignment": "8.0",
-          "End term examination": "30.0",
-          "Group Presentation": "7.5",
-          "Individual Class Participation": "3.0",
-          "Mid Term Exam": "4.0",
-          "Role Play": "7.0",
-          "Total Marks(100.0)": "59.50",
-          "Grading": "B",
-          "Attendance": "81.48"
-        },
-        {
-          "Sr.No": 13,
-          "Unique Id.": "240347",
-          "Student Name": "Neha Raju Shinde",
-          "Assignment": "8.5",
-          "End term examination": "20.5",
-          "Group Presentation": "8.5",
-          "Individual Class Participation": "6.0",
-          "Mid Term Exam": "6.0",
-          "Role Play": "7.5",
-          "Total Marks(100.0)": "57.00",
-          "Grading": "C+",
-          "Attendance": "89.29"
-        },
-        {
-          "Sr.No": 14,
-          "Unique Id.": "240348",
-          "Student Name": "Priya  Chadda",
-          "Assignment": "9.0",
-          "End term examination": "34.0",
-          "Group Presentation": "8.5",
-          "Individual Class Participation": "6.5",
-          "Mid Term Exam": "16.0",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "82.00",
-          "Grading": "A",
-          "Attendance": "85.19"
-        },
-        {
-          "Sr.No": 15,
-          "Unique Id.": "240349",
-          "Student Name": "Purnendu  Vashishtha",
-          "Assignment": "8.0",
-          "End term examination": "11.5",
-          "Group Presentation": "8.0",
-          "Individual Class Participation": "6.5",
-          "Mid Term Exam": "8.0",
-          "Role Play": "7.0",
-          "Total Marks(100.0)": "49.00",
-          "Grading": "C",
-          "Attendance": "96.43"
-        },
-        {
-          "Sr.No": 16,
-          "Unique Id.": "240350",
-          "Student Name": "Sagar  Bista",
-          "Assignment": "9.5",
-          "End term examination": "23.0",
-          "Group Presentation": "8.0",
-          "Individual Class Participation": "7.5",
-          "Mid Term Exam": "12.0",
-          "Role Play": "7.0",
-          "Total Marks(100.0)": "67.00",
-          "Grading": "B+",
-          "Attendance": "96.43"
-        },
-        {
-          "Sr.No": 17,
-          "Unique Id.": "240351",
-          "Student Name": "Shoryaveer  Singh",
-          "Assignment": "8.0",
-          "End term examination": "21.5",
-          "Group Presentation": "0.0",
-          "Individual Class Participation": "1.0",
-          "Mid Term Exam": "2.5",
-          "Role Play": "7.0",
-          "Total Marks(100.0)": "40.00",
-          "Grading": "F",
-          "Attendance": "60.71"
-        },
-        {
-          "Sr.No": 18,
-          "Unique Id.": "240352",
-          "Student Name": "Yash  Garg",
-          "Assignment": "8.0",
-          "End term examination": "5.0",
-          "Group Presentation": "7.0",
-          "Individual Class Participation": "0.0",
-          "Mid Term Exam": "2.5",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "30.50",
-          "Grading": "F",
-          "Attendance": "71.43"
-        },
-        {
-          "Sr.No": 19,
-          "Unique Id.": "240870",
-          "Student Name": "Sanchi  Narang",
-          "Assignment": "9.5",
-          "End term examination": "35.0",
-          "Group Presentation": "8.0",
-          "Individual Class Participation": "9.5",
-          "Mid Term Exam": "17.0",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "87.00",
-          "Grading": "A+",
-          "Attendance": "96.43"
-        },
-        {
-          "Sr.No": 20,
-          "Unique Id.": "240871",
-          "Student Name": "Cheshtha  Narang",
-          "Assignment": "7.5",
-          "End term examination": "33.0",
-          "Group Presentation": "9.0",
-          "Individual Class Participation": "9.5",
-          "Mid Term Exam": "8.0",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "75.00",
-          "Grading": "B+",
-          "Attendance": "96.43"
-        },
-        {
-          "Sr.No": 21,
-          "Unique Id.": "240909",
-          "Student Name": "Nishtha  Arora",
-          "Assignment": "8.5",
-          "End term examination": "18.5",
-          "Group Presentation": "7.5",
-          "Individual Class Participation": "8.5",
-          "Mid Term Exam": "17.5",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "68.50",
-          "Grading": "B+",
-          "Attendance": "100.00"
-        },
-        {
-          "Sr.No": 22,
-          "Unique Id.": "240794",
-          "Student Name": "Astha  Jaiswal",
-          "Assignment": "0.0",
-          "End term examination": "0.0",
-          "Group Presentation": "0.0",
-          "Individual Class Participation": "0.0",
-          "Mid Term Exam": "0.0",
-          "Role Play": "0.0",
-          "Total Marks(100.0)": "0.00",
-          "Grading": "",
-          "Attendance": "42.86"
-        },
-        {
-          "Sr.No": 23,
-          "Unique Id.": "240333",
-          "Student Name": "Kshitij  Khera",
-          "Assignment": "9.5",
-          "End term examination": "15.5",
-          "Group Presentation": "7.5",
-          "Individual Class Participation": "4.5",
-          "Mid Term Exam": "8.5",
-          "Role Play": "7.0",
-          "Total Marks(100.0)": "52.50",
-          "Grading": "C",
-          "Attendance": "78.57"
-        },
-        {
-          "Sr.No": 24,
-          "Unique Id.": "240943",
-          "Student Name": "Hitansh  Goel",
-          "Assignment": "8.0",
-          "End term examination": "11.5",
-          "Group Presentation": "7.5",
-          "Individual Class Participation": "4.0",
-          "Mid Term Exam": "3.5",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "42.50",
-          "Grading": "D",
-          "Attendance": "82.14"
-        },
-        {
-          "Sr.No": 25,
-          "Unique Id.": "240963",
-          "Student Name": "Sneha Singh  ",
-          "Assignment": "8.0",
-          "End term examination": "26.5",
-          "Group Presentation": "8.0",
-          "Individual Class Participation": "5.5",
-          "Mid Term Exam": "9.5",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "65.50",
-          "Grading": "B+",
-          "Attendance": "82.14"
+          "Sr No.": 10,
+          "Unique Id.": 240343,
+          "Student Name": "Keshav Gupta",
+          "Quiz(30)": 25,
+          "project(30)": 20,
+          "End Term(40)": 40,
+          "Total Marks(100.0)": 85,
+          "Grading": "a+",
+          "Attendance": 93
         }
       ]
     },
@@ -550,8 +298,8 @@
     "learnerCategories": {
       "advancedLearners": [
         {
-          "id": "240335",
-          "rollNumber": "Anisha  Chhanpadia",
+          "id": 240334,
+          "rollNumber": "Aditya Goel",
           "coScores": {
             "CO1": 3,
             "CO2": 3,
@@ -560,8 +308,8 @@
           "rowAverage": 3
         },
         {
-          "id": "240338",
-          "rollNumber": "EENA  CHAUDHARY",
+          "id": 240335,
+          "rollNumber": "Anisha Chhanpadia",
           "coScores": {
             "CO1": 3,
             "CO2": 3,
@@ -570,8 +318,8 @@
           "rowAverage": 3
         },
         {
-          "id": "240339",
-          "rollNumber": "Eshaan  Chandra",
+          "id": 240336,
+          "rollNumber": "Dhruv Singla",
           "coScores": {
             "CO1": 3,
             "CO2": 3,
@@ -580,8 +328,8 @@
           "rowAverage": 3
         },
         {
-          "id": "240342",
-          "rollNumber": "Jiya  Gera",
+          "id": 240341,
+          "rollNumber": "Harsh Gupta",
           "coScores": {
             "CO1": 3,
             "CO2": 3,
@@ -590,38 +338,8 @@
           "rowAverage": 3
         },
         {
-          "id": "240348",
-          "rollNumber": "Priya  Chadda",
-          "coScores": {
-            "CO1": 3,
-            "CO2": 3,
-            "CO3": 3
-          },
-          "rowAverage": 3
-        },
-        {
-          "id": "240350",
-          "rollNumber": "Sagar  Bista",
-          "coScores": {
-            "CO1": 3,
-            "CO2": 3,
-            "CO3": 3
-          },
-          "rowAverage": 3
-        },
-        {
-          "id": "240870",
-          "rollNumber": "Sanchi  Narang",
-          "coScores": {
-            "CO1": 3,
-            "CO2": 3,
-            "CO3": 3
-          },
-          "rowAverage": 3
-        },
-        {
-          "id": "240871",
-          "rollNumber": "Cheshtha  Narang",
+          "id": 240343,
+          "rollNumber": "Keshav Gupta",
           "coScores": {
             "CO1": 3,
             "CO2": 3,
@@ -630,1027 +348,24 @@
           "rowAverage": 3
         }
       ],
-      "mediumLearners": [],
-      "slowLearners": []
+      "slowLearners": [
+        {
+          "id": 240338,
+          "rollNumber": "EENA CHAUDHARY",
+          "coScores": {
+            "CO1": 1,
+            "CO2": 1,
+            "CO3": 1
+          },
+          "rowAverage": 1
+        }
+      ]
     },
     "selectedAssessments": [
-      "Assignment",
-      "Group Presentation",
-      "Mid Term Exam"
+      "Quiz(30)",
+      "End Term(40)"
     ],
     "par_sem_slowLearner": [],
-    "last_modified": "7:35 pm, 22 Mar 2025"
-  },
-  {
-    "filename": "1742419156C Programming Course Handout for Batch 2024-28.pdf",
-    "done": 1,
-    "Program": 1,
-    "Course Syllabus": [
-      {
-        "srNo": 1,
-        "content": "Topic Name with Details",
-        "co": "1",
-        "sessions": 1
-      }
-    ],
-    "Learning Resources": {
-      "textBooks": [
-        "dfsfsdf"
-      ],
-      "referenceLinks": [
-        "dsfds"
-      ]
-    },
-    "internalAssessmentData": {
-      "components": {
-        "component1": {
-          "component": "dfsfsdf",
-          "duration": "dsfds",
-          "weightage": "fdsf",
-          "evaluationWeek": "",
-          "remarks": "dfsfsdfds",
-          "evaluation": "s"
-        }
-      }
-    },
-    "copoMappingData": {
-      "courseOutcomes": {
-        "CO1": {
-          "description": "fdsf",
-          "bullets": []
-        }
-      },
-      "mappingData": {
-        "CO1": {
-          "PO1": "",
-          "PO2": "",
-          "PO3": "",
-          "PO4": "",
-          "PO5": "",
-          "PO6": "",
-          "PO7": "",
-          "PO8": "",
-          "PO9": "",
-          "PO10": "",
-          "PO11": "",
-          "PO12": "",
-          "PSO1": "",
-          "PSO2": "",
-          "PSO3": "",
-          "PSO4": ""
-        }
-      }
-    },
-    "weeklyTimetableData": {
-      "Monday": {
-        "9:15-10:10": false,
-        "10:15-11:10": false,
-        "11:15-12:10": false,
-        "12:15-13:10": false,
-        "13:15-14:10": false,
-        "14:15-15:10": false,
-        "15:15-16:10": false,
-        "16:15-17:10": false,
-        "17:15-18:10": false
-      },
-      "Tuesday": {
-        "9:15-10:10": false,
-        "10:15-11:10": false,
-        "11:15-12:10": true,
-        "12:15-13:10": false,
-        "13:15-14:10": false,
-        "14:15-15:10": false,
-        "15:15-16:10": false,
-        "16:15-17:10": false,
-        "17:15-18:10": true
-      },
-      "Wednesday": {
-        "9:15-10:10": false,
-        "10:15-11:10": false,
-        "11:15-12:10": false,
-        "12:15-13:10": false,
-        "13:15-14:10": false,
-        "14:15-15:10": false,
-        "15:15-16:10": false,
-        "16:15-17:10": false,
-        "17:15-18:10": false
-      },
-      "Thursday": {
-        "9:15-10:10": false,
-        "10:15-11:10": false,
-        "11:15-12:10": false,
-        "12:15-13:10": false,
-        "13:15-14:10": false,
-        "14:15-15:10": true,
-        "15:15-16:10": false,
-        "16:15-17:10": false,
-        "17:15-18:10": true
-      },
-      "Friday": {
-        "9:15-10:10": false,
-        "10:15-11:10": false,
-        "11:15-12:10": false,
-        "12:15-13:10": false,
-        "13:15-14:10": false,
-        "14:15-15:10": false,
-        "15:15-16:10": false,
-        "16:15-17:10": false,
-        "17:15-18:10": false
-      }
-    },
-    "actionsForWeakStudentsData": [
-      "dsfdsfdsfd",
-      "dsffds"
-    ],
-    "assignmentPDF": "1742419408818-651440000-file (41).pdf",
-    "course_code": "CSC2030",
-    "course_name": "Course FIle",
-    "Module/Semester": "4th",
-    "Session": "2023-24",
-    "course_description": "dsfsdf",
-    "coWeightages": {
-      "CO1": {
-        "assignment": "100",
-        "end term examination": "100",
-        "group presentation": "100",
-        "individual class participation": "100",
-        "mid term exam": "100",
-        "role play": "100"
-      }
-    },
-    "coAttainmentCriteria": {
-      "CO1": {
-        "full": 80,
-        "partial": 50
-      }
-    },
-    "targetAttainment": {
-      "CO1": {
-        "full": 80,
-        "partial": 50
-      }
-    },
-    "studentData": {
-      "maxMarks": {
-        "Assignment": "10",
-        "End term examination": "40",
-        "Group Presentation": "10",
-        "Individual Class Participation": "10",
-        "Mid Term Exam": "20",
-        "Role Play": "10",
-        "Total Marks(100.0)": 100
-      },
-      "data": [
-        {
-          "Sr.No": 1,
-          "Unique Id.": "240334",
-          "Student Name": "Aditya  Goel",
-          "Assignment": "8.5",
-          "End term examination": "0.0",
-          "Group Presentation": "9.0",
-          "Individual Class Participation": "0.0",
-          "Mid Term Exam": "6.5",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "32.00",
-          "Grading": "F",
-          "Attendance": "75.00"
-        },
-        {
-          "Sr.No": 2,
-          "Unique Id.": "240335",
-          "Student Name": "Anisha  Chhanpadia",
-          "Assignment": "8.5",
-          "End term examination": "21.0",
-          "Group Presentation": "9.0",
-          "Individual Class Participation": "9.0",
-          "Mid Term Exam": "10.5",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "66.00",
-          "Grading": "B+",
-          "Attendance": "85.19"
-        },
-        {
-          "Sr.No": 3,
-          "Unique Id.": "240336",
-          "Student Name": "Dhruv  Singla",
-          "Assignment": "8.5",
-          "End term examination": "24.0",
-          "Group Presentation": "9.0",
-          "Individual Class Participation": "1.0",
-          "Mid Term Exam": "6.0",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "56.50",
-          "Grading": "C",
-          "Attendance": "71.43"
-        },
-        {
-          "Sr.No": 4,
-          "Unique Id.": "240337",
-          "Student Name": "Dorjee Phinjo Sona  ",
-          "Assignment": "8.5",
-          "End term examination": "18.5",
-          "Group Presentation": "9.0",
-          "Individual Class Participation": "7.0",
-          "Mid Term Exam": "3.0",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "54.00",
-          "Grading": "C",
-          "Attendance": "89.29"
-        },
-        {
-          "Sr.No": 5,
-          "Unique Id.": "240338",
-          "Student Name": "EENA  CHAUDHARY",
-          "Assignment": "9.0",
-          "End term examination": "29.0",
-          "Group Presentation": "9.0",
-          "Individual Class Participation": "8.5",
-          "Mid Term Exam": "8.0",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "71.50",
-          "Grading": "B+",
-          "Attendance": "100.00"
-        },
-        {
-          "Sr.No": 6,
-          "Unique Id.": "240339",
-          "Student Name": "Eshaan  Chandra",
-          "Assignment": "7.5",
-          "End term examination": "26.0",
-          "Group Presentation": "8.5",
-          "Individual Class Participation": "6.0",
-          "Mid Term Exam": "8.0",
-          "Role Play": "7.5",
-          "Total Marks(100.0)": "63.50",
-          "Grading": "B",
-          "Attendance": "85.71"
-        },
-        {
-          "Sr.No": 7,
-          "Unique Id.": "240340",
-          "Student Name": "Hardik  Rustagi",
-          "Assignment": "9.0",
-          "End term examination": "21.0",
-          "Group Presentation": "8.5",
-          "Individual Class Participation": "7.5",
-          "Mid Term Exam": "4.5",
-          "Role Play": "7.5",
-          "Total Marks(100.0)": "58.00",
-          "Grading": "C+",
-          "Attendance": "78.57"
-        },
-        {
-          "Sr.No": 8,
-          "Unique Id.": "240341",
-          "Student Name": "Harsh  Gupta",
-          "Assignment": "8.0",
-          "End term examination": "20.0",
-          "Group Presentation": "7.5",
-          "Individual Class Participation": "0.0",
-          "Mid Term Exam": "7.5",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "51.00",
-          "Grading": "C",
-          "Attendance": "82.14"
-        },
-        {
-          "Sr.No": 9,
-          "Unique Id.": "240342",
-          "Student Name": "Jiya  Gera",
-          "Assignment": "8.5",
-          "End term examination": "26.5",
-          "Group Presentation": "8.5",
-          "Individual Class Participation": "7.5",
-          "Mid Term Exam": "8.5",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "67.50",
-          "Grading": "B+",
-          "Attendance": "92.86"
-        },
-        {
-          "Sr.No": 10,
-          "Unique Id.": "240343",
-          "Student Name": "Keshav  Gupta",
-          "Assignment": "7.5",
-          "End term examination": "5.0",
-          "Group Presentation": "8.5",
-          "Individual Class Participation": "0.0",
-          "Mid Term Exam": "4.0",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "33.00",
-          "Grading": "F",
-          "Attendance": "75.00"
-        },
-        {
-          "Sr.No": 11,
-          "Unique Id.": "240345",
-          "Student Name": "Luvisha  Verma",
-          "Assignment": "8.0",
-          "End term examination": "20.0",
-          "Group Presentation": "7.5",
-          "Individual Class Participation": "9.5",
-          "Mid Term Exam": "7.5",
-          "Role Play": "7.0",
-          "Total Marks(100.0)": "59.50",
-          "Grading": "B",
-          "Attendance": "92.86"
-        },
-        {
-          "Sr.No": 12,
-          "Unique Id.": "240346",
-          "Student Name": "Mehal  Raghav",
-          "Assignment": "8.0",
-          "End term examination": "30.0",
-          "Group Presentation": "7.5",
-          "Individual Class Participation": "3.0",
-          "Mid Term Exam": "4.0",
-          "Role Play": "7.0",
-          "Total Marks(100.0)": "59.50",
-          "Grading": "B",
-          "Attendance": "81.48"
-        },
-        {
-          "Sr.No": 13,
-          "Unique Id.": "240347",
-          "Student Name": "Neha Raju Shinde",
-          "Assignment": "8.5",
-          "End term examination": "20.5",
-          "Group Presentation": "8.5",
-          "Individual Class Participation": "6.0",
-          "Mid Term Exam": "6.0",
-          "Role Play": "7.5",
-          "Total Marks(100.0)": "57.00",
-          "Grading": "C+",
-          "Attendance": "89.29"
-        },
-        {
-          "Sr.No": 14,
-          "Unique Id.": "240348",
-          "Student Name": "Priya  Chadda",
-          "Assignment": "9.0",
-          "End term examination": "34.0",
-          "Group Presentation": "8.5",
-          "Individual Class Participation": "6.5",
-          "Mid Term Exam": "16.0",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "82.00",
-          "Grading": "A",
-          "Attendance": "85.19"
-        },
-        {
-          "Sr.No": 15,
-          "Unique Id.": "240349",
-          "Student Name": "Purnendu  Vashishtha",
-          "Assignment": "8.0",
-          "End term examination": "11.5",
-          "Group Presentation": "8.0",
-          "Individual Class Participation": "6.5",
-          "Mid Term Exam": "8.0",
-          "Role Play": "7.0",
-          "Total Marks(100.0)": "49.00",
-          "Grading": "C",
-          "Attendance": "96.43"
-        },
-        {
-          "Sr.No": 16,
-          "Unique Id.": "240350",
-          "Student Name": "Sagar  Bista",
-          "Assignment": "9.5",
-          "End term examination": "23.0",
-          "Group Presentation": "8.0",
-          "Individual Class Participation": "7.5",
-          "Mid Term Exam": "12.0",
-          "Role Play": "7.0",
-          "Total Marks(100.0)": "67.00",
-          "Grading": "B+",
-          "Attendance": "96.43"
-        },
-        {
-          "Sr.No": 17,
-          "Unique Id.": "240351",
-          "Student Name": "Shoryaveer  Singh",
-          "Assignment": "8.0",
-          "End term examination": "21.5",
-          "Group Presentation": "0.0",
-          "Individual Class Participation": "1.0",
-          "Mid Term Exam": "2.5",
-          "Role Play": "7.0",
-          "Total Marks(100.0)": "40.00",
-          "Grading": "F",
-          "Attendance": "60.71"
-        },
-        {
-          "Sr.No": 18,
-          "Unique Id.": "240352",
-          "Student Name": "Yash  Garg",
-          "Assignment": "8.0",
-          "End term examination": "5.0",
-          "Group Presentation": "7.0",
-          "Individual Class Participation": "0.0",
-          "Mid Term Exam": "2.5",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "30.50",
-          "Grading": "F",
-          "Attendance": "71.43"
-        },
-        {
-          "Sr.No": 19,
-          "Unique Id.": "240870",
-          "Student Name": "Sanchi  Narang",
-          "Assignment": "9.5",
-          "End term examination": "35.0",
-          "Group Presentation": "8.0",
-          "Individual Class Participation": "9.5",
-          "Mid Term Exam": "17.0",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "87.00",
-          "Grading": "A+",
-          "Attendance": "96.43"
-        },
-        {
-          "Sr.No": 20,
-          "Unique Id.": "240871",
-          "Student Name": "Cheshtha  Narang",
-          "Assignment": "7.5",
-          "End term examination": "33.0",
-          "Group Presentation": "9.0",
-          "Individual Class Participation": "9.5",
-          "Mid Term Exam": "8.0",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "75.00",
-          "Grading": "B+",
-          "Attendance": "96.43"
-        },
-        {
-          "Sr.No": 21,
-          "Unique Id.": "240909",
-          "Student Name": "Nishtha  Arora",
-          "Assignment": "8.5",
-          "End term examination": "18.5",
-          "Group Presentation": "7.5",
-          "Individual Class Participation": "8.5",
-          "Mid Term Exam": "17.5",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "68.50",
-          "Grading": "B+",
-          "Attendance": "100.00"
-        },
-        {
-          "Sr.No": 22,
-          "Unique Id.": "240794",
-          "Student Name": "Astha  Jaiswal",
-          "Assignment": "0.0",
-          "End term examination": "0.0",
-          "Group Presentation": "0.0",
-          "Individual Class Participation": "0.0",
-          "Mid Term Exam": "0.0",
-          "Role Play": "0.0",
-          "Total Marks(100.0)": "0.00",
-          "Grading": "",
-          "Attendance": "42.86"
-        },
-        {
-          "Sr.No": 23,
-          "Unique Id.": "240333",
-          "Student Name": "Kshitij  Khera",
-          "Assignment": "9.5",
-          "End term examination": "15.5",
-          "Group Presentation": "7.5",
-          "Individual Class Participation": "4.5",
-          "Mid Term Exam": "8.5",
-          "Role Play": "7.0",
-          "Total Marks(100.0)": "52.50",
-          "Grading": "C",
-          "Attendance": "78.57"
-        },
-        {
-          "Sr.No": 24,
-          "Unique Id.": "240943",
-          "Student Name": "Hitansh  Goel",
-          "Assignment": "8.0",
-          "End term examination": "11.5",
-          "Group Presentation": "7.5",
-          "Individual Class Participation": "4.0",
-          "Mid Term Exam": "3.5",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "42.50",
-          "Grading": "D",
-          "Attendance": "82.14"
-        },
-        {
-          "Sr.No": 25,
-          "Unique Id.": "240963",
-          "Student Name": "Sneha Singh  ",
-          "Assignment": "8.0",
-          "End term examination": "26.5",
-          "Group Presentation": "8.0",
-          "Individual Class Participation": "5.5",
-          "Mid Term Exam": "9.5",
-          "Role Play": "8.0",
-          "Total Marks(100.0)": "65.50",
-          "Grading": "B+",
-          "Attendance": "82.14"
-        }
-      ]
-    },
-    "feedbackData": {
-      "quantitativeFeedback": "3.00",
-      "qualitativeFeedback": "fds"
-    },
-    "facultyCourseReview": "34223423",
-    "learnerCategories": {},
-    "selectedAssessments": [],
-    "par_sem_slowLearner": [],
-    "last_modified": "7:35 pm, 22 Mar 2025"
-  },
-  {
-    "filename": "1742653154_ikdam tikdam dikdamikdam tikdam .pdf",
-    "done": 1,
-    "Program": 1,
-    "Session": "Vth Semester",
-    "course_code": "ECE3009",
-    "course_name": "IoT Sensors, Peripherals and Processors",
-    "Module/Semester": "Intro IoT",
-    "course_description": "The objective of course is to introduce the students to a variety of sensors, actuators and signal conditioning operations. To understand the concepts of root level microcontroller programming in C so that they can write the customized programs for different real-world applications. Sensors and microcontrollers are the key to automate and incorporate intelligence in automatic systems which are used for real time operations. Therefore, it is mandatory to develop a good understanding of their operation and how they can be used as building blocks for automated systems and control applications. This course explores the inner workings of a microcontroller from the programmer\u2019s perspective for which the course is divided into three main sections.",
-    "Course Syllabus": [
-      {
-        "srNo": 1,
-        "content": "Introduction to various types of sensors",
-        "co": "1",
-        "sessions": 1
-      }
-    ],
-    "Learning Resources": {
-      "textBooks": [
-        "AVR microcontroller and Embedded systems using assembly and C by Muhammad Ali Mazidi",
-        "Embedded C programing and the ATMEL AVR by Richard H."
-      ],
-      "referenceLinks": [
-        "Proteous",
-        "Tinker Cad"
-      ]
-    },
-    "internalAssessmentData": {
-      "components": {
-        "component1": {
-          "component": "",
-          "duration": "",
-          "weightage": "",
-          "evaluationWeek": "",
-          "remarks": ""
-        }
-      }
-    },
-    "copoMappingData": {
-      "courseOutcomes": {
-        "CO1": {
-          "description": "Understand the fundamentals of various sensors and their signal conditioning operations.",
-          "bullets": []
-        },
-        "CO2": {
-          "description": "Analyze various types of microcontroller development boards in terms of their architectures and programming.",
-          "bullets": []
-        },
-        "CO3": {
-          "description": "Apply the concepts of microcontroller programming for interfacing of various sensors, actuators and other peripherals.",
-          "bullets": []
-        }
-      },
-      "mappingData": {
-        "CO1": {
-          "CO/PO": "",
-          "PO1": "2",
-          "PO2": "1",
-          "PO3": "1",
-          "PO4": "2",
-          "PO5": "",
-          "PO6": "",
-          "PO7": "",
-          "PO8": "",
-          "PO9": "",
-          "PO10": "",
-          "PO11": "",
-          "PO12": "",
-          "PSO1": "",
-          "PSO2": "",
-          "PSO3": "",
-          "PSO4": ""
-        },
-        "CO2": {
-          "CO/PO": "",
-          "PO1": "",
-          "PO2": "",
-          "PO3": "",
-          "PO4": "",
-          "PO5": "",
-          "PO6": "",
-          "PO7": "",
-          "PO8": "",
-          "PO9": "",
-          "PO10": "",
-          "PO11": "",
-          "PO12": "",
-          "PSO1": "",
-          "PSO2": "",
-          "PSO3": "",
-          "PSO4": ""
-        },
-        "CO3": {
-          "CO/PO": "",
-          "PO1": "",
-          "PO2": "",
-          "PO3": "",
-          "PO4": "",
-          "PO5": "",
-          "PO6": "",
-          "PO7": "",
-          "PO8": "",
-          "PO9": "",
-          "PO10": "",
-          "PO11": "",
-          "PO12": "",
-          "PSO1": "",
-          "PSO2": "",
-          "PSO3": "",
-          "PSO4": ""
-        }
-      }
-    },
-    "weeklyTimetableData": {
-      "Monday": {
-        "9:15-10:10": false,
-        "10:15-11:10": false,
-        "11:15-12:10": false,
-        "12:15-13:10": false,
-        "13:15-14:10": false,
-        "14:15-15:10": false,
-        "15:15-16:10": false,
-        "16:15-17:10": false,
-        "17:15-18:10": false
-      },
-      "Tuesday": {
-        "9:15-10:10": false,
-        "10:15-11:10": false,
-        "11:15-12:10": false,
-        "12:15-13:10": false,
-        "13:15-14:10": false,
-        "14:15-15:10": false,
-        "15:15-16:10": false,
-        "16:15-17:10": false,
-        "17:15-18:10": false
-      },
-      "Wednesday": {
-        "9:15-10:10": false,
-        "10:15-11:10": false,
-        "11:15-12:10": false,
-        "12:15-13:10": false,
-        "13:15-14:10": false,
-        "14:15-15:10": false,
-        "15:15-16:10": false,
-        "16:15-17:10": false,
-        "17:15-18:10": false
-      },
-      "Thursday": {
-        "9:15-10:10": false,
-        "10:15-11:10": false,
-        "11:15-12:10": false,
-        "12:15-13:10": false,
-        "13:15-14:10": false,
-        "14:15-15:10": false,
-        "15:15-16:10": false,
-        "16:15-17:10": false,
-        "17:15-18:10": false
-      },
-      "Friday": {
-        "9:15-10:10": false,
-        "10:15-11:10": false,
-        "11:15-12:10": false,
-        "12:15-13:10": false,
-        "13:15-14:10": false,
-        "14:15-15:10": false,
-        "15:15-16:10": false,
-        "16:15-17:10": false,
-        "17:15-18:10": false
-      }
-    },
-    "actionsForWeakStudentsData": [
-      ""
-    ]
-  },
-  {
-    "filename": "1742653620_Cyber Forensics_CSE4708.pdf",
-    "done": 1,
-    "Program": 1,
-    "course_code": "CSE4708",
-    "course_name": "Cyber Forensics",
-    "Module/Semester": "7th Sem",
-    "course_description": "The goal of this course \u201cCyber Forensics\u201d is to understand the principles and practice of security attacks and fundamentals of security protocols and its defense. It covers operating system security, database security, network-based security threats and their social and legal aspect. Cyber Forensics is a core elective course in computer science and engineering and computer science undergraduate program. This course focuses on to understand Computer Forensics, Computing Investigations, Enforcement Agency Investigations. This course will provide overview of types of computer forensics, data recovery, electronic evidence, threats, surveillance.",
-    "Course Syllabus": [
-      {
-        "srNo": 1,
-        "content": "Computer Forensics Fundamentals.",
-        "co": "1",
-        "sessions": 3
-      },
-      {
-        "srNo": 2,
-        "content": "Types of Computer Forensics Technology",
-        "co": "1",
-        "sessions": 3
-      },
-      {
-        "srNo": 3,
-        "content": "Types of Vendor and Computer Forensics Services.",
-        "co": "1",
-        "sessions": 2
-      },
-      {
-        "srNo": 4,
-        "content": "Data Recovery",
-        "co": "2",
-        "sessions": 2
-      },
-      {
-        "srNo": 5,
-        "content": "Evidence Collection and Data Seizure",
-        "co": "3",
-        "sessions": 2
-      },
-      {
-        "srNo": 6,
-        "content": "Duplication and Preservation of Digital Evidence",
-        "co": "2",
-        "sessions": 2
-      },
-      {
-        "srNo": 7,
-        "content": "Computer Image Verification and Authentication.",
-        "co": "3",
-        "sessions": 2
-      },
-      {
-        "srNo": 8,
-        "content": "Discover of Electronic Evidence",
-        "co": "3",
-        "sessions": 2
-      },
-      {
-        "srNo": 9,
-        "content": "Identification of Data",
-        "co": "3",
-        "sessions": 3
-      },
-      {
-        "srNo": 10,
-        "content": "Reconstructing Past Events",
-        "co": "3",
-        "sessions": 2
-      },
-      {
-        "srNo": 11,
-        "content": "Networks.",
-        "co": "2",
-        "sessions": 1
-      },
-      {
-        "srNo": 12,
-        "content": "Fighting against Macro Threats",
-        "co": "3",
-        "sessions": 2
-      },
-      {
-        "srNo": 13,
-        "content": "Information Warfare Arsenal",
-        "co": "4",
-        "sessions": 2
-      },
-      {
-        "srNo": 14,
-        "content": "Tactics of the Military",
-        "co": "3",
-        "sessions": 2
-      },
-      {
-        "srNo": 15,
-        "content": "Tactics of Terrorist and Rogues",
-        "co": "4",
-        "sessions": 2
-      },
-      {
-        "srNo": 16,
-        "content": "Tactics of Private Companies.",
-        "co": "3",
-        "sessions": 2
-      },
-      {
-        "srNo": 17,
-        "content": "The Future \u2013 Arsenal",
-        "co": "4",
-        "sessions": 2
-      },
-      {
-        "srNo": 18,
-        "content": "Surveillance Tools",
-        "co": "4",
-        "sessions": 1
-      },
-      {
-        "srNo": 19,
-        "content": "Victims and Refugees",
-        "co": "4",
-        "sessions": 2
-      },
-      {
-        "srNo": 20,
-        "content": "Advanced Computer Forensics.",
-        "co": "4",
-        "sessions": 2
-      },
-      {
-        "srNo": 21,
-        "content": "Payload, Key Management",
-        "co": "4",
-        "sessions": 2
-      }
-    ],
-    "Learning Resources": {
-      "textBooks": [
-        "John R. Vacca, \u201cComputer Forensics\u201d, Firewall Media, 2004",
-        "Chad Steel, \u201cWindows Forensics\u201d, Wiley India, 2006",
-        "Majid Yar, \u201cCybercrime and Society\u201d, Sage Publications, 2006",
-        "Robert M Slade, \u201cSoftware Forensics\u201d, Tata McGraw Hill, 2004"
-      ],
-      "referenceLinks": []
-    },
-    "internalAssessmentData": {
-      "components": {
-        "component1": {
-          "component": "",
-          "duration": "",
-          "weightage": "",
-          "evaluationWeek": "",
-          "remarks": ""
-        }
-      }
-    },
-    "copoMappingData": {
-      "courseOutcomes": {
-        "CO1": {
-          "description": "Understand a brief overview of Computer Forensics Fundamentals.",
-          "bullets": []
-        },
-        "CO2": {
-          "description": "Identify the features of Data Recovery.",
-          "bullets": []
-        },
-        "CO3": {
-          "description": "Understanding of Reconstructing Past Events.",
-          "bullets": []
-        },
-        "CO4": {
-          "description": "Work with cyber forensics tools.",
-          "bullets": []
-        }
-      },
-      "mappingData": {
-        "CO1": {
-          "CO/PO": "",
-          "PO1": "3",
-          "PO2": "2",
-          "PO3": "2",
-          "PO4": "2",
-          "PO5": "2",
-          "PO6": "0",
-          "PO7": "0",
-          "PO8": "0",
-          "PO9": "0",
-          "PO10": "0",
-          "PO11": "0",
-          "PO12": "0",
-          "PSO1": "0",
-          "PSO2": "0",
-          "PSO3": "0",
-          "PSO4": "0"
-        },
-        "CO2": {
-          "CO/PO": "",
-          "PO1": "0",
-          "PO2": "3",
-          "PO3": "0",
-          "PO4": "0",
-          "PO5": "0",
-          "PO6": "0",
-          "PO7": "0",
-          "PO8": "",
-          "PO9": "",
-          "PO10": "",
-          "PO11": "",
-          "PO12": "",
-          "PSO1": "0",
-          "PSO2": "0",
-          "PSO3": "",
-          "PSO4": ""
-        },
-        "CO3": {
-          "CO/PO": "",
-          "PO1": "0",
-          "PO2": "0",
-          "PO3": "3",
-          "PO4": "3",
-          "PO5": "0",
-          "PO6": "0",
-          "PO7": "0",
-          "PO8": "",
-          "PO9": "",
-          "PO10": "",
-          "PO11": "",
-          "PO12": "",
-          "PSO1": "0",
-          "PSO2": "0",
-          "PSO3": "",
-          "PSO4": ""
-        },
-        "CO4": {
-          "CO/PO": "",
-          "PO1": "0",
-          "PO2": "0",
-          "PO3": "0",
-          "PO4": "3",
-          "PO5": "0",
-          "PO6": "0",
-          "PO7": "0",
-          "PO8": "",
-          "PO9": "",
-          "PO10": "",
-          "PO11": "",
-          "PO12": "",
-          "PSO1": "0",
-          "PSO2": "0",
-          "PSO3": "",
-          "PSO4": ""
-        }
-      }
-    },
-    "weeklyTimetableData": {
-      "Monday": {
-        "9:15-10:10": false,
-        "10:15-11:10": false,
-        "11:15-12:10": false,
-        "12:15-13:10": false,
-        "13:15-14:10": false,
-        "14:15-15:10": false,
-        "15:15-16:10": false,
-        "16:15-17:10": false,
-        "17:15-18:10": false
-      },
-      "Tuesday": {
-        "9:15-10:10": false,
-        "10:15-11:10": false,
-        "11:15-12:10": false,
-        "12:15-13:10": false,
-        "13:15-14:10": false,
-        "14:15-15:10": false,
-        "15:15-16:10": false,
-        "16:15-17:10": false,
-        "17:15-18:10": false
-      },
-      "Wednesday": {
-        "9:15-10:10": false,
-        "10:15-11:10": false,
-        "11:15-12:10": false,
-        "12:15-13:10": false,
-        "13:15-14:10": false,
-        "14:15-15:10": false,
-        "15:15-16:10": false,
-        "16:15-17:10": false,
-        "17:15-18:10": false
-      },
-      "Thursday": {
-        "9:15-10:10": false,
-        "10:15-11:10": false,
-        "11:15-12:10": false,
-        "12:15-13:10": false,
-        "13:15-14:10": false,
-        "14:15-15:10": false,
-        "15:15-16:10": false,
-        "16:15-17:10": false,
-        "17:15-18:10": false
-      },
-      "Friday": {
-        "9:15-10:10": false,
-        "10:15-11:10": false,
-        "11:15-12:10": false,
-        "12:15-13:10": false,
-        "13:15-14:10": false,
-        "14:15-15:10": false,
-        "15:15-16:10": false,
-        "16:15-17:10": false,
-        "17:15-18:10": false
-      }
-    },
-    "actionsForWeakStudentsData": [
-      ""
-    ],
-    "last_modified": "07:57 PM, 22/03/2025"
+    "last_modified": "2:26 pm, 23 Mar 2025"
   }
 ]

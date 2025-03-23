@@ -143,6 +143,7 @@ const FeedbackForm = (props) => {
   const [studentData, setStudentData] = useState([]);
   const handleStudentDataSave = (data) => {
     setStudentData(data);
+    setSelectedAssessments([]);
   };
 
   const [feedbackData, setFeedbackData] = useState({
