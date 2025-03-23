@@ -25,13 +25,14 @@ import CourseCodeInput from "./CourseCodeInput";
 import AssessmentSelection from "./AssessmentSelection";
 import InstructionsCard from "./InstructionsCard";
 import ExcelToJson from "./ExcelToJson";
+import StudentCOAchievement from './StudentCOAchievement';
 
 const FeedbackForm = (props) => {
   const token = localStorage.getItem("token");
 
   let num = props.num;
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const [coursecode, setCourseCode] = useState("");
   const [coursetitle, setCourseTitle] = useState("");
   const [module, setModule] = useState("");
@@ -337,9 +338,8 @@ const FeedbackForm = (props) => {
     return (
       <div className="relative w-full">
         <div
-          className={`flex items-center border ${
-            value ? "border-[#FFB255]" : "border-gray-300"
-          } rounded-md overflow-hidden`}
+          className={`flex items-center border ${value ? "border-[#FFB255]" : "border-gray-300"
+            } rounded-md overflow-hidden`}
           onClick={() => setIsOpen(!isOpen)}
         >
           <div className="p-2 flex-grow cursor-pointer flex items-center justify-between">
@@ -379,11 +379,10 @@ const FeedbackForm = (props) => {
                 filteredOptions.map(([programValue, label]) => (
                   <div
                     key={programValue}
-                    className={`p-3 cursor-pointer flex items-center justify-between ${
-                      parseInt(programValue) === value
-                        ? "bg-[#FFB255] bg-opacity-20 border-l-4 border-[#FFB255] text-[#FFB255] font-medium"
-                        : "hover:bg-gray-100"
-                    }`}
+                    className={`p-3 cursor-pointer flex items-center justify-between ${parseInt(programValue) === value
+                      ? "bg-[#FFB255] bg-opacity-20 border-l-4 border-[#FFB255] text-[#FFB255] font-medium"
+                      : "hover:bg-gray-100"
+                      }`}
                     onClick={() => {
                       onChange(parseInt(programValue));
                       setIsOpen(false);
@@ -542,15 +541,14 @@ const FeedbackForm = (props) => {
           )}
           <button
             onClick={postData}
-            className={`relative overflow-hidden transition-all duration-300 text-white font-semibold rounded-lg px-8 py-3.5 ${
-              isWeightageValid &&
+            className={`relative overflow-hidden transition-all duration-300 text-white font-semibold rounded-lg px-8 py-3.5 ${isWeightageValid &&
               validateCriteria() &&
               validateTargetAttainment() &&
               selectedProgram !== 0 &&
               isCourseCodeValid
-                ? "bg-[#FFB255] hover:bg-[#f5a543] shadow-md hover:shadow-lg transform hover:-translate-y-1"
-                : "bg-gray-400 cursor-not-allowed opacity-75"
-            }`}
+              ? "bg-[#FFB255] hover:bg-[#f5a543] shadow-md hover:shadow-lg transform hover:-translate-y-1"
+              : "bg-gray-400 cursor-not-allowed opacity-75"
+              }`}
             disabled={
               !isWeightageValid ||
               !validateCriteria() ||
@@ -560,15 +558,14 @@ const FeedbackForm = (props) => {
             }
           >
             <span
-              className={`absolute inset-0 h-full w-full bg-white opacity-10 ${
-                isWeightageValid &&
+              className={`absolute inset-0 h-full w-full bg-white opacity-10 ${isWeightageValid &&
                 validateCriteria() &&
                 validateTargetAttainment() &&
                 selectedProgram !== 0 &&
                 isCourseCodeValid
-                  ? "animate-pulse-slow"
-                  : ""
-              }`}
+                ? "animate-pulse-slow"
+                : ""
+                }`}
             ></span>
             <div className="flex items-center gap-2">
               <span className="relative z-10">Submit Form</span>
@@ -598,9 +595,8 @@ const FeedbackForm = (props) => {
 
         <div className="grid grid-cols-2 gap-4">
           {/* Program Section */}
-          <div className={`bg-white p-6 rounded-lg shadow-sm border ${
-            selectedProgram === 0 ? "border-red-600" : "border-gray-100"
-          }`}>
+          <div className={`bg-white p-6 rounded-lg shadow-sm border ${selectedProgram === 0 ? "border-red-600" : "border-gray-100"
+            }`}>
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
                 1
@@ -615,9 +611,8 @@ const FeedbackForm = (props) => {
           </div>
 
           {/* Course Code Section */}
-          <div className={`bg-white p-6 rounded-lg shadow-sm border ${
-            !isCourseCodeValid ? "border-red-600" : "border-gray-100"
-          }`}>
+          <div className={`bg-white p-6 rounded-lg shadow-sm border ${!isCourseCodeValid ? "border-red-600" : "border-gray-100"
+            }`}>
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
                 2
@@ -736,9 +731,8 @@ const FeedbackForm = (props) => {
         <ExcelToJson onSave={handleStudentDataSave} initialData={studentData} />
 
         {/* CO Assessment weightage Section */}
-        <div className={`bg-white p-6 rounded-xl shadow-sm border ${
-          !isWeightageValid ? "border-red-600" : "border-gray-100"
-        } mt-8`}>
+        <div className={`bg-white p-6 rounded-xl shadow-sm border ${!isWeightageValid ? "border-red-600" : "border-gray-100"
+          } mt-8`}>
           <COAssessmentWeightage
             copoMappingData={copoMappingData}
             studentData={studentData}
@@ -747,6 +741,16 @@ const FeedbackForm = (props) => {
               setCoWeightages(weightages);
             }}
             onValidationChange={(isValid) => setIsWeightageValid(isValid)}
+          />
+        </div>
+
+        {/* CO Attainment Criteria Section with error border if invalid */}
+        <div className={`bg-white p-6 rounded-lg shadow-sm border ${!validateCriteria() ? "border-red-600" : "border-gray-100"
+          }`}>
+          <COAttainmentCriteria
+            copoMappingData={copoMappingData}
+            initialCriteria={coAttainmentCriteria}
+            onSave={handleCoAttainmentCriteriaSave}
           />
         </div>
 
@@ -766,21 +770,16 @@ const FeedbackForm = (props) => {
           />
         </div>
 
-        {/* CO Attainment Criteria Section with error border if invalid */}
-        <div className={`bg-white p-6 rounded-lg shadow-sm border ${
-          !validateCriteria() ? "border-red-600" : "border-gray-100"
-        }`}>
-          <COAttainmentCriteria
-            copoMappingData={copoMappingData}
-            initialCriteria={coAttainmentCriteria}
-            onSave={handleCoAttainmentCriteriaSave}
-          />
-        </div>
+        <StudentCOAchievement
+          selectedAssessments={selectedAssessments}
+          coWeightages={coWeightages}
+          studentData={studentData}
+          coAttainmentCriteria={coAttainmentCriteria}
+        />
 
         {/* Target Attainment Section with error border if invalid */}
-        <div className={`bg-white p-6 rounded-lg shadow-sm border ${
-          !validateTargetAttainment() ? "border-red-600" : "border-gray-100"
-        }`}>
+        <div className={`bg-white p-6 rounded-lg shadow-sm border ${!validateTargetAttainment() ? "border-red-600" : "border-gray-100"
+          }`}>
           <TargetAttainment
             copoMappingData={copoMappingData}
             initialCriteria={targetAttainment}
