@@ -115,7 +115,15 @@ const FeedbackForm = (props) => {
 
   const handleCoAttainmentCriteriaSave = (criteria) => {
     setCoAttainmentCriteria(criteria);
+    setPar_sem_slowLearner([[],[]]);
+    setLearnerCategories([[],[]]);
   };
+
+  const handleAssessmentSelectionChange = (selected) =>{
+    setSelectedAssessments(selected);
+    setPar_sem_slowLearner([[],[]]);
+  }
+
   const handleTargetAttainmentSave = (criteria) => {
     setTargetAttainment(criteria);
   };
@@ -151,6 +159,8 @@ const FeedbackForm = (props) => {
   const handleStudentDataSave = (data) => {
     setStudentData(data);
     setSelectedAssessments([]);
+    setPar_sem_slowLearner([[],[]]);
+    setLearnerCategories([[],[]]);
   };
 
   const [feedbackData, setFeedbackData] = useState({
@@ -505,6 +515,7 @@ const FeedbackForm = (props) => {
           }
         );
         console.log("Form submitted successfully:", response.data);
+        window.location.reload();
       } catch (error) {
         console.error("Error submitting form:", error);
         alert("An error occurred while submitting the form.");
@@ -772,7 +783,7 @@ const FeedbackForm = (props) => {
           <AssessmentSelection
             studentData={studentData}
             selectedAssessments={selectedAssessments}
-            onChange={(selected) => setSelectedAssessments(selected)}
+            onChange={handleAssessmentSelectionChange}
           />
         </div>
 

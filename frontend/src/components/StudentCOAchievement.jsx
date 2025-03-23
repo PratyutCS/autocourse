@@ -11,10 +11,10 @@ const StudentCOAchievement = ({
 }) => {
   // State for complete student performance calculated from the assessments.
   const [studentPerformance, setStudentPerformance] = useState([]);
-  // State for system-identified advanced and weak learners.
-  const [systemIdentified, setSystemIdentified] = useState({ advanced: [], weak: [] });
+  // State for system-identified advanced and slow learners.
+  const [systemIdentified, setSystemIdentified] = useState({ advanced: [], slow: [] });
   // Local state for the user's modifications to learner categories.
-  // Format: [advancedLearners, weakLearners]
+  // Format: [advancedLearners, slowLearners]
   const [localLearnerCategories, setLocalLearnerCategories] = useState([[], []]);
   // States for removal confirmation popup.
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -101,14 +101,14 @@ const StudentCOAchievement = ({
     const sysAdvanced = performanceData.filter(student =>
       Object.values(student.coScores).every(score => score === 3)
     );
-    const sysWeak = performanceData.filter(student =>
+    const sysSlow = performanceData.filter(student =>
       Object.values(student.coScores).every(score => score === 1)
     );
-    setSystemIdentified({ advanced: sysAdvanced, weak: sysWeak });
+    setSystemIdentified({ advanced: sysAdvanced, slow: sysSlow });
   };
 
   useEffect(() => {
-    if (coWeightages && studentData && coAttainmentCriteria && selectedAssessments) {
+    if (coWeightages && studentData && coAttainmentCriteria && selectedAssessments && selectedAssessments.length > 0) {
       calculateAttainment();
     }
   }, [coWeightages, studentData, coAttainmentCriteria, selectedAssessments]);
@@ -117,7 +117,7 @@ const StudentCOAchievement = ({
   const getStudentType = (student) => {
     const coScores = Object.values(student.coScores);
     if (coScores.every(score => score === 3)) return "Advanced";
-    if (coScores.every(score => score === 1)) return "Weak";
+    if (coScores.every(score => score === 1)) return "Slow";
     return "Regular";
   };
 
@@ -134,7 +134,7 @@ const StudentCOAchievement = ({
       let updatedCategories = [...localLearnerCategories];
       if (categoryType === "Advanced") {
         updatedCategories[0] = updatedCategories[0].filter(s => s.id !== student.id);
-      } else if (categoryType === "Weak") {
+      } else if (categoryType === "Slow") {
         updatedCategories[1] = updatedCategories[1].filter(s => s.id !== student.id);
       }
       setLocalLearnerCategories(updatedCategories);
@@ -156,7 +156,7 @@ const StudentCOAchievement = ({
       if (!updatedCategories[0].some(s => s.id === student.id)) {
         updatedCategories[0] = [...updatedCategories[0], student];
       }
-    } else if (categoryType === "Weak") {
+    } else if (categoryType === "Slow") {
       if (!updatedCategories[1].some(s => s.id === student.id)) {
         updatedCategories[1] = [...updatedCategories[1], student];
       }
@@ -169,7 +169,7 @@ const StudentCOAchievement = ({
   const unmatchedAdvanced = systemIdentified.advanced.filter(
     student => !localLearnerCategories[0].some(s => s.id === student.id)
   );
-  const unmatchedWeak = systemIdentified.weak.filter(
+  const unmatchedSlow = systemIdentified.slow.filter(
     student => !localLearnerCategories[1].some(s => s.id === student.id)
   );
 
@@ -243,36 +243,46 @@ const StudentCOAchievement = ({
 
   return (
     <div className="rounded-lg p-4 shadow-md border border-black border-opacity-10">
-      <h3 className="text-lg font-semibold text-purple-700 mb-4 border-b pb-2">Advanced &amp; Weak Student Achievement</h3>
+      <h3 className="text-lg font-semibold text-purple-700 mb-4 border-b pb-2">
+        Advanced &amp; Slow learner identification for partial Semester
+      </h3>
       
-      {/* Display System Identified Learners as Learner Categories */}
-      <div className="mb-8">
-        <h4 className="text-md font-medium mb-2">Advanced Learners</h4>
-        {localLearnerCategories[0].length > 0 ? 
-          renderTable(localLearnerCategories[0], "Advanced", "local")
-          : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">No Advanced Learners</div>}
-        
-        <h4 className="text-md font-medium mb-2">Weak Learners</h4>
-        {localLearnerCategories[1].length > 0 ? 
-          renderTable(localLearnerCategories[1], "Weak", "local")
-          : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">No Weak Learners</div>}
-      </div>
+      {(!selectedAssessments || selectedAssessments.length === 0) ? (
+        <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">
+          Please select the assessment first.
+        </div>
+      ) : (
+        <>
+          {/* Display System Identified Learners as Learner Categories */}
+          <div className="mb-8">
+            <h4 className="text-md font-medium mb-2">Advanced Learners</h4>
+            {localLearnerCategories[0].length > 0 ? 
+              renderTable(localLearnerCategories[0], "Advanced", "local")
+              : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">No Advanced Learners</div>}
+            
+            <h4 className="text-md font-medium mb-2">Slow Learners</h4>
+            {localLearnerCategories[1].length > 0 ? 
+              renderTable(localLearnerCategories[1], "Slow", "local")
+              : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">No Slow Learners</div>}
+          </div>
 
-      {/* Display Unmatched Learners for addition */}
-      <div className="mb-8">
-        <h4 className="text-md font-medium mb-2">Unmatched Advanced Learners</h4>
-        {unmatchedAdvanced.length > 0 ? 
-          renderTable(unmatchedAdvanced, "Advanced", "unmatched")
-          : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">
-              All Advanced Learners are added
-            </div>}
-        <h4 className="text-md font-medium mb-2">Unmatched Weak Learners</h4>
-        {unmatchedWeak.length > 0 ? 
-          renderTable(unmatchedWeak, "Weak", "unmatched")
-          : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">
-              All Weak Learners are added
-            </div>}
-      </div>
+          {/* Display Unmatched Learners for addition */}
+          <div className="mb-8">
+            <h4 className="text-md font-medium mb-2">Unmatched Advanced Learners</h4>
+            {unmatchedAdvanced.length > 0 ? 
+              renderTable(unmatchedAdvanced, "Advanced", "unmatched")
+              : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">
+                  All Advanced Learners are added
+                </div>}
+            <h4 className="text-md font-medium mb-2">Unmatched Slow Learners</h4>
+            {unmatchedSlow.length > 0 ? 
+              renderTable(unmatchedSlow, "Slow", "unmatched")
+              : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">
+                  All Slow Learners are added
+                </div>}
+          </div>
+        </>
+      )}
       
       {/* Confirmation Popup */}
       {showConfirmation && studentToRemove && (
