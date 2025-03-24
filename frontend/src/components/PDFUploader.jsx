@@ -225,6 +225,13 @@ const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess, initialFileName })
         </div>
       )}
 
+      {/* Permanent message added: show if a file is currently uploaded */}
+      {currentFileName && (
+        <div className="mt-2 p-3 bg-blue-50 rounded-lg flex items-center gap-2 text-blue-600">
+          <span>To upload a new pdf, please delete the previous one.</span>
+        </div>
+      )}
+
       {/* Dropzone Area - Only show if no file is currently uploaded */}
       {!currentFileName && (
         <div

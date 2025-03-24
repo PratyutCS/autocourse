@@ -10,7 +10,7 @@ const AdvanceAndWeakStudentIdentification = ({
 }) => {
   // State that holds the complete student performance data from calculations.
   const [studentPerformance, setStudentPerformance] = useState([]);
-  // State that holds system-identified advanced and weak learners separately.
+  // State that holds system-identified advanced and Low Performers separately.
   const [systemIdentified, setSystemIdentified] = useState({ advanced: [], weak: [] });
   // State for the user's modified learnerCategories.
   // Expected to be an array of arrays: [advancedLearners, weakLearners]
@@ -331,16 +331,16 @@ const AdvanceAndWeakStudentIdentification = ({
       <div className="mb-8">
         <h3 className="text-lg font-semibold mb-4">Learner Categories</h3>
         <div>
-          <h4 className="text-md font-medium mb-2">Advanced Learners</h4>
+          <h4 className="text-md font-medium mb-2">Advanced performers</h4>
           {localLearnerCategories[0].length > 0 ? 
             renderTable(localLearnerCategories[0], "Advanced", "local")
-            : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">No Advanced Learners</div>}
+            : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">No Advanced performers</div>}
         </div>
         <div>
-          <h4 className="text-md font-medium mb-2">Weak Learners</h4>
+          <h4 className="text-md font-medium mb-2">Low Performers</h4>
           {localLearnerCategories[1].length > 0 ? 
             renderTable(localLearnerCategories[1], "Weak", "local")
-            : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">No Weak Learners</div>}
+            : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">No Low Performers</div>}
         </div>
       </div>
 
@@ -348,19 +348,19 @@ const AdvanceAndWeakStudentIdentification = ({
       <div className="mb-8">
         <h3 className="text-lg font-semibold mb-4">Unmatched Learners</h3>
         <div>
-          <h4 className="text-md font-medium mb-2">Unmatched Advanced Learners</h4>
+          <h4 className="text-md font-medium mb-2">Unmatched Advanced performers</h4>
           {unmatchedAdvanced.length > 0 ? 
             renderTable(unmatchedAdvanced, "Advanced", "unmatched")
             : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">
-                All Advanced Learners are in the Learner Categories
+                All Advanced performers are in the Learner Categories
               </div>}
         </div>
         <div>
-          <h4 className="text-md font-medium mb-2">Unmatched Weak Learners</h4>
+          <h4 className="text-md font-medium mb-2">Unmatched Low Performers</h4>
           {unmatchedWeak.length > 0 ? 
             renderTable(unmatchedWeak, "Weak", "unmatched")
             : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">
-                All Weak Learners are in the Learner Categories
+                All Low Performers are in the Learner Categories
               </div>}
         </div>
       </div>
@@ -372,14 +372,14 @@ const AdvanceAndWeakStudentIdentification = ({
           <div className="flex items-center p-3 bg-white rounded-lg border border-gray-200">
             <span className="inline-block w-8 h-8 mr-3 bg-blue-100 text-blue-700 border border-blue-300 rounded-full flex items-center justify-center font-medium">3</span>
             <div>
-              <span className="text-blue-700 font-medium">Advanced Learner</span>
+              <span className="text-blue-700 font-medium">Advanced performers</span>
               <p className="text-xs text-gray-500 mt-1">Student has achieved full attainment in all COs</p>
             </div>
           </div>
           <div className="flex items-center p-3 bg-white rounded-lg border border-gray-200">
             <span className="inline-block w-8 h-8 mr-3 bg-orange-100 text-orange-700 border border-orange-300 rounded-full flex items-center justify-center font-medium">1</span>
             <div>
-              <span className="text-orange-700 font-medium">Weak Learner</span>
+              <span className="text-orange-700 font-medium">Low Performer</span>
               <p className="text-xs text-gray-500 mt-1">Student has not achieved minimum attainment in any CO</p>
             </div>
           </div>

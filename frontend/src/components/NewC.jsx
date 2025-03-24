@@ -248,7 +248,7 @@ export default function NewC(props) {
               className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FFB255] hover:bg-[#ffa133] text-white rounded-md transition-all duration-200 font-medium shadow-sm hover:shadow"
             >
               <IoEye className="w-4 h-4" />
-              <span>View Document</span>
+              <span>Edit Document</span>
             </button>
             
             <button

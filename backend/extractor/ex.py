@@ -575,7 +575,7 @@ Requirements:
 
 -4. textBooks objects must have: title, author, publisher, edition, year, isbn
 
--5. referenceLinks objects must have: title, authors, journal, volume, year, doi
+-5. referenceLinks objects must have: title, authors, journal, volume, year, doi anything related to links given in the learning resources section.
 
 -6. Preserve all existing template fields even if not mentioned in the text
 
@@ -614,8 +614,8 @@ Requirements:
               ["CO/PO", "PO1", "PO2", "PO3", "PO4", "PO5", "PO6"]
           * For any other program, default to Program 1's structure.
       - Extract the exact mapping values from the table.
-      - All mapping values must be numerical and must be between 0 and 3 (inclusive). If a mapping value falls outside this range or is non-numerical, treat it as invalid and default to an empty string "".
-      - Preserve empty cells as empty strings "".
+      - All mapping values must be numerical and must be between 0 and 3 (inclusive). If a mapping value falls outside this range or is non-numerical, treat it as invalid and default to this string "0".
+      - Preserve empty cells as empty strings "0".
       - Ensure the mapping matches the course outcomes exactly as present in the document.
       - The Program field value must match the structure used in the mappingData.
 
@@ -656,7 +656,7 @@ Additional Extraction and Validation Restrictions:
     try:
         # Use the OpenAI client to create a chat completion.
         completion = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o",
             messages=[{"role": "user", "content": prompt}]
         )
 

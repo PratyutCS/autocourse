@@ -11,7 +11,7 @@ const StudentCOAchievement = ({
 }) => {
   // State for complete student performance calculated from the assessments.
   const [studentPerformance, setStudentPerformance] = useState([]);
-  // State for system-identified advanced and slow learners.
+  // State for system-identified advanced and Low performers.
   const [systemIdentified, setSystemIdentified] = useState({ advanced: [], slow: [] });
   // Local state for the user's modifications to learner categories.
   // Format: [advancedLearners, slowLearners]
@@ -244,7 +244,7 @@ const StudentCOAchievement = ({
   return (
     <div className="rounded-lg p-4 shadow-md border border-black border-opacity-10">
       <h3 className="text-lg font-semibold text-purple-700 mb-4 border-b pb-2">
-        Advanced &amp; Slow learner identification for partial Semester
+        Advanced &amp; Low performer identification for partial Semester
       </h3>
       
       {(!selectedAssessments || selectedAssessments.length === 0) ? (
@@ -255,30 +255,30 @@ const StudentCOAchievement = ({
         <>
           {/* Display System Identified Learners as Learner Categories */}
           <div className="mb-8">
-            <h4 className="text-md font-medium mb-2">Advanced Learners</h4>
+            <h4 className="text-md font-medium mb-2">Advanced performers</h4>
             {localLearnerCategories[0].length > 0 ? 
               renderTable(localLearnerCategories[0], "Advanced", "local")
-              : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">No Advanced Learners</div>}
+              : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">No Advanced performers</div>}
             
-            <h4 className="text-md font-medium mb-2">Slow Learners</h4>
+            <h4 className="text-md font-medium mb-2">Low performers</h4>
             {localLearnerCategories[1].length > 0 ? 
               renderTable(localLearnerCategories[1], "Slow", "local")
-              : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">No Slow Learners</div>}
+              : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">No Low performers</div>}
           </div>
 
           {/* Display Unmatched Learners for addition */}
           <div className="mb-8">
-            <h4 className="text-md font-medium mb-2">Unmatched Advanced Learners</h4>
+            <h4 className="text-md font-medium mb-2">Unmatched Advanced performers</h4>
             {unmatchedAdvanced.length > 0 ? 
               renderTable(unmatchedAdvanced, "Advanced", "unmatched")
               : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">
-                  All Advanced Learners are added
+                  All Advanced performers are added
                 </div>}
-            <h4 className="text-md font-medium mb-2">Unmatched Slow Learners</h4>
+            <h4 className="text-md font-medium mb-2">Unmatched Low performers</h4>
             {unmatchedSlow.length > 0 ? 
               renderTable(unmatchedSlow, "Slow", "unmatched")
               : <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200 text-gray-600">
-                  All Slow Learners are added
+                  All Low performers are added
                 </div>}
           </div>
         </>

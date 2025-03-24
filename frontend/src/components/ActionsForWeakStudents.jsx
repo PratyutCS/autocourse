@@ -24,12 +24,12 @@ const ActionsForWeakStudents = ({ onSave, initialData }) => {
           19
         </div>
         <h2 className="text-xl font-semibold">
-          Actions Taken for Weak Students
+          Actions Taken for Slow Performers
         </h2>
       </div>
       <div className="mt-4">
         <AddField
-          label="Action Taken for Weak Students"
+          label="Action Taken for Slow Performers"
           initialData={actions}
           onChange={handleActionsChange}
         />

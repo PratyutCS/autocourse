@@ -63,16 +63,16 @@ const COAssessmentWeightage = ({
     courseOutcomes.forEach(co => {
       newWeightages[co] = {};
       newInputValues[co] = {};
-      
+
       assessments.forEach(assessment => {
         const existingValue = weightages[co]?.[assessment.name];
         const initialValue = initialWeightages?.[co]?.[assessment.name];
 
-        const numericValue = 
+        const numericValue =
           existingValue !== undefined ? existingValue :
-          initialValue !== undefined ? initialValue :
-          "0";
-          
+            initialValue !== undefined ? initialValue :
+              "0";
+
         newWeightages[co][assessment.name] = numericValue;
         newInputValues[co][assessment.name] = numericValue;
       });
@@ -95,11 +95,11 @@ const COAssessmentWeightage = ({
       }
     };
     setInputValues(newInputValues);
-    
+
     // If the value is a valid number, update the weightages too
     if (value !== '' && !isNaN(Number(value))) {
       const numValue = Math.min(100, Math.max(0, Number(value)));
-      
+
       const newWeightages = {
         ...weightages,
         [co]: {
@@ -107,7 +107,7 @@ const COAssessmentWeightage = ({
           [assessmentName]: numValue.toString()
         }
       };
-      
+
       setWeightages(newWeightages);
       onChange?.(newWeightages);
     } else if (value === '') {
@@ -119,15 +119,15 @@ const COAssessmentWeightage = ({
           [assessmentName]: "0"
         }
       };
-      
+
       setWeightages(newWeightages);
       onChange?.(newWeightages);
     }
   };
-  
+
   const handleBlur = (co, assessmentName, value) => {
     const numValue = value === '' ? 0 : Math.min(100, Math.max(0, Number(value) || 0));
-    
+
     // Update both input values and weightages with the validated number
     const newInputValues = {
       ...inputValues,
@@ -136,7 +136,7 @@ const COAssessmentWeightage = ({
         [assessmentName]: numValue.toString()
       }
     };
-    
+
     const newWeightages = {
       ...weightages,
       [co]: {
@@ -144,7 +144,7 @@ const COAssessmentWeightage = ({
         [assessmentName]: numValue.toString()
       }
     };
-    
+
     setInputValues(newInputValues);
     setWeightages(newWeightages);
     onChange?.(newWeightages);
@@ -157,12 +157,20 @@ const COAssessmentWeightage = ({
     }, 0);
   };
 
+  // Updated getRowTotal:
+  // Instead of showing the raw sum, we divide by (100 * number of assessments)
+  // to normalize it, then multiply by 100 to show as a percentage.
+  // This is equivalent to taking the average percentage for that row.
   const getRowTotal = (co) => {
-    return Object.values(weightages[co] || {}).reduce((total, value) => {
-      return total + (Number(value) || 0);
+    const total = Object.values(weightages[co] || {}).reduce((sum, value) => {
+      return sum + (Number(value) || 0);
     }, 0);
+    const assessmentsCount = getAssessmentComponents().length;
+    // Calculate normalized percentage: (total / (100 * assessmentsCount)) * 100 === total / assessmentsCount
+    const normalized = total / assessmentsCount;
+    return normalized.toFixed(2);
   };
-  
+
   const getColumnClass = (assessmentName) => {
     const total = getColumnTotal(assessmentName);
     return total === 100 ? 'text-green-600 font-medium' : 'text-red-600 font-medium';
@@ -223,7 +231,7 @@ const COAssessmentWeightage = ({
         </div>
       </div>
 
-      <div className="overflow-x-auto border border-black/10 rounded-lg  ">
+      <div className="overflow-x-auto border border-black/10 rounded-lg">
         <table className="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
           <thead>
             <tr className="bg-gray-50">
@@ -244,7 +252,7 @@ const COAssessmentWeightage = ({
                 </th>
               ))}
               <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
-                Total
+                Weightages
               </th>
             </tr>
           </thead>
@@ -267,19 +275,20 @@ const COAssessmentWeightage = ({
                         onFocus={() => setFocusedField(`${co}_${assessment.name}`)}
                         onBlur={(e) => handleBlur(co, assessment.name, e.target.value)}
                         className={`w-20 px-3 py-2 border rounded-md transition-all duration-200
-                          ${focusedField === `${co}_${assessment.name}` 
-                            ? 'border-[#FFB255] ring-2 ring-[#FFB255] ring-opacity-20' 
+                          ${focusedField === `${co}_${assessment.name}`
+                            ? 'border-[#FFB255] ring-2 ring-[#FFB255] ring-opacity-20'
                             : inputValues[co]?.[assessment.name] !== initialWeightages?.[co]?.[assessment.name]
-                                ? 'border-amber-300 bg-amber-50 hover:border-amber-400'
-                                : 'border-gray-300 hover:border-gray-400'
+                              ? 'border-amber-300 bg-amber-50 hover:border-amber-400'
+                              : 'border-gray-300 hover:border-gray-400'
                           }`}
                       />
-                      
                     </div>
                   </td>
                 ))}
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-700">{getRowTotal(co)}%</div>
+                  <div className="text-sm font-medium text-gray-700">
+                    {getRowTotal(co)}%
+                  </div>
                 </td>
               </tr>
             ))}
@@ -291,8 +300,8 @@ const COAssessmentWeightage = ({
               {assessments.map((assessment) => {
                 const total = getColumnTotal(assessment.name);
                 return (
-                  <td 
-                    key={`total_${assessment.name}`} 
+                  <td
+                    key={`total_${assessment.name}`}
                     className="px-6 py-4 whitespace-nowrap border-r border-gray-200"
                   >
                     <div className={`text-sm ${getColumnClass(assessment.name)}`}>
@@ -313,7 +322,7 @@ const COAssessmentWeightage = ({
         <div className="mt-4 p-4 bg-red-50 border border-red-100 rounded-lg space-y-2">
           <div className="font-medium text-red-800 flex items-center">
             <AlertCircle className="w-5 h-5 mr-2" />
-            Validation Errors
+            Validation Error(s)
           </div>
           {validationErrors.map((error, index) => (
             <p key={index} className="text-sm text-red-700 ml-7">
@@ -322,7 +331,7 @@ const COAssessmentWeightage = ({
           ))}
         </div>
       )}
-      
+
       <div className="mt-4 text-xs text-gray-500">
         Note: Each assessment column should sum to exactly 100%.
       </div>

@@ -4,23 +4,23 @@ const MBAWeeklyTimetable = ({ onChange, initialData }) => {
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   const hours = Array.from({ length: 12 }, (_, i) => i + 1); // 1-12
   const durations = [1, 1.5, 2, 2.5, 3, 3.5, 4]; // Common class durations in hours
-  
+
   // Initialize timetable entries state
   const [entries, setEntries] = useState([]);
-  
+
   // Popup state
   const [popup, setPopup] = useState({
     show: false,
     message: ''
   });
-  
+
   // Load initial data if provided
   useEffect(() => {
     if (initialData && initialData.entries) {
       setEntries(initialData.entries);
     }
   }, [initialData]);
-  
+
   // Helper: Convert an entry's time to minutes since midnight (using 24-hour format)
   const getTimeRange = (entry) => {
     let hour24;
@@ -53,7 +53,6 @@ const MBAWeeklyTimetable = ({ onChange, initialData }) => {
       show: true,
       message
     });
-    
     // Auto-hide after 3 seconds
     setTimeout(() => {
       setPopup({
@@ -63,22 +62,38 @@ const MBAWeeklyTimetable = ({ onChange, initialData }) => {
     }, 3000);
   };
 
-  // Add a new empty entry (after checking for conflicts)
+  // Add a new entry, but if the default timeslot is occupied then find an alternative
   const addEntry = () => {
-    const newEntry = {
-      id: Date.now(), // Unique identifier
+    let newEntry = {
+      id: Date.now(),
       day: days[0],
       hour: 9,
       period: 'AM',
       duration: 1
     };
 
-    // Prevent adding if new entry conflicts with an existing entry
+    // If the default timeslot conflicts, iterate through days, hours, and periods to find an open slot.
     if (hasConflict(newEntry, entries)) {
-      showPopup("Time slot conflicts with an existing class. Please choose a different time.");
-      return;
+      let found = false;
+      // Loop through days, then hours and periods
+      for (let d = 0; d < days.length && !found; d++) {
+        for (let h = 1; h <= 12 && !found; h++) {
+          for (let p of ['AM', 'PM']) {
+            const candidate = { ...newEntry, day: days[d], hour: h, period: p };
+            if (!hasConflict(candidate, entries)) {
+              newEntry = candidate;
+              found = true;
+              break;
+            }
+          }
+        }
+      }
+      if (!found) {
+        showPopup("No available time slot found for the new class.");
+        return;
+      }
     }
-    
+
     const updatedEntries = [...entries, newEntry];
     setEntries(updatedEntries);
     onChange?.({ entries: updatedEntries });
@@ -100,7 +115,7 @@ const MBAWeeklyTimetable = ({ onChange, initialData }) => {
       showPopup("Time slot conflicts with an existing class. Please choose a different time.");
       return;
     }
-    
+
     setEntries(candidateEntries);
     onChange?.({ entries: candidateEntries });
   };
@@ -131,7 +146,7 @@ const MBAWeeklyTimetable = ({ onChange, initialData }) => {
     setEntries(updatedEntries);
     onChange?.({ entries: updatedEntries });
   };
-  
+
   return (
     <div className="bg-white rounded-lg relative">
       {/* Custom Popup Component */}
@@ -165,7 +180,9 @@ const MBAWeeklyTimetable = ({ onChange, initialData }) => {
       )}
 
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-medium text-gray-800">MBA Weekly Schedule</h3>
+        <h3 className="text-lg font-medium text-gray-800">
+          MBA Weekly Schedule - <span className="text-[#FFB255] font-bold">Add timetable for 1 week only</span>
+        </h3>
         <button
           onClick={addEntry}
           className="bg-[#FFB255] hover:bg-[#f5a543] text-white px-4 py-2 rounded-md transition-colors"
@@ -173,7 +190,7 @@ const MBAWeeklyTimetable = ({ onChange, initialData }) => {
           Add Class
         </button>
       </div>
-      
+
       {entries.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
           <p>No classes scheduled. Click "Add Class" to create your timetable.</p>
@@ -181,8 +198,8 @@ const MBAWeeklyTimetable = ({ onChange, initialData }) => {
       ) : (
         <div className="space-y-4">
           {entries.map((entry) => (
-            <div 
-              key={entry.id} 
+            <div
+              key={entry.id}
               className="flex flex-wrap items-center gap-4 p-4 border border-gray-200 rounded-lg bg-gray-50"
             >
               {/* Day Selection */}
@@ -198,7 +215,7 @@ const MBAWeeklyTimetable = ({ onChange, initialData }) => {
                   ))}
                 </select>
               </div>
-              
+
               {/* Hour Selection */}
               <div className="min-w-[100px]">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Start Hour</label>
@@ -212,7 +229,7 @@ const MBAWeeklyTimetable = ({ onChange, initialData }) => {
                   ))}
                 </select>
               </div>
-              
+
               {/* AM/PM Selection */}
               <div className="min-w-[100px]">
                 <label className="block text-sm font-medium text-gray-700 mb-1">AM/PM</label>
@@ -220,28 +237,26 @@ const MBAWeeklyTimetable = ({ onChange, initialData }) => {
                   <button
                     type="button"
                     onClick={() => handleEntryChange(entry.id, 'period', 'AM')}
-                    className={`flex-1 px-3 py-2 text-sm font-medium ${
-                      entry.period === 'AM'
-                        ? 'bg-[#FFB255] text-white'
-                        : 'bg-white text-gray-700 border-gray-300 border'
-                    } rounded-l-md focus:outline-none transition-colors`}
+                    className={`flex-1 px-3 py-2 text-sm font-medium ${entry.period === 'AM'
+                      ? 'bg-[#FFB255] text-white'
+                      : 'bg-white text-gray-700 border-gray-300 border'
+                      } rounded-l-md focus:outline-none transition-colors`}
                   >
                     AM
                   </button>
                   <button
                     type="button"
                     onClick={() => handleEntryChange(entry.id, 'period', 'PM')}
-                    className={`flex-1 px-3 py-2 text-sm font-medium ${
-                      entry.period === 'PM'
-                        ? 'bg-[#FFB255] text-white'
-                        : 'bg-white text-gray-700 border-gray-300 border'
-                    } rounded-r-md focus:outline-none transition-colors`}
+                    className={`flex-1 px-3 py-2 text-sm font-medium ${entry.period === 'PM'
+                      ? 'bg-[#FFB255] text-white'
+                      : 'bg-white text-gray-700 border-gray-300 border'
+                      } rounded-r-md focus:outline-none transition-colors`}
                   >
                     PM
                   </button>
                 </div>
               </div>
-              
+
               {/* Duration Selection */}
               <div className="min-w-[150px]">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Duration (hours)</label>
@@ -255,15 +270,15 @@ const MBAWeeklyTimetable = ({ onChange, initialData }) => {
                   ))}
                 </select>
               </div>
-              
+
               {/* Time Summary */}
               <div className="flex-grow min-w-[180px]">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Class Time</label>
-                <div className="p-2 bg-white border border-gray-300 rounded-md text-gray-800">
+                <div className="p-2 bg-gray-200 border border-gray-300 rounded-md text-gray-500 select-none">
                   {entry.hour}:00 {entry.period} - {getEndTime(entry.hour, entry.period, entry.duration)}
                 </div>
               </div>
-              
+
               {/* Remove Button */}
               <div className="ml-auto">
                 <button
@@ -279,7 +294,7 @@ const MBAWeeklyTimetable = ({ onChange, initialData }) => {
           ))}
         </div>
       )}
-      
+
       {/* Weekly View Display */}
       {entries.length > 0 && (
         <div className="mt-8">
