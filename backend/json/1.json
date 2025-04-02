@@ -107,7 +107,7 @@
       },
       {
         "srNo": 17,
-        "content": "The Future – Arsenal",
+        "content": "The Future \u2013 Arsenal",
         "co": "4",
         "sessions": 2
       },
@@ -527,5 +527,206 @@
       "End Term(40)"
     ],
     "assignmentPDF": "1742849074370-654649931-Cyber Forensics.pdf"
+  },
+  {
+    "filename": "1743563085Seminar_Case Studies.pdf",
+    "done": 1,
+    "Program": 3,
+    "Session": "2024-25",
+    "course_code": "ABC1404",
+    "course_name": "Seminar/Case Studies",
+    "Module/Semester": "5th",
+    "course_description": "The main objective of this course is to introduce students to different data structures and illustrate their effective use in solving technical and logical problems. The course comprehensively explores different problem-solving techniques and skills. Proficiency in problem-solving skills is a fundamental expectation for any competent developer, as these concepts are commonly assessed by reputable companies during the screening process for software developer positions. The primary emphasis will be on achieving a deep understanding of data structures, their implementation, practical applications through problem-solving scenarios, exploring various programming paradigms, algorithm analysis, and the practical application of different data structures and algorithms. This course explores the fundamental workings of algorithms and data structures, which lie at its core essence.",
+    "Course Syllabus": [
+      {
+        "srNo": 1,
+        "content": "Linear Search, Maximum in an Array, Sorting(Selection, Bubble and Insertion), Binary search, Kadane's Algo-O(N), Merge two sorted arrays, Rotate Array anti clock wise by k times, Unique Number-1, and tell about bitwise operators, Basics of strings, String methods, String builder, Mutable and Immutable concepts, 2D Arrays: Wave Print, Spiral Print, and Transpose",
+        "co": "1",
+        "sessions": 1
+      },
+      {
+        "srNo": 2,
+        "content": "Recursion: Factorial, Fibonacci, isArraySorted, SumofArray, Print Numbers \u2013 1) Increasing Order 2) Decreasing Order, MergeSort, Subsequence, Rat in Maze, N_Stairs, Subset Sum",
+        "co": "2",
+        "sessions": 1
+      },
+      {
+        "srNo": 3,
+        "content": "Stack: stack implementation, Queue implementation, Linkedlist implementation(Add and Delete), Mid (Cycle detection hints), Reverse LinkedList, Merge two Sorted LinkedList, Intersection of two LinkedList, Binary Tree implementation and traversal of binary tree(PreOrder, InOrder and PostOrder), Diameter-O(N^2) and O(N) height, count number of node, Level-Order, Create Tree using Pre and Inorder, Create Tree using level-order, Binary Search Tree implementation, Addition and Deletion",
+        "co": "2",
+        "sessions": 1
+      },
+      {
+        "srNo": 4,
+        "content": "BST to LinkedList, Balanced binary Tree, Valid BST, priority queue Collections, Kth Smallest, Meeting Room-2, Merge k Sorted List, Map and Set Collections (HashMap TreeMap and LinkedHashMap), SubArray using Map related Question",
+        "co": "3",
+        "sessions": 1
+      },
+      {
+        "srNo": 5,
+        "content": "Dynamic Programming: Fib, min Steps to one, coin Changes, LCS, LIS, knapsack, Edit Distance, Graph basic, BFS, DFS, Dijkstra, MST(Prims), bipartite",
+        "co": "1",
+        "sessions": 1
+      }
+    ],
+    "Learning Resources": {
+      "textBooks": [
+        "Cracking the Coding Interview author( Gayle Laakmann McDowell )",
+        "Coding Interview Questions author(Narasimha Karumanchi)"
+      ],
+      "referenceLinks": [
+        "https://google.com/",
+        "NPTEL Data Structures And Algorithms, IIT Delhi"
+      ]
+    },
+    "internalAssessmentData": {
+      "components": {
+        "component1": {
+          "component": "",
+          "duration": "",
+          "weightage": "",
+          "evaluationWeek": "",
+          "remarks": ""
+        }
+      }
+    },
+    "copoMappingData": {
+      "courseOutcomes": {
+        "CO1": {
+          "description": "",
+          "bullets": []
+        },
+        "CO2": {
+          "description": "",
+          "bullets": []
+        },
+        "CO3": {
+          "description": "",
+          "bullets": []
+        }
+      },
+      "mappingData": {
+        "CO1": {
+          "CO/PO": "CO1",
+          "PO1": "2",
+          "PO2": "2",
+          "PO3": "2",
+          "PO4": "0",
+          "PO5": "0",
+          "PO6": "0",
+          "PO7": "0",
+          "PO8": "0",
+          "PO9": "0",
+          "PO10": "0",
+          "PO11": "0",
+          "PO12": "0",
+          "PSO1": "0",
+          "PSO2": "0"
+        },
+        "CO2": {
+          "CO/PO": "CO2",
+          "PO1": "0",
+          "PO2": "0",
+          "PO3": "0",
+          "PO4": "0",
+          "PO5": "0",
+          "PO6": "0",
+          "PO7": "0",
+          "PO8": "0",
+          "PO9": "0",
+          "PO10": "0",
+          "PO11": "0",
+          "PO12": "0",
+          "PSO1": "0",
+          "PSO2": "0"
+        },
+        "CO3": {
+          "CO/PO": "CO3",
+          "PO1": "3",
+          "PO2": "3",
+          "PO3": "2",
+          "PO4": "0",
+          "PO5": "0",
+          "PO6": "0",
+          "PO7": "0",
+          "PO8": "0",
+          "PO9": "0",
+          "PO10": "0",
+          "PO11": "0",
+          "PO12": "0",
+          "PSO1": "0",
+          "PSO2": "0"
+        }
+      }
+    },
+    "weeklyTimetableData": {
+      "Monday": {
+        "9:15-10:10": true,
+        "10:15-11:10": false,
+        "11:15-12:10": false,
+        "12:15-13:10": false,
+        "13:15-14:10": false,
+        "14:15-15:10": false,
+        "15:15-16:10": true,
+        "16:15-17:10": true,
+        "17:15-18:10": true
+      },
+      "Tuesday": {
+        "9:15-10:10": false,
+        "10:15-11:10": false,
+        "11:15-12:10": false,
+        "12:15-13:10": false,
+        "13:15-14:10": false,
+        "14:15-15:10": false,
+        "15:15-16:10": false,
+        "16:15-17:10": false,
+        "17:15-18:10": false
+      },
+      "Wednesday": {
+        "9:15-10:10": false,
+        "10:15-11:10": false,
+        "11:15-12:10": false,
+        "12:15-13:10": false,
+        "13:15-14:10": false,
+        "14:15-15:10": false,
+        "15:15-16:10": false,
+        "16:15-17:10": false,
+        "17:15-18:10": false
+      },
+      "Thursday": {
+        "9:15-10:10": false,
+        "10:15-11:10": false,
+        "11:15-12:10": false,
+        "12:15-13:10": false,
+        "13:15-14:10": false,
+        "14:15-15:10": false,
+        "15:15-16:10": false,
+        "16:15-17:10": false,
+        "17:15-18:10": false
+      },
+      "Friday": {
+        "9:15-10:10": false,
+        "10:15-11:10": false,
+        "11:15-12:10": false,
+        "12:15-13:10": false,
+        "13:15-14:10": false,
+        "14:15-15:10": false,
+        "15:15-16:10": false,
+        "16:15-17:10": false,
+        "17:15-18:10": false
+      }
+    },
+    "actionsForWeakStudentsData": [
+      "we beat them"
+    ],
+    "last_modified": "08:35 AM, 02/04/2025",
+    "par_sem_slowLearner": [
+      [],
+      []
+    ],
+    "learnerCategories": [
+      [],
+      []
+    ]
   }
 ]

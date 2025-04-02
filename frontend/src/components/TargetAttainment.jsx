@@ -78,7 +78,7 @@ const TargetAttainment = ({ copoMappingData, initialCriteria, onSave }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8 relative">
+    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100  relative">
       {/* Toast notification */}
       {toast.show && (
         <div className="absolute top-4 right-4 bg-[#FFB255] text-white px-4 py-2 rounded-md shadow-md animate-fade-in z-10 flex items-center">

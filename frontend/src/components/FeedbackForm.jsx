@@ -740,7 +740,7 @@ const FeedbackForm = (props) => {
         <ExcelToJson onSave={handleStudentDataSave} initialData={studentData} />
 
         {/* CO Assessment weightage Section */}
-        <div className={`bg-white p-6 rounded-xl shadow-sm border ${!isWeightageValid ? "border-red-600" : "border-gray-100"
+        <div className={`bg-white  rounded-xl shadow-sm border ${!isWeightageValid ? "border-red-600" : "border-gray-100"
           } mt-8`}>
           <COAssessmentWeightage
             copoMappingData={copoMappingData}
@@ -754,7 +754,7 @@ const FeedbackForm = (props) => {
         </div>
 
         {/* CO Attainment Criteria Section with error border if invalid */}
-        <div className={`bg-white p-6 rounded-lg shadow-sm border ${!validateCriteria() ? "border-red-600" : "border-gray-100"
+        <div className={`bg-white rounded-xl shadow-sm border ${!validateCriteria() ? "border-red-600" : "border-gray-100"
           }`}>
           <COAttainmentCriteria
             copoMappingData={copoMappingData}
@@ -766,7 +766,7 @@ const FeedbackForm = (props) => {
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              11
+              12
             </div>
             <h2 className="section-title text-xl font-semibold">
               Select Assessments for Partial Semester Slow Learner Analysis
@@ -789,7 +789,7 @@ const FeedbackForm = (props) => {
         />
 
         {/* Target Attainment Section with error border if invalid */}
-        <div className={`bg-white p-6 rounded-lg shadow-sm border ${!validateTargetAttainment() ? "border-red-600" : "border-gray-100"
+        <div className={`bg-white rounded-xl shadow-sm border ${!validateTargetAttainment() ? "border-red-600" : "border-gray-100"
           }`}>
           <TargetAttainment
             copoMappingData={copoMappingData}

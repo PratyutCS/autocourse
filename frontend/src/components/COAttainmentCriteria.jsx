@@ -96,7 +96,7 @@ const COAttainmentCriteria = ({ copoMappingData, initialCriteria, onSave }) => {
   };
   
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8 relative">
+    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100  relative">
       {/* Toast notification */}
       {toast.show && (
         <div className="absolute top-4 right-4 bg-[#FFB255] text-white px-4 py-2 rounded-md shadow-md animate-fade-in z-10 flex items-center">
@@ -109,7 +109,7 @@ const COAttainmentCriteria = ({ copoMappingData, initialCriteria, onSave }) => {
 
       <div className="flex items-center gap-4 mb-6">
         <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-          12
+          11
         </div>
         <h2 className="section-title text-xl font-semibold">
           CO Attainment Criteria
