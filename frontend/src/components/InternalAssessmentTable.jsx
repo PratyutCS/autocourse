@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 
-
 const InternalAssessmentTable = ({ onSave, initialData }) => {
   const [assessmentData, setAssessmentData] = useState({
     components: initialData?.components || {
       component1: {
         component: '',
-        duration: '',
         weightage: '',
         evaluationWeek: '',
         remarks: ''
@@ -39,13 +37,21 @@ const InternalAssessmentTable = ({ onSave, initialData }) => {
       onSave(newData);
     }
   };
+
+  const handleKeyDown = (e, componentKey, field) => {
+    if (e.key === 'Enter' && e.ctrlKey) {
+      e.preventDefault();
+      const currentValue = assessmentData.components[componentKey][field] || '';
+      handleInputChange(componentKey, field, currentValue + '\n');
+    }
+  };
+
   const addRow = () => {
     const newKey = `component${Date.now()}`;
     const newComponents = {
       ...assessmentData.components,
       [newKey]: {
         component: '',
-        duration: '',
         weightage: '',
         evaluationWeek: '',
         remarks: ''
@@ -78,16 +84,11 @@ const InternalAssessmentTable = ({ onSave, initialData }) => {
 
   return (
     <div className="space-y-4">
-      {/* <div className="flex justify-end">
-        
-      </div> */}
-
-<div className="overflow-x-auto rounded-lg border border-gray-200">
+      <div className="overflow-x-auto rounded-lg border border-gray-200">
         <table className="w-full border-collapse" style={{ minWidth: '1000px' }}>
           <thead>
             <tr className="bg-gray-50">
               <th className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 text-left">Component</th>
-              <th className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 text-left w-32">Duration</th>
               <th className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 text-left w-32">Weightage (%)</th>
               <th className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 text-left w-40">Evaluation Week</th>
               <th className="border-b border-r border-gray-200 p-3 text-sm font-semibold text-gray-600 text-left">Remarks</th>
@@ -109,15 +110,6 @@ const InternalAssessmentTable = ({ onSave, initialData }) => {
                 <td className="border-b border-r border-gray-200 p-3">
                   <input
                     type="text"
-                    value={assessmentData.components[componentKey].duration}
-                    onChange={(e) => handleInputChange(componentKey, 'duration', e.target.value)}
-                    className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-gray-700"
-                    placeholder="e.g. 2 hrs"
-                  />
-                </td>
-                <td className="border-b border-r border-gray-200 p-3">
-                  <input
-                    type="text"
                     value={assessmentData.components[componentKey].weightage}
                     onChange={(e) => handleInputChange(componentKey, 'weightage', e.target.value)}
                     className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-gray-700"
@@ -128,18 +120,29 @@ const InternalAssessmentTable = ({ onSave, initialData }) => {
                   <input
                     type="text"
                     value={assessmentData.components[componentKey].evaluationWeek}
-                    onChange={(e) => handleInputChange(componentKey, 'evaluation', e.target.value)}
+                    onChange={(e) => handleInputChange(componentKey, 'evaluationWeek', e.target.value)}
                     className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-gray-700"
-                    placeholder="Enter evaluation method"
+                    placeholder="Enter evaluation week"
                   />
                 </td>
                 <td className="border-b border-r border-gray-200 p-3">
-                  <input
-                    type="text"
+                  <textarea
                     value={assessmentData.components[componentKey].remarks}
                     onChange={(e) => handleInputChange(componentKey, 'remarks', e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(e, componentKey, 'remarks')}
                     className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-gray-700"
-                    placeholder="Add remarks"
+                    placeholder="Add remarks (Ctrl+Enter for new line)"
+                    rows={1}
+                    style={{ 
+                      minHeight: '38px', 
+                      resize: 'vertical',
+                      height: 'auto',
+                      overflow: 'hidden'
+                    }}
+                    onInput={(e) => {
+                      e.target.style.height = 'auto';
+                      e.target.style.height = e.target.scrollHeight + 'px';
+                    }}
                   />
                 </td>
                 <td className="border-b border-gray-200 p-3 text-center">
