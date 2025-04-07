@@ -312,12 +312,12 @@ app.post("/delete", auth, async (req, res) => {
 });
 
 // To download
+// To download
 app.post("/download", auth, async (req, res) => {
   const num = req.body.num;
 
   if (num === undefined) {
-    console.error("Error: 'num' is missing in the request");
-    return res.status(400).json({ message: "Error in /download: Missing 'num'" });
+    return res.status(400).json({ message: "Error: Missing 'num'" });
   }
 
   try {
@@ -328,66 +328,73 @@ app.post("/download", auth, async (req, res) => {
       return res.status(400).json({ message: "File not found" });
     }
 
-    fs.readFile(directoryPath, "utf8", (err, data) => {
-      if (err) {
-        console.error("Error reading file:", err);
-        return res.status(500).json({ message: "Error reading files" });
-      }
+    // Read user data
+    const data = await fs.promises.readFile(directoryPath, "utf8");
+    const jsonData = JSON.parse(data);
+    
+    if (num >= jsonData.length || num < 0) {
+      return res.status(400).json({ message: "Invalid 'num' parameter." });
+    }
 
-      try {
-        const jsonData = JSON.parse(data);
-        if (num >= jsonData.length || num < 0) {
-          return res.status(400).json({ message: "Invalid 'num' parameter." });
-        }
+    const fileData = jsonData[num];
+    if (fileData["done"] !== 1) {
+      return res.status(400).json({ message: "Extraction not yet finished" });
+    }
 
-        const fileData = jsonData[num];
-        if (fileData["done"] !== 1) {
-          return res.status(400).json({ message: "extraction not yet finished" });
-        }
+    // Create a promise for the Python process
+    const runPythonProcess = () => {
+      return new Promise((resolve, reject) => {
         const pythonProcess = spawn('python3', ['./extractor/j2d2p.py']);
-
-        // Write JSON to the Python process's stdin and close it to signal we're done
+        let pdfFileName = fileData['filename'];
+        
         pythonProcess.stdin.write(JSON.stringify(fileData));
         pythonProcess.stdin.end();
-
-        let pdfFileName = fileData['filename'];
-
-        pythonProcess.stdout.on('data', (data) => {
-          console.log(`Python script output (filename): ${pdfFileName}`);
-        });
-
+        
         pythonProcess.stderr.on('data', (data) => {
           console.error(`Python script error: ${data}`);
         });
-
+        
         pythonProcess.on('close', (code) => {
           if (code !== 0) {
-            console.error(`Python script exited with code ${code}`);
-            return res.status(500).json({ message: "Error processing the file" });
+            return reject(new Error(`Python process exited with code ${code}`));
           }
-
-          const pdfFilePath = path.join(__dirname, "download", pdfFileName);
-
-          if (!fs.existsSync(pdfFilePath)) {
-            console.error("PDF file not found:", pdfFilePath);
-            return res.status(500).json({ message: "PDF file not found" });
-          }
-
-          res.download(pdfFilePath, pdfFileName, (err) => {
-            if (err) {
-              console.error("Error occurred during file download:", err);
-              return res.status(500).json({ message: "Error downloading the file" });
-            }
-          });
+          resolve(pdfFileName);
         });
-      } catch (parseError) {
-        console.error("Error parsing JSON data:", parseError);
-        res.status(500).json({ message: "Error parsing JSON data" });
+      });
+    };
+
+    // Run the Python process and wait for it to complete
+    const pdfFileName = await runPythonProcess();
+    const pdfFilePath = path.join(__dirname, "download", pdfFileName);
+
+    if (!fs.existsSync(pdfFilePath)) {
+      return res.status(404).json({ message: "PDF file not found" });
+    }
+
+    // Set appropriate headers for PDF download
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${pdfFileName}"`);
+    
+    // Stream the file with proper error handling
+    const fileStream = fs.createReadStream(pdfFilePath);
+    
+    fileStream.on('error', (error) => {
+      console.error('Error streaming file:', error);
+      // Only send error if headers haven't been sent yet
+      if (!res.headersSent) {
+        res.status(500).json({ message: "Error streaming file" });
       }
     });
+    
+    // Pipe the file to the response
+    fileStream.pipe(res);
+    
   } catch (error) {
-    console.error("Error in /download route:", error);
-    res.status(500).json({ message: "Server error" });
+    console.error("Error in download route:", error);
+    // Only send error if headers haven't been sent yet
+    if (!res.headersSent) {
+      res.status(500).json({ message: "Server error: " + error.message });
+    }
   }
 });
 

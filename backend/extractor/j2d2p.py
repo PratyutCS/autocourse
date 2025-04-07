@@ -1470,7 +1470,7 @@ def create_learner_categorization_partial_sem(doc, data):
     categories = [
         ("Advanced Learners", len(advanced_learners)),
         ("Medium Learners", len(medium_learners)),
-        ("Slow Learners", len(slow_learners))
+        ("Low Performers", len(slow_learners))
     ]
     for idx, (category, count) in enumerate(categories):
         row = summary_table.rows[idx + 1]
