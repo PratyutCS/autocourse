@@ -19,7 +19,7 @@ const FacultyCourseReview = ({ initialData, onSave }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
       <div className="flex items-center gap-3 mb-4">
         <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
           24

@@ -57,7 +57,7 @@ export default function Box(props) {
           </div>
           
           {/* Empty state message */}
-          <div className="w-full sm:w-1/2 lg:w-2/3 flex flex-col items-center justify-center py-6 px-4 bg-white rounded-xl shadow-sm border border-gray-100">
+          <div className="w-full sm:w-1/2 lg:w-2/3 flex flex-col items-center justify-center py-6 px-4 bg-white rounded-xl shadow-sm border border-gray-200">
             <div className="bg-gray-100 rounded-full p-6 mb-4">
               <FcDocument className="w-16 h-16" />
             </div>

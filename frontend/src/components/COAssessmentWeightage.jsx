@@ -181,7 +181,7 @@ const COAssessmentWeightage = ({
 
   if (!courseOutcomes.length || !assessments.length) {
     return (
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
         <div className="flex items-center gap-3 mb-6">
           <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold">
             10
@@ -191,7 +191,7 @@ const COAssessmentWeightage = ({
           </h2>
         </div>
 
-        <div className="text-center py-10 bg-gray-50 rounded-lg border border-gray-100">
+        <div className="text-center py-10 bg-gray-50 rounded-lg border border-gray-200">
           <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <p className="text-gray-600 font-semibold text-lg">
             Missing Required Data
@@ -210,7 +210,7 @@ const COAssessmentWeightage = ({
   }
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
       <div className="flex items-center gap-3 mb-6">
         <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold">
           10

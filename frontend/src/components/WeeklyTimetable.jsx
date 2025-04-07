@@ -62,7 +62,7 @@ const WeeklyTimetable = ({ onChange, initialData }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-x-auto">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
       <table className="min-w-full border-collapse">
         <thead>
           <tr>

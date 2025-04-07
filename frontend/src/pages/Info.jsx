@@ -79,16 +79,25 @@ const Info = () => {
     return <ErrorDisplay message={error} />;
   }
 
+  // Custom handler for file selection in info view - this will navigate to sections
+  const handleSectionSelect = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className='dash'>
       <AsideComp 
         userEmail={userData?.email} 
         files={allFiles} 
-        isCollapsed={isCollapsed} 
+        isCollapsed={isCollapsed}
         setIsCollapsed={setIsCollapsed}
+        onFileSelect={handleSectionSelect}
       />
-      <div className="right">
-        <div className="box23 w-full">
+      <div className="right h-screen overflow-hidden">
+      <div className="box23 w-full h-full">
           {file && file.done === 1 ? (
             <FeedbackForm
               file={file.filename}

@@ -585,40 +585,52 @@ if data.get('studentData'):
     
     doc.add_paragraph()
     
-    # Create the main student list table with a smaller width
-    table = doc.add_table(rows=1, cols=4)
+    # Dynamically determine table columns
+    # Get all keys from the first student record
+    student_keys = set(data['studentData']['data'][0].keys())
+    # Get assessment keys from maxMarks
+    assessment_keys = set(data['studentData']['maxMarks'].keys())
+    # Student list headers = all student keys EXCEPT assessment keys and Grade
+    student_list_headers = list(student_keys - assessment_keys)
+    if "Grade" in student_list_headers:
+        student_list_headers.remove("Grade")
+    # Sort headers to ensure consistent order
+ 
+    # Create the table with dynamically determined columns
+    table = doc.add_table(rows=1, cols=len(student_list_headers))
     
     # Set header row
     header_cells = table.rows[0].cells
-    headers = ['Sr. No.', 'Roll No', 'Student Name', 'Unique Id']
     
-    for i, header_text in enumerate(headers):
+    for i, header_text in enumerate(student_list_headers):
         header_cells[i].text = header_text
         paragraph = header_cells[i].paragraphs[0]
         run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(header_text)
         run.bold = True
-        run.font.size = Pt(9)  # Reduce font size for a more compact table
+        run.font.size = Pt(9)
         paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
     
     # Add student rows
-    for i, student in enumerate(data['studentData']['data']):
+    for student in data['studentData']['data']:
         row_cells = table.add_row().cells
         
-        # Add cell data
-        row_cells[0].text = str(i + 1)  # Sr. No.
-        row_cells[1].text = "220C203{:04d}".format(i + 1)  # Roll No (example format)
-        row_cells[2].text = student['Student Name']
-        row_cells[3].text = str(student['Unique Id.'])
+        # Add cell data directly from student object for each header
+        for i, header in enumerate(student_list_headers):
+            value = student.get(header, '')
+            row_cells[i].text = str(value)
         
         # Format cell text
         for cell in row_cells:
             paragraph = cell.paragraphs[0]
             paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
             for run in paragraph.runs:
-                run.font.size = Pt(9)  # Reduce font size further for compactness
+                run.font.size = Pt(9)
     
-    # Reduce column widths for a smaller table
-    widths = [Inches(0.8), Inches(2.0), Inches(2.5), Inches(1)]  # Reduced widths
+    # Calculate dynamic column widths
+    total_width = Inches(6.3)  # Total table width
+    column_width = total_width / len(student_list_headers)
+    widths = [column_width] * len(student_list_headers)
+    
     for row in table.rows:
         for idx, cell in enumerate(row.cells):
             if idx < len(widths):
@@ -647,7 +659,6 @@ if data.get('studentData'):
     
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
     
-    # Ensure table rows don't split across pages
     for row in table.rows:
         tr = row._tr
         trPr = tr.get_or_add_trPr()
@@ -658,7 +669,6 @@ if data.get('studentData'):
 # Code to generate Attendance Report and Detail of Marks tables
 
 if data.get('studentData'):
-    # 1. ATTENDANCE REPORT TABLE
     doc.add_page_break()
     attendance_heading = doc.add_heading(level=1)
     attendance_run = attendance_heading.add_run('19. Attendance Report')
@@ -666,48 +676,59 @@ if data.get('studentData'):
     attendance_run.font.size = Pt(16)
     attendance_run.font.color.rgb = RGBColor(28, 132, 196)
     attendance_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
-    
+
     doc.add_paragraph()
-    
+
+    # Dynamically determine attendance table columns
+    # Get all keys from the first student record
+    student_keys = set(data['studentData']['data'][0].keys())
+    # Get assessment keys from maxMarks
+    assessment_keys = set(data['studentData']['maxMarks'].keys())
+    # Attendance headers = all student keys EXCEPT assessment keys and Grade
+    attendance_headers = list(student_keys - assessment_keys)
+    if "Grade" in attendance_headers:
+        attendance_headers.remove("Grade")
+    # Sort headers to ensure consistent order
+
     # Create the attendance table
-    table = doc.add_table(rows=1, cols=4)
-    
+    table = doc.add_table(rows=1, cols=len(attendance_headers))
+
     # Set header row
     header_cells = table.rows[0].cells
-    headers = ['Sr. No.', 'Roll No', 'Student Name', 'Attendance\nOut of(100)']
-    
-    for i, header_text in enumerate(headers):
+
+    for i, header_text in enumerate(attendance_headers):
         header_cells[i].text = header_text
         paragraph = header_cells[i].paragraphs[0]
         run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(header_text)
         run.bold = True
-        run.font.size = Pt(9)  # Reduce font size for a more compact table
+        run.font.size = Pt(9)
         paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    
-    # Add student attendance rows
-    for i, student in enumerate(data['studentData']['data']):
+
+    # Add student attendance rows - using actual data fields
+    for student in data['studentData']['data']:
         row_cells = table.add_row().cells
         
-        # Add cell data
-        row_cells[0].text = str(i + 1)  # Sr. No.
-        row_cells[1].text = "220C203{:04d}".format(i + 1)  # Roll No (example format)
-        row_cells[2].text = student['Student Name']
-        row_cells[3].text = str(student['Attendance'])
+        # Add cell data directly from student object for each header
+        for i, header in enumerate(attendance_headers):
+            value = student.get(header, '')
+            row_cells[i].text = str(value)
         
         # Format cell text
         for cell in row_cells:
             paragraph = cell.paragraphs[0]
             paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
             for run in paragraph.runs:
-                run.font.size = Pt(9)  # Reduce font size further for compactness
-    
-    # Reduce column widths for a smaller table
-    widths = [Inches(0.8), Inches(2.0), Inches(2.5), Inches(1.5)]  # Adjusted widths
+                run.font.size = Pt(9)
+
+    # Distribute width evenly across columns
+    cell_width = Inches(7.0) / len(attendance_headers)
+    widths = [cell_width] * len(attendance_headers)
+
     for row in table.rows:
         for idx, cell in enumerate(row.cells):
             if idx < len(widths):
                 cell.width = widths[idx]
-    
+
     # Set table borders
     def set_cell_border(cell, border_type, border_size, border_color):
         tc = cell._tc
@@ -721,23 +742,22 @@ if data.get('studentData'):
             element[0].getparent().replace(element[0], border)
         else:
             tcPr.append(border)
-    
+
     for row in table.rows:
         for cell in row.cells:
             set_cell_border(cell, 'top', 3, '000000')
             set_cell_border(cell, 'bottom', 3, '000000')
             set_cell_border(cell, 'left', 3, '000000')
             set_cell_border(cell, 'right', 3, '000000')
-    
+
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
-    
+
     # Ensure table rows don't split across pages
     for row in table.rows:
         tr = row._tr
         trPr = tr.get_or_add_trPr()
         cantSplit = OxmlElement('w:cantSplit')
         trPr.append(cantSplit)
-    
     # 2. DETAIL OF MARKS TABLE
     doc.add_page_break()
     marks_heading = doc.add_heading(level=1)
@@ -749,24 +769,42 @@ if data.get('studentData'):
     
     doc.add_paragraph()
     
-    # Create the marks table with dynamic columns based on the data
-    assessment_columns = [key for key in data['studentData']['maxMarks'].keys() if key != 'Total Marks(100.0)']
-    assessment_columns.append('Total Marks(100.0)')  # Add total at the end
+    # Dynamically determine identifier columns and assessment columns
+    # Identifier columns = all student keys EXCEPT assessment keys
+    all_student_keys = set(data['studentData']['data'][0].keys())
+    assessment_keys = set(data['studentData']['maxMarks'].keys())
+    identifier_cols = list(all_student_keys - assessment_keys)
     
-    # Create table with assessment columns + 3 (Sr.No, Roll No, Student Name)
-    table = doc.add_table(rows=1, cols=3 + len(assessment_columns))
+    # For the marks table, we want to make sure standard identifier columns come first
+    # and are in a consistent order
+    standard_id_cols = ["Sr.No", "Unique Id.", "Student Name"]
+    
+    # Create ordered identifier columns list (standard cols first, then any remaining)
+    ordered_id_cols = []
+    for col in standard_id_cols:
+        if col in identifier_cols:
+            ordered_id_cols.append(col)
+            identifier_cols.remove(col)
+    # Add any remaining identifier columns that weren't in standard_id_cols
+    ordered_id_cols.extend(sorted(identifier_cols))
+    
+    # Get assessment columns directly from maxMarks
+    assessment_columns = list(data['studentData']['maxMarks'].keys())
+    
+    # Create table with identifier columns + assessment columns
+    table = doc.add_table(rows=1, cols=len(ordered_id_cols) + len(assessment_columns))
     
     # Set header row
     header_cells = table.rows[0].cells
-    base_headers = ['Sr. No.', 'Roll No', 'Student Name']
-    headers = base_headers + assessment_columns
+    all_headers = ordered_id_cols + assessment_columns
     
-    for i, header_text in enumerate(headers):
+    for i, header_text in enumerate(all_headers):
         header_cells[i].text = header_text
         
-        # Add "Out" as a second row for assessment columns
-        if i >= len(base_headers):
-            header_cells[i].add_paragraph("Out")
+        # Add max marks info for assessment columns
+        if i >= len(ordered_id_cols):
+            max_mark = data['studentData']['maxMarks'][header_text]
+            header_cells[i].add_paragraph(f"Out of ({max_mark})")
             
         # Format all header text
         for paragraph in header_cells[i].paragraphs:
@@ -776,17 +814,16 @@ if data.get('studentData'):
             paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
     
     # Add student marks rows
-    for i, student in enumerate(data['studentData']['data']):
+    for student in data['studentData']['data']:
         row_cells = table.add_row().cells
         
-        # Add base data
-        row_cells[0].text = str(i + 1)  # Sr. No.
-        row_cells[1].text = "220C203{:04d}".format(i + 1)  
-        row_cells[2].text = student['Student Name']
+        # Add identifier columns data
+        for i, id_col in enumerate(ordered_id_cols):
+            row_cells[i].text = str(student.get(id_col, ''))
         
         # Add marks for each assessment
         for j, assessment in enumerate(assessment_columns):
-            row_cells[3 + j].text = str(student[assessment])
+            row_cells[len(ordered_id_cols) + j].text = str(student.get(assessment, ''))
         
         # Format cell text
         for cell in row_cells:
@@ -795,10 +832,17 @@ if data.get('studentData'):
             for run in paragraph.runs:
                 run.font.size = Pt(9)
     
-    # Adjust column widths for marks table
-    base_widths = [Inches(0.5), Inches(1.2), Inches(2.0)]
-    assessment_widths = [Inches(0.8)] * len(assessment_columns)
-    widths = base_widths + assessment_widths
+    # Calculate dynamic column widths
+    total_width = Inches(7.0)
+    # Base width for identifier columns (distribute 60% of width)
+    id_cols_total = 0.6 * total_width  
+    id_col_width = id_cols_total / len(ordered_id_cols)
+    id_widths = [id_col_width] * len(ordered_id_cols)
+    
+    # Remaining width divided equally among assessment columns
+    assessment_width = (total_width * 0.4) / len(assessment_columns)
+    assessment_widths = [assessment_width] * len(assessment_columns)
+    widths = id_widths + assessment_widths
     
     for row in table.rows:
         for idx, cell in enumerate(row.cells):
@@ -821,7 +865,6 @@ if data.get('studentData'):
         trPr = tr.get_or_add_trPr()
         cantSplit = OxmlElement('w:cantSplit')
         trPr.append(cantSplit)
-
 
 
 ################################################################  Attainment Table #########################

@@ -518,8 +518,8 @@ const FeedbackForm = (props) => {
   };
 
   return (
-    <div className="p-5 gap-[2rem] h-screen flex flex-col bg-[#FFFEFD]">
-      <div className="bg-gradient-to-r from-white to-gray-50 rounded-xl shadow-md p-5 flex flex-col md:flex-row justify-between items-center gap-5 transition-all hover:shadow-xl border border-gray-100">
+    <div className="p-5 gap-[2rem] h-screen flex flex-col ">
+      <div id="header-section" className="bg-gradient-to-r from-white to-gray-50 rounded-xl shadow-md p-5 flex flex-col md:flex-row justify-between items-center gap-5 transition-all hover:shadow-xl border border-gray-200">
   <button
     onClick={() => window.history.back()}
     className="group flex items-center gap-2 text-gray-700 font-medium transition-all duration-300 px-4 py-2.5 rounded-lg bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-gray-300"
@@ -591,12 +591,14 @@ const FeedbackForm = (props) => {
   </div>
 </div>
 
-      <div className="space-y-6 overflow-scroll">
-        <InstructionsCard />
+      <div className="space-y-6 overflow-auto flex-1">
+        <div id="instructions-section">
+          <InstructionsCard />
+        </div>
 
         <div className="grid grid-cols-2 gap-4">
           {/* Program Section */}
-          <div className={`bg-white p-6 rounded-lg shadow-sm border ${selectedProgram === 0 ? "border-red-600" : "border-gray-100"
+          <div id="program-section" className={`bg-white p-6 rounded-lg shadow-sm border ${selectedProgram === 0 ? "border-red-600" : "border-gray-200"
             }`}>
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
@@ -612,7 +614,7 @@ const FeedbackForm = (props) => {
           </div>
 
           {/* Course Code Section */}
-          <div className={`bg-white p-6 rounded-lg shadow-sm border ${!isCourseCodeValid ? "border-red-600" : "border-gray-100"
+          <div id="course-code-section" className={`bg-white p-6 rounded-lg shadow-sm border ${!isCourseCodeValid ? "border-red-600" : "border-gray-200"
             }`}>
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
@@ -627,7 +629,7 @@ const FeedbackForm = (props) => {
           </div>
 
           {/* Course Title Section */}
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          <div id="course-title-section" className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
                 3
@@ -644,7 +646,7 @@ const FeedbackForm = (props) => {
           </div>
 
           {/* Module/Semester Section */}
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          <div id="module-section" className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
                 4
@@ -661,7 +663,7 @@ const FeedbackForm = (props) => {
           </div>
 
           {/* Session Section */}
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          <div id="session-section" className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
                 5
@@ -679,7 +681,7 @@ const FeedbackForm = (props) => {
         </div>
 
         {/* Course Description Section */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+        <div id="course-description-section" className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
               6
@@ -695,7 +697,7 @@ const FeedbackForm = (props) => {
         </div>
 
         {/* CO-PO Mapping Section */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+        <div id="copo-mapping-section" className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
               7
@@ -713,7 +715,7 @@ const FeedbackForm = (props) => {
         </div>
 
         {/* Internal Assessments */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+        <div id="assessments-section" className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
               8
@@ -729,10 +731,12 @@ const FeedbackForm = (props) => {
         </div>
 
         {/* Excel to JSON to extract student data */}
-        <ExcelToJson onSave={handleStudentDataSave} initialData={studentData} />
+        <div id="student-data-section">
+          <ExcelToJson onSave={handleStudentDataSave} initialData={studentData} />
+        </div>
 
         {/* CO Assessment weightage Section */}
-        <div className={`bg-white  rounded-xl shadow-sm border ${!isWeightageValid ? "border-red-600" : "border-gray-100"
+        <div id="co-weightage-section" className={`bg-white rounded-xl shadow-sm border ${!isWeightageValid ? "border-red-600" : "border-gray-200"
           } mt-8`}>
           <COAssessmentWeightage
             copoMappingData={copoMappingData}
@@ -746,7 +750,7 @@ const FeedbackForm = (props) => {
         </div>
 
         {/* CO Attainment Criteria Section with error border if invalid */}
-        <div className={`bg-white rounded-xl shadow-sm border ${!validateCriteria() ? "border-red-600" : "border-gray-100"
+        <div id="attainment-criteria-section" className={`bg-white rounded-xl shadow-sm border ${!validateCriteria() ? "border-red-600" : "border-gray-200"
           }`}>
           <COAttainmentCriteria
             copoMappingData={copoMappingData}
@@ -755,7 +759,28 @@ const FeedbackForm = (props) => {
           />
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+      
+
+        {/* Target Attainment Section with error border if invalid */}
+        <div id="target-attainment-section" className={`bg-white rounded-xl shadow-sm border ${!validateTargetAttainment() ? "border-red-600" : "border-gray-200"
+          }`}>
+          <TargetAttainment
+            copoMappingData={copoMappingData}
+            initialCriteria={targetAttainment}
+            onSave={handleTargetAttainmentSave}
+          />
+        </div>
+
+        <div id="attainment-analysis-section">
+          <COAttainmentAnalysis
+            coWeightages={coWeightages}
+            studentData={studentData}
+            coAttainmentCriteria={coAttainmentCriteria}
+            copoMappingData={copoMappingData}
+            targetAttainment={targetAttainment}
+          />
+        </div>
+        <div id="assessment-selection-section" className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
               12
@@ -769,48 +794,36 @@ const FeedbackForm = (props) => {
             selectedAssessments={selectedAssessments}
             onChange={handleAssessmentSelectionChange}
           />
+          <div id="co-achievement-section ">
+          <StudentCOAchievement
+            selectedAssessments={selectedAssessments}
+            coWeightages={coWeightages}
+            studentData={studentData}
+            coAttainmentCriteria={coAttainmentCriteria}
+            learnerCategories={par_sem_slowLearner}
+            onSave={handlePar_sem_slowLearner}
+          />
         </div>
+        </div>
+        
 
-        <StudentCOAchievement
-          selectedAssessments={selectedAssessments}
-          coWeightages={coWeightages}
-          studentData={studentData}
-          coAttainmentCriteria={coAttainmentCriteria}
-          learnerCategories={par_sem_slowLearner}
-          onSave={handlePar_sem_slowLearner}
-        />
-
-        {/* Target Attainment Section with error border if invalid */}
-        <div className={`bg-white rounded-xl shadow-sm border ${!validateTargetAttainment() ? "border-red-600" : "border-gray-100"
-          }`}>
-          <TargetAttainment
-            copoMappingData={copoMappingData}
-            initialCriteria={targetAttainment}
-            onSave={handleTargetAttainmentSave}
+        <div id="student-identification-section">
+          <AdvanceAndWeakStudentIdentification
+            coWeightages={coWeightages}
+            studentData={studentData}
+            coAttainmentCriteria={coAttainmentCriteria}
+            learnerCategories={learnerCategories}
+            onSave={handleLearners}
           />
         </div>
 
-        <COAttainmentAnalysis
-          coWeightages={coWeightages}
-          studentData={studentData}
-          coAttainmentCriteria={coAttainmentCriteria}
-          copoMappingData={copoMappingData}
-          targetAttainment={targetAttainment}
-        />
-
-        <AdvanceAndWeakStudentIdentification
-          coWeightages={coWeightages}
-          studentData={studentData}
-          coAttainmentCriteria={coAttainmentCriteria}
-          learnerCategories={learnerCategories}
-          onSave={handleLearners}
-        />
-
         {/* Course Syllabus Section */}
-        <CourseSyllabus onSave={handleCourseSyllabusChange} initialData={courseSyllabus} />
+        <div id="course-syllabus-section">
+          <CourseSyllabus onSave={handleCourseSyllabusChange} initialData={courseSyllabus} />
+        </div>
 
         {/* Learning Resources Section */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+        <div id="learning-resources-section" className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
               17
@@ -836,7 +849,7 @@ const FeedbackForm = (props) => {
         </div>
 
         {/* Weekly Time-Table */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
+        <div id="timetable-section" className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
               18
@@ -863,35 +876,43 @@ const FeedbackForm = (props) => {
         </div>
 
         {/* Actions for Weak Students */}
-        <ActionsForWeakStudents
-          label="Actions Taken for Weak Students"
-          initialData={actionsForWeakStudentsData}
-          onSave={handleWeakStudentsChange}
-        />
+        <div id="weak-students-section">
+          <ActionsForWeakStudents
+            label="Actions Taken for Weak Students"
+            initialData={actionsForWeakStudentsData}
+            onSave={handleWeakStudentsChange}
+          />
+        </div>
 
         {/* PDF Uploader */}
-        <PDFUploader
-          num={num}
-          onUploadSuccess={(filename) => {
-            console.log("File uploaded:", filename);
-          }}
-          onDeleteSuccess={() => {
-            console.log("File deleted");
-          }}
-          initialFileName={props.mergePDF}
-        />
+        <div id="pdf-uploader-section">
+          <PDFUploader
+            num={num}
+            onUploadSuccess={(filename) => {
+              console.log("File uploaded:", filename);
+            }}
+            onDeleteSuccess={() => {
+              console.log("File deleted");
+            }}
+            initialFileName={props.mergePDF}
+          />
+        </div>
 
         {/* Feedback and Corrective Actions */}
-        <FeedbackAndCorrectiveActions
-          initialData={feedbackData}
-          onSave={handleFeedbackChange}
-        />
+        <div id="feedback-section">
+          <FeedbackAndCorrectiveActions
+            initialData={feedbackData}
+            onSave={handleFeedbackChange}
+          />
+        </div>
 
         {/* Faculty Course Review */}
-        <FacultyCourseReview
-          initialData={facultyCourseReview}
-          onSave={(data) => setFacultyCourseReview(data)}
-        />
+        <div id="faculty-review-section">
+          <FacultyCourseReview
+            initialData={facultyCourseReview}
+            onSave={(data) => setFacultyCourseReview(data)}
+          />
+        </div>
 
         {isLoading && <LoadingSpinner />}
       </div>

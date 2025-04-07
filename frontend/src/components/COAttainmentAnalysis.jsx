@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, ArrowRight, Award, BarChart3, Users, Percent, BookOpen } from 'lucide-react';
 import { Bar } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 
@@ -20,6 +20,7 @@ const COAttainmentAnalysis = ({
     attainmentLevel: {},
     overallAttainment: 0
   });
+  const [viewAll, setViewAll] = useState(false);
 
   useEffect(() => {
     if (coWeightages && studentData && coAttainmentCriteria) {
@@ -196,23 +197,31 @@ const COAttainmentAnalysis = ({
     }
   };
 
+  // Function to get color based on attainment level
+  const getAttainmentColor = (level) => {
+    if (level >= 3) return 'text-green-600';
+    if (level >= 2) return 'text-amber-500';
+    return 'text-red-500';
+  };
+
   if (!coWeightages || !studentData || !coAttainmentCriteria || !copoMappingData) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6 m-4 border-2 border-gray-300 border-opacity-10">
+      <div className="bg-white rounded-lg shadow-lg p-6 m-4 border border-gray-200">
         <div className="flex items-center gap-4 mb-6">
-            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              13
-            </div>
-            <h2 className="section-title text-xl font-semibold">
-              Course Attainment Analysis
-            </h2>
+          <div className="bg-amber-400 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-md">
+            <span className="text-lg font-bold">14</span>
           </div>
-        <div className="border-2 border-gray-400 border-opacity-10 rounded-md p-4 flex items-start">
-          <AlertCircle className="h-6 w-6 text-red-500 mr-3 mt-0.5" />
+          <h2 className="text-2xl font-semibold text-gray-800">
+            Course Attainment Analysis
+          </h2>
+        </div>
+        <div className="bg-red-50 border-l-4 border-red-500 rounded-md p-5 flex items-start">
+          <AlertCircle className="h-6 w-6 text-red-500 mr-3 flex-shrink-0" />
           <div>
-            <h3 className="text-sm font-semibold text-red-800">Missing Required Data</h3>
-            <p className="text-sm text-red-700 mt-1">
-              Please ensure CO weightages, student data, CO PO Mapping Data and attainment criteria are provided.
+            <h3 className="text-base font-semibold text-red-800">Missing Required Data</h3>
+            <p className="text-sm text-red-700 mt-2">
+              Please ensure CO weightages, student data, CO PO Mapping Data and attainment criteria are provided 
+              before proceeding with the analysis.
             </p>
           </div>
         </div>
@@ -230,20 +239,47 @@ const COAttainmentAnalysis = ({
       {
         label: "Attainment",
         data: coLabels.map(co => parseFloat(averages[co]) || 0),
-        backgroundColor: 'rgba(79, 70, 229, 0.7)'
+        backgroundColor: 'rgba(79, 70, 229, 0.8)',
+        borderColor: 'rgba(79, 70, 229, 1)',
+        borderWidth: 1
       },
       {
         label: "Required",
         data: coLabels.map(() => 3),
-        backgroundColor: 'rgba(245, 158, 11, 0.7)'
+        backgroundColor: 'rgba(245, 158, 11, 0.6)',
+        borderColor: 'rgba(245, 158, 11, 1)',
+        borderWidth: 1
       }
     ]
   };
   const courseAttainmentChartOptions = {
     indexAxis: 'y',
     scales: {
-      x: { beginAtZero: true, max: 3 }
-    }
+      x: { 
+        beginAtZero: true, 
+        max: 3,
+        grid: {
+          color: 'rgba(0, 0, 0, 0.05)'
+        }
+      },
+      y: {
+        grid: {
+          display: false
+        }
+      }
+    },
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        padding: 12,
+        usePointStyle: true
+      }
+    },
+    responsive: true,
+    maintainAspectRatio: false
   };
 
   // Percentage Chart (using % of students scoring ≥ 3)
@@ -258,15 +294,45 @@ const COAttainmentAnalysis = ({
       {
         label: "% of Students ≥ 3",
         data: percentageDataValues,
-        backgroundColor: 'rgba(16, 185, 129, 0.7)'
+        backgroundColor: 'rgba(16, 185, 129, 0.8)',
+        borderColor: 'rgba(16, 185, 129, 1)',
+        borderWidth: 1
       }
     ]
   };
   const percentageChartOptions = {
     indexAxis: 'y',
     scales: {
-      x: { beginAtZero: true, max: 100 }
-    }
+      x: { 
+        beginAtZero: true, 
+        max: 100,
+        grid: {
+          color: 'rgba(0, 0, 0, 0.05)'
+        }
+      },
+      y: {
+        grid: {
+          display: false
+        }
+      }
+    },
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        padding: 12,
+        usePointStyle: true,
+        callbacks: {
+          label: function(context) {
+            return `${context.raw}%`;
+          }
+        }
+      }
+    },
+    responsive: true,
+    maintainAspectRatio: false
   };
 
   const poLabels = Object.keys(programAttainment);
@@ -276,70 +342,110 @@ const COAttainmentAnalysis = ({
       {
         label: "Program Attainment",
         data: poLabels.map(po => parseFloat(programAttainment[po]) || 0),
-        backgroundColor: 'rgba(239, 68, 68, 0.7)'
+        backgroundColor: 'rgba(239, 68, 68, 0.8)',
+        borderColor: 'rgba(239, 68, 68, 1)',
+        borderWidth: 1
       }
     ]
   };
   const programAttainmentChartOptions = {
     indexAxis: 'y',
-    scales: { x: { beginAtZero: true } }
+    scales: { 
+      x: { 
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(0, 0, 0, 0.05)'
+        }
+      },
+      y: {
+        grid: {
+          display: false
+        }
+      }
+    },
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        padding: 12,
+        usePointStyle: true
+      }
+    },
+    responsive: true,
+    maintainAspectRatio: false
   };
 
   return (
-    <div className="bg-white rounded-lg p-6 border border-black/5 border-opacity-10">
-      <div className="flex items-center gap-4 mb-6">
-            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              14
+    <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+      <div className="flex items-center gap-4 mb-8">
+          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+              12
             </div>
-            <h2 className="section-title text-xl font-semibold">
-              Course Attainment Analysis
-            </h2>
+        <h2 className="text-xl font-semibold text-gray-800">
+          Course Attainment Analysis
+        </h2>
+      </div>
+
+      {/* Overall Attainment Card */}
+      <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg shadow-lg mb-8 p-6 text-white">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-medium opacity-90">Overall Course Attainment</h3>
+            <p className="text-4xl font-bold mt-2">{attainmentSummary.overallAttainment?.toFixed(2) || "0.00"}</p>
           </div>
+          <Award className="h-16 w-16 opacity-80" />
+        </div>
+      </div>
+      
       {/* Main dashboard grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* CO Attainment Summary */}
-        <div className="rounded-lg p-4 shadow-md border border-black border-opacity-10">
-          <h3 className="text-lg font-semibold text-indigo-700 mb-4 border-b pb-2">CO Attainment Summary</h3>
+        <div className="bg-white rounded-lg p-5 shadow-md border border-gray-200">
+          <div className="flex items-center mb-4">
+            <BarChart3 className="h-5 w-5 text-indigo-600 mr-2" />
+            <h3 className="text-lg font-semibold text-indigo-700">CO Attainment Summary</h3>
+          </div>
           <div className="overflow-x-auto">
-            <table className="min-w-full bg-white rounded-md">
+            <table className="w-full">
               <thead>
-                <tr>
-                  <th className="px-4 py-2 text-left text-sm font-medium text-indigo-700 border-b-2 border-gray-200 border-opacity-10">Course Outcomes</th>
+                <tr className="bg-indigo-50">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-indigo-800 uppercase tracking-wider border-b">Course Outcomes</th>
                   {Object.keys(coWeightages || {}).map(co => (
-                    <th key={co} className="px-4 py-2 text-center text-sm font-medium text-indigo-700 border-b-2 border-gray-200 border-opacity-10">{co}</th>
+                    <th key={co} className="px-4 py-3 text-center text-xs font-medium text-indigo-800 uppercase tracking-wider border-b">{co}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody>
-                <tr className="hover:bg-indigo-50">
-                  <td className="px-4 py-2 text-sm font-medium text-gray-700 border-b border-gray-200 border-opacity-10">Weights</td>
+              <tbody className="divide-y divide-gray-200">
+                <tr className="hover:bg-gray-50 transition-colors">
+                  <td className="px-4 py-3 text-sm font-medium text-gray-700">Weights</td>
                   {Object.keys(coWeightages || {}).map(co => (
-                    <td key={co} className="px-4 py-2 text-center text-sm text-gray-600 border-b border-gray-200 border-opacity-10">{attainmentSummary.weights[co] || "0.00%"}</td>
+                    <td key={co} className="px-4 py-3 text-center text-sm text-gray-600">{attainmentSummary.weights[co] || "0.00%"}</td>
                   ))}
                 </tr>
-                <tr className="hover:bg-indigo-50">
-                  <td className="px-4 py-2 text-sm font-medium text-gray-700 border-b border-gray-200 border-opacity-10">No. of students scored ≥ 3</td>
+                <tr className="hover:bg-gray-50 transition-colors">
+                  <td className="px-4 py-3 text-sm font-medium text-gray-700">Students scored ≥ 3</td>
                   {Object.keys(coWeightages || {}).map(co => (
-                    <td key={co} className="px-4 py-2 text-center text-sm text-gray-600 border-b border-gray-200 border-opacity-10">{attainmentSummary.studentsScored3[co] || 0}</td>
+                    <td key={co} className="px-4 py-3 text-center text-sm text-gray-600">{attainmentSummary.studentsScored3[co] || 0}</td>
                   ))}
                 </tr>
-                <tr className="hover:bg-indigo-50">
-                  <td className="px-4 py-2 text-sm font-medium text-gray-700 border-b border-gray-200 border-opacity-10">Percentage of students scored ≥ 3</td>
+                <tr className="hover:bg-gray-50 transition-colors">
+                  <td className="px-4 py-3 text-sm font-medium text-gray-700">% of students scored ≥ 3</td>
                   {Object.keys(coWeightages || {}).map(co => (
-                    <td key={co} className="px-4 py-2 text-center text-sm text-gray-600 border-b border-gray-200 border-opacity-10">{attainmentSummary.percentageScored3[co] || "0%"}</td>
+                    <td key={co} className="px-4 py-3 text-center text-sm text-gray-600">{attainmentSummary.percentageScored3[co] || "0%"}</td>
                   ))}
                 </tr>
-                <tr className="hover:bg-indigo-50">
-                  <td className="px-4 py-2 text-sm font-medium text-gray-700 border-b border-gray-200 border-opacity-10">Attainment Level</td>
-                  {Object.keys(coWeightages || {}).map(co => (
-                    <td key={co} className="px-4 py-2 text-center text-sm text-gray-600 border-b border-gray-200 border-opacity-10">{attainmentSummary.attainmentLevel[co] || 0}</td>
-                  ))}
-                </tr>
-                <tr className="hover:bg-indigo-50">
-                  <td className="px-4 py-2 text-sm font-bold text-indigo-700">Overall Course Attainment</td>
-                  <td colSpan={Object.keys(coWeightages || {}).length} className="px-4 py-2 text-center text-lg font-bold text-indigo-700">
-                    {attainmentSummary.overallAttainment?.toFixed(4) || "0.0000"}
-                  </td>
+                <tr className="hover:bg-gray-50 transition-colors">
+                  <td className="px-4 py-3 text-sm font-medium text-gray-700">Attainment Level</td>
+                  {Object.keys(coWeightages || {}).map(co => {
+                    const level = attainmentSummary.attainmentLevel[co] || 0;
+                    return (
+                      <td key={co} className={`px-4 py-3 text-center text-sm font-medium ${getAttainmentColor(level)}`}>
+                        {level}
+                      </td>
+                    );
+                  })}
                 </tr>
               </tbody>
             </table>
@@ -347,8 +453,11 @@ const COAttainmentAnalysis = ({
         </div>
 
         {/* % of Students Scored Chart */}
-        <div className="rounded-lg p-4 shadow-md border border-black border-opacity-10">
-          <h3 className="text-lg font-semibold text-green-700 mb-4 border-b pb-2">% of Students Scored ≥ 3</h3>
+        <div className="bg-white rounded-lg p-5 shadow-md border border-gray-200">
+          <div className="flex items-center mb-4">
+            <Percent className="h-5 w-5 text-green-600 mr-2" />
+            <h3 className="text-lg font-semibold text-green-700">% of Students Scored ≥ 3</h3>
+          </div>
           <div className="h-64">
             <Bar data={percentageChartData} options={percentageChartOptions} />
           </div>
@@ -356,23 +465,26 @@ const COAttainmentAnalysis = ({
 
         {/* Program Attainment */}
         {Object.keys(programAttainment).length > 0 && (
-          <div className="rounded-lg p-4 shadow-md border border-black border-opacity-10">
-            <h3 className="text-lg font-semibold text-red-700 mb-4 border-b pb-2">Program Attainment</h3>
+          <div className="bg-white rounded-lg p-5 shadow-md border border-gray-200">
+            <div className="flex items-center mb-4">
+              <BookOpen className="h-5 w-5 text-red-600 mr-2" />
+              <h3 className="text-lg font-semibold text-red-700">Program Attainment</h3>
+            </div>
             <div className="overflow-x-auto">
-              <table className="min-w-full bg-white rounded-md">
+              <table className="w-full">
                 <thead>
-                  <tr>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-red-700 border-b-2 border-gray-200 border-opacity-10">Program Outcomes</th>
+                  <tr className="bg-red-50">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-red-800 uppercase tracking-wider border-b">Program Outcomes</th>
                     {Object.keys(programAttainment).map(po => (
-                      <th key={po} className="px-4 py-2 text-center text-sm font-medium text-red-700 border-b-2 border-gray-200 border-opacity-10">{po}</th>
+                      <th key={po} className="px-4 py-3 text-center text-xs font-medium text-red-800 uppercase tracking-wider border-b">{po}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="hover:bg-red-50">
-                    <td className="px-4 py-2 text-sm font-medium text-gray-700 border-b border-gray-200 border-opacity-10">Program Attainment</td>
+                  <tr className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-3 text-sm font-medium text-gray-700">Program Attainment</td>
                     {Object.keys(programAttainment).map(po => (
-                      <td key={po} className="px-4 py-2 text-center text-sm text-gray-600 border-b border-gray-200 border-opacity-10">{programAttainment[po]}</td>
+                      <td key={po} className="px-4 py-3 text-center text-sm font-medium text-gray-600">{programAttainment[po]}</td>
                     ))}
                   </tr>
                 </tbody>
@@ -383,55 +495,80 @@ const COAttainmentAnalysis = ({
 
         {/* Program Attainment Chart */}
         {Object.keys(programAttainment).length > 0 && (
-          <div className="rounded-lg p-4 shadow-md border border-black border-opacity-10">
-            <h3 className="text-lg font-semibold text-red-700 mb-4 border-b pb-2">Program Attainment Chart</h3>
+          <div className="bg-white rounded-lg p-5 shadow-md border border-gray-200">
+            <div className="flex items-center mb-4">
+              <BarChart3 className="h-5 w-5 text-red-600 mr-2" />
+              <h3 className="text-lg font-semibold text-red-700">Program Attainment Chart</h3>
+            </div>
             <div className="h-64">
               <Bar data={programAttainmentData} options={programAttainmentChartOptions} />
             </div>
           </div>
         )}
 
-        {/* Student-wise CO Achievement */}
+        {/* Course Outcome Attainment Chart */}
         {studentPerformance.length > 0 && (
-          <div className="rounded-lg p-4 shadow-md border border-black border-opacity-10 col-span-1 lg:col-span-2">
-            <h3 className="text-lg font-semibold text-purple-700 mb-4 border-b pb-2">Student-wise CO Achievement</h3>
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white rounded-md">
-                <thead>
-                  <tr>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-purple-700 border-b-2 border-gray-200 border-opacity-10">NAME</th>
-                    {Object.keys(coWeightages || {}).map(co => (
-                      <th key={co} className="px-4 py-2 text-center text-sm font-medium text-purple-700 border-b-2 border-gray-200 border-opacity-10">{co} Score</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {studentPerformance.slice(0, 5).map((student, index) => (
-                    <tr key={student.id} className={index % 2 === 0 ? "hover:bg-purple-50" : "hover:bg-purple-50"}>
-                      <td className="px-4 py-2 text-sm font-medium text-gray-700 border-b border-gray-200 border-opacity-10">{student.rollNumber}</td>
-                      {Object.keys(coWeightages || {}).map(co => (
-                        <td key={co} className="px-4 py-2 text-center text-sm text-gray-600 border-b border-gray-200 border-opacity-10">{student.coScores[co]}</td>
-                      ))}
-                    </tr>
-                  ))}
-                  <tr className="hover:bg-purple-100">
-                    <td className="px-4 py-2 text-sm font-bold text-purple-700 border-b border-gray-200 border-opacity-10">Average</td>
-                    {Object.keys(coWeightages || {}).map(co => (
-                      <td key={co} className="px-4 py-2 text-center text-sm font-bold text-purple-700 border-b border-gray-200 border-opacity-10">{averages[co] || "0.00"}</td>
-                    ))}
-                  </tr>
-                </tbody>
-              </table>
+          <div className="bg-white rounded-lg p-5 shadow-md border border-gray-200 col-span-1 lg:col-span-2">
+            <div className="flex items-center mb-4">
+              <BarChart3 className="h-5 w-5 text-amber-600 mr-2" />
+              <h3 className="text-lg font-semibold text-amber-700">Course Outcome Attainment</h3>
+            </div>
+            <div className="h-64">
+              <Bar data={courseAttainmentChartData} options={courseAttainmentChartOptions} />
             </div>
           </div>
         )}
 
-        {/* Course Outcome Attainment Chart */}
+        {/* Student-wise CO Achievement */}
         {studentPerformance.length > 0 && (
-          <div className="rounded-lg p-4 shadow-md border border-black border-opacity-10 col-span-1 lg:col-span-2">
-            <h3 className="text-lg font-semibold text-amber-700 mb-4 border-b pb-2">Course Outcome Attainment</h3>
-            <div className="h-64">
-              <Bar data={courseAttainmentChartData} options={courseAttainmentChartOptions} />
+          <div className="bg-white rounded-lg p-5 shadow-md border border-gray-200 col-span-1 lg:col-span-2">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <Users className="h-5 w-5 text-purple-600 mr-2" />
+                <h3 className="text-lg font-semibold text-purple-700">Student-wise CO Achievement</h3>
+              </div>
+              {studentPerformance.length > 5 && (
+                <button 
+                  onClick={() => setViewAll(!viewAll)} 
+                  className="text-indigo-600 hover:text-indigo-800 flex items-center text-sm font-medium transition-colors"
+                >
+                  {viewAll ? 'Show Less' : 'View All'}
+                  <ArrowRight className="ml-1 h-4 w-4" />
+                </button>
+              )}
+            </div>
+            <div className="overflow-x-auto overflow-y-auto max-h-96">
+              <table className="w-full">
+                <thead className="sticky top-0 bg-white">
+                  <tr className="bg-purple-50">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-purple-800 uppercase tracking-wider border-b">NAME</th>
+                    {Object.keys(coWeightages || {}).map(co => (
+                      <th key={co} className="px-4 py-3 text-center text-xs font-medium text-purple-800 uppercase tracking-wider border-b">{co} Score</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {(viewAll ? studentPerformance : studentPerformance.slice(0, 5)).map((student, index) => (
+                    <tr key={student.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-3 text-sm font-medium text-gray-700">{student.rollNumber}</td>
+                      {Object.keys(coWeightages || {}).map(co => {
+                        const score = student.coScores[co];
+                        return (
+                          <td key={co} className={`px-4 py-3 text-center text-sm font-medium ${getAttainmentColor(score)}`}>
+                            {score}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                  <tr className="bg-purple-50">
+                    <td className="px-4 py-3 text-sm font-bold text-purple-800">Average</td>
+                    {Object.keys(coWeightages || {}).map(co => (
+                      <td key={co} className="px-4 py-3 text-center text-sm font-bold text-purple-800">{averages[co] || "0.00"}</td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         )}

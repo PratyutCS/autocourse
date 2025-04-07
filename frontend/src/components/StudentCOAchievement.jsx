@@ -242,8 +242,8 @@ const StudentCOAchievement = ({
   };
 
   return (
-    <div className="rounded-lg p-4 shadow-md border border-black border-opacity-10">
-      <h3 className="text-lg font-semibold text-purple-700 mb-4 border-b pb-2">
+    <div className="rounded-lg p-4 shadow-md border border-black border-opacity-10 mt-10">
+      <h3 className="text-lg font-semibold text-gray-600 mb-4 border-b pb-2">
         Advanced &amp; Low performer identification for partial Semester
       </h3>
       

@@ -6,7 +6,7 @@ const InstructionsCard = () => {
   const [activeTab, setActiveTab] = useState('instructions');
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 border border-gray-100 hover:shadow-xl">
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 border border-gray-200 hover:shadow-xl">
       {/* Header with gradient border effect */}
       <div className="relative">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#FFB255] to-orange-300"></div>

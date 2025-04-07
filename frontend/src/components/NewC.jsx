@@ -216,12 +216,12 @@ export default function NewC(props) {
           {props.done === 1 ? (
             <div className="bg-green-100 text-green-700 text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
               <IoCheckmarkCircle className="w-3.5 h-3.5" />
-              <span>Complete</span>
+              <span>Data Extracted</span>
             </div>
           ) : (
             <div className="bg-red-100 text-red-700 text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
               <IoWarning className="w-3.5 h-3.5" />
-              <span>Incomplete</span>
+              <span>Data is being extracted</span>
             </div>
           )}
         </div>

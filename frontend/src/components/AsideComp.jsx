@@ -4,9 +4,10 @@ import { RxQuestionMarkCircled } from "react-icons/rx";
 import { HiMenuAlt3 } from "react-icons/hi";
 import { AiFillDelete } from "react-icons/ai";
 import { IoMdDownload } from "react-icons/io";
-import { AiOutlineFilePdf } from "react-icons/ai"; // Added PDF icon
+import { AiOutlineFilePdf } from "react-icons/ai";
+import { FiList } from "react-icons/fi"; // Added for index icon
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
 import constants from "../constants"; 
 
@@ -14,6 +15,40 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect }) => {
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Explicitly check if we're on the info page
+  const isInfoPage = location.pathname.includes('/form');
+  
+  console.log("Current path:", location.pathname);
+  console.log("Is info page:", isInfoPage);
+
+  // Define the index sections for the form
+  const formSections = [
+    { id: "program-section", title: "Program", number: 1 },
+    { id: "course-code-section", title: "Course Code", number: 2 },
+    { id: "course-title-section", title: "Course Title", number: 3 },
+    { id: "module-section", title: "Module/Semester", number: 4 },
+    { id: "session-section", title: "Session", number: 5 },
+    { id: "course-description-section", title: "Course Description", number: 6 },
+    { id: "copo-mapping-section", title: "CO-PO Mapping", number: 7 },
+    { id: "assessments-section", title: "Assessments", number: 8 },
+    { id: "student-data-section", title: "Student Data", number: 9 },
+    { id: "co-weightage-section", title: "CO Weightage", number: 10 },
+    { id: "attainment-criteria-section", title: "Attainment Criteria", number: 11 },
+    { id: "assessment-selection-section", title: "Assessment Selection", number: 12 },
+    { id: "co-achievement-section", title: "Student CO Achievement", number: 13 },
+    { id: "target-attainment-section", title: "Target Attainment", number: 14 },
+    { id: "attainment-analysis-section", title: "Attainment Analysis", number: 15 },
+    { id: "student-identification-section", title: "Student Identification", number: 16 },
+    { id: "course-syllabus-section", title: "Course Syllabus", number: 17 },
+    { id: "learning-resources-section", title: "Learning Resources", number: 18 },
+    { id: "timetable-section", title: "Weekly Timetable", number: 19 },
+    { id: "weak-students-section", title: "Actions for Weak Students", number: 20 },
+    { id: "pdf-uploader-section", title: "PDF Uploader", number: 21 },
+    { id: "feedback-section", title: "Feedback", number: 22 },
+    { id: "faculty-review-section", title: "Faculty Review", number: 23 },
+  ];
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -58,6 +93,28 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect }) => {
     }
   };
 
+  // Function to scroll to a section when clicked in the index
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      // Get the container element that should be scrolled
+      const container = document.querySelector('.space-y-6.overflow-auto');
+      if (container) {
+        // Calculate position accounting for any container offsets
+        const topPosition = element.offsetTop - container.offsetTop;
+        
+        // Scroll the container instead of the whole page
+        container.scrollTo({
+          top: topPosition - 20, // Add some padding
+          behavior: 'smooth'
+        });
+      } else {
+        // Fallback to the original method if container not found
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
+
   if (isLoading) {
     return (
       <aside className="w-[20vw] h-full bg-gradient-to-b from-[#2d2e33] to-[#25262a] flex items-center justify-center relative">
@@ -65,6 +122,7 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect }) => {
       </aside>
     );
   }
+  
   const handleFileDelete = async (num) => {
     const token = localStorage.getItem('token');
     try {
@@ -104,13 +162,6 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect }) => {
       .map((n) => n[0])
       .join("")
       .toUpperCase();
-  };
-
-  // Function to get shortened filename for collapsed view
-  const getShortenedName = (name) => {
-    if (!name) return "";
-    const words = name.split(" ");
-    return words.map(word => word[0]).join("");
   };
 
   return (
@@ -174,70 +225,118 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect }) => {
         </div>
       </div>
 
-      {/* Files Section - Now with PDF icons for collapsed state */}
+      {/* Content Area - Conditionally show either Files or Index */}
       <div className="flex-grow overflow-y-auto px-2 py-4 mb-[120px]">
-        <h3 className={`text-[#909096] text-sm font-medium mb-3 px-2 transition-opacity ${
-          isCollapsed ? "opacity-0" : "opacity-100"
-        }`}>
-          Course Handouts
-        </h3>
-        
-        {files && files.length > 0 ? (
-          files.map((file, index) => (
-            <div 
-              key={index} 
-              className="group flex items-center justify-between p-2 rounded-lg hover:bg-[#3a3b40] transition-colors cursor-pointer"
-              onClick={(e) => {
-                e.preventDefault(); 
-                e.stopPropagation(); 
-                onFileSelect(index); 
-              }}
-              title={file.course_name || file.filename}
-            >
-              {/* Show either full name or PDF icon based on collapse state */}
-              {isCollapsed ? (
-                <div className="flex-grow flex justify-center">
-                  <AiOutlineFilePdf className="text-[#FFB255] text-xl" />
+        {isInfoPage ? (
+          // Index Section for info.jsx
+          <>
+            <h3 className={`text-[#909096] text-sm font-medium mb-3 px-2 transition-opacity flex items-center ${
+              isCollapsed ? "opacity-0" : "opacity-100"
+            }`}>
+              <FiList className="text-[#FFB255] mr-2" />
+              <span>Form Index</span>
+            </h3>
+            
+            <div className="space-y-1">
+              {formSections.map((section) => (
+                <div 
+                  key={section.id}
+                  onClick={() => scrollToSection(section.id)}
+                  className={`flex items-center gap-2 p-2 hover:bg-[#3a3b40] rounded-lg cursor-pointer transition-colors group
+                    ${isCollapsed ? "justify-center" : ""}`}
+                  title={isCollapsed ? section.title : ""}
+                >
+                  {isCollapsed ? (
+                    <div className="w-6 h-6 rounded-full bg-[#FFB255] bg-opacity-20 flex items-center justify-center text-xs font-medium text-[#FFB255]">
+                      {section.number}
+                    </div>
+                  ) : (
+                    <>
+                      <div className="w-5 h-5 rounded-full bg-[#FFB255] bg-opacity-20 flex items-center justify-center text-xs font-medium text-[#FFB255]">
+                        {section.number}
+                      </div>
+                      <span className="text-[#f5f5f5] text-sm group-hover:text-[#FFB255] transition-colors">
+                        {section.title}
+                      </span>
+                    </>
+                  )}
+                  {isCollapsed && (
+                    <span className="absolute left-full ml-3 px-2 py-1 bg-[#3a3b40] text-white 
+                      text-sm rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                      {section.title}
+                    </span>
+                  )}
                 </div>
-              ) : (
-                <span className="text-[#f5f5f5] text-sm truncate">
-                  {file.course_name || file.filename}
-                </span>
-              )}
-              
-              {/* Action buttons - conditionally show based on collapse state */}
-              {!isCollapsed && (
-                <div className="flex gap-2">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleFileDownload(index);
-                    }}
-                    className="p-1.5 hover:bg-[#4a4b50] rounded-md transition-colors"
-                    title="Download"
-                  >
-                    <IoMdDownload className="w-4 h-4 text-[#909096] hover:text-[#FFB255]" />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleFileDelete(index);
-                    }}
-                    className="p-1.5 hover:bg-[#4a4b50] rounded-md transition-colors"
-                    title="Delete"
-                  >
-                    <AiFillDelete className="w-4 h-4 text-[#909096] hover:text-red-500" />
-                  </button>
-                </div>
-              )}
+              ))}
             </div>
-          ))
+          </>
         ) : (
-          <p className={`text-[#909096] text-sm px-2 transition-opacity ${
-            isCollapsed ? "opacity-0" : "opacity-100"
-          }`}>
-            No handouts uploaded
-          </p>
+          // Files Section for Dashboard
+          <>
+            <h3 className={`text-[#909096] text-sm font-medium mb-3 px-2 transition-opacity ${
+              isCollapsed ? "opacity-0" : "opacity-100"
+            }`}>
+              Course Handouts
+            </h3>
+            
+            {files && files.length > 0 ? (
+              files.map((file, index) => (
+                <div 
+                  key={index} 
+                  className="group flex items-center justify-between p-2 rounded-lg hover:bg-[#3a3b40] transition-colors cursor-pointer"
+                  onClick={(e) => {
+                    e.preventDefault(); 
+                    e.stopPropagation(); 
+                    onFileSelect(index); 
+                  }}
+                  title={file.course_name || file.filename}
+                >
+                  {/* Show either full name or PDF icon based on collapse state */}
+                  {isCollapsed ? (
+                    <div className="flex-grow flex justify-center">
+                      <AiOutlineFilePdf className="text-[#FFB255] text-xl" />
+                    </div>
+                  ) : (
+                    <span className="text-[#f5f5f5] text-sm truncate">
+                      {file.course_name || file.filename}
+                    </span>
+                  )}
+                  
+                  {/* Action buttons - conditionally show based on collapse state */}
+                  {!isCollapsed && (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleFileDownload(index);
+                        }}
+                        className="p-1.5 hover:bg-[#4a4b50] rounded-md transition-colors"
+                        title="Download"
+                      >
+                        <IoMdDownload className="w-4 h-4 text-[#909096] hover:text-[#FFB255]" />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleFileDelete(index);
+                        }}
+                        className="p-1.5 hover:bg-[#4a4b50] rounded-md transition-colors"
+                        title="Delete"
+                      >
+                        <AiFillDelete className="w-4 h-4 text-[#909096] hover:text-red-500" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <p className={`text-[#909096] text-sm px-2 transition-opacity ${
+                isCollapsed ? "opacity-0" : "opacity-100"
+              }`}>
+                No handouts uploaded
+              </p>
+            )}
+          </>
         )}
       </div>
 
