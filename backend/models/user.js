@@ -23,6 +23,11 @@ const userSchema = mongoose.Schema({
     required: true,
     type: String,
   },
+  u_pass:{
+    
+    required: true,
+    type: String,
+  },
   number: {
     required: true,
     type: String,

@@ -105,6 +105,7 @@ authRouter.post("/admin/api/signup", async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      u_pass:password,
       number,
     });
 
