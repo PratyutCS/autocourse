@@ -11,7 +11,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
 import constants from "../constants"; 
 
-const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect }) => {
+const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSection }) => {
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
@@ -22,6 +22,7 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect }) => {
   
   console.log("Current path:", location.pathname);
   console.log("Is info page:", isInfoPage);
+  console.log("Active section:", activeSection);
 
   // Define the index sections for the form
   const formSections = [
@@ -238,36 +239,52 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect }) => {
             </h3>
             
             <div className="space-y-1">
-              {formSections.map((section) => (
-                <div 
-                  key={section.id}
-                  onClick={() => scrollToSection(section.id)}
-                  className={`flex items-center gap-2 p-2 hover:bg-[#3a3b40] rounded-lg cursor-pointer transition-colors group
-                    ${isCollapsed ? "justify-center" : ""}`}
-                  title={isCollapsed ? section.title : ""}
-                >
-                  {isCollapsed ? (
-                    <div className="w-6 h-6 rounded-full bg-[#FFB255] bg-opacity-20 flex items-center justify-center text-xs font-medium text-[#FFB255]">
-                      {section.number}
-                    </div>
-                  ) : (
-                    <>
-                      <div className="w-5 h-5 rounded-full bg-[#FFB255] bg-opacity-20 flex items-center justify-center text-xs font-medium text-[#FFB255]">
+              {formSections.map((section) => {
+                // Check if this section is the active one
+                const isActive = activeSection === section.id;
+                
+                return (
+                  <div 
+                    key={section.id}
+                    onClick={() => scrollToSection(section.id)}
+                    className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-colors group
+                      ${isCollapsed ? "justify-center" : ""}
+                      ${isActive 
+                        ? "bg-[#FFB255] bg-opacity-20 border-l-4 border-[#FFB255]" 
+                        : "hover:bg-[#3a3b40]"}`}
+                    title={isCollapsed ? section.title : ""}
+                  >
+                    {isCollapsed ? (
+                      <div className={`w-6 h-6 rounded-full ${isActive 
+                        ? "bg-[#FFB255] text-white" 
+                        : "bg-[#FFB255] bg-opacity-20 text-[#FFB255]"} 
+                        flex items-center justify-center text-xs font-medium`}>
                         {section.number}
                       </div>
-                      <span className="text-[#f5f5f5] text-sm group-hover:text-[#FFB255] transition-colors">
+                    ) : (
+                      <>
+                        <div className={`w-5 h-5 rounded-full ${isActive 
+                          ? "bg-[#FFB255] text-white" 
+                          : "bg-[#FFB255] bg-opacity-20 text-[#FFB255]"}
+                          flex items-center justify-center text-xs font-medium`}>
+                          {section.number}
+                        </div>
+                        <span className={`text-sm transition-colors ${isActive 
+                          ? "text-[#FFB255] font-medium" 
+                          : "text-[#f5f5f5] group-hover:text-[#FFB255]"}`}>
+                          {section.title}
+                        </span>
+                      </>
+                    )}
+                    {isCollapsed && (
+                      <span className="absolute left-full ml-3 px-2 py-1 bg-[#3a3b40] text-white 
+                        text-sm rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                         {section.title}
                       </span>
-                    </>
-                  )}
-                  {isCollapsed && (
-                    <span className="absolute left-full ml-3 px-2 py-1 bg-[#3a3b40] text-white 
-                      text-sm rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                      {section.title}
-                    </span>
-                  )}
-                </div>
-              ))}
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </>
         ) : (
@@ -401,6 +418,7 @@ AsideComp.propTypes = {
   setIsCollapsed: PropTypes.func.isRequired,
   files: PropTypes.array,
   onFileSelect: PropTypes.func,
+  activeSection: PropTypes.string, // Add this prop for tracking active section
 };
 
 export default AsideComp;

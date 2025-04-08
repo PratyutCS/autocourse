@@ -592,10 +592,43 @@ if data.get('studentData'):
     assessment_keys = set(data['studentData']['maxMarks'].keys())
     # Student list headers = all student keys EXCEPT assessment keys and Grade
     student_list_headers = list(student_keys - assessment_keys)
-    if "Grade" in student_list_headers:
-        student_list_headers.remove("Grade")
-    # Sort headers to ensure consistent order
- 
+    
+    # Remove grade-related columns and attendance columns (case-insensitive)
+    columns_to_exclude = ['grade', 'grading', 'attendance']
+    student_list_headers = [header for header in student_list_headers 
+                           if header.lower() not in [c.lower() for c in columns_to_exclude]]
+    
+    # Define priority columns and their corresponding possible variations (case-insensitive)
+    # Added exact column headers as specified
+    priority_columns = [
+        ['Sr.No', 'sr no', 'sr.no', 'srno', 'serial no', 'serial number', 'sl no', 'sl.no', 'slno', '#'],  # Serial Number variations
+        ['Student Name', 'name', 'student name', 'studentname', 'student_name'],  # Student Name variations
+        ['Unique Id.', 'id', 'unique id', 'uniqueid', 'unique_id', 'student id', 'studentid', 'student_id', 'enrollment', 'roll no']  # Unique ID variations
+    ]
+    
+    # Create a new ordered list for headers
+    ordered_headers = []
+    remaining_headers = student_list_headers.copy()
+    
+    # For each priority category, find a matching column if available
+    for priority_options in priority_columns:
+        found = False
+        for option in priority_options:
+            for header in remaining_headers:
+                if option.lower() == header.lower():
+                    ordered_headers.append(header)
+                    remaining_headers.remove(header)
+                    found = True
+                    break
+            if found:
+                break
+    
+    # Add any remaining headers after the priority ones
+    ordered_headers.extend(remaining_headers)
+    
+    # Use the ordered headers for the table
+    student_list_headers = ordered_headers
+    
     # Create the table with dynamically determined columns
     table = doc.add_table(rows=1, cols=len(student_list_headers))
     
@@ -686,9 +719,41 @@ if data.get('studentData'):
     assessment_keys = set(data['studentData']['maxMarks'].keys())
     # Attendance headers = all student keys EXCEPT assessment keys and Grade
     attendance_headers = list(student_keys - assessment_keys)
-    if "Grade" in attendance_headers:
-        attendance_headers.remove("Grade")
-    # Sort headers to ensure consistent order
+    
+    # Remove only grade-related columns (case-insensitive)
+    grade_columns_to_exclude = ['grade', 'grading']
+    attendance_headers = [header for header in attendance_headers 
+                         if header.lower() not in [c.lower() for c in grade_columns_to_exclude]]
+    
+    # Define priority columns and their corresponding possible variations (case-insensitive)
+    priority_columns = [
+        ['Sr.No', 'sr no', 'sr.no', 'srno', 'serial no', 'serial number', 'sl no', 'sl.no', 'slno', '#'],  # Serial Number variations
+        ['Student Name', 'name', 'student name', 'studentname', 'student_name'],  # Student Name variations
+        ['Unique Id.', 'id', 'unique id', 'uniqueid', 'unique_id', 'student id', 'studentid', 'student_id', 'enrollment', 'roll no']  # Unique ID variations
+    ]
+    
+    # Create a new ordered list for headers
+    ordered_headers = []
+    remaining_headers = attendance_headers.copy()
+    
+    # For each priority category, find a matching column if available
+    for priority_options in priority_columns:
+        found = False
+        for option in priority_options:
+            for header in remaining_headers:
+                if option.lower() == header.lower():
+                    ordered_headers.append(header)
+                    remaining_headers.remove(header)
+                    found = True
+                    break
+            if found:
+                break
+    
+    # Add any remaining headers after the priority ones
+    ordered_headers.extend(remaining_headers)
+    
+    # Use the ordered headers for the table
+    attendance_headers = ordered_headers
 
     # Create the attendance table
     table = doc.add_table(rows=1, cols=len(attendance_headers))
@@ -758,6 +823,7 @@ if data.get('studentData'):
         trPr = tr.get_or_add_trPr()
         cantSplit = OxmlElement('w:cantSplit')
         trPr.append(cantSplit)
+        
     # 2. DETAIL OF MARKS TABLE
     doc.add_page_break()
     marks_heading = doc.add_heading(level=1)
@@ -775,18 +841,37 @@ if data.get('studentData'):
     assessment_keys = set(data['studentData']['maxMarks'].keys())
     identifier_cols = list(all_student_keys - assessment_keys)
     
-    # For the marks table, we want to make sure standard identifier columns come first
-    # and are in a consistent order
-    standard_id_cols = ["Sr.No", "Unique Id.", "Student Name"]
+    # Remove grade-related columns from identifiers
+    grade_columns_to_exclude = ['Attendance', 'attendance',]
+    identifier_cols = [col for col in identifier_cols 
+                      if col.lower() not in [c.lower() for c in grade_columns_to_exclude]]
     
-    # Create ordered identifier columns list (standard cols first, then any remaining)
+    # Define priority columns with same format as other tables
+    priority_columns = [
+        ['Sr.No', 'sr no', 'sr.no', 'srno', 'serial no', 'serial number', 'sl no', 'sl.no', 'slno', '#'],  # Serial Number variations
+        ['Student Name', 'name', 'student name', 'studentname', 'student_name'],  # Student Name variations
+        ['Unique Id.', 'id', 'unique id', 'uniqueid', 'unique_id', 'student id', 'studentid', 'student_id', 'enrollment', 'roll no']  # Unique ID variations
+    ]
+    
+    # Create a new ordered list for identifier columns
     ordered_id_cols = []
-    for col in standard_id_cols:
-        if col in identifier_cols:
-            ordered_id_cols.append(col)
-            identifier_cols.remove(col)
-    # Add any remaining identifier columns that weren't in standard_id_cols
-    ordered_id_cols.extend(sorted(identifier_cols))
+    remaining_id_cols = identifier_cols.copy()
+    
+    # For each priority category, find a matching column if available
+    for priority_options in priority_columns:
+        found = False
+        for option in priority_options:
+            for col in remaining_id_cols:
+                if option.lower() == col.lower():
+                    ordered_id_cols.append(col)
+                    remaining_id_cols.remove(col)
+                    found = True
+                    break
+            if found:
+                break
+    
+    # Add any remaining identifier columns after the priority ones
+    ordered_id_cols.extend(remaining_id_cols)
     
     # Get assessment columns directly from maxMarks
     assessment_columns = list(data['studentData']['maxMarks'].keys())
@@ -865,7 +950,6 @@ if data.get('studentData'):
         trPr = tr.get_or_add_trPr()
         cantSplit = OxmlElement('w:cantSplit')
         trPr.append(cantSplit)
-
 
 ################################################################  Attainment Table #########################
 

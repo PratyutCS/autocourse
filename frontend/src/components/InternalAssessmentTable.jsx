@@ -82,6 +82,33 @@ const InternalAssessmentTable = ({ onSave, initialData }) => {
     }
   };
 
+  // Function to auto-resize any textarea
+  const autoResizeTextarea = (e) => {
+    e.target.style.height = 'auto';
+    e.target.style.height = e.target.scrollHeight + 'px';
+  };
+
+  // Common textarea style properties
+  const textareaStyle = {
+    minHeight: '38px',
+    resize: 'none',
+    height: 'auto',
+    overflow: 'hidden'
+  };
+  
+  // Common textarea class 
+  const textareaClass = "w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-gray-700";
+
+  useEffect(() => {
+    // Initialize all textareas' heights on component mount and data changes
+    setTimeout(() => {
+      document.querySelectorAll('.auto-resize-textarea').forEach(textarea => {
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+      });
+    }, 0);
+  }, [assessmentData]);
+
   return (
     <div className="space-y-4">
       <div className="overflow-x-auto rounded-lg border border-gray-200">
@@ -99,30 +126,39 @@ const InternalAssessmentTable = ({ onSave, initialData }) => {
             {Object.keys(assessmentData.components).map((componentKey) => (
               <tr key={componentKey} className="hover:bg-gray-50 transition-colors">
                 <td className="border-b border-r border-gray-200 p-3">
-                  <input
-                    type="text"
+                  <textarea
                     value={assessmentData.components[componentKey].component}
                     onChange={(e) => handleInputChange(componentKey, 'component', e.target.value)}
-                    className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-gray-700"
+                    onKeyDown={(e) => handleKeyDown(e, componentKey, 'component')}
+                    onInput={autoResizeTextarea}
+                    className={`${textareaClass} auto-resize-textarea`}
                     placeholder="Enter component"
+                    rows={1}
+                    style={textareaStyle}
                   />
                 </td>
                 <td className="border-b border-r border-gray-200 p-3">
-                  <input
-                    type="text"
+                  <textarea
                     value={assessmentData.components[componentKey].weightage}
                     onChange={(e) => handleInputChange(componentKey, 'weightage', e.target.value)}
-                    className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-gray-700"
+                    onKeyDown={(e) => handleKeyDown(e, componentKey, 'weightage')}
+                    onInput={autoResizeTextarea}
+                    className={`${textareaClass} auto-resize-textarea`}
                     placeholder="e.g. 20"
+                    rows={1}
+                    style={textareaStyle}
                   />
                 </td>
                 <td className="border-b border-r border-gray-200 p-3">
-                  <input
-                    type="text"
+                  <textarea
                     value={assessmentData.components[componentKey].evaluationWeek}
                     onChange={(e) => handleInputChange(componentKey, 'evaluationWeek', e.target.value)}
-                    className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-gray-700"
+                    onKeyDown={(e) => handleKeyDown(e, componentKey, 'evaluationWeek')}
+                    onInput={autoResizeTextarea}
+                    className={`${textareaClass} auto-resize-textarea`}
                     placeholder="Enter evaluation week"
+                    rows={1}
+                    style={textareaStyle}
                   />
                 </td>
                 <td className="border-b border-r border-gray-200 p-3">
@@ -130,19 +166,11 @@ const InternalAssessmentTable = ({ onSave, initialData }) => {
                     value={assessmentData.components[componentKey].remarks}
                     onChange={(e) => handleInputChange(componentKey, 'remarks', e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e, componentKey, 'remarks')}
-                    className="w-full p-2 border border-gray-200 rounded bg-white hover:border-gray-300 transition-colors outline-none text-gray-700"
+                    onInput={autoResizeTextarea}
+                    className={`${textareaClass} auto-resize-textarea`}
                     placeholder="Add remarks (Ctrl+Enter for new line)"
                     rows={1}
-                    style={{ 
-                      minHeight: '38px', 
-                      resize: 'vertical',
-                      height: 'auto',
-                      overflow: 'hidden'
-                    }}
-                    onInput={(e) => {
-                      e.target.style.height = 'auto';
-                      e.target.style.height = e.target.scrollHeight + 'px';
-                    }}
+                    style={textareaStyle}
                   />
                 </td>
                 <td className="border-b border-gray-200 p-3 text-center">

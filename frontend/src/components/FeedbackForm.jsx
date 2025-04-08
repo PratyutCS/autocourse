@@ -519,47 +519,40 @@ const FeedbackForm = (props) => {
 
   return (
     <div className="p-5 gap-[2rem] h-screen flex flex-col ">
-      <div id="header-section" className="bg-gradient-to-r from-white to-gray-50 rounded-xl shadow-md p-5 flex flex-col md:flex-row justify-between items-center gap-5 transition-all hover:shadow-xl border border-gray-200">
-  <button
-    onClick={() => window.history.back()}
-    className="group flex items-center gap-2 text-gray-700 font-medium transition-all duration-300 px-4 py-2.5 rounded-lg bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-gray-300"
-  >
-    <IoReturnUpBackSharp className="text-lg transform group-hover:-translate-x-1 transition-transform duration-300" />
-    <span className="relative z-10">Back to Files</span>
-  </button>
+      <div id="header-section" className="bg-gradient-to-r from-white to-gray-50 rounded-2xl shadow-md p-5 border border-gray-200 mb-6 transition-all hover:shadow-lg">
+  <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+    {/* Back Button */}
+    <button
+      onClick={() => window.history.back()}
+      className="group flex items-center gap-2 text-gray-700 font-medium transition-all duration-300 px-4 py-2.5 rounded-xl bg-white/70 hover:bg-white border border-gray-200 hover:border-amber-200 hover:shadow-sm"
+      aria-label="Go back to files"
+    >
+      <svg className="w-5 h-5 text-amber-500 transform group-hover:-translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      <span>Back to Files</span>
+    </button>
 
-  <div className="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
-    {!isWeightageValid && (
-      <span className="text-red-600 text-sm flex items-center bg-red-50 px-3 py-2 rounded-lg border border-red-100 shadow-sm w-full md:w-auto">
-        <AlertCircle className="w-4 h-4 mr-2 flex-shrink-0" />
-        <span>CO Assessment weightages must add up to 100%</span>
-      </span>
-    )}
-    {!validateCriteria() && (
-      <span className="text-red-600 text-sm flex items-center bg-red-50 px-3 py-2 rounded-lg border border-red-100 shadow-sm w-full md:w-auto">
-        <AlertCircle className="w-4 h-4 mr-2 flex-shrink-0" />
-        <span>CO Attainment Criteria: Fully attained must be greater than partially attained</span>
-      </span>
-    )}
-    {!validateTargetAttainment() && (
-      <span className="text-red-600 text-sm flex items-center bg-red-50 px-3 py-2 rounded-lg border border-red-100 shadow-sm w-full md:w-auto">
-        <AlertCircle className="w-4 h-4 mr-2 flex-shrink-0" />
-        <span>Target Attainment: Fully attained must be greater than or equal to partially attained</span>
-      </span>
-    )}
-    
+    {/* Status & Submit Button Section */}
     <div className="flex items-center gap-3 ml-auto">
-      <div className="hidden md:flex items-center gap-2 mr-2 bg-gray-50 p-1.5 rounded-lg border border-gray-200">
-        <div className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${isWeightageValid ? "bg-green-500" : "bg-gray-300"}`} title="Weightage validation"></div>
-        <div className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${validateCriteria() ? "bg-green-500" : "bg-gray-300"}`} title="Criteria validation"></div>
-        <div className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${validateTargetAttainment() ? "bg-green-500" : "bg-gray-300"}`} title="Target attainment validation"></div>
-        <div className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${selectedProgram !== 0 ? "bg-green-500" : "bg-gray-300"}`} title="Program selected"></div>
-        <div className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${isCourseCodeValid ? "bg-green-500" : "bg-gray-300"}`} title="Course code validation"></div>
+      {/* Validation Status Pills - Compact version */}
+      <div className="hidden md:flex items-center gap-1.5 mr-3 bg-white/80 p-1.5 rounded-xl border border-gray-200">
+        <div className={`h-3 w-3 rounded-full transition-all duration-300 ${isWeightageValid ? "bg-green-500" : "bg-red-400"}`} 
+             title="Weightage validation"></div>
+        <div className={`h-3 w-3 rounded-full transition-all duration-300 ${validateCriteria() ? "bg-green-500" : "bg-red-400"}`} 
+             title="Criteria validation"></div>
+        <div className={`h-3 w-3 rounded-full transition-all duration-300 ${validateTargetAttainment() ? "bg-green-500" : "bg-red-400"}`} 
+             title="Target attainment validation"></div>
+        <div className={`h-3 w-3 rounded-full transition-all duration-300 ${selectedProgram !== 0 ? "bg-green-500" : "bg-gray-300"}`} 
+             title="Program selected"></div>
+        <div className={`h-3 w-3 rounded-full transition-all duration-300 ${isCourseCodeValid ? "bg-green-500" : "bg-gray-300"}`} 
+             title="Course code validation"></div>
       </div>
-      
+
+      {/* Submit Button */}
       <button
         onClick={postData}
-        className={`relative transition-all duration-300 text-white font-medium rounded-lg px-6 py-3 flex items-center gap-2 ${
+        className={`relative transition-all duration-300 text-white font-medium rounded-xl px-6 py-3 flex items-center gap-2 ${
           isWeightageValid &&
           validateCriteria() &&
           validateTargetAttainment() &&
@@ -589,6 +582,41 @@ const FeedbackForm = (props) => {
       </button>
     </div>
   </div>
+  
+  {/* Validation Messages - Elegantly styled */}
+  {(!isWeightageValid || !validateCriteria() || !validateTargetAttainment()) && (
+    <div className="mt-4 flex flex-wrap gap-3">
+      {!isWeightageValid && (
+        <div className="text-red-600 text-sm flex items-center bg-red-50 px-4 py-2.5 rounded-xl border border-red-100 shadow-sm">
+          <svg className="w-4 h-4 mr-2 flex-shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span>CO Assessment weightages must add up to 100%</span>
+        </div>
+      )}
+      
+      {!validateCriteria() && (
+        <div className="text-red-600 text-sm flex items-center bg-red-50 px-4 py-2.5 rounded-xl border border-red-100 shadow-sm">
+          <svg className="w-4 h-4 mr-2 flex-shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span>CO Attainment Criteria: Fully attained must be greater than partially attained</span>
+        </div>
+      )}
+      
+      {!validateTargetAttainment() && (
+        <div className="text-red-600 text-sm flex items-center bg-red-50 px-4 py-2.5 rounded-xl border border-red-100 shadow-sm">
+          <svg className="w-4 h-4 mr-2 flex-shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span>Target Attainment: Fully attained must be greater than or equal to partially attained</span>
+        </div>
+      )}
+    </div>
+  )}
 </div>
 
       <div className="space-y-6 overflow-auto flex-1">

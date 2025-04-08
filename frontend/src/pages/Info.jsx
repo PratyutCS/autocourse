@@ -24,6 +24,7 @@ const Info = () => {
   const [file, setFileData] = useState(null);
   const [error, setError] = useState(null);
   const [allFiles, setAllFiles] = useState(null);
+  const [activeSection, setActiveSection] = useState("program-section"); // Default active section
   
   // Fetch all files for the sidebar
   useEffect(() => {
@@ -75,6 +76,37 @@ const Info = () => {
     return () => clearInterval(pollingInterval);
   }, [num, token]);
 
+  // Set up intersection observer to track which section is currently visible
+  useEffect(() => {
+    const observerOptions = {
+      root: document.querySelector('.space-y-6.overflow-auto'),
+      rootMargin: '0px',
+      threshold: 0.5, // Element is considered "visible" when 50% is in view
+    };
+
+    const observerCallback = (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+    
+    // Observe all section elements
+    const sectionElements = document.querySelectorAll('[id$="-section"]');
+    sectionElements.forEach(element => {
+      observer.observe(element);
+    });
+
+    return () => {
+      sectionElements.forEach(element => {
+        observer.unobserve(element);
+      });
+    };
+  }, [file]); // Re-run when file data is loaded
+
   if (error) {
     return <ErrorDisplay message={error} />;
   }
@@ -84,6 +116,7 @@ const Info = () => {
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
+      setActiveSection(sectionId); // Update active section when clicked
     }
   };
 
@@ -95,6 +128,7 @@ const Info = () => {
         isCollapsed={isCollapsed}
         setIsCollapsed={setIsCollapsed}
         onFileSelect={handleSectionSelect}
+        activeSection={activeSection} // Pass active section to sidebar
       />
       <div className="right h-screen overflow-hidden">
       <div className="box23 w-full h-full">
