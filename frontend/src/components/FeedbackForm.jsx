@@ -38,6 +38,7 @@ const FeedbackForm = (props) => {
   const [module, setModule] = useState("");
   const [session, setSession] = useState("");
   const [program, setProgram] = useState("");
+  const [change, setChange] = useState(false);
 
   const [courseSyllabus, setCourseSyllabus] = useState([
     {
@@ -75,8 +76,15 @@ const FeedbackForm = (props) => {
   };
 
   const EditableCourseDescriptionDataChange = (data) => {
+    setChange(true);
     setEditableCourseDescriptionData(data);
   };
+
+  useEffect(() => {
+    if(change){
+      auto_postData();
+    }
+  },[EditableCourseDescriptionData]);
 
   const handleCOPOMappingChange = (data) => {
     const newData = { ...copoMappingData };
@@ -427,6 +435,98 @@ const FeedbackForm = (props) => {
       const { full, partial } = targetAttainment[co];
       return parseFloat(full) > parseFloat(partial);
     });
+  };
+
+  const auto_postData = async () => {
+    let last_modified =
+      new Date().toLocaleString("en-IN", {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      }) +
+      ", " +
+      new Date().toLocaleString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
+
+    if (!isWeightageValid) {
+      // alert("Please ensure all CO Assessment weightages add up to 100% before submitting.");
+      // return;
+      setCoWeightages(props.coWeightages || {});
+    }
+    if (!validateCriteria()) {
+      // alert("Please ensure that the 'Min. % marks (fully attained)' are greater than or equal to 'Min. % marks (partially attained)' for all COs.");
+      // return;
+      setCoAttainmentCriteria(props.coAttainmentCriteria || {});
+    }
+    if (!validateTargetAttainment()) {
+      // alert("Please ensure that in Target Attainment, the 'Min. % students (fully attained)' are greater than or equal to 'Min. % students (partially attained)' for all COs.");
+      // return;
+      setTargetAttainment(props.targetAttainment || {});
+    }
+    if (!isCourseCodeValid) {
+      // alert("Please enter a valid course code (3 letters followed by 4 numbers).");
+      // return;
+      setCourseCode(props.coursecode || "");
+    }
+
+    if (num !== undefined) {
+      if (selectedProgram <= 0 || selectedProgram > 10) {
+        alert("Please select a valid program option before submitting.");
+        return;
+      }
+
+      try {
+        // setIsLoading(true);
+        const response = await axios.post(
+          constants.url + "/form",
+          {
+            program: selectedProgram,
+            num,
+            coursecode,
+            coursetitle,
+            module,
+            session,
+            EditableCourseDescriptionData,
+            courseSyllabus,
+            learningResources,
+            copoMappingData,
+            internalAssessmentData,
+            actionsForWeakStudentsData,
+            weeklyTimetableData,
+            coWeightages,
+            coAttainmentCriteria,
+            studentData,
+            targetAttainment,
+            feedbackData,
+            facultyCourseReview,
+            learnerCategories,
+            selectedAssessments,
+            par_sem_slowLearner,
+            last_modified,
+          },
+          {
+            headers: {
+              "x-auth-token": token,
+              "ngrok-skip-browser-warning": "69420",
+            },
+          }
+        );
+        console.log("Form submitted successfully:", response.data);
+        // window.location.reload();
+      } catch (error) {
+        console.error("Error submitting form:", error);
+        alert("An error occurred while submitting the form.");
+      } finally {
+        // setIsLoading(false);
+      }
+    }
+    else{
+      alert("wrong number of the file cannot save check with admin...");
+      return;
+    }
   };
 
   const postData = async () => {
