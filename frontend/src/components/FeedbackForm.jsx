@@ -115,35 +115,35 @@ const FeedbackForm = (props) => {
 
   const handleCoAttainmentCriteriaSave = (criteria) => {
     setCoAttainmentCriteria(criteria);
-    setPar_sem_slowLearner([[],[]]);
-    setLearnerCategories([[],[]]);
+    setPar_sem_slowLearner([[], []]);
+    setLearnerCategories([[], []]);
   };
 
-  const handleAssessmentSelectionChange = (selected) =>{
+  const handleAssessmentSelectionChange = (selected) => {
     setSelectedAssessments(selected);
-    setPar_sem_slowLearner([[],[]]);
+    setPar_sem_slowLearner([[], []]);
   }
 
   const handleTargetAttainmentSave = (criteria) => {
     setTargetAttainment(criteria);
   };
 
-  const [learnerCategories, setLearnerCategories] = useState([[],[]]);
+  const [learnerCategories, setLearnerCategories] = useState([[], []]);
 
   const handleLearners = (learnerCategories) => {
     console.log("this ran");
     setLearnerCategories(learnerCategories);
   };
-  
+
   const handlePar_sem_slowLearner = (learnerCategories) => {
     console.log("this ran1");
     setPar_sem_slowLearner(learnerCategories);
   };
-  
+
 
   useEffect(() => {
     setLearnerCategories(
-      props.learnerCategories || [[],[]]
+      props.learnerCategories || [[], []]
     );
   }, [props.learnerCategories]);
 
@@ -151,8 +151,8 @@ const FeedbackForm = (props) => {
   const handleStudentDataSave = (data) => {
     setStudentData(data);
     setSelectedAssessments([]);
-    setPar_sem_slowLearner([[],[]]);
-    setLearnerCategories([[],[]]);
+    setPar_sem_slowLearner([[], []]);
+    setLearnerCategories([[], []]);
   };
 
   const [feedbackData, setFeedbackData] = useState({
@@ -209,9 +209,9 @@ const FeedbackForm = (props) => {
     setSelectedAssessments(props.selectedAssessments || []);
   }, [props.selectedAssessments]);
 
-  const [par_sem_slowLearner, setPar_sem_slowLearner] = useState(props.par_sem_slowLearner || [[],[]]);
+  const [par_sem_slowLearner, setPar_sem_slowLearner] = useState(props.par_sem_slowLearner || [[], []]);
   useEffect(() => {
-    setPar_sem_slowLearner(props.par_sem_slowLearner || [[],[]]);
+    setPar_sem_slowLearner(props.par_sem_slowLearner || [[], []]);
   }, [props.par_sem_slowLearner]);
 
   /////////////////////////////////////////**Use Effect**//////////////////////////
@@ -226,11 +226,11 @@ const FeedbackForm = (props) => {
   }, [props.studentData]);
 
   useEffect(() => {
-    setCoAttainmentCriteria(props.coAttainmentCriteria || "");
+    setCoAttainmentCriteria(props.coAttainmentCriteria || {});
   }, [props.coAttainmentCriteria]);
 
   useEffect(() => {
-    setTargetAttainment(props.targetAttainment || "");
+    setTargetAttainment(props.targetAttainment || {});
   }, [props.targetAttainment]);
 
   useEffect(() => {
@@ -444,28 +444,28 @@ const FeedbackForm = (props) => {
       });
 
     if (!isWeightageValid) {
-      alert("Please ensure all CO Assessment weightages add up to 100% before submitting.");
-      return;
+      // alert("Please ensure all CO Assessment weightages add up to 100% before submitting.");
+      // return;
+      setCoWeightages(props.coWeightages || {});
     }
     if (!validateCriteria()) {
-      alert(
-        "Please ensure that the 'Min. % marks (fully attained)' are greater than or equal to 'Min. % marks (partially attained)' for all COs."
-      );
-      return;
+      // alert("Please ensure that the 'Min. % marks (fully attained)' are greater than or equal to 'Min. % marks (partially attained)' for all COs.");
+      // return;
+      setCoAttainmentCriteria(props.coAttainmentCriteria || {});
     }
     if (!validateTargetAttainment()) {
-      alert(
-        "Please ensure that in Target Attainment, the 'Min. % students (fully attained)' are greater than or equal to 'Min. % students (partially attained)' for all COs."
-      );
-      return;
+      // alert("Please ensure that in Target Attainment, the 'Min. % students (fully attained)' are greater than or equal to 'Min. % students (partially attained)' for all COs.");
+      // return;
+      setTargetAttainment(props.targetAttainment || {});
     }
     if (!isCourseCodeValid) {
-      alert("Please enter a valid course code (3 letters followed by 4 numbers).");
-      return;
+      // alert("Please enter a valid course code (3 letters followed by 4 numbers).");
+      // return;
+      setCourseCode(props.coursecode || "");
     }
 
     if (num !== undefined) {
-      if (selectedProgram === 0) {
+      if (selectedProgram <= 0 || selectedProgram > 10) {
         alert("Please select a valid program option before submitting.");
         return;
       }
@@ -515,12 +515,16 @@ const FeedbackForm = (props) => {
         setIsLoading(false);
       }
     }
+    else{
+      alert("wrong number of the file cannot save check with admin...");
+      return;
+    }
   };
 
   return (
     <div className="p-5 gap-[2rem] h-screen flex flex-col bg-[#FFFEFD]">
-     
-     <div id="header-section" className="bg-gradient-to-r from-white to-gray-50 rounded-2xl shadow-md p-5 border border-gray-200 mb-6 transition-all hover:shadow-lg">
+
+      <div id="header-section" className="bg-gradient-to-r from-white to-gray-50 rounded-2xl shadow-md p-5 border border-gray-200 mb-6 transition-all hover:shadow-lg">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           {/* Back Button */}
           <button
@@ -554,12 +558,12 @@ const FeedbackForm = (props) => {
             <button
               onClick={postData}
               className={`relative transition-all duration-300 text-white font-medium rounded-xl px-6 py-3 flex items-center gap-2 ${isWeightageValid &&
-                  validateCriteria() &&
-                  validateTargetAttainment() &&
-                  selectedProgram !== 0 &&
-                  isCourseCodeValid
-                  ? "bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-600 hover:to-orange-500 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                  : "bg-gray-400 cursor-not-allowed"
+                validateCriteria() &&
+                validateTargetAttainment() &&
+                selectedProgram !== 0 &&
+                isCourseCodeValid
+                ? "bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-600 hover:to-orange-500 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                : "bg-gray-400 cursor-not-allowed"
                 }`}
               disabled={
                 !isWeightageValid ||
