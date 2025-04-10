@@ -906,7 +906,6 @@ const FeedbackForm = (props) => {
           onDeleteSuccess={() => {
             console.log("File deleted");
           }}
-          initialFileName={props.mergePDF}
         />
 
         {/* Feedback and Corrective Actions */}

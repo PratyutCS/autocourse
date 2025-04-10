@@ -4,12 +4,12 @@ import axios from 'axios';
 import { Trash2, Upload, FileText, AlertCircle, Check, Eye } from 'lucide-react';
 import constants from "../constants";
 
-const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess, initialFileName }) => {
+const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess }) => {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [currentFileName, setCurrentFileName] = useState(initialFileName || '');
+  const [currentFileName, setCurrentFileName] = useState('');
   const [viewUrl, setViewUrl] = useState('');
   const [isViewing, setIsViewing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -31,8 +31,6 @@ const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess, initialFileName })
         // Check if there's an assignmentPDF entry
         if (response.data && response.data.assignmentPDF) {
           setCurrentFileName(response.data.assignmentPDF);
-        } else if (initialFileName) {
-          setCurrentFileName(initialFileName);
         }
       } catch (error) {
         console.error('Error fetching file info:', error);
@@ -43,7 +41,7 @@ const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess, initialFileName })
     };
     
     fetchFileInfo();
-  }, [num, initialFileName]);
+  }, [num]);
 
   const onDrop = useCallback((acceptedFiles) => {
     const selectedFile = acceptedFiles[0];

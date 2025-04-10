@@ -148,7 +148,6 @@ const Info = () => {
               actionsForWeakStudentsData={file["actionsForWeakStudentsData"] || ""}
               program={file["Program"] || ""}
               weeklyTimetableData={file["weeklyTimetableData"] || ""}
-              mergePDF={file["mergePDF"] || ""}
               coWeightages={file["coWeightages"] || {}}
               coAttainmentCriteria={file["coAttainmentCriteria"] || {}}
               studentData={file["studentData"] || {}}
