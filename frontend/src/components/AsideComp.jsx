@@ -5,19 +5,21 @@ import { HiMenuAlt3 } from "react-icons/hi";
 import { AiFillDelete } from "react-icons/ai";
 import { IoMdDownload } from "react-icons/io";
 import { AiOutlineFilePdf } from "react-icons/ai";
-import { FiList } from "react-icons/fi"; // Added for index icon
+import { FiList } from "react-icons/fi";
+import { FiSearch } from "react-icons/fi"; // For search icon
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
-import constants from "../constants"; 
+import constants from "../constants";
 
 const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSection }) => {
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [fileSearchQuery, setFileSearchQuery] = useState(""); // For files search
+  const [indexSearchQuery, setIndexSearchQuery] = useState(""); // For index search
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Explicitly check if we're on the info page
   const isInfoPage = location.pathname.includes('/form');
   
   console.log("Current path:", location.pathname);
@@ -50,6 +52,17 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
     { id: "feedback-section", title: "Feedback", number: 22 },
     { id: "faculty-review-section", title: "Faculty Review", number: 23 },
   ];
+
+  // Filter form sections based on search query
+  const filteredFormSections = formSections.filter(section =>
+    section.title.toLowerCase().includes(indexSearchQuery.toLowerCase())
+  );
+
+  // Filter files based on search query
+  const filteredFiles = files?.filter(file => 
+    (file.course_name?.toLowerCase() || file.filename?.toLowerCase() || '')
+      .includes(fileSearchQuery.toLowerCase())
+  );
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -94,23 +107,17 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
     }
   };
 
-  // Function to scroll to a section when clicked in the index
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      // Get the container element that should be scrolled
       const container = document.querySelector('.space-y-6.overflow-auto');
       if (container) {
-        // Calculate position accounting for any container offsets
         const topPosition = element.offsetTop - container.offsetTop;
-        
-        // Scroll the container instead of the whole page
         container.scrollTo({
-          top: topPosition - 20, // Add some padding
+          top: topPosition - 20,
           behavior: 'smooth'
         });
       } else {
-        // Fallback to the original method if container not found
         element.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
@@ -226,78 +233,118 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
         </div>
       </div>
 
-      {/* Content Area - Conditionally show either Files or Index */}
+      {/* Content Area */}
       <div className="flex-grow overflow-y-auto px-2 py-4 mb-[120px]">
         {isInfoPage ? (
-          // Index Section for info.jsx
+          // Index Section for info.jsx with Search
           <>
-            <h3 className={`text-[#909096] text-sm font-medium mb-3 px-2 transition-opacity flex items-center ${
+            <div className={`mb-4 transition-opacity ${
               isCollapsed ? "opacity-0" : "opacity-100"
             }`}>
-              <FiList className="text-[#FFB255] mr-2" />
-              <span>Form Index</span>
-            </h3>
+              <h3 className="text-[#909096] text-sm font-medium mb-3 px-2 flex items-center">
+                <FiList className="text-[#FFB255] mr-2" />
+                <span>Form Index</span>
+              </h3>
+              
+              {/* Search Input for Index */}
+              {!isCollapsed && (
+                <div className="relative px-2 mb-4">
+                  <input
+                    type="text"
+                    placeholder="Search sections..."
+                    value={indexSearchQuery}
+                    onChange={(e) => setIndexSearchQuery(e.target.value)}
+                    className="w-full bg-[#3a3b40] text-[#f5f5f5] text-sm rounded-lg pl-9 pr-4 py-2 
+                      placeholder-[#909096] focus:outline-none focus:ring-2 focus:ring-[#FFB255] transition-all"
+                  />
+                  <FiSearch className="absolute left-5 top-1/2 transform -translate-y-1/2 text-[#909096]" />
+                </div>
+              )}
+            </div>
             
             <div className="space-y-1">
-              {formSections.map((section) => {
-                // Check if this section is the active one
-                const isActive = activeSection === section.id;
-                
-                return (
-                  <div 
-                    key={section.id}
-                    onClick={() => scrollToSection(section.id)}
-                    className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-colors group
-                      ${isCollapsed ? "justify-center" : ""}
-                      ${isActive 
-                        ? "bg-[#FFB255] bg-opacity-20 border-l-4 border-[#FFB255]" 
-                        : "hover:bg-[#3a3b40]"}`}
-                    title={isCollapsed ? section.title : ""}
-                  >
-                    {isCollapsed ? (
-                      <div className={`w-6 h-6 rounded-full ${isActive 
-                        ? "bg-[#FFB255] text-white" 
-                        : "bg-[#FFB255] bg-opacity-20 text-[#FFB255]"} 
-                        flex items-center justify-center text-xs font-medium`}>
-                        {section.number}
-                      </div>
-                    ) : (
-                      <>
-                        <div className={`w-5 h-5 rounded-full ${isActive 
+              {filteredFormSections.length > 0 ? (
+                filteredFormSections.map((section) => {
+                  const isActive = activeSection === section.id;
+                  return (
+                    <div 
+                      key={section.id}
+                      onClick={() => scrollToSection(section.id)}
+                      className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-colors group
+                        ${isCollapsed ? "justify-center" : ""}
+                        ${isActive 
+                          ? "bg-[#FFB255] bg-opacity-20 border-l-4 border-[#FFB255]" 
+                          : "hover:bg-[#3a3b40]"}`}
+                      title={isCollapsed ? section.title : ""}
+                    >
+                      {isCollapsed ? (
+                        <div className={`w-6 h-6 rounded-full ${isActive 
                           ? "bg-[#FFB255] text-white" 
-                          : "bg-[#FFB255] bg-opacity-20 text-[#FFB255]"}
+                          : "bg-[#FFB255] bg-opacity-20 text-[#FFB255]"} 
                           flex items-center justify-center text-xs font-medium`}>
                           {section.number}
                         </div>
-                        <span className={`text-sm transition-colors ${isActive 
-                          ? "text-[#FFB255] font-medium" 
-                          : "text-[#f5f5f5] group-hover:text-[#FFB255]"}`}>
+                      ) : (
+                        <>
+                          <div className={`w-5 h-5 rounded-full ${isActive 
+                            ? "bg-[#FFB255] text-white" 
+                            : "bg-[#FFB255] bg-opacity-20 text-[#FFB255]"}
+                            flex items-center justify-center text-xs font-medium`}>
+                            {section.number}
+                          </div>
+                          <span className={`text-sm transition-colors ${isActive 
+                            ? "text-[#FFB255] font-medium" 
+                            : "text-[#f5f5f5] group-hover:text-[#FFB255]"}`}>
+                            {section.title}
+                          </span>
+                        </>
+                      )}
+                      {isCollapsed && (
+                        <span className="absolute left-full ml-3 px-2 py-1 bg-[#3a3b40] text-white 
+                          text-sm rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                           {section.title}
                         </span>
-                      </>
-                    )}
-                    {isCollapsed && (
-                      <span className="absolute left-full ml-3 px-2 py-1 bg-[#3a3b40] text-white 
-                        text-sm rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                        {section.title}
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
+                      )}
+                    </div>
+                  );
+                })
+              ) : (
+                <p className={`text-[#909096] text-sm px-2 transition-opacity ${
+                  isCollapsed ? "opacity-0" : "opacity-100"
+                }`}>
+                  No matching sections found
+                </p>
+              )}
             </div>
           </>
         ) : (
-          // Files Section for Dashboard
+          // Files Section for Dashboard with Search
           <>
-            <h3 className={`text-[#909096] text-sm font-medium mb-3 px-2 transition-opacity ${
+            <div className={`mb-4 transition-opacity ${
               isCollapsed ? "opacity-0" : "opacity-100"
             }`}>
-              Course Handouts
-            </h3>
+              <h3 className="text-[#909096] text-sm font-medium mb-3 px-2">
+                Course Handouts
+              </h3>
+              
+              {/* Search Input for Files */}
+              {!isCollapsed && (
+                <div className="relative px-2">
+                  <input
+                    type="text"
+                    placeholder="Search handouts..."
+                    value={fileSearchQuery}
+                    onChange={(e) => setFileSearchQuery(e.target.value)}
+                    className="w-full bg-[#3a3b40] text-[#f5f5f5] text-sm rounded-lg pl-9 pr-4 py-2 
+                      placeholder-[#909096] focus:outline-none focus:ring-2 focus:ring-[#FFB255] transition-all"
+                  />
+                  <FiSearch className="absolute left-5 top-1/2 transform -translate-y-1/2 text-[#909096]" />
+                </div>
+              )}
+            </div>
             
-            {files && files.length > 0 ? (
-              files.map((file, index) => (
+            {filteredFiles && filteredFiles.length > 0 ? (
+              filteredFiles.map((file, index) => (
                 <div 
                   key={index} 
                   className="group flex items-center justify-between p-2 rounded-lg hover:bg-[#3a3b40] transition-colors cursor-pointer"
@@ -308,7 +355,6 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
                   }}
                   title={file.course_name || file.filename}
                 >
-                  {/* Show either full name or PDF icon based on collapse state */}
                   {isCollapsed ? (
                     <div className="flex-grow flex justify-center">
                       <AiOutlineFilePdf className="text-[#FFB255] text-xl" />
@@ -319,7 +365,6 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
                     </span>
                   )}
                   
-                  {/* Action buttons - conditionally show based on collapse state */}
                   {!isCollapsed && (
                     <div className="flex gap-2">
                       <button
@@ -350,14 +395,14 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
               <p className={`text-[#909096] text-sm px-2 transition-opacity ${
                 isCollapsed ? "opacity-0" : "opacity-100"
               }`}>
-                No handouts uploaded
+                {fileSearchQuery ? "No matching handouts found" : "No handouts uploaded"}
               </p>
             )}
           </>
         )}
       </div>
 
-      {/* Navigation Controls - Always visible with proper spacing */}
+      {/* Navigation Controls */}
       <div className="absolute bottom-0 left-0 right-0 bg-[#25262a] py-4 border-t border-[#3a3b40]">
         <form onSubmit={handleLogout} className="w-full">
           <button
@@ -418,7 +463,7 @@ AsideComp.propTypes = {
   setIsCollapsed: PropTypes.func.isRequired,
   files: PropTypes.array,
   onFileSelect: PropTypes.func,
-  activeSection: PropTypes.string, // Add this prop for tracking active section
+  activeSection: PropTypes.string,
 };
 
 export default AsideComp;
