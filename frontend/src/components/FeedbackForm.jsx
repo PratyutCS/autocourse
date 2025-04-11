@@ -66,11 +66,13 @@ const FeedbackForm = (props) => {
   const [weeklyTimetableData, setWeeklyTimetableData] = useState(null);
 
   const handleWeakStudentsChange = (updatedData) => {
+    setChange(true);
     setActionsForWeakStudentsData(updatedData);
   };
 
   const handleCourseSyllabusChange = (data) => {
     if (data) {
+      setChange(true);
       setCourseSyllabus(data);
     }
   };
@@ -105,6 +107,7 @@ const FeedbackForm = (props) => {
   };
 
   const handleLearningResourcesChange = (updatedFields, fieldType) => {
+    setChange(true);
     setLearningResources((prevState) => ({
       ...prevState,
       [fieldType]: updatedFields,
@@ -175,6 +178,7 @@ const FeedbackForm = (props) => {
   }, [props.feedbackData]);
 
   const handleFeedbackChange = (data) => {
+    setChange(true);
     setFeedbackData(data);
   };
 
@@ -624,7 +628,7 @@ const FeedbackForm = (props) => {
       setChange(false);
       auto_postData();
     }
-  },[selectedProgram, EditableCourseDescriptionData, coursetitle, module, session, copoMappingData, internalAssessmentData, selectedAssessments]);
+  },[selectedProgram, EditableCourseDescriptionData, coursetitle, module, session, copoMappingData, internalAssessmentData, selectedAssessments, courseSyllabus, learningResources, weeklyTimetableData, actionsForWeakStudentsData, feedbackData, facultyCourseReview]);
 
 
   return (
@@ -998,6 +1002,7 @@ const FeedbackForm = (props) => {
               <MBAWeeklyTimetable
                 initialData={weeklyTimetableData}
                 onChange={(newTimetable) => {
+                  setChange(true);
                   setWeeklyTimetableData(newTimetable);
                 }}
               />
@@ -1005,6 +1010,7 @@ const FeedbackForm = (props) => {
               <WeeklyTimetable
                 initialData={weeklyTimetableData}
                 onChange={(newTimetable) => {
+                  setChange(true);
                   setWeeklyTimetableData(newTimetable);
                 }}
               />
@@ -1014,7 +1020,7 @@ const FeedbackForm = (props) => {
 
         {/* Actions for Weak Students */}
         <ActionsForWeakStudents
-          label="Actions Taken for Weak Students"
+          label="Actions Taken for Low Performers"
           initialData={actionsForWeakStudentsData}
           onSave={handleWeakStudentsChange}
         />
@@ -1039,7 +1045,10 @@ const FeedbackForm = (props) => {
         {/* Faculty Course Review */}
         <FacultyCourseReview
           initialData={facultyCourseReview}
-          onSave={(data) => setFacultyCourseReview(data)}
+          onSave={(data) => {
+            setChange(true);
+            setFacultyCourseReview(data);
+          }}
         />
 
         {isLoading && <LoadingSpinner />}
