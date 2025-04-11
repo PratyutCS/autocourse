@@ -80,12 +80,6 @@ const FeedbackForm = (props) => {
     setEditableCourseDescriptionData(data);
   };
 
-  useEffect(() => {
-    if(change){
-      auto_postData();
-    }
-  },[EditableCourseDescriptionData, coursetitle, module, session, copoMappingData]);
-
   const handleCOPOMappingChange = (data) => {
     const newData = { ...copoMappingData };
 
@@ -103,6 +97,7 @@ const FeedbackForm = (props) => {
 
   const handleInternalAssessmentChange = (data) => {
     if (data && data.components) {
+      setChange(true);
       setInternalAssessmentData({
         components: data.components,
       });
@@ -129,6 +124,7 @@ const FeedbackForm = (props) => {
   };
 
   const handleAssessmentSelectionChange = (selected) => {
+    setChange(true);
     setSelectedAssessments(selected);
     setPar_sem_slowLearner([[], []]);
   }
@@ -621,6 +617,15 @@ const FeedbackForm = (props) => {
       return;
     }
   };
+  
+
+  useEffect(() => {
+    if(change){
+      setChange(false);
+      auto_postData();
+    }
+  },[selectedProgram, EditableCourseDescriptionData, coursetitle, module, session, copoMappingData, internalAssessmentData, selectedAssessments]);
+
 
   return (
     <div className="p-5 gap-[2rem] h-screen flex flex-col bg-[#FFFEFD]">
@@ -740,7 +745,10 @@ const FeedbackForm = (props) => {
             <SearchableDropdown
               options={programOptions}
               value={selectedProgram}
-              onChange={(value) => setSelectedProgram(value)}
+              onChange={(value) => {
+                setChange(true);
+                setSelectedProgram(value);
+              }}
             />
           </div>
 
