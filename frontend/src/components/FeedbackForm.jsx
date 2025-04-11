@@ -84,7 +84,7 @@ const FeedbackForm = (props) => {
     if(change){
       auto_postData();
     }
-  },[EditableCourseDescriptionData]);
+  },[EditableCourseDescriptionData, coursetitle, module, session, copoMappingData]);
 
   const handleCOPOMappingChange = (data) => {
     const newData = { ...copoMappingData };
@@ -97,6 +97,7 @@ const FeedbackForm = (props) => {
       newData.mappingData = data.mappingData;
     }
 
+    setChange(true);
     setCopoMappingData(newData);
   };
 
@@ -770,7 +771,10 @@ const FeedbackForm = (props) => {
               className="w-full p-3 border border-gray-200 rounded-md transition-all resize-none text-gray-700"
               placeholder="Enter course title here..."
               value={coursetitle}
-              onChange={(e) => setCourseTitle(e.target.value)}
+              onChange={(e) => {
+                setChange(true);
+                setCourseTitle(e.target.value);
+              }}
               rows="2"
             />
           </div>
@@ -787,7 +791,10 @@ const FeedbackForm = (props) => {
               className="w-full p-3 border border-gray-200 rounded-md transition-all resize-none text-gray-700"
               placeholder="Enter module/semester here..."
               value={module}
-              onChange={(e) => setModule(e.target.value)}
+              onChange={(e) => {
+                setChange(true);
+                setModule(e.target.value);
+              }}
               rows="2"
             />
           </div>
@@ -804,7 +811,10 @@ const FeedbackForm = (props) => {
               className="w-full p-3 border border-gray-200 rounded-md transition-all resize-none text-gray-700"
               placeholder="Enter session here..."
               value={session}
-              onChange={(e) => setSession(e.target.value)}
+              onChange={(e) => {
+                setChange(true);
+                setSession(e.target.value);
+              }}
               rows="2"
             />
           </div>
