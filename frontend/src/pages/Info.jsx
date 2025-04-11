@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import constants from "../constants";
 import axios from 'axios';
 import FeedbackForm from '../components/FeedbackForm';
-import { IoReturnUpBackSharp } from "react-icons/io5";
 import { useLocation } from 'react-router-dom';
 import AsideComp from '../components/AsideComp';
 import '../css/dash.css';
@@ -24,14 +23,16 @@ const Info = () => {
   const [file, setFileData] = useState(null);
   const [error, setError] = useState(null);
   const [allFiles, setAllFiles] = useState(null);
-  const [activeSection, setActiveSection] = useState("program-section"); // Default active section
+  const [activeSection, setActiveSection] = useState("header-section"); // Default active section
+  const observerRef = useRef(null);
+  const sectionsRef = useRef([]);
   
   // Fetch all files for the sidebar
   useEffect(() => {
     const fetchAllFiles = async () => {
       try {
         const filesResponse = await axios.get(constants.url + "/files", {
-          headers: { 
+          headers: {
             "x-auth-token": token,
             "ngrok-skip-browser-warning": "69420"
           },
@@ -41,24 +42,27 @@ const Info = () => {
         console.error("Error fetching all files:", error);
       }
     };
-
+    
     fetchAllFiles();
   }, [token]);
-
+  
   // Fetch single file data
   useEffect(() => {
     let pollingInterval = null;
-
+    
     const fetchFilesData = async () => {
       try {
-        const response = await axios.post(constants.url + '/numdata', { num }, {
-          headers: { 
-            'x-auth-token': token,
-            'ngrok-skip-browser-warning': '69420'
+        const response = await axios.post(
+          constants.url + '/numdata',
+          { num },
+          {
+            headers: {
+              'x-auth-token': token,
+              'ngrok-skip-browser-warning': '69420'
+            }
           }
-        });
+        );
         setFileData(response.data);
-
         if (response.data.done === 1) {
           clearInterval(pollingInterval);
         }
@@ -68,70 +72,172 @@ const Info = () => {
         clearInterval(pollingInterval);
       }
     };
-
+    
     if (num !== undefined) {
       pollingInterval = setInterval(fetchFilesData, 1000);
       fetchFilesData();
     }
+    
     return () => clearInterval(pollingInterval);
   }, [num, token]);
 
-  // Set up intersection observer to track which section is currently visible
+  // Setup intersection observer for tracking the visible sections
   useEffect(() => {
-    const observerOptions = {
-      root: document.querySelector('.space-y-6.overflow-auto'),
-      rootMargin: '0px',
-      threshold: 0.5, // Element is considered "visible" when 50% is in view
+    // Cleanup previous observer
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+    
+    // Wait for content to load before setting up observer
+    if (!file || file.done !== 1) return;
+    
+    // Wait a bit for the DOM to be fully ready
+    const setupObserver = setTimeout(() => {
+      // Add section IDs to sections if they don't have them
+      const sections = document.querySelectorAll('[id$="-section"]');
+      sectionsRef.current = Array.from(sections);
+      
+      console.log(`Found ${sections.length} sections in the document`);
+      
+      if (sections.length === 0) {
+        console.warn("No sections found with -section suffix");
+        return;
+      }
+      
+      // Create a new intersection observer
+      const observer = new IntersectionObserver(
+        (entries) => {
+          // Filter for entries that are currently intersecting
+          const visibleEntries = entries.filter(entry => entry.isIntersecting);
+          
+          if (visibleEntries.length > 0) {
+            // Sort by y position to prioritize the one at the top
+            visibleEntries.sort((a, b) => {
+              const aRect = a.boundingClientRect;
+              const bRect = b.boundingClientRect;
+              return aRect.top - bRect.top;
+            });
+            
+            const topSection = visibleEntries[0];
+            if (topSection && topSection.target.id) {
+              const newActiveSection = topSection.target.id;
+              console.log(`Setting active section to: ${newActiveSection}`);
+              setActiveSection(newActiveSection);
+            }
+          }
+        },
+        {
+          root: document.querySelector('.space-y-6.overflow-scroll'), // Scroll container
+          rootMargin: '-100px 0px -70% 0px', // Consider elements in the top portion of the viewport
+          threshold: 0.05 // Detect when just a small part is visible
+        }
+      );
+      
+      // Observe all sections
+      sections.forEach(section => {
+        observer.observe(section);
+      });
+      
+      // Store the observer for cleanup
+      observerRef.current = observer;
+      
+    }, 1000);
+    
+    return () => {
+      clearTimeout(setupObserver);
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
     };
+  }, [file]);
 
-    const observerCallback = (entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id);
+  // Function to manually check which section is visible when scrolling
+  useEffect(() => {
+    const handleScroll = () => {
+      const container = document.querySelector('.space-y-6.overflow-scroll');
+      if (!container || sectionsRef.current.length === 0) return;
+      
+      // Get container dimensions
+      const containerRect = container.getBoundingClientRect();
+      const containerTop = containerRect.top;
+      const viewableAreaTop = containerTop + 100; // Add some offset
+      
+      // Find the topmost visible section
+      let activeElement = null;
+      let smallestDistance = Infinity;
+      
+      sectionsRef.current.forEach(section => {
+        const rect = section.getBoundingClientRect();
+        
+        // If the top of the section is above the viewable area's top
+        // and it's the closest to the top of the viewable area
+        if (rect.top <= viewableAreaTop && (viewableAreaTop - rect.top) < smallestDistance) {
+          smallestDistance = viewableAreaTop - rect.top;
+          activeElement = section;
         }
       });
+      
+      if (activeElement && activeElement.id) {
+        setActiveSection(activeElement.id);
+      }
     };
-
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
     
-    // Observe all section elements
-    const sectionElements = document.querySelectorAll('[id$="-section"]');
-    sectionElements.forEach(element => {
-      observer.observe(element);
-    });
-
+    const container = document.querySelector('.space-y-6.overflow-scroll');
+    if (container) {
+      container.addEventListener('scroll', handleScroll);
+    }
+    
     return () => {
-      sectionElements.forEach(element => {
-        observer.unobserve(element);
-      });
+      if (container) {
+        container.removeEventListener('scroll', handleScroll);
+      }
     };
-  }, [file]); // Re-run when file data is loaded
+  }, [file]);
 
   if (error) {
     return <ErrorDisplay message={error} />;
   }
 
-  // Custom handler for file selection in info view - this will navigate to sections
+  // Function to scroll to a specific section
   const handleSectionSelect = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      setActiveSection(sectionId); // Update active section when clicked
+    const section = document.getElementById(sectionId);
+    if (section) {
+      const container = document.querySelector('.space-y-6.overflow-scroll');
+      if (container) {
+        const containerRect = container.getBoundingClientRect();
+        const sectionRect = section.getBoundingClientRect();
+        const offsetTop = section.offsetTop;
+        
+        container.scrollTo({
+          top: offsetTop - 80, // Add offset for padding/margin
+          behavior: 'smooth'
+        });
+      } else {
+        section.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start' 
+        });
+      }
+      
+      // Force update active section
+      setActiveSection(sectionId);
+    } else {
+      console.warn(`Section with id ${sectionId} not found`);
     }
   };
 
   return (
     <div className='dash'>
-      <AsideComp 
-        userEmail={userData?.email} 
-        files={allFiles} 
+      <AsideComp
+        userEmail={userData?.email}
+        files={allFiles}
         isCollapsed={isCollapsed}
         setIsCollapsed={setIsCollapsed}
         onFileSelect={handleSectionSelect}
-        activeSection={activeSection} // Pass active section to sidebar
+        activeSection={activeSection}
       />
       <div className="right h-screen overflow-hidden">
-      <div className="box23 w-full h-full">
+        <div className="box23 w-full h-full">
           {file && file.done === 1 ? (
             <FeedbackForm
               file={file.filename}
@@ -163,6 +269,13 @@ const Info = () => {
           )}
         </div>
       </div>
+      
+      {/* Add debugging overlay for active section */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed bottom-0 right-0 bg-black bg-opacity-70 text-white p-2 text-xs z-50">
+          Active: {activeSection}
+        </div>
+      )}
     </div>
   );
 };

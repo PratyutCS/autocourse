@@ -6,7 +6,7 @@ import { AiFillDelete } from "react-icons/ai";
 import { IoMdDownload } from "react-icons/io";
 import { AiOutlineFilePdf } from "react-icons/ai";
 import { FiList } from "react-icons/fi";
-import { FiSearch } from "react-icons/fi"; // For search icon
+import { FiSearch } from "react-icons/fi";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -15,19 +15,18 @@ import constants from "../constants";
 const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSection }) => {
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [fileSearchQuery, setFileSearchQuery] = useState(""); // For files search
-  const [indexSearchQuery, setIndexSearchQuery] = useState(""); // For index search
+  const [fileSearchQuery, setFileSearchQuery] = useState("");
+  const [indexSearchQuery, setIndexSearchQuery] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
-  
   const isInfoPage = location.pathname.includes('/form');
-  
-  console.log("Current path:", location.pathname);
-  console.log("Is info page:", isInfoPage);
-  console.log("Active section:", activeSection);
+
+  // Console log for debugging
+  console.log("Active section in AsideComp:", activeSection);
 
   // Define the index sections for the form
   const formSections = [
+    { id: "header-section", title: "Form Header", number: 0 },
     { id: "program-section", title: "Program", number: 1 },
     { id: "course-code-section", title: "Course Code", number: 2 },
     { id: "course-title-section", title: "Course Title", number: 3 },
@@ -54,14 +53,14 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
   ];
 
   // Filter form sections based on search query
-  const filteredFormSections = formSections.filter(section =>
+  const filteredFormSections = formSections.filter(section => 
     section.title.toLowerCase().includes(indexSearchQuery.toLowerCase())
   );
 
   // Filter files based on search query
   const filteredFiles = files?.filter(file => 
     (file.course_name?.toLowerCase() || file.filename?.toLowerCase() || '')
-      .includes(fileSearchQuery.toLowerCase())
+    .includes(fileSearchQuery.toLowerCase())
   );
 
   useEffect(() => {
@@ -71,7 +70,6 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
         navigate("/");
         return;
       }
-
       try {
         const response = await axios.get(constants.url + "/", {
           headers: { "x-auth-token": token },
@@ -94,8 +92,8 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        constants.url + "/api/signout",
-        {},
+        constants.url + "/api/signout", 
+        {}, 
         { headers: { "x-auth-token": token } }
       );
       if (response.status !== 500) {
@@ -108,19 +106,34 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
   };
 
   const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      const container = document.querySelector('.space-y-6.overflow-auto');
-      if (container) {
-        const topPosition = element.offsetTop - container.offsetTop;
-        container.scrollTo({
-          top: topPosition - 20,
-          behavior: 'smooth'
-        });
-      } else {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+    // First try to find the section directly
+    const section = document.getElementById(sectionId);
+    if (!section) {
+      console.warn(`Section with ID ${sectionId} not found`);
+      return;
     }
+
+    // Find the main container that has the scroll
+    const mainContainer = document.querySelector('.space-y-6.overflow-scroll');
+    if (!mainContainer) {
+      console.warn("Main scroll container not found");
+      section.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+
+    // Calculate position relative to scroll container
+    const containerRect = mainContainer.getBoundingClientRect();
+    const sectionRect = section.getBoundingClientRect();
+    const offsetTop = sectionRect.top - containerRect.top + mainContainer.scrollTop;
+
+    // Log for debugging
+    console.log(`Scrolling to section ${sectionId} at position ${offsetTop}`);
+
+    // Scroll the container
+    mainContainer.scrollTo({
+      top: offsetTop - 80, // Add some offset for header/padding
+      behavior: 'smooth'
+    });
   };
 
   if (isLoading) {
@@ -130,7 +143,7 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
       </aside>
     );
   }
-  
+
   const handleFileDelete = async (num) => {
     const token = localStorage.getItem('token');
     try {
@@ -150,7 +163,6 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
         headers: { 'x-auth-token': token },
         responseType: 'blob'
       });
-
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
@@ -172,39 +184,40 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
       .toUpperCase();
   };
 
+  // Function to get the active section name for display
+  const getActiveSectionName = () => {
+    const activeItem = formSections.find(section => section.id === activeSection);
+    return activeItem ? activeItem.title : "";
+  };
+
   return (
-    <aside
-      className={`relative flex flex-col h-full transition-all duration-300 ease-in-out
-        ${isCollapsed ? "w-[4.5vw]" : "w-[20vw]"} 
-        bg-gradient-to-b from-[#2d2e33] to-[#25262a] shadow-2xl`}
+    <aside 
+      className={`relative flex flex-col h-full transition-all duration-300 ease-in-out 
+      ${isCollapsed ? "w-[4.5vw]" : "w-[20vw]"} 
+      bg-gradient-to-b from-[#2d2e33] to-[#25262a] shadow-2xl`}
     >
       {/* Collapse Button */}
-      <button
+      <button 
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-3 top-6 bg-[#3a3b40] rounded-full p-2 hover:bg-[#FFB255] 
-          transition-all duration-300 shadow-lg hover:shadow-[#FFB255]/20 z-10"
+        className="absolute -right-3 top-6 bg-[#3a3b40] rounded-full p-2 hover:bg-[#FFB255] transition-all duration-300 shadow-lg hover:shadow-[#FFB255]/20 z-10"
       >
-        <HiMenuAlt3
-          size={20}
-          className={`text-gray-300 transform transition-transform ${
-            isCollapsed ? "rotate-180" : ""
-          }`}
+        <HiMenuAlt3 
+          size={20} 
+          className={`text-gray-300 transform transition-transform ${isCollapsed ? "rotate-180" : ""}`} 
         />
       </button>
 
       {/* Logo Section */}
-      <div className="flex-shrink-0 flex items-center h-[18%] px-4 py-6 border-b border-[#3a3b40]">
+      <div className="flex-shrink-0 flex items-center h-[12%] px-4 py-4 border-b border-[#3a3b40]">
         <div className="flex items-center gap-3 w-full">
-          <img
-            src="/customer-logo.png"
-            alt="BMU Logo"
-            className="h-[6vh] w-auto transition-all duration-300"
+          <img 
+            src="/customer-logo.png" 
+            alt="BMU Logo" 
+            className="h-[5vh] w-auto transition-all duration-300" 
           />
-          <h1
-            className={`font-['Nunito'] font-semibold text-[#f5f5f5] text-[1.8vmin] 
-              transition-opacity duration-300 truncate ${
-                isCollapsed ? "opacity-0 w-0" : "opacity-100 w-full"
-              }`}
+          <h1 
+            className={`font-['Nunito'] font-semibold text-[#f5f5f5] text-[1.8vmin] transition-opacity duration-300 truncate 
+            ${isCollapsed ? "opacity-0 w-0" : "opacity-100 w-full"}`}
           >
             BML Munjal University
           </h1>
@@ -212,16 +225,14 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
       </div>
 
       {/* User Profile Section */}
-      <div className="flex-shrink-0 px-4 py-6 border-b border-[#3a3b40]">
+      <div className="flex-shrink-0 px-4 py-4 border-b border-[#3a3b40]">
         <div className="flex items-center gap-3 group">
-          <div className="flex items-center justify-center h-10 w-10 rounded-full 
-            bg-[#FFB255] text-white font-semibold text-sm shrink-0">
+          <div className="flex items-center justify-center h-9 w-9 rounded-full bg-[#FFB255] text-white font-semibold text-sm shrink-0">
             {getUserInitials(userData?.name)}
           </div>
-          <div
-            className={`flex flex-col transition-opacity duration-300 overflow-hidden ${
-              isCollapsed ? "opacity-0 w-0" : "opacity-100 w-full"
-            }`}
+          <div 
+            className={`flex flex-col transition-opacity duration-300 overflow-hidden 
+            ${isCollapsed ? "opacity-0 w-0" : "opacity-100 w-full"}`}
           >
             <span className="text-[#f5f5f5] font-medium text-sm truncate">
               {userData?.name || "User Name"}
@@ -233,75 +244,97 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
         </div>
       </div>
 
-      {/* Content Area */}
-      <div className="flex-grow overflow-y-auto px-2 py-4 mb-[120px]">
+      {/* Active Section Indicator (only when not collapsed) */}
+      {!isCollapsed && isInfoPage && activeSection && (
+        <div className="bg-[#FFB255] bg-opacity-10 px-4 py-2 border-b border-[#3a3b40] flex items-center">
+          <div className="w-2 h-2 rounded-full bg-[#FFB255] mr-2"></div>
+          <span className="text-[#FFB255] text-xs font-medium truncate">
+            Currently viewing: {getActiveSectionName()}
+          </span>
+        </div>
+      )}
+
+      {/* Content Area - with custom scrollbar styles */}
+      <div className="flex-grow overflow-y-auto px-2 py-4 mb-[100px] sidebar-content">
         {isInfoPage ? (
           // Index Section for info.jsx with Search
           <>
-            <div className={`mb-4 transition-opacity ${
-              isCollapsed ? "opacity-0" : "opacity-100"
-            }`}>
-              <h3 className="text-[#909096] text-sm font-medium mb-3 px-2 flex items-center">
+            <div className={`mb-3 transition-opacity ${isCollapsed ? "opacity-0" : "opacity-100"}`}>
+              <h3 className="text-[#909096] text-sm font-medium mb-2 px-2 flex items-center">
                 <FiList className="text-[#FFB255] mr-2" />
                 <span>Form Index</span>
               </h3>
               
               {/* Search Input for Index */}
               {!isCollapsed && (
-                <div className="relative px-2 mb-4">
-                  <input
-                    type="text"
-                    placeholder="Search sections..."
-                    value={indexSearchQuery}
+                <div className="relative px-2 mb-3">
+                  <input 
+                    type="text" 
+                    placeholder="Search sections..." 
+                    value={indexSearchQuery} 
                     onChange={(e) => setIndexSearchQuery(e.target.value)}
-                    className="w-full bg-[#3a3b40] text-[#f5f5f5] text-sm rounded-lg pl-9 pr-4 py-2 
-                      placeholder-[#909096] focus:outline-none focus:ring-2 focus:ring-[#FFB255] transition-all"
+                    className="w-full bg-[#3a3b40] text-[#f5f5f5] text-xs rounded-lg pl-8 pr-3 py-1.5 placeholder-[#909096] focus:outline-none focus:ring-1 focus:ring-[#FFB255] transition-all"
                   />
-                  <FiSearch className="absolute left-5 top-1/2 transform -translate-y-1/2 text-[#909096]" />
+                  <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#909096] text-xs" />
                 </div>
               )}
             </div>
             
-            <div className="space-y-1">
+            <div className="space-y-0.5 max-h-[calc(100vh-280px)] overflow-y-auto pr-1" 
+                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {filteredFormSections.length > 0 ? (
                 filteredFormSections.map((section) => {
+                  // Check if this section is active - enhanced with more specific check
                   const isActive = activeSection === section.id;
+                  
                   return (
                     <div 
                       key={section.id}
-                      onClick={() => scrollToSection(section.id)}
-                      className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-colors group
-                        ${isCollapsed ? "justify-center" : ""}
-                        ${isActive 
-                          ? "bg-[#FFB255] bg-opacity-20 border-l-4 border-[#FFB255]" 
-                          : "hover:bg-[#3a3b40]"}`}
+                      onClick={() => {
+                        console.log(`Clicked on section ${section.id}`);
+                        onFileSelect(section.id);
+                      }} 
+                      className={`flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-all duration-200 ${isCollapsed ? "justify-center" : ""}
+                      ${isActive 
+                        ? "bg-[#FFB255] bg-opacity-20 border-l-2 border-[#FFB255]" 
+                        : "hover:bg-[#3a3b40]"}`}
                       title={isCollapsed ? section.title : ""}
+                      data-section-id={section.id} // Add data attribute for easier debugging
                     >
                       {isCollapsed ? (
-                        <div className={`w-6 h-6 rounded-full ${isActive 
-                          ? "bg-[#FFB255] text-white" 
-                          : "bg-[#FFB255] bg-opacity-20 text-[#FFB255]"} 
-                          flex items-center justify-center text-xs font-medium`}>
+                        <div 
+                          className={`w-5 h-5 rounded-full ${
+                            isActive 
+                              ? "bg-[#FFB255] text-white" 
+                              : "bg-[#FFB255] bg-opacity-20 text-[#FFB255]"
+                          } flex items-center justify-center text-xs font-medium`}
+                        >
                           {section.number}
                         </div>
                       ) : (
                         <>
-                          <div className={`w-5 h-5 rounded-full ${isActive 
-                            ? "bg-[#FFB255] text-white" 
-                            : "bg-[#FFB255] bg-opacity-20 text-[#FFB255]"}
-                            flex items-center justify-center text-xs font-medium`}>
+                          <div 
+                            className={`w-4 h-4 rounded-full ${
+                              isActive 
+                                ? "bg-[#FFB255] text-white" 
+                                : "bg-[#FFB255] bg-opacity-20 text-[#FFB255]"
+                            } flex items-center justify-center text-xs font-medium flex-shrink-0`}
+                          >
                             {section.number}
                           </div>
-                          <span className={`text-sm transition-colors ${isActive 
-                            ? "text-[#FFB255] font-medium" 
-                            : "text-[#f5f5f5] group-hover:text-[#FFB255]"}`}>
+                          <span 
+                            className={`text-xs transition-colors truncate ${
+                              isActive 
+                                ? "text-[#FFB255] font-medium" 
+                                : "text-[#f5f5f5] group-hover:text-[#FFB255]"
+                            }`}
+                          >
                             {section.title}
                           </span>
                         </>
                       )}
                       {isCollapsed && (
-                        <span className="absolute left-full ml-3 px-2 py-1 bg-[#3a3b40] text-white 
-                          text-sm rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                        <span className="absolute left-full ml-2 px-2 py-1 bg-[#3a3b40] text-white text-xs rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                           {section.title}
                         </span>
                       )}
@@ -309,9 +342,7 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
                   );
                 })
               ) : (
-                <p className={`text-[#909096] text-sm px-2 transition-opacity ${
-                  isCollapsed ? "opacity-0" : "opacity-100"
-                }`}>
+                <p className={`text-[#909096] text-xs px-2 transition-opacity ${isCollapsed ? "opacity-0" : "opacity-100"}`}>
                   No matching sections found
                 </p>
               )}
@@ -320,140 +351,143 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
         ) : (
           // Files Section for Dashboard with Search
           <>
-            <div className={`mb-4 transition-opacity ${
-              isCollapsed ? "opacity-0" : "opacity-100"
-            }`}>
-              <h3 className="text-[#909096] text-sm font-medium mb-3 px-2">
+            <div className={`mb-3 transition-opacity ${isCollapsed ? "opacity-0" : "opacity-100"}`}>
+              <h3 className="text-[#909096] text-sm font-medium mb-2 px-2">
                 Course Handouts
               </h3>
               
               {/* Search Input for Files */}
               {!isCollapsed && (
                 <div className="relative px-2">
-                  <input
-                    type="text"
-                    placeholder="Search handouts..."
-                    value={fileSearchQuery}
-                    onChange={(e) => setFileSearchQuery(e.target.value)}
-                    className="w-full bg-[#3a3b40] text-[#f5f5f5] text-sm rounded-lg pl-9 pr-4 py-2 
-                      placeholder-[#909096] focus:outline-none focus:ring-2 focus:ring-[#FFB255] transition-all"
+                  <input 
+                    type="text" 
+                    placeholder="Search handouts..." 
+                    value={fileSearchQuery} 
+                    onChange={(e) => setFileSearchQuery(e.target.value)} 
+                    className="w-full bg-[#3a3b40] text-[#f5f5f5] text-xs rounded-lg pl-8 pr-3 py-1.5 placeholder-[#909096] focus:outline-none focus:ring-1 focus:ring-[#FFB255] transition-all"
                   />
-                  <FiSearch className="absolute left-5 top-1/2 transform -translate-y-1/2 text-[#909096]" />
+                  <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#909096] text-xs" />
                 </div>
               )}
             </div>
             
-            {filteredFiles && filteredFiles.length > 0 ? (
-              filteredFiles.map((file, index) => (
-                <div 
-                  key={index} 
-                  className="group flex items-center justify-between p-2 rounded-lg hover:bg-[#3a3b40] transition-colors cursor-pointer"
-                  onClick={(e) => {
-                    e.preventDefault(); 
-                    e.stopPropagation(); 
-                    onFileSelect(index); 
-                  }}
-                  title={file.course_name || file.filename}
-                >
-                  {isCollapsed ? (
-                    <div className="flex-grow flex justify-center">
-                      <AiOutlineFilePdf className="text-[#FFB255] text-xl" />
-                    </div>
-                  ) : (
-                    <span className="text-[#f5f5f5] text-sm truncate">
-                      {file.course_name || file.filename}
-                    </span>
-                  )}
-                  
-                  {!isCollapsed && (
-                    <div className="flex gap-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleFileDownload(index);
-                        }}
-                        className="p-1.5 hover:bg-[#4a4b50] rounded-md transition-colors"
-                        title="Download"
-                      >
-                        <IoMdDownload className="w-4 h-4 text-[#909096] hover:text-[#FFB255]" />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleFileDelete(index);
-                        }}
-                        className="p-1.5 hover:bg-[#4a4b50] rounded-md transition-colors"
-                        title="Delete"
-                      >
-                        <AiFillDelete className="w-4 h-4 text-[#909096] hover:text-red-500" />
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ))
-            ) : (
-              <p className={`text-[#909096] text-sm px-2 transition-opacity ${
-                isCollapsed ? "opacity-0" : "opacity-100"
-              }`}>
-                {fileSearchQuery ? "No matching handouts found" : "No handouts uploaded"}
-              </p>
-            )}
+            <div className="max-h-[calc(100vh-280px)] overflow-y-auto pr-1" 
+                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              {filteredFiles && filteredFiles.length > 0 ? (
+                filteredFiles.map((file, index) => (
+                  <div 
+                    key={index} 
+                    className="group flex items-center justify-between py-1.5 px-2 mb-1 rounded-md hover:bg-[#3a3b40] transition-colors cursor-pointer"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onFileSelect(index);
+                    }}
+                    title={file.course_name || file.filename}
+                  >
+                    {isCollapsed ? (
+                      <div className="flex-grow flex justify-center">
+                        <AiOutlineFilePdf className="text-[#FFB255] text-lg" />
+                      </div>
+                    ) : (
+                      <span className="text-[#f5f5f5] text-xs truncate max-w-[70%]">
+                        {file.course_name || file.filename}
+                      </span>
+                    )}
+                    {!isCollapsed && (
+                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleFileDownload(index);
+                          }}
+                          className="p-1 hover:bg-[#4a4b50] rounded-md transition-colors"
+                          title="Download"
+                        >
+                          <IoMdDownload className="w-3.5 h-3.5 text-[#909096] hover:text-[#FFB255]" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleFileDelete(index);
+                          }}
+                          className="p-1 hover:bg-[#4a4b50] rounded-md transition-colors"
+                          title="Delete"
+                        >
+                          <AiFillDelete className="w-3.5 h-3.5 text-[#909096] hover:text-red-500" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <p className={`text-[#909096] text-xs px-2 transition-opacity ${isCollapsed ? "opacity-0" : "opacity-100"}`}>
+                  {fileSearchQuery ? "No matching handouts found" : "No handouts uploaded"}
+                </p>
+              )}
+            </div>
           </>
         )}
       </div>
 
       {/* Navigation Controls */}
-      <div className="absolute bottom-0 left-0 right-0 bg-[#25262a] py-4 border-t border-[#3a3b40]">
+      <div className="absolute bottom-0 left-0 right-0 bg-[#25262a] py-3 border-t border-[#3a3b40]">
         <form onSubmit={handleLogout} className="w-full">
-          <button
+          <button 
             type="submit"
-            className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all
-              hover:bg-[#3a3b40] group relative ${
-                isCollapsed ? "justify-center" : ""
-              }`}
+            className={`w-full flex items-center gap-3 py-2 px-3 rounded-lg transition-all hover:bg-[#3a3b40] group relative ${isCollapsed ? "justify-center" : ""}`}
             title="Logout"
           >
-            <TfiPowerOff className="text-[#909096] group-hover:text-[#FFB255] text-xl" />
-            <div
-              className={`flex flex-col items-start transition-opacity duration-300 ${
-                isCollapsed ? "opacity-0 w-0" : "opacity-100"
-              }`}
-            >
+            <TfiPowerOff className="text-[#909096] group-hover:text-[#FFB255] text-lg" />
+            <div className={`flex flex-col items-start transition-opacity duration-300 ${isCollapsed ? "opacity-0 w-0" : "opacity-100"}`}>
               <span className="text-[#f5f5f5] text-sm">Logout</span>
             </div>
             {isCollapsed && (
-              <span className="absolute left-full ml-3 px-2 py-1 bg-[#3a3b40] text-white 
-                text-sm rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+              <span className="absolute left-full ml-2 px-2 py-1 bg-[#3a3b40] text-white text-xs rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
                 Logout
               </span>
             )}
           </button>
         </form>
-        <button
-          className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all
-            hover:bg-[#3a3b40] group relative ${
-              isCollapsed ? "justify-center" : ""
-            }`}
+        
+        <button 
+          className={`w-full flex items-center gap-3 py-2 px-3 rounded-lg transition-all hover:bg-[#3a3b40] group relative ${isCollapsed ? "justify-center" : ""}`}
           title="Support"
         >
-          <RxQuestionMarkCircled
-            className="text-[#909096] group-hover:text-[#FFB255] text-xl"
-          />
-          <span
-            className={`text-[#f5f5f5] text-sm transition-opacity duration-300 ${
-              isCollapsed ? "opacity-0" : "opacity-100"
-            }`}
-          >
+          <RxQuestionMarkCircled className="text-[#909096] group-hover:text-[#FFB255] text-lg" />
+          <span className={`text-[#f5f5f5] text-sm transition-opacity duration-300 ${isCollapsed ? "opacity-0" : "opacity-100"}`}>
             Support
           </span>
           {isCollapsed && (
-            <span className="absolute left-full ml-3 px-2 py-1 bg-[#3a3b40] text-white 
-              text-sm rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="absolute left-full ml-2 px-2 py-1 bg-[#3a3b40] text-white text-xs rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
               Support
             </span>
           )}
         </button>
       </div>
+      
+      {/* Add global styles to hide scrollbar */}
+      <style jsx global>{`
+        .sidebar-content::-webkit-scrollbar {
+          width: 0px;
+          background: transparent;
+        }
+        
+        .sidebar-content {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        
+        .sidebar-content > div::-webkit-scrollbar {
+          width: 0px;
+          background: transparent;
+        }
+        
+        .sidebar-content > div {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+      `}</style>
     </aside>
   );
 };

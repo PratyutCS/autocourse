@@ -585,57 +585,25 @@ if data.get('studentData'):
     
     doc.add_paragraph()
     
-    # Dynamically determine table columns
-    # Get all keys from the first student record
-    student_keys = set(data['studentData']['data'][0].keys())
-    # Get assessment keys from maxMarks
-    assessment_keys = set(data['studentData']['maxMarks'].keys())
-    # Student list headers = all student keys EXCEPT assessment keys and Grade
-    student_list_headers = list(student_keys - assessment_keys)
+    # Get student data and assessment headers
+    student_data = data['studentData']['data']
+    # assessment_keys = list(data['studentData']['maxMarks'].keys())
     
-    # Remove grade-related columns and attendance columns (case-insensitive)
-    columns_to_exclude = ['grade', 'grading', 'attendance']
-    student_list_headers = [header for header in student_list_headers 
-                           if header.lower() not in [c.lower() for c in columns_to_exclude]]
+    # Get actual header names from the first student entry
+    all_keys = list(student_data[0].keys())
     
-    # Define priority columns and their corresponding possible variations (case-insensitive)
-    # Added exact column headers as specified
-    priority_columns = [
-        ['Sr.No', 'sr no', 'sr.no', 'srno', 'serial no', 'serial number', 'sl no', 'sl.no', 'slno', '#'],  # Serial Number variations
-        ['Student Name', 'name', 'student name', 'studentname', 'student_name'],  # Student Name variations
-        ['Unique Id.', 'id', 'unique id', 'uniqueid', 'unique_id', 'student id', 'studentid', 'student_id', 'enrollment', 'roll no']  # Unique ID variations
-    ]
+    # First 3 keys are student info, remainder are assessment data
+    student_info_keys = all_keys[:3]  # Position-based access instead of hardcoded names
     
-    # Create a new ordered list for headers
-    ordered_headers = []
-    remaining_headers = student_list_headers.copy()
+    # Combine fixed headers with assessment headers
+    all_headers = student_info_keys 
     
-    # For each priority category, find a matching column if available
-    for priority_options in priority_columns:
-        found = False
-        for option in priority_options:
-            for header in remaining_headers:
-                if option.lower() == header.lower():
-                    ordered_headers.append(header)
-                    remaining_headers.remove(header)
-                    found = True
-                    break
-            if found:
-                break
-    
-    # Add any remaining headers after the priority ones
-    ordered_headers.extend(remaining_headers)
-    
-    # Use the ordered headers for the table
-    student_list_headers = ordered_headers
-    
-    # Create the table with dynamically determined columns
-    table = doc.add_table(rows=1, cols=len(student_list_headers))
+    # Create the table
+    table = doc.add_table(rows=1, cols=len(all_headers))
     
     # Set header row
     header_cells = table.rows[0].cells
-    
-    for i, header_text in enumerate(student_list_headers):
+    for i, header_text in enumerate(all_headers):
         header_cells[i].text = header_text
         paragraph = header_cells[i].paragraphs[0]
         run = paragraph.runs[0] if paragraph.runs else paragraph.add_run(header_text)
@@ -644,13 +612,15 @@ if data.get('studentData'):
         paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
     
     # Add student rows
-    for student in data['studentData']['data']:
+    for student in student_data:
         row_cells = table.add_row().cells
         
-        # Add cell data directly from student object for each header
-        for i, header in enumerate(student_list_headers):
-            value = student.get(header, '')
-            row_cells[i].text = str(value)
+        # Add student info columns by position from keys
+        for i, key in enumerate(student_info_keys):
+            row_cells[i].text = str(student.get(key, ''))
+        
+        # Add assessment values
+        
         
         # Format cell text
         for cell in row_cells:
@@ -661,13 +631,12 @@ if data.get('studentData'):
     
     # Calculate dynamic column widths
     total_width = Inches(6.3)  # Total table width
-    column_width = total_width / len(student_list_headers)
-    widths = [column_width] * len(student_list_headers)
+    column_width = total_width / len(all_headers)
     
+    # Apply formatting
     for row in table.rows:
         for idx, cell in enumerate(row.cells):
-            if idx < len(widths):
-                cell.width = widths[idx]
+            cell.width = column_width
     
     # Set table borders
     def set_cell_border(cell, border_type, border_size, border_color):
@@ -692,16 +661,17 @@ if data.get('studentData'):
     
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
     
+    # Ensure rows don't split across pages
     for row in table.rows:
         tr = row._tr
         trPr = tr.get_or_add_trPr()
         cantSplit = OxmlElement('w:cantSplit')
         trPr.append(cantSplit)
-################################################## Attendance Table ########################################################
-
-# Code to generate Attendance Report and Detail of Marks tables
+        
+        
 
 if data.get('studentData'):
+    # 1. ATTENDANCE REPORT TABLE
     doc.add_page_break()
     attendance_heading = doc.add_heading(level=1)
     attendance_run = attendance_heading.add_run('19. Attendance Report')
@@ -712,55 +682,41 @@ if data.get('studentData'):
 
     doc.add_paragraph()
 
-    # Dynamically determine attendance table columns
-    # Get all keys from the first student record
-    student_keys = set(data['studentData']['data'][0].keys())
-    # Get assessment keys from maxMarks
-    assessment_keys = set(data['studentData']['maxMarks'].keys())
-    # Attendance headers = all student keys EXCEPT assessment keys and Grade
-    attendance_headers = list(student_keys - assessment_keys)
+    # Get student data and find the attendance column
+    student_data = data['studentData']['data']
+    first_student = student_data[0]
     
-    # Remove only grade-related columns (case-insensitive)
-    grade_columns_to_exclude = ['grade', 'grading']
-    attendance_headers = [header for header in attendance_headers 
-                         if header.lower() not in [c.lower() for c in grade_columns_to_exclude]]
+    # Get all student keys
+    all_keys = list(first_student.keys())
     
-    # Define priority columns and their corresponding possible variations (case-insensitive)
-    priority_columns = [
-        ['Sr.No', 'sr no', 'sr.no', 'srno', 'serial no', 'serial number', 'sl no', 'sl.no', 'slno', '#'],  # Serial Number variations
-        ['Student Name', 'name', 'student name', 'studentname', 'student_name'],  # Student Name variations
-        ['Unique Id.', 'id', 'unique id', 'uniqueid', 'unique_id', 'student id', 'studentid', 'student_id', 'enrollment', 'roll no']  # Unique ID variations
-    ]
+    # First 3 keys are always student info (Sr.No, ID, Name)
+    student_info_keys = all_keys[:3]
     
-    # Create a new ordered list for headers
-    ordered_headers = []
-    remaining_headers = attendance_headers.copy()
+    # Find attendance column by name (should be the last non-assessment column)
+    attendance_column = None
+    for key in all_keys:
+        if 'attendance' in key.lower():
+            attendance_column = key
+            break
     
-    # For each priority category, find a matching column if available
-    for priority_options in priority_columns:
-        found = False
-        for option in priority_options:
-            for header in remaining_headers:
-                if option.lower() == header.lower():
-                    ordered_headers.append(header)
-                    remaining_headers.remove(header)
-                    found = True
-                    break
-            if found:
+    # If no explicit attendance column found, use the last non-assessment column
+    if not attendance_column:
+        assessment_keys = list(data['studentData']['maxMarks'].keys())
+        for key in reversed(all_keys):
+            if key not in assessment_keys and key not in ['grade', 'grading', 'Grade', 'Grading']:
+                attendance_column = key
                 break
     
-    # Add any remaining headers after the priority ones
-    ordered_headers.extend(remaining_headers)
-    
-    # Use the ordered headers for the table
-    attendance_headers = ordered_headers
+    # Headers for the attendance table: student info + attendance
+    attendance_headers = student_info_keys.copy()
+    if attendance_column and attendance_column not in attendance_headers:
+        attendance_headers.append(attendance_column)
 
     # Create the attendance table
     table = doc.add_table(rows=1, cols=len(attendance_headers))
 
     # Set header row
     header_cells = table.rows[0].cells
-
     for i, header_text in enumerate(attendance_headers):
         header_cells[i].text = header_text
         paragraph = header_cells[i].paragraphs[0]
@@ -769,11 +725,11 @@ if data.get('studentData'):
         run.font.size = Pt(9)
         paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    # Add student attendance rows - using actual data fields
-    for student in data['studentData']['data']:
+    # Add student attendance rows
+    for student in student_data:
         row_cells = table.add_row().cells
         
-        # Add cell data directly from student object for each header
+        # Add cell data for each header
         for i, header in enumerate(attendance_headers):
             value = student.get(header, '')
             row_cells[i].text = str(value)
@@ -835,59 +791,36 @@ if data.get('studentData'):
     
     doc.add_paragraph()
     
-    # Dynamically determine identifier columns and assessment columns
-    # Identifier columns = all student keys EXCEPT assessment keys
-    all_student_keys = set(data['studentData']['data'][0].keys())
-    assessment_keys = set(data['studentData']['maxMarks'].keys())
-    identifier_cols = list(all_student_keys - assessment_keys)
+    # First 3 columns are always student info
+    student_info_keys = list(first_student.keys())[:3]
     
-    # Remove grade-related columns from identifiers
-    grade_columns_to_exclude = ['Attendance', 'attendance',]
-    identifier_cols = [col for col in identifier_cols 
-                      if col.lower() not in [c.lower() for c in grade_columns_to_exclude]]
+    # Get assessment columns from maxMarks, exclude "TOTAL Marks"
+    assessment_keys = [key for key in data['studentData']['maxMarks'].keys() 
+                       if not key.lower().startswith('total')]
     
-    # Define priority columns with same format as other tables
-    priority_columns = [
-        ['Sr.No', 'sr no', 'sr.no', 'srno', 'serial no', 'serial number', 'sl no', 'sl.no', 'slno', '#'],  # Serial Number variations
-        ['Student Name', 'name', 'student name', 'studentname', 'student_name'],  # Student Name variations
-        ['Unique Id.', 'id', 'unique id', 'uniqueid', 'unique_id', 'student id', 'studentid', 'student_id', 'enrollment', 'roll no']  # Unique ID variations
-    ]
+    # Find grading column if it exists
+    grading_column = None
+    for key in all_keys:
+        if 'grade' in key.lower() or 'grading' in key.lower():
+            grading_column = key
+            break
     
-    # Create a new ordered list for identifier columns
-    ordered_id_cols = []
-    remaining_id_cols = identifier_cols.copy()
+    # Headers for the marks table: student info + assessments + (grade if exists)
+    marks_headers = student_info_keys + assessment_keys
+    if grading_column and grading_column not in marks_headers:
+        marks_headers.append(grading_column)
     
-    # For each priority category, find a matching column if available
-    for priority_options in priority_columns:
-        found = False
-        for option in priority_options:
-            for col in remaining_id_cols:
-                if option.lower() == col.lower():
-                    ordered_id_cols.append(col)
-                    remaining_id_cols.remove(col)
-                    found = True
-                    break
-            if found:
-                break
-    
-    # Add any remaining identifier columns after the priority ones
-    ordered_id_cols.extend(remaining_id_cols)
-    
-    # Get assessment columns directly from maxMarks
-    assessment_columns = list(data['studentData']['maxMarks'].keys())
-    
-    # Create table with identifier columns + assessment columns
-    table = doc.add_table(rows=1, cols=len(ordered_id_cols) + len(assessment_columns))
+    # Create table
+    table = doc.add_table(rows=1, cols=len(marks_headers))
     
     # Set header row
     header_cells = table.rows[0].cells
-    all_headers = ordered_id_cols + assessment_columns
     
-    for i, header_text in enumerate(all_headers):
+    for i, header_text in enumerate(marks_headers):
         header_cells[i].text = header_text
         
         # Add max marks info for assessment columns
-        if i >= len(ordered_id_cols):
+        if header_text in data['studentData']['maxMarks']:
             max_mark = data['studentData']['maxMarks'][header_text]
             header_cells[i].add_paragraph(f"Out of ({max_mark})")
             
@@ -899,16 +832,13 @@ if data.get('studentData'):
             paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
     
     # Add student marks rows
-    for student in data['studentData']['data']:
+    for student in student_data:
         row_cells = table.add_row().cells
         
-        # Add identifier columns data
-        for i, id_col in enumerate(ordered_id_cols):
-            row_cells[i].text = str(student.get(id_col, ''))
-        
-        # Add marks for each assessment
-        for j, assessment in enumerate(assessment_columns):
-            row_cells[len(ordered_id_cols) + j].text = str(student.get(assessment, ''))
+        # Add data for each header
+        for i, header in enumerate(marks_headers):
+            value = student.get(header, '')
+            row_cells[i].text = str(value)
         
         # Format cell text
         for cell in row_cells:
@@ -919,15 +849,25 @@ if data.get('studentData'):
     
     # Calculate dynamic column widths
     total_width = Inches(7.0)
-    # Base width for identifier columns (distribute 60% of width)
-    id_cols_total = 0.6 * total_width  
-    id_col_width = id_cols_total / len(ordered_id_cols)
-    id_widths = [id_col_width] * len(ordered_id_cols)
     
-    # Remaining width divided equally among assessment columns
-    assessment_width = (total_width * 0.4) / len(assessment_columns)
-    assessment_widths = [assessment_width] * len(assessment_columns)
-    widths = id_widths + assessment_widths
+    # Student info columns get 40% of width
+    id_cols_count = len(student_info_keys)
+    id_cols_total = 0.4 * total_width  
+    id_col_width = id_cols_total / id_cols_count if id_cols_count > 0 else 0
+    id_widths = [id_col_width] * id_cols_count
+    
+    # Assessment columns get 50% of width
+    assessment_count = len(assessment_keys)
+    assessment_total = 0.5 * total_width
+    assessment_width = assessment_total / assessment_count if assessment_count > 0 else 0
+    assessment_widths = [assessment_width] * assessment_count
+    
+    # Grade column gets 10% if it exists
+    grade_width = []
+    if grading_column in marks_headers:
+        grade_width = [0.1 * total_width]
+    
+    widths = id_widths + assessment_widths + grade_width
     
     for row in table.rows:
         for idx, cell in enumerate(row.cells):
@@ -950,7 +890,6 @@ if data.get('studentData'):
         trPr = tr.get_or_add_trPr()
         cantSplit = OxmlElement('w:cantSplit')
         trPr.append(cantSplit)
-
 ################################################################  Attainment Table #########################
 
 import matplotlib.pyplot as plt

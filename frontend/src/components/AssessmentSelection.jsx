@@ -42,20 +42,15 @@ const AssessmentSelection = ({ studentData, selectedAssessments, onChange }) => 
         ))}
       </div>
       
-      <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-        <h3 className="font-medium text-gray-700 mb-2">Selected Assessments ({selected.length})</h3>
+      
+        {/* <h3 className="font-medium text-gray-700 mb-2">Selected Assessments ({selected.length})</h3> */}
         {selected.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
-            {selected.map(assessment => (
-              <div key={assessment} className="bg-[#FFB255] bg-opacity-20 text-[#FFB255] py-1 px-3 rounded-full text-sm">
-                {assessment}
-              </div>
-            ))}
+          <div>
           </div>
         ) : (
           <p className="text-gray-500 text-sm">No assessments selected</p>
         )}
-      </div>
+      
     </div>
   );
 };
