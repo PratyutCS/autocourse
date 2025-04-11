@@ -12,10 +12,8 @@ const AssessmentSelection = ({ studentData, selectedAssessments, onChange }) => 
     return <div className="text-gray-500 italic">Please upload student data to see assessments</div>;
   }
 
-  // Extract assessment names from maxMarks, excluding the "Total Marks" entry
-  const assessments = Object.keys(studentData.maxMarks).filter(
-    name => !name.includes("Total Marks")
-  );
+  let assessments = Object.keys(studentData.maxMarks);
+  assessments = assessments.slice(0, -1);
 
   const toggleAssessment = (assessment) => {
     const newSelected = selected.includes(assessment)
