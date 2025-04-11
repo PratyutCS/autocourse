@@ -615,7 +615,7 @@ Requirements:
           * For any other program, default to Program 1's structure.
       - Extract the exact mapping values from the table.
       - All mapping values must be numerical and must be between 0 and 3 (inclusive). If a mapping value falls outside this range or is non-numerical, treat it as invalid and default to this string "0".
-      - Preserve empty cells as empty strings "0".
+      - Preserve empty cells as empty strings "0". 
       - Ensure the mapping matches the course outcomes exactly as present in the document.
       - The Program field value must match the structure used in the mappingData.
 

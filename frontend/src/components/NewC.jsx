@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AiFillDelete } from "react-icons/ai";
 import { IoMdDownload } from "react-icons/io";
 import { FcDocument } from "react-icons/fc";
-import { IoCheckmarkCircle, IoClose, IoWarning, IoEye } from "react-icons/io5";
+import { IoCheckmarkCircle, IoClose, IoWarning, IoEye, IoEllipsisVertical } from "react-icons/io5";
+import { MdContentCopy } from "react-icons/md";
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import constants from "../constants";
@@ -14,9 +15,34 @@ export default function NewC(props) {
   const [isHovered, setIsHovered] = useState(false);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);
-
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  
   const form = (num, userData) => {
     navigate('/form', { state: { num: num, userData: userData } });
+  }
+
+  const Clone = async (num) => {
+    const token = localStorage.getItem('token');
+    try {
+      showNotification('loading', 'Cloning document...');
+      const response = await axios.post(constants.url + '/clone', { num }, { 
+        headers: { 
+          'x-auth-token': token, 
+          'ngrok-skip-browser-warning': '69420' 
+        } 
+      });
+      
+      if (response.status === 200) {
+        showNotification('success', 'Document cloned successfully!');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
+    } catch (error) {
+      console.error("Error cloning document:", error);
+      showNotification('error', 'Failed to clone document. Please try again.');
+    }
   }
 
   const Delete = async (num) => {
@@ -24,15 +50,17 @@ export default function NewC(props) {
       setIsConfirmingDelete(true);
       return;
     }
+    
     const token = localStorage.getItem('token');
     try {
       showNotification('loading', 'Deleting document...');
-      const response = await axios.post(constants.url + '/delete', { num }, {
-        headers: {
-          'x-auth-token': token,
-          'ngrok-skip-browser-warning': '69420'
-        }
+      const response = await axios.post(constants.url + '/delete', { num }, { 
+        headers: { 
+          'x-auth-token': token, 
+          'ngrok-skip-browser-warning': '69420' 
+        } 
       });
+      
       if (response.status === 200) {
         showNotification('success', 'Document deleted successfully!');
         setTimeout(() => {
@@ -61,14 +89,14 @@ export default function NewC(props) {
     const token = localStorage.getItem('token');
     showNotification('loading', 'Preparing your download...');
     try {
-      const response = await axios.post(constants.url + '/download', { num }, {
-        headers: {
-          'x-auth-token': token,
-          'ngrok-skip-browser-warning': '69420'
-        },
-        responseType: 'blob'
+      const response = await axios.post(constants.url + '/download', { num }, { 
+        headers: { 
+          'x-auth-token': token, 
+          'ngrok-skip-browser-warning': '69420' 
+        }, 
+        responseType: 'blob' 
       });
-  
+      
       if (response.status === 200) {
         const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
         const link = document.createElement('a');
@@ -85,7 +113,6 @@ export default function NewC(props) {
     }
   }
 
-  // Modified Preview function that opens a new tab immediately within a local variable (isolated for this call)
   const Preview = async (num) => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -97,30 +124,28 @@ export default function NewC(props) {
       showNotification('error', 'Cannot preview incomplete documents');
       return;
     }
-  
-    // Open a new tab immediately. This tab is independent for each preview call.
+    
     const previewTab = window.open('', '_blank');
     if (!previewTab) {
       showNotification('error', 'Popup blocked! Please disable your popup blocker.');
       return;
     }
-  
+    
     setIsLoadingPreview(true);
     showNotification('loading', 'Generating PDF for preview...');
     
     try {
-      const response = await axios.post(constants.url + '/download', { num }, {
-        headers: {
-          'x-auth-token': token,
-          'ngrok-skip-browser-warning': '69420'
-        },
-        responseType: 'blob'
+      const response = await axios.post(constants.url + '/download', { num }, { 
+        headers: { 
+          'x-auth-token': token, 
+          'ngrok-skip-browser-warning': '69420' 
+        }, 
+        responseType: 'blob' 
       });
-  
+      
       if (response.status === 200) {
         const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
         const url = window.URL.createObjectURL(pdfBlob);
-        // Update new tab's location with the blob URL so that the PDF is displayed
         previewTab.location.href = url;
         showNotification('success', 'Preview opened in a new tab!');
       }
@@ -131,7 +156,7 @@ export default function NewC(props) {
       } else {
         showNotification('error', 'Preview failed. Please try again.');
       }
-      previewTab.close(); // Close the tab if there's an error
+      previewTab.close();
     } finally {
       setIsLoadingPreview(false);
     }
@@ -143,8 +168,26 @@ export default function NewC(props) {
     }
   }, [isHovered, isConfirmingDelete]);
 
+  // Handle clicks outside the menu to close it
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false);
+        if (isConfirmingDelete) {
+          setIsConfirmingDelete(false);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [menuRef, isConfirmingDelete]);
+
   const Notification = () => {
     if (!notification.visible) return null;
+    
     let icon;
     let bgColor;
     let textColor = "text-white";
@@ -205,14 +248,17 @@ export default function NewC(props) {
       <AnimatePresence>
         {notification.visible && <Notification />}
       </AnimatePresence>
-      
       <motion.div 
         className={`relative h-full w-full bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border-2 ${getBorderColorClass()}`}
         onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          // Don't auto-close menu when mouse leaves the card
+        }}
         transition={{ type: 'spring', stiffness: 300 }}
       >
-        <div className="absolute top-3 right-3 z-1">
+        <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
+          {/* Status Badge */}
           {props.done === 1 ? (
             <div className="bg-green-100 text-green-700 text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
               <IoCheckmarkCircle className="w-3.5 h-3.5" />
@@ -224,14 +270,77 @@ export default function NewC(props) {
               <span>Data is being extracted</span>
             </div>
           )}
+          
+          {/* Three-dot menu */}
+          <div className="relative" ref={menuRef}>
+            <button 
+              className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                setMenuOpen(!menuOpen);
+                if (isConfirmingDelete) setIsConfirmingDelete(false);
+              }}
+              aria-label="More options"
+            >
+              <IoEllipsisVertical className="w-5 h-5 text-gray-600" />
+            </button>
+            
+            {/* Dropdown menu */}
+            <AnimatePresence>
+              {menuOpen && (
+                <motion.div 
+                  className="absolute right-0 top-full mt-1 w-44 bg-white rounded-md shadow-lg z-50 border border-gray-200 py-1 overflow-hidden"
+                  initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  <button 
+                    onClick={() => {
+                      Clone(props.num);
+                      setMenuOpen(false);
+                    }}
+                    className="w-full flex items-center gap-2 px-4 py-2.5 text-left hover:bg-blue-50 text-gray-700 hover:text-blue-600 transition-colors"
+                  >
+                    <MdContentCopy className="w-4 h-4" />
+                    <span>Clone</span>
+                  </button>
+                  
+                  <button 
+                    onClick={() => {
+                      Download(props.num);
+                      setMenuOpen(false);
+                    }}
+                    className="w-full flex items-center gap-2 px-4 py-2.5 text-left hover:bg-blue-50 text-gray-700 hover:text-blue-600 transition-colors"
+                  >
+                    <IoMdDownload className="w-4 h-4" />
+                    <span>Download</span>
+                  </button>
+                  
+                  <button 
+                    onClick={() => {
+                      Delete(props.num);
+                    }}
+                    className={`w-full flex items-center gap-2 px-4 py-2.5 text-left transition-colors ${
+                      isConfirmingDelete 
+                        ? "bg-red-50 text-red-600"
+                        : "hover:bg-red-50 text-gray-700 hover:text-red-600"
+                    }`}
+                  >
+                    <AiFillDelete className="w-4 h-4" />
+                    <span>{isConfirmingDelete ? "Confirm Delete" : "Delete"}</span>
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
-
+        
         <div className="flex h-full flex-col items-center justify-between p-6">
           <div className="w-full flex flex-col items-center gap-4">
             <div className={`rounded-full p-4 transition-colors duration-300 shadow-sm ${props.done === 1 ? 'bg-green-50' : 'bg-red-50'}`}>
               <FcDocument className="w-10 h-10" />
             </div>
-            
             <div className="w-full text-center">
               <h3 className="text-lg font-medium text-gray-900 mb-1 truncate px-2" title={props.name}>
                 {props.name}
@@ -241,9 +350,9 @@ export default function NewC(props) {
               </p>
             </div>
           </div>
-
+          
           <div className="w-full flex flex-col gap-3 mt-6">
-            <button
+            <button 
               onClick={() => form(props.num, props.userData)}
               className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FFB255] hover:bg-[#ffa133] text-white rounded-md transition-all duration-200 font-medium shadow-sm hover:shadow"
             >
@@ -251,14 +360,14 @@ export default function NewC(props) {
               <span>Edit Document</span>
             </button>
             
-            <button
+            <button 
               onClick={() => Preview(props.num)}
               disabled={props.done !== 1 || isLoadingPreview}
-              className={`inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-md transition-all duration-200 font-medium shadow-sm
-                ${props.done !== 1 
+              className={`inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-md transition-all duration-200 font-medium shadow-sm ${
+                props.done !== 1 
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                  : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-600 hover:shadow'}
-              `}
+                  : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-600 hover:shadow'
+              } `}
             >
               {isLoadingPreview ? (
                 <>
@@ -275,32 +384,9 @@ export default function NewC(props) {
                 </>
               )}
             </button>
-            
-            <div className="flex justify-between gap-2">
-              <button
-                onClick={() => Delete(props.num)}
-                className={`flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-md transition-all duration-200 border font-medium ${
-                  isConfirmingDelete
-                    ? "bg-red-500 text-white hover:bg-red-600 border-red-500"
-                    : "bg-white hover:bg-red-50 text-red-500 border-red-200 hover:border-red-300"
-                }`}
-                title={isConfirmingDelete ? "Confirm delete" : "Delete"}
-              >
-                <AiFillDelete className="w-4 h-4" />
-                {isConfirmingDelete && <span className="text-xs">Confirm</span>}
-              </button>
-              
-              <button
-                onClick={() => Download(props.num)}
-                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white hover:bg-blue-50 text-blue-500 rounded-md transition-all duration-200 border border-blue-200 hover:border-blue-300 font-medium"
-                title="Download"
-              >
-                <IoMdDownload className="w-4 h-4" />
-              </button>
-            </div>
           </div>
         </div>
-
+        
         <motion.div 
           className="absolute inset-0 bg-gray-900 pointer-events-none"
           initial={{ opacity: 0 }}

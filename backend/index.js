@@ -310,7 +310,138 @@ app.post("/delete", auth, async (req, res) => {
     res.status(500).json({ message: "Error in /delete" });
   }
 });
+// Clone route implementation
+app.post("/clone", auth, async (req, res) => {
+  const num = req.body.num;
 
+  if (num === undefined) {
+    console.error("Error: 'num' is undefined.");
+    return res.status(400).json({ message: "Error: 'num' is required in request body." });
+  }
+
+  try {
+    const user = await User.findById(req.user);
+    const directoryPath = path.join(__dirname, "/json/", `${user.number}.json`);
+    const filePath = path.join(__dirname, "/data/", user.number, "/");
+
+    // Read the JSON file
+    let data = fs.readFileSync(directoryPath, "utf8");
+    let jsonData = JSON.parse(data);
+
+    if (num >= jsonData.length || num < 0) {
+      return res.status(400).json({ message: "Invalid 'num' parameter." });
+    }
+
+    // Get source document data to clone
+    const sourceDocument = jsonData[num];
+    
+    // Create a deep copy of the source document
+    const clonedDocument = JSON.parse(JSON.stringify(sourceDocument));
+    
+    // Update fields in cloned document
+    const timestamp = new Date();
+    const formattedTime = timestamp.toLocaleString("en-IN", { 
+      hour: "numeric", minute: "numeric", hour12: true 
+    });
+    const formattedDate = timestamp.toLocaleString("en-IN", { 
+      day: "numeric", month: "short", year: "numeric" 
+    });
+    clonedDocument.last_modified = formattedTime + ", " + formattedDate;
+    
+    // If there's a filename, create a clone with a new name
+    if (clonedDocument.filename) {
+      const originalFilename = sourceDocument.filename;
+      const fileExt = path.extname(originalFilename);
+      const fileBase = path.basename(originalFilename, fileExt);
+      const newFilename = `${fileBase}_clone${fileExt}`;
+      
+      // Copy the physical file if it exists
+      const originalFilePath = path.join(filePath, originalFilename);
+      const newFilePath = path.join(filePath, newFilename);
+      
+      if (fs.existsSync(originalFilePath)) {
+        fs.copyFileSync(originalFilePath, newFilePath);
+      }
+      
+      // Update the filename in the cloned document
+      clonedDocument.filename = newFilename;
+      
+      // Add suffix to course name if exists
+      if (clonedDocument.course_name) {
+        clonedDocument.course_name = `${clonedDocument.course_name} (Copy)`;
+      }
+    }
+    
+    // Handle associated files (mergePDF if exists)
+    if (clonedDocument.mergePDF && clonedDocument.mergePDF !== "") {
+      const originalMergePdf = clonedDocument.mergePDF;
+      const pdfExt = path.extname(originalMergePdf);
+      const pdfBase = path.basename(originalMergePdf, pdfExt);
+      const newMergePdf = `${pdfBase}_clone${pdfExt}`;
+      
+      const originalPdfPath = path.join(filePath, originalMergePdf);
+      const newPdfPath = path.join(filePath, newMergePdf);
+      
+      if (fs.existsSync(originalPdfPath)) {
+        fs.copyFileSync(originalPdfPath, newPdfPath);
+        clonedDocument.mergePDF = newMergePdf;
+      }
+    }
+    
+    // Handle assignmentPDF if exists
+    if (clonedDocument.assignmentPDF && clonedDocument.assignmentPDF !== "") {
+      const originalAssignmentPdf = clonedDocument.assignmentPDF;
+      const assignmentDir = path.join(__dirname, 'data', 'assignments');
+      const pdfExt = path.extname(originalAssignmentPdf);
+      const pdfBase = path.basename(originalAssignmentPdf, pdfExt);
+      const newAssignmentPdf = `${pdfBase}_clone${pdfExt}`;
+      
+      const originalAssignmentPath = path.join(assignmentDir, originalAssignmentPdf);
+      const newAssignmentPath = path.join(assignmentDir, newAssignmentPdf);
+      
+      if (fs.existsSync(originalAssignmentPath)) {
+        fs.copyFileSync(originalAssignmentPath, newAssignmentPath);
+        clonedDocument.assignmentPDF = newAssignmentPdf;
+      }
+    }
+
+    // Handle custom image from copoMappingData if exists
+    if (clonedDocument.copoMappingData && 
+        clonedDocument.copoMappingData.imagePath && 
+        clonedDocument.copoMappingData.imagePath !== "") {
+      const originalImagePath = "." + clonedDocument.copoMappingData.imagePath;
+      if (fs.existsSync(originalImagePath)) {
+        // Parse the original path to create a new one
+        const imgDir = path.dirname(originalImagePath);
+        const imgExt = path.extname(originalImagePath);
+        const imgBase = path.basename(originalImagePath, imgExt);
+        const newImageFilename = `${imgBase}_clone${imgExt}`;
+        const newImagePath = path.join(imgDir, newImageFilename);
+        
+        // Copy the image file
+        fs.copyFileSync(originalImagePath, newImagePath);
+        
+        // Update the path in the cloned document
+        clonedDocument.copoMappingData.imagePath = newImagePath.substring(1); // Remove leading dot
+      }
+    }
+
+    // Add the cloned document to the JSON array
+    jsonData.push(clonedDocument);
+    
+    // Save the updated JSON data
+    fs.writeFileSync(directoryPath, JSON.stringify(jsonData));
+
+    res.status(200).json({ 
+      message: "Document cloned successfully",
+      newIndex: jsonData.length - 1
+    });
+    
+  } catch (error) {
+    console.error("Error during cloning:", error);
+    res.status(500).json({ message: "Server error: " + error.message });
+  }
+});
 // To download
 // To download
 app.post("/download", auth, async (req, res) => {
