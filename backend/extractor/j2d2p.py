@@ -2082,6 +2082,50 @@ except Exception as e:
 
 # Prepare PDF list for merging
 # If an assignmentPDF is provided, include it; otherwise, just use our generated PDF.
+
+from PyPDF2 import PdfReader, PdfWriter
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from io import BytesIO
+
+def add_heading_to_pdf(input_pdf_path, heading_text):
+    # Step 1: Create a PDF with the heading text
+    packet = BytesIO()
+    can = canvas.Canvas(packet, pagesize=letter)
+    can.setFont("Helvetica-Bold", 14)
+    can.drawString(72, 750, heading_text)  # 1 inch margin from left and near the top
+    can.save()
+    packet.seek(0)
+
+    # Step 2: Read original PDF and overlay the heading
+    heading_pdf = PdfReader(packet)
+    original_pdf = PdfReader(input_pdf_path)
+    writer = PdfWriter()
+
+    # Merge heading on top of the first page
+    first_page = original_pdf.pages[0]
+    first_page.merge_page(heading_pdf.pages[0])
+    writer.add_page(first_page)
+
+    # Add the rest of the pages unchanged
+    for page in original_pdf.pages[1:]:
+        writer.add_page(page)
+
+    # Step 3: Save modified version (overwrite original or use temp path)
+    modified_pdf_path = input_pdf_path.replace(".pdf", "_with_heading.pdf")
+    with open(modified_pdf_path, "wb") as f_out:
+        writer.write(f_out)
+
+    return modified_pdf_path
+
+# if data.get('assignmentPDF'):
+#     assignment_pdf_path = "./data/assignments/" + data['assignmentPDF']
+#     heading_text = "Assignments / Quiz / Internal Components"
+#     updated_assignment_pdf = add_heading_to_pdf(assignment_pdf_path, heading_text)
+#     pdf_list = [pdf_path, updated_assignment_pdf]
+# else:
+#     pdf_list = [pdf_path]
+
 if data.get('assignmentPDF'):
     pdf_list = [pdf_path, "./data/assignments/" + data['assignmentPDF']]
 else:
