@@ -27,7 +27,7 @@ const COAttainmentCriteria = ({ copoMappingData, initialCriteria, onSave }) => {
       };
     });
     
-    if (JSON.stringify(criteria) !== JSON.stringify(newCriteria)) {
+    if (JSON.stringify(initialCriteria) !== JSON.stringify(newCriteria)) {
       setCriteria(newCriteria);
       // Only save if there are actual values to save
       const dataToSave = {};
@@ -37,6 +37,7 @@ const COAttainmentCriteria = ({ copoMappingData, initialCriteria, onSave }) => {
           partial: newCriteria[co].partial === '' ? 0 : newCriteria[co].partial,
         };
       });
+      console.log("[COAttainmentCriteria] this ran 40");
       onSave(dataToSave);
     }
   }, [copoMappingData, initialCriteria]);

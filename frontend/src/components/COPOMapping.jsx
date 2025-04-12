@@ -5,8 +5,7 @@ const COPOMapping = ({ onSave, initialData, program }) => {
   // Generate headers based on the program - using useMemo to avoid recalculations
   const headers = useMemo(() => {
     const programInt = parseInt(program);
-    
-    switch(programInt) {
+    switch (programInt) {
       case 1: // Computer Science Engineering
         return [
           "CO/PO",
@@ -18,7 +17,7 @@ const COPOMapping = ({ onSave, initialData, program }) => {
         return [
           "CO/PO",
           "PO1", "PO2", "PO3", "PO4", "PO5", "PO6",
-          "PO7", "PO8", "PO9", "PO10", "PO11","PO12",
+          "PO7", "PO8", "PO9", "PO10", "PO11", "PO12",
           "PSO1", "PSO2"
         ];
       case 3: // Electronics and Computer Engineering
@@ -26,48 +25,46 @@ const COPOMapping = ({ onSave, initialData, program }) => {
           "CO/PO",
           "PO1", "PO2", "PO3", "PO4", "PO5", "PO6",
           "PO7", "PO8", "PO9", "PO10", "PO11", "PO12", 
-          "PSO1", "PSO2", 
+          "PSO1", "PSO2"
         ];
       case 4: // BBA
         return [
           "CO/PO",
           "PO1", "PO2", "PO3", "PO4", "PO5", "PO6",
-          "PSFA1", "PSFA2",
+          "PSFA1", "PSFA2"
         ];
-
-        case 5: // BCOM(Hons)/
+      case 5: // BCOM(Hons)
         return [
           "CO/PO",
-          "PO1", "PO2", "PO3", "PO4", "PO5", "PO6","PO7","PO8",
-          
+          "PO1", "PO2", "PO3", "PO4", "PO5", "PO6", "PO7", "PO8"
         ];
-        case 6: // Integrated BBA/MBA
-        return [
-          "CO/PO",
-          "PO1", "PO2", "PO3", "PO4", "PO5", "PO6",
-          "PSFB1", "PSFB2", "PSFB3",
-        ];
-        case 7: // BA (Hons) Libreral Arts
-        return [
-          "CO/PO",
-          "PO1", "PO2", "PO3", "PO4", "PO5", "PO6","PO7",
-        ];
-        case 8: //  BA LLB (Hons)
-        return [
-          "CO/PO",
-          "PO1", "PO2", "PO3", "PO4", "PO5", "PO6","PO7",
-          "PSO1", "PSO2"
-        ];
-        case 9: // BBA LLB (Hons)
-        return [
-          "CO/PO",
-          "PO1", "PO2", "PO3", "PO4", "PO5", "PO6","PO7",
-          "PSO1", "PSO2"
-        ];
-        case 10: // BBA LLB (Hons)
+      case 6: // Integrated BBA/MBA
         return [
           "CO/PO",
           "PO1", "PO2", "PO3", "PO4", "PO5", "PO6",
+          "PSFB1", "PSFB2", "PSFB3"
+        ];
+      case 7: // BA (Hons) Libreral Arts
+        return [
+          "CO/PO",
+          "PO1", "PO2", "PO3", "PO4", "PO5", "PO6", "PO7"
+        ];
+      case 8: // BA LLB (Hons)
+        return [
+          "CO/PO",
+          "PO1", "PO2", "PO3", "PO4", "PO5", "PO6", "PO7",
+          "PSO1", "PSO2"
+        ];
+      case 9: // BBA LLB (Hons)
+        return [
+          "CO/PO",
+          "PO1", "PO2", "PO3", "PO4", "PO5", "PO6", "PO7",
+          "PSO1", "PSO2"
+        ];
+      case 10: // MBA
+        return [
+          "CO/PO",
+          "PO1", "PO2", "PO3", "PO4", "PO5", "PO6"
         ];
       default: // Default to Computer Science Engineering format
         return [
@@ -83,63 +80,51 @@ const COPOMapping = ({ onSave, initialData, program }) => {
   const [state, setState] = useState(() => {
     const courseOutcomes = initialData?.courseOutcomes || {};
     let mappingData = {};
-    
-    // Initialize mapping data with POs based on current headers
+
     if (initialData?.mappingData) {
-      // For each CO in the initial data
       Object.entries(initialData.mappingData).forEach(([co, poMap]) => {
         mappingData[co] = {};
-        
-        // Only include POs that are in the current headers
         headers.slice(1).forEach(po => {
           mappingData[co][po] = poMap[po] || "";
         });
       });
     }
-    
+
     return { courseOutcomes, mappingData };
   });
-  
+
   // Update mapping data when program/headers change
   useEffect(() => {
-    // If we have existing mapping data
     if (Object.keys(state.mappingData).length > 0) {
       const updatedMappingData = {};
-      
-      // For each CO
       Object.entries(state.mappingData).forEach(([co, poMap]) => {
         updatedMappingData[co] = {};
-        
-        // Only keep the POs that are in the new headers
         headers.slice(1).forEach(po => {
           updatedMappingData[co][po] = poMap[po] || "";
         });
       });
-      
-      // Update state with the new mapping data
-      setState(prevState => ({
-        ...prevState,
-        mappingData: updatedMappingData
-      }));
-      
-      // Notify parent component
-      onSave({
-        courseOutcomes: state.courseOutcomes,
-        mappingData: updatedMappingData,
-      });
+      // Only update and trigger onSave if the new mapping data differs
+      if (JSON.stringify(state.mappingData) !== JSON.stringify(updatedMappingData)) {
+        setState(prevState => ({
+          ...prevState,
+          mappingData: updatedMappingData
+        }));
+        onSave({
+          courseOutcomes: state.courseOutcomes,
+          mappingData: updatedMappingData,
+        });
+      }
     }
-  }, [headers]); // This runs when headers change (which is when program changes)
+  }, [headers]);
 
-  // Initialize with initial data
+  // Initialize state with initialData only if there is an actual difference
   useEffect(() => {
     if (initialData) {
       setState(prevState => {
-        // Only update the state if the initialData is different
         if (
           JSON.stringify(prevState.courseOutcomes) !== JSON.stringify(initialData.courseOutcomes) ||
           JSON.stringify(Object.keys(prevState.mappingData)) !== JSON.stringify(Object.keys(initialData.mappingData))
         ) {
-          // Prepare new mapping data that matches current headers
           const newMappingData = {};
           Object.entries(initialData.mappingData || {}).forEach(([co, poMap]) => {
             newMappingData[co] = {};
@@ -147,11 +132,16 @@ const COPOMapping = ({ onSave, initialData, program }) => {
               newMappingData[co][po] = poMap[po] || "";
             });
           });
-          
-          return {
+
+          const newState = {
             courseOutcomes: initialData.courseOutcomes || {},
             mappingData: newMappingData
           };
+
+          if (JSON.stringify(prevState.mappingData) !== JSON.stringify(newMappingData)) {
+            onSave(newState);
+          }
+          return newState;
         }
         return prevState;
       });
@@ -172,13 +162,10 @@ const COPOMapping = ({ onSave, initialData, program }) => {
             },
           }
         };
-        
-        // Notify parent component
         onSave({
           courseOutcomes: prevState.courseOutcomes,
           mappingData: newState.mappingData,
         });
-        
         return newState;
       });
     }
@@ -197,13 +184,10 @@ const COPOMapping = ({ onSave, initialData, program }) => {
           },
         }
       };
-      
-      // Notify parent component
       onSave({
         courseOutcomes: newState.courseOutcomes,
         mappingData: prevState.mappingData,
       });
-      
       return newState;
     });
   };
@@ -221,13 +205,10 @@ const COPOMapping = ({ onSave, initialData, program }) => {
           },
         }
       };
-      
-      // Notify parent component
       onSave({
         courseOutcomes: newState.courseOutcomes,
         mappingData: prevState.mappingData,
       });
-      
       return newState;
     });
   };
@@ -245,13 +226,10 @@ const COPOMapping = ({ onSave, initialData, program }) => {
           },
         }
       };
-      
-      // Notify parent component
       onSave({
         courseOutcomes: newState.courseOutcomes,
         mappingData: prevState.mappingData,
       });
-      
       return newState;
     });
   };
@@ -271,13 +249,10 @@ const COPOMapping = ({ onSave, initialData, program }) => {
           },
         }
       };
-      
-      // Notify parent component
       onSave({
         courseOutcomes: newState.courseOutcomes,
         mappingData: prevState.mappingData,
       });
-      
       return newState;
     });
   };
@@ -287,8 +262,6 @@ const COPOMapping = ({ onSave, initialData, program }) => {
     setState(prevState => {
       const newCoNumber = Object.keys(prevState.mappingData).length + 1;
       const newCo = `CO${newCoNumber}`;
-
-      // Create empty mapping for all POs in current headers
       const newPoMap = headers.slice(1).reduce((acc, po) => {
         acc[po] = "";
         return acc;
@@ -304,10 +277,8 @@ const COPOMapping = ({ onSave, initialData, program }) => {
           [newCo]: newPoMap,
         }
       };
-      
-      // Notify parent component
+
       onSave(newState);
-      
       return newState;
     });
   };
@@ -315,16 +286,13 @@ const COPOMapping = ({ onSave, initialData, program }) => {
   // Remove a course outcome and renumber remaining ones
   const removeCourseOutcome = (coToRemove) => {
     setState(prevState => {
-      // Create new objects without the removed CO
       const remainingOutcomes = Object.fromEntries(
         Object.entries(prevState.courseOutcomes).filter(([key]) => key !== coToRemove)
       );
-
       const remainingMappings = Object.fromEntries(
         Object.entries(prevState.mappingData).filter(([key]) => key !== coToRemove)
       );
 
-      // Renumber the remaining COs
       const renumberedOutcomes = {};
       const renumberedMappings = {};
 
@@ -342,10 +310,8 @@ const COPOMapping = ({ onSave, initialData, program }) => {
         courseOutcomes: renumberedOutcomes,
         mappingData: renumberedMappings,
       };
-      
-      // Notify parent component
+
       onSave(newState);
-      
       return newState;
     });
   };
@@ -353,7 +319,7 @@ const COPOMapping = ({ onSave, initialData, program }) => {
   // Display the program name based on its code
   const getProgramName = () => {
     const programInt = parseInt(program);
-    switch(programInt) {
+    switch (programInt) {
       case 1: return "Computer Science Engineering";
       case 2: return "Mechanical Engineering";
       case 3: return "Electronics and Computer Engineering";
@@ -438,7 +404,7 @@ const COPOMapping = ({ onSave, initialData, program }) => {
             CO-PO Mapping Table
           </h3>
           <div className="text-sm text-gray-500 flex items-center bg-orange-50 px-3 py-1.5 rounded-md border border-orange-100">
-            <span className="font-medium text-orange-600 mr-1">Current program:</span> 
+            <span className="font-medium text-orange-600 mr-1">Current program:</span>
             <span className="text-gray-700">{getProgramName()}</span>
           </div>
         </div>
@@ -471,9 +437,7 @@ const COPOMapping = ({ onSave, initialData, program }) => {
                       <input
                         type="text"
                         value={poMap[po] || ""}
-                        onChange={(e) =>
-                          handleCellChange(co, po, e.target.value)
-                        }
+                        onChange={(e) => handleCellChange(co, po, e.target.value)}
                         className="w-full h-8 text-center outline-none bg-transparent hover:bg-white transition-colors text-gray-700"
                         maxLength={1}
                         placeholder="-"

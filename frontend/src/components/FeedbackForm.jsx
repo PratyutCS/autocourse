@@ -29,14 +29,17 @@ import StudentCOAchievement from './StudentCOAchievement';
 
 const FeedbackForm = (props) => {
   const token = localStorage.getItem("token");
+
   let num = props.num;
   const [isLoading, setIsLoading] = useState(false);
+
   const [coursecode, setCourseCode] = useState("");
   const [coursetitle, setCourseTitle] = useState("");
   const [module, setModule] = useState("");
   const [session, setSession] = useState("");
   const [program, setProgram] = useState("");
   const [change, setChange] = useState(false);
+
   const [courseSyllabus, setCourseSyllabus] = useState([
     {
       srNo: 1,
@@ -49,11 +52,14 @@ const FeedbackForm = (props) => {
     textBooks: [],
     referenceLinks: [],
   });
+
   const [EditableCourseDescriptionData, setEditableCourseDescriptionData] = useState("");
+
   const [copoMappingData, setCopoMappingData] = useState({
     courseOutcomes: {},
     mappingData: {},
   });
+
   const [internalAssessmentData, setInternalAssessmentData] = useState({
     components: [],
   });
@@ -79,13 +85,17 @@ const FeedbackForm = (props) => {
 
   const handleCOPOMappingChange = (data) => {
     const newData = { ...copoMappingData };
+
     if (data.courseOutcomes) {
       newData.courseOutcomes = data.courseOutcomes;
     }
+
     if (data.mappingData) {
       newData.mappingData = data.mappingData;
     }
+
     setChange(true);
+    console.log("this ran 98");
     setCopoMappingData(newData);
   };
 
@@ -108,6 +118,7 @@ const FeedbackForm = (props) => {
 
   const [coWeightages, setCoWeightages] = useState(props.coWeightages || {});
   const [isWeightageValid, setIsWeightageValid] = useState(false);
+
   const [coAttainmentCriteria, setCoAttainmentCriteria] = useState({});
   const [targetAttainment, setTargetAttainment] = useState({});
 
@@ -115,12 +126,14 @@ const FeedbackForm = (props) => {
     setCoAttainmentCriteria(criteria);
     setPar_sem_slowLearner([[], []]);
     setLearnerCategories([[], []]);
+    console.log("this ran 127");
   };
 
   const handleAssessmentSelectionChange = (selected) => {
     setChange(true);
     setSelectedAssessments(selected);
     setPar_sem_slowLearner([[], []]);
+    console.log("this ran 134");
   }
 
   const handleTargetAttainmentSave = (criteria) => {
@@ -128,15 +141,17 @@ const FeedbackForm = (props) => {
   };
 
   const [learnerCategories, setLearnerCategories] = useState([[], []]);
-  const handleLearners = (learnerCategories) => {
+
+  const handleLearners = (learnerCategoriess) => {
     console.log("this ran");
-    setLearnerCategories(learnerCategories);
+    setLearnerCategories(learnerCategoriess);
   };
 
-  const handlePar_sem_slowLearner = (learnerCategories) => {
+  const handlePar_sem_slowLearner = (learnerCategoriesss) => {
     console.log("this ran1");
-    setPar_sem_slowLearner(learnerCategories);
+    setPar_sem_slowLearner(learnerCategoriesss);
   };
+
 
   useEffect(() => {
     setLearnerCategories(
@@ -172,7 +187,6 @@ const FeedbackForm = (props) => {
   };
 
   const [facultyCourseReview, setFacultyCourseReview] = useState("");
-
   useEffect(() => {
     setFacultyCourseReview(props.facultyCourseReview || "");
   }, [props.facultyCourseReview]);
@@ -204,20 +218,18 @@ const FeedbackForm = (props) => {
   };
 
   const [selectedAssessments, setSelectedAssessments] = useState(props.selectedAssessments || []);
-
   useEffect(() => {
     setSelectedAssessments(props.selectedAssessments || []);
   }, [props.selectedAssessments]);
 
   const [par_sem_slowLearner, setPar_sem_slowLearner] = useState(props.par_sem_slowLearner || [[], []]);
-
   useEffect(() => {
     setPar_sem_slowLearner(props.par_sem_slowLearner || [[], []]);
   }, [props.par_sem_slowLearner]);
 
   /////////////////////////////////////////**Use Effect**//////////////////////////
-  const [isCourseCodeValid, setIsCourseCodeValid] = useState(false);
 
+  const [isCourseCodeValid, setIsCourseCodeValid] = useState(false);
   useEffect(() => {
     validateCourseCode(coursecode);
   }, [coursecode]);
@@ -310,7 +322,6 @@ const FeedbackForm = (props) => {
   }, [props.weeklyTimetableData]);
 
   const [selectedProgram, setSelectedProgram] = useState(0);
-
   useEffect(() => {
     const programNumber = parseInt(props.program);
     if (programOptions[programNumber]) {
@@ -348,9 +359,8 @@ const FeedbackForm = (props) => {
     return (
       <div className="relative w-full">
         <div
-          className={`flex items-center border ${
-            value ? "border-[#FFB255]" : "border-gray-300"
-          } rounded-md overflow-hidden`}
+          className={`flex items-center border ${value ? "border-[#FFB255]" : "border-gray-300"
+            } rounded-md overflow-hidden`}
           onClick={() => setIsOpen(!isOpen)}
         >
           <div className="p-2 flex-grow cursor-pointer flex items-center justify-between">
@@ -364,9 +374,7 @@ const FeedbackForm = (props) => {
             )}
           </div>
           <button
-            className={`p-2 ${
-              value ? "bg-[#FFB255] text-white" : "bg-gray-100 text-gray-700"
-            }`}
+            className={`p-2 ${value ? "bg-[#FFB255] text-white" : "bg-gray-100 text-gray-700"}`}
             onClick={(e) => {
               e.stopPropagation();
               setIsOpen(!isOpen);
@@ -392,11 +400,10 @@ const FeedbackForm = (props) => {
                 filteredOptions.map(([programValue, label]) => (
                   <div
                     key={programValue}
-                    className={`p-3 cursor-pointer flex items-center justify-between ${
-                      parseInt(programValue) === value
-                        ? "bg-[#FFB255] bg-opacity-20 border-l-4 border-[#FFB255] text-[#FFB255] font-medium"
-                        : "hover:bg-gray-100"
-                    }`}
+                    className={`p-3 cursor-pointer flex items-center justify-between ${parseInt(programValue) === value
+                      ? "bg-[#FFB255] bg-opacity-20 border-l-4 border-[#FFB255] text-[#FFB255] font-medium"
+                      : "hover:bg-gray-100"
+                      }`}
                     onClick={() => {
                       onChange(parseInt(programValue));
                       setIsOpen(false);
@@ -405,18 +412,8 @@ const FeedbackForm = (props) => {
                   >
                     <span>{label}</span>
                     {parseInt(programValue) === value && (
-                      <svg
-                        className="w-5 h-5 text-[#FFB255]"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 13l4 4L19 7"
-                        />
+                      <svg className="w-5 h-5 text-[#FFB255]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                       </svg>
                     )}
                   </div>
@@ -446,34 +443,34 @@ const FeedbackForm = (props) => {
   };
 
   const auto_postData = async () => {
-    let last_modified = new Date().toLocaleString("en-IN", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    }) + ", " + new Date().toLocaleString("en-IN", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
+    let last_modified =
+      new Date().toLocaleString("en-IN", {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      }) +
+      ", " +
+      new Date().toLocaleString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
 
     if (!isWeightageValid) {
       // alert("Please ensure all CO Assessment weightages add up to 100% before submitting.");
       // return;
       setCoWeightages(props.coWeightages || {});
     }
-
     if (!validateCriteria()) {
       // alert("Please ensure that the 'Min. % marks (fully attained)' are greater than or equal to 'Min. % marks (partially attained)' for all COs.");
       // return;
       setCoAttainmentCriteria(props.coAttainmentCriteria || {});
     }
-
     if (!validateTargetAttainment()) {
       // alert("Please ensure that in Target Attainment, the 'Min. % students (fully attained)' are greater than or equal to 'Min. % students (partially attained)' for all COs.");
       // return;
       setTargetAttainment(props.targetAttainment || {});
     }
-
     if (!isCourseCodeValid) {
       // alert("Please enter a valid course code (3 letters followed by 4 numbers).");
       // return;
@@ -522,7 +519,7 @@ const FeedbackForm = (props) => {
             },
           }
         );
-        console.log("Form submitted successfully:", response.data);
+        console.log("[auto] Form submitted successfully:", response.data);
         // window.location.reload();
       } catch (error) {
         console.error("Error submitting form:", error);
@@ -530,41 +527,42 @@ const FeedbackForm = (props) => {
       } finally {
         // setIsLoading(false);
       }
-    } else{
+    }
+    else{
       alert("wrong number of the file cannot save check with admin...");
       return;
     }
   };
 
   const postData = async () => {
-    let last_modified = new Date().toLocaleString("en-IN", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    }) + ", " + new Date().toLocaleString("en-IN", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
+    let last_modified =
+      new Date().toLocaleString("en-IN", {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      }) +
+      ", " +
+      new Date().toLocaleString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
 
     if (!isWeightageValid) {
       // alert("Please ensure all CO Assessment weightages add up to 100% before submitting.");
       // return;
       setCoWeightages(props.coWeightages || {});
     }
-
     if (!validateCriteria()) {
       // alert("Please ensure that the 'Min. % marks (fully attained)' are greater than or equal to 'Min. % marks (partially attained)' for all COs.");
       // return;
       setCoAttainmentCriteria(props.coAttainmentCriteria || {});
     }
-
     if (!validateTargetAttainment()) {
       // alert("Please ensure that in Target Attainment, the 'Min. % students (fully attained)' are greater than or equal to 'Min. % students (partially attained)' for all COs.");
       // return;
       setTargetAttainment(props.targetAttainment || {});
     }
-
     if (!isCourseCodeValid) {
       // alert("Please enter a valid course code (3 letters followed by 4 numbers).");
       // return;
@@ -613,7 +611,7 @@ const FeedbackForm = (props) => {
             },
           }
         );
-        console.log("Form submitted successfully:", response.data);
+        console.log("[manual] Form submitted successfully:", response.data);
         window.location.reload();
       } catch (error) {
         console.error("Error submitting form:", error);
@@ -621,21 +619,131 @@ const FeedbackForm = (props) => {
       } finally {
         setIsLoading(false);
       }
-    } else{
+    }
+    else{
       alert("wrong number of the file cannot save check with admin...");
       return;
     }
   };
+  
 
   useEffect(() => {
-    if(change){
+    if (change) {
+      console.log("selectedProgram changed");
       setChange(false);
       auto_postData();
     }
-  },[selectedProgram, EditableCourseDescriptionData, coursetitle, module, session, copoMappingData, internalAssessmentData, selectedAssessments, courseSyllabus, learningResources, weeklyTimetableData, actionsForWeakStudentsData, feedbackData, facultyCourseReview]);
+  }, [selectedProgram]);
+  
+  useEffect(() => {
+    if (change) {
+      console.log("EditableCourseDescriptionData changed");
+      setChange(false);
+      auto_postData();
+    }
+  }, [EditableCourseDescriptionData]);
+  
+  useEffect(() => {
+    if (change) {
+      console.log("coursetitle changed");
+      setChange(false);
+      auto_postData();
+    }
+  }, [coursetitle]);
+  
+  useEffect(() => {
+    if (change) {
+      console.log("module changed");
+      setChange(false);
+      auto_postData();
+    }
+  }, [module]);
+  
+  useEffect(() => {
+    if (change) {
+      console.log("session changed");
+      setChange(false);
+      auto_postData();
+    }
+  }, [session]);
+  
+  useEffect(() => {
+    if (change) {
+      console.log("copoMappingData changed");
+      setChange(false);
+      auto_postData();
+    }
+  }, [copoMappingData]);
+  
+  useEffect(() => {
+    if (change) {
+      console.log("internalAssessmentData changed");
+      setChange(false);
+      auto_postData();
+    }
+  }, [internalAssessmentData]);
+  
+  useEffect(() => {
+    if (change) {
+      console.log("selectedAssessments changed");
+      setChange(false);
+      auto_postData();
+    }
+  }, [selectedAssessments]);
+  
+  useEffect(() => {
+    if (change) {
+      console.log("courseSyllabus changed");
+      setChange(false);
+      auto_postData();
+    }
+  }, [courseSyllabus]);
+  
+  useEffect(() => {
+    if (change) {
+      console.log("learningResources changed");
+      setChange(false);
+      auto_postData();
+    }
+  }, [learningResources]);
+  
+  useEffect(() => {
+    if (change) {
+      console.log("weeklyTimetableData changed");
+      setChange(false);
+      auto_postData();
+    }
+  }, [weeklyTimetableData]);
+  
+  useEffect(() => {
+    if (change) {
+      console.log("actionsForWeakStudentsData changed");
+      setChange(false);
+      auto_postData();
+    }
+  }, [actionsForWeakStudentsData]);
+  
+  useEffect(() => {
+    if (change) {
+      console.log("feedbackData changed");
+      setChange(false);
+      auto_postData();
+    }
+  }, [feedbackData]);
+  
+  useEffect(() => {
+    if (change) {
+      console.log("facultyCourseReview changed");
+      setChange(false);
+      auto_postData();
+    }
+  }, [facultyCourseReview]);
+  
+
 
   return (
     <div className="p-5 gap-[2rem] h-screen flex flex-col bg-[#FFFEFD]">
+
       <div id="header-section" className="bg-gradient-to-r from-white to-gray-50 rounded-2xl shadow-md p-5 border border-gray-200 mb-6 transition-all hover:shadow-lg">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           {/* Back Button */}
@@ -644,18 +752,8 @@ const FeedbackForm = (props) => {
             className="group flex items-center gap-2 text-gray-700 font-medium transition-all duration-300 px-4 py-2.5 rounded-xl bg-white/70 hover:bg-white border border-gray-200 hover:border-amber-200 hover:shadow-sm"
             aria-label="Go back to files"
           >
-            <svg
-              className="w-5 h-5 text-amber-500 transform group-hover:-translate-x-1 transition-transform duration-300"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
+            <svg className="w-5 h-5 text-amber-500 transform group-hover:-translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             <span>Back to Files</span>
           </button>
@@ -664,50 +762,29 @@ const FeedbackForm = (props) => {
           <div className="flex items-center gap-3 ml-auto">
             {/* Validation Status Pills - Compact version */}
             <div className="hidden md:flex items-center gap-1.5 mr-3 bg-white/80 p-1.5 rounded-xl border border-gray-200">
-              <div
-                className={`h-3 w-3 rounded-full transition-all duration-300 ${
-                  isWeightageValid ? "bg-green-500" : "bg-red-400"
-                }`}
-                title="Weightage validation"
-              ></div>
-              <div
-                className={`h-3 w-3 rounded-full transition-all duration-300 ${
-                  validateCriteria() ? "bg-green-500" : "bg-red-400"
-                }`}
-                title="Criteria validation"
-              ></div>
-              <div
-                className={`h-3 w-3 rounded-full transition-all duration-300 ${
-                  validateTargetAttainment() ? "bg-green-500" : "bg-red-400"
-                }`}
-                title="Target attainment validation"
-              ></div>
-              <div
-                className={`h-3 w-3 rounded-full transition-all duration-300 ${
-                  selectedProgram !== 0 ? "bg-green-500" : "bg-gray-300"
-                }`}
-                title="Program selected"
-              ></div>
-              <div
-                className={`h-3 w-3 rounded-full transition-all duration-300 ${
-                  isCourseCodeValid ? "bg-green-500" : "bg-gray-300"
-                }`}
-                title="Course code validation"
-              ></div>
+              <div className={`h-3 w-3 rounded-full transition-all duration-300 ${isWeightageValid ? "bg-green-500" : "bg-red-400"}`}
+                title="Weightage validation"></div>
+              <div className={`h-3 w-3 rounded-full transition-all duration-300 ${validateCriteria() ? "bg-green-500" : "bg-red-400"}`}
+                title="Criteria validation"></div>
+              <div className={`h-3 w-3 rounded-full transition-all duration-300 ${validateTargetAttainment() ? "bg-green-500" : "bg-red-400"}`}
+                title="Target attainment validation"></div>
+              <div className={`h-3 w-3 rounded-full transition-all duration-300 ${selectedProgram !== 0 ? "bg-green-500" : "bg-gray-300"}`}
+                title="Program selected"></div>
+              <div className={`h-3 w-3 rounded-full transition-all duration-300 ${isCourseCodeValid ? "bg-green-500" : "bg-gray-300"}`}
+                title="Course code validation"></div>
             </div>
 
             {/* Submit Button */}
             <button
               onClick={postData}
-              className={`relative transition-all duration-300 text-white font-medium rounded-xl px-6 py-3 flex items-center gap-2 ${
-                isWeightageValid &&
+              className={`relative transition-all duration-300 text-white font-medium rounded-xl px-6 py-3 flex items-center gap-2 ${isWeightageValid &&
                 validateCriteria() &&
                 validateTargetAttainment() &&
                 selectedProgram !== 0 &&
                 isCourseCodeValid
-                  ? "bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-600 hover:to-orange-500 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                  : "bg-gray-400 cursor-not-allowed"
-              }`}
+                ? "bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-600 hover:to-orange-500 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                : "bg-gray-400 cursor-not-allowed"
+                }`}
               disabled={
                 !isWeightageValid ||
                 !validateCriteria() ||
@@ -717,96 +794,47 @@ const FeedbackForm = (props) => {
               }
             >
               <span className="relative z-10">Submit Form</span>
-              {isWeightageValid &&
-              validateCriteria() &&
-              validateTargetAttainment() &&
-              selectedProgram !== 0 &&
-              isCourseCodeValid ? (
-                <svg
-                  className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 7l5 5m0 0l-5 5m5-5H6"
-                  />
+              {isWeightageValid && validateCriteria() && validateTargetAttainment() && selectedProgram !== 0 && isCourseCodeValid ? (
+                <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               ) : (
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 15v2m0 0v2m0-2h2m-2 0H9m3-10v1"
-                  />
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m0 0v2m0-2h2m-2 0H9m3-10v1" />
                 </svg>
               )}
             </button>
           </div>
         </div>
-        
+
         {/* Validation Messages - Elegantly styled */}
         {(!isWeightageValid || !validateCriteria() || !validateTargetAttainment()) && (
           <div className="mt-4 flex flex-wrap gap-3">
             {!isWeightageValid && (
               <div className="text-red-600 text-sm flex items-center bg-red-50 px-4 py-2.5 rounded-xl border border-red-100 shadow-sm">
-                <svg
-                  className="w-4 h-4 mr-2 flex-shrink-0 text-red-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
+                <svg className="w-4 h-4 mr-2 flex-shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
                 <span>CO Assessment weightages must add up to 100%</span>
               </div>
             )}
+
             {!validateCriteria() && (
               <div className="text-red-600 text-sm flex items-center bg-red-50 px-4 py-2.5 rounded-xl border border-red-100 shadow-sm">
-                <svg
-                  className="w-4 h-4 mr-2 flex-shrink-0 text-red-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
+                <svg className="w-4 h-4 mr-2 flex-shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
                 <span>CO Attainment Criteria: Fully attained must be greater than partially attained</span>
               </div>
             )}
+
             {!validateTargetAttainment() && (
               <div className="text-red-600 text-sm flex items-center bg-red-50 px-4 py-2.5 rounded-xl border border-red-100 shadow-sm">
-                <svg
-                  className="w-4 h-4 mr-2 flex-shrink-0 text-red-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
+                <svg className="w-4 h-4 mr-2 flex-shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
                 <span>Target Attainment: Fully attained must be greater than or equal to partially attained</span>
               </div>
@@ -814,18 +842,14 @@ const FeedbackForm = (props) => {
           </div>
         )}
       </div>
-      
+
       <div className="space-y-6 overflow-scroll">
         <InstructionsCard />
-        
+
         <div className="grid grid-cols-2 gap-4">
           {/* Program Section */}
-          <div
-            id="program-section"
-            className={`bg-white p-6 rounded-lg shadow-sm border ${
-              selectedProgram === 0 ? "border-red-600" : "border-gray-100"
-            }`}
-          >
+          <div className={`bg-white p-6 rounded-lg shadow-sm border ${selectedProgram === 0 ? "border-red-600" : "border-gray-100"
+            }`}>
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
                 1
@@ -841,14 +865,10 @@ const FeedbackForm = (props) => {
               }}
             />
           </div>
-          
+
           {/* Course Code Section */}
-          <div
-            id="course-code-section"
-            className={`bg-white p-6 rounded-lg shadow-sm border ${
-              !isCourseCodeValid ? "border-red-600" : "border-gray-100"
-            }`}
-          >
+          <div className={`bg-white p-6 rounded-lg shadow-sm border ${!isCourseCodeValid ? "border-red-600" : "border-gray-100"
+            }`}>
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
                 2
@@ -860,12 +880,9 @@ const FeedbackForm = (props) => {
               onChange={(value) => setCourseCode(value)}
             />
           </div>
-          
+
           {/* Course Title Section */}
-          <div
-            id="course-title-section"
-            className="bg-white p-6 rounded-lg shadow-sm border border-gray-100"
-          >
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
                 3
@@ -883,12 +900,9 @@ const FeedbackForm = (props) => {
               rows="2"
             />
           </div>
-          
+
           {/* Module/Semester Section */}
-          <div
-            id="module-section"
-            className="bg-white p-6 rounded-lg shadow-sm border border-gray-100"
-          >
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
                 4
@@ -906,12 +920,9 @@ const FeedbackForm = (props) => {
               rows="2"
             />
           </div>
-          
+
           {/* Session Section */}
-          <div
-            id="session-section"
-            className="bg-white p-6 rounded-lg shadow-sm border border-gray-100"
-          >
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
                 5
@@ -930,12 +941,9 @@ const FeedbackForm = (props) => {
             />
           </div>
         </div>
-        
+
         {/* Course Description Section */}
-        <div
-          id="course-description-section"
-          className="bg-white p-6 rounded-lg shadow-sm border border-gray-100"
-        >
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
               6
@@ -949,12 +957,9 @@ const FeedbackForm = (props) => {
             onChange={EditableCourseDescriptionDataChange}
           />
         </div>
-        
+
         {/* CO-PO Mapping Section */}
-        <div
-          id="copo-mapping-section"
-          className="bg-white p-6 rounded-lg shadow-sm border border-gray-100"
-        >
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
               7
@@ -970,12 +975,9 @@ const FeedbackForm = (props) => {
             key={`copo-${selectedProgram}`}
           />
         </div>
-        
+
         {/* Internal Assessments */}
-        <div
-          id="assessments-section"
-          className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8"
-        >
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
               8
@@ -989,19 +991,13 @@ const FeedbackForm = (props) => {
             initialData={internalAssessmentData}
           />
         </div>
-        
+
         {/* Excel to JSON to extract student data */}
-        <div id="student-data-section">
-          <ExcelToJson onSave={handleStudentDataSave} initialData={studentData} />
-        </div>
-        
+        <ExcelToJson onSave={handleStudentDataSave} initialData={studentData} />
+
         {/* CO Assessment weightage Section */}
-        <div
-          id="co-weightage-section"
-          className={`bg-white rounded-xl shadow-sm border ${
-            !isWeightageValid ? "border-red-600" : "border-gray-100"
-          } mt-8`}
-        >
+        <div className={`bg-white  rounded-xl shadow-sm border ${!isWeightageValid ? "border-red-600" : "border-gray-100"
+          } mt-8`}>
           <COAssessmentWeightage
             copoMappingData={copoMappingData}
             studentData={studentData}
@@ -1012,25 +1008,18 @@ const FeedbackForm = (props) => {
             onValidationChange={(isValid) => setIsWeightageValid(isValid)}
           />
         </div>
-        
+
         {/* CO Attainment Criteria Section with error border if invalid */}
-        <div
-          id="attainment-criteria-section"
-          className={`bg-white rounded-xl shadow-sm border ${
-            !validateCriteria() ? "border-red-600" : "border-gray-100"
-          }`}
-        >
+        <div className={`bg-white rounded-xl shadow-sm border ${!validateCriteria() ? "border-red-600" : "border-gray-100"
+          }`}>
           <COAttainmentCriteria
             copoMappingData={copoMappingData}
             initialCriteria={coAttainmentCriteria}
             onSave={handleCoAttainmentCriteriaSave}
           />
         </div>
-        
-        <div
-          id="assessment-selection-section"
-          className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8"
-        >
+
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
               12
@@ -1044,62 +1033,48 @@ const FeedbackForm = (props) => {
             selectedAssessments={selectedAssessments}
             onChange={handleAssessmentSelectionChange}
           />
-          <div id="co-achievement-section">
-            <StudentCOAchievement
-              selectedAssessments={selectedAssessments}
-              coWeightages={coWeightages}
-              studentData={studentData}
-              coAttainmentCriteria={coAttainmentCriteria}
-              learnerCategories={par_sem_slowLearner}
-              onSave={handlePar_sem_slowLearner}
-            />
-          </div>
         </div>
-        
+
+        <StudentCOAchievement
+          selectedAssessments={selectedAssessments}
+          coWeightages={coWeightages}
+          studentData={studentData}
+          coAttainmentCriteria={coAttainmentCriteria}
+          learnerCategories={par_sem_slowLearner}
+          onSave={handlePar_sem_slowLearner}
+        />
+
         {/* Target Attainment Section with error border if invalid */}
-        <div
-          id="target-attainment-section"
-          className={`bg-white rounded-xl shadow-sm border ${
-            !validateTargetAttainment() ? "border-red-600" : "border-gray-100"
-          }`}
-        >
+        <div className={`bg-white rounded-xl shadow-sm border ${!validateTargetAttainment() ? "border-red-600" : "border-gray-100"
+          }`}>
           <TargetAttainment
             copoMappingData={copoMappingData}
             initialCriteria={targetAttainment}
             onSave={handleTargetAttainmentSave}
           />
         </div>
-        
-        <div id="attainment-analysis-section">
-          <COAttainmentAnalysis
-            coWeightages={coWeightages}
-            studentData={studentData}
-            coAttainmentCriteria={coAttainmentCriteria}
-            copoMappingData={copoMappingData}
-            targetAttainment={targetAttainment}
-          />
-        </div>
-        
-        <div id="student-identification-section">
-          <AdvanceAndWeakStudentIdentification
-            coWeightages={coWeightages}
-            studentData={studentData}
-            coAttainmentCriteria={coAttainmentCriteria}
-            learnerCategories={learnerCategories}
-            onSave={handleLearners}
-          />
-        </div>
-        
+
+        <COAttainmentAnalysis
+          coWeightages={coWeightages}
+          studentData={studentData}
+          coAttainmentCriteria={coAttainmentCriteria}
+          copoMappingData={copoMappingData}
+          targetAttainment={targetAttainment}
+        />
+
+        <AdvanceAndWeakStudentIdentification
+          coWeightages={coWeightages}
+          studentData={studentData}
+          coAttainmentCriteria={coAttainmentCriteria}
+          learnerCategories={learnerCategories}
+          onSave={handleLearners}
+        />
+
         {/* Course Syllabus Section */}
-        <div id="course-syllabus-section">
-          <CourseSyllabus onSave={handleCourseSyllabusChange} initialData={courseSyllabus} />
-        </div>
-        
+        <CourseSyllabus onSave={handleCourseSyllabusChange} initialData={courseSyllabus} />
+
         {/* Learning Resources Section */}
-        <div
-          id="learning-resources-section"
-          className="bg-white p-6 rounded-lg shadow-sm border border-gray-100"
-        >
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
               17
@@ -1123,12 +1098,9 @@ const FeedbackForm = (props) => {
             />
           </div>
         </div>
-        
+
         {/* Weekly Time-Table */}
-        <div
-          id="timetable-section"
-          className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8"
-        >
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
               18
@@ -1155,45 +1127,40 @@ const FeedbackForm = (props) => {
             )}
           </div>
         </div>
-        
+
         {/* Actions for Weak Students */}
-        <div id="weak-students-section">
-          <ActionsForWeakStudents
-            label="Actions Taken for Low Performers"
-            initialData={actionsForWeakStudentsData}
-            onSave={handleWeakStudentsChange}
-          />
-        </div>
-        
+        <ActionsForWeakStudents
+          label="Actions Taken for Low Performers"
+          initialData={actionsForWeakStudentsData}
+          onSave={handleWeakStudentsChange}
+        />
+
         {/* PDF Uploader */}
-        <div id="pdf-uploader-section">
-          <PDFUploader
-            num={num}
-            onUploadSuccess={(filename) => {
-              console.log("File uploaded:", filename);
-            }}
-            onDeleteSuccess={() => {
-              console.log("File deleted");
-            }}
-          />
-        </div>
-        
+        <PDFUploader
+          num={num}
+          onUploadSuccess={(filename) => {
+            console.log("File uploaded:", filename);
+          }}
+          onDeleteSuccess={() => {
+            console.log("File deleted");
+          }}
+        />
+
         {/* Feedback and Corrective Actions */}
-        <div id="feedback-section">
-          <FeedbackAndCorrectiveActions initialData={feedbackData} onSave={handleFeedbackChange} />
-        </div>
-        
+        <FeedbackAndCorrectiveActions
+          initialData={feedbackData}
+          onSave={handleFeedbackChange}
+        />
+
         {/* Faculty Course Review */}
-        <div id="faculty-review-section">
-          <FacultyCourseReview
-            initialData={facultyCourseReview}
-            onSave={(data) => {
-              setChange(true);
-              setFacultyCourseReview(data);
-            }}
-          />
-        </div>
-        
+        <FacultyCourseReview
+          initialData={facultyCourseReview}
+          onSave={(data) => {
+            setChange(true);
+            setFacultyCourseReview(data);
+          }}
+        />
+
         {isLoading && <LoadingSpinner />}
       </div>
     </div>
