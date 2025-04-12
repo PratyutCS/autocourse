@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { TfiPowerOff } from "react-icons/tfi";
 import { RxQuestionMarkCircled } from "react-icons/rx";
 import { HiMenuAlt3 } from "react-icons/hi";
@@ -17,12 +17,14 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
   const [isLoading, setIsLoading] = useState(true);
   const [fileSearchQuery, setFileSearchQuery] = useState("");
   const [indexSearchQuery, setIndexSearchQuery] = useState("");
+  const [stableActiveSection, setStableActiveSection] = useState(activeSection || "header-section");
+  const lastActiveSectionRef = useRef(activeSection || "header-section");
+  const activeSectionTimeoutRef = useRef(null);
+  const ignoreHeaderTimeoutRef = useRef(null);
+  const ignoreHeaderUntilRef = useRef(false);
   const navigate = useNavigate();
   const location = useLocation();
   const isInfoPage = location.pathname.includes('/form');
-
-  // Console log for debugging
-  console.log("Active section in AsideComp:", activeSection);
 
   // Define the index sections for the form
   const formSections = [
@@ -51,6 +53,64 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
     { id: "feedback-section", title: "Feedback", number: 22 },
     { id: "faculty-review-section", title: "Faculty Review", number: 23 },
   ];
+
+  // Smart active section handler with protection against quick changes to header
+  useEffect(() => {
+    // If activeSection is header-section and we're ignoring header section changes,
+    // don't update the stableActiveSection
+    if (activeSection === "header-section" && ignoreHeaderUntilRef.current) {
+      return;
+    }
+    
+    // If section changed
+    if (activeSection !== lastActiveSectionRef.current) {
+      // Clear any existing timeout
+      if (activeSectionTimeoutRef.current) {
+        clearTimeout(activeSectionTimeoutRef.current);
+      }
+      
+      // If changing from a non-header section to header section, add a delay
+      if (activeSection === "header-section" && lastActiveSectionRef.current !== "header-section") {
+        // We'll wait longer before accepting a change to the header section
+        activeSectionTimeoutRef.current = setTimeout(() => {
+          lastActiveSectionRef.current = activeSection;
+          setStableActiveSection(activeSection);
+        }, 300); // Longer delay for header changes
+      } else {
+        // For all other section changes, update more quickly
+        lastActiveSectionRef.current = activeSection;
+        
+        // Brief delay to prevent flickering
+        activeSectionTimeoutRef.current = setTimeout(() => {
+          setStableActiveSection(activeSection);
+        }, 50);
+        
+        // When we change to a non-header section, prevent changing back to header
+        // for a short period (helps with fast scrolling)
+        if (activeSection !== "header-section") {
+          ignoreHeaderUntilRef.current = true;
+          
+          if (ignoreHeaderTimeoutRef.current) {
+            clearTimeout(ignoreHeaderTimeoutRef.current);
+          }
+          
+          ignoreHeaderTimeoutRef.current = setTimeout(() => {
+            ignoreHeaderUntilRef.current = false;
+          }, 1000); // Ignore header changes for 1 second
+        }
+      }
+    }
+    
+    // Clean up timeouts when component unmounts
+    return () => {
+      if (activeSectionTimeoutRef.current) {
+        clearTimeout(activeSectionTimeoutRef.current);
+      }
+      if (ignoreHeaderTimeoutRef.current) {
+        clearTimeout(ignoreHeaderTimeoutRef.current);
+      }
+    };
+  }, [activeSection]);
 
   // Filter form sections based on search query
   const filteredFormSections = formSections.filter(section => 
@@ -105,35 +165,41 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
     }
   };
 
+  // Reliable scroll handler that avoids issues with fast scrolling
   const scrollToSection = (sectionId) => {
-    // First try to find the section directly
+    // Only perform the scroll operation if there's a valid section
     const section = document.getElementById(sectionId);
-    if (!section) {
-      console.warn(`Section with ID ${sectionId} not found`);
-      return;
+    if (!section) return;
+
+    // Find the scroll container
+    const container = document.querySelector('.space-y-6.overflow-scroll');
+    if (container) {
+      // Get the absolute position of the section within the container
+      const offsetTop = section.offsetTop;
+      
+      // Scroll with a fixed offset to ensure consistent positioning
+      container.scrollTo({
+        top: offsetTop - 80,
+        behavior: 'smooth'
+      });
+    } else {
+      // Fallback to standard scrollIntoView
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-
-    // Find the main container that has the scroll
-    const mainContainer = document.querySelector('.space-y-6.overflow-scroll');
-    if (!mainContainer) {
-      console.warn("Main scroll container not found");
-      section.scrollIntoView({ behavior: 'smooth' });
-      return;
+    
+    // Force-update the active section when manually clicking
+    // this bypasses any timing issues
+    lastActiveSectionRef.current = sectionId;
+    setStableActiveSection(sectionId);
+    
+    // Also prevent changing to header for a period after manual selection
+    ignoreHeaderUntilRef.current = true;
+    if (ignoreHeaderTimeoutRef.current) {
+      clearTimeout(ignoreHeaderTimeoutRef.current);
     }
-
-    // Calculate position relative to scroll container
-    const containerRect = mainContainer.getBoundingClientRect();
-    const sectionRect = section.getBoundingClientRect();
-    const offsetTop = sectionRect.top - containerRect.top + mainContainer.scrollTop;
-
-    // Log for debugging
-    console.log(`Scrolling to section ${sectionId} at position ${offsetTop}`);
-
-    // Scroll the container
-    mainContainer.scrollTo({
-      top: offsetTop - 80, // Add some offset for header/padding
-      behavior: 'smooth'
-    });
+    ignoreHeaderTimeoutRef.current = setTimeout(() => {
+      ignoreHeaderUntilRef.current = false;
+    }, 1500); // Longer protection after manual click
   };
 
   if (isLoading) {
@@ -186,8 +252,8 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
 
   // Function to get the active section name for display
   const getActiveSectionName = () => {
-    const activeItem = formSections.find(section => section.id === activeSection);
-    return activeItem ? activeItem.title : "";
+    const activeItem = formSections.find(section => section.id === stableActiveSection);
+    return activeItem ? activeItem.title : "Form Header";
   };
 
   return (
@@ -244,10 +310,10 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
         </div>
       </div>
 
-      {/* Active Section Indicator (only when not collapsed) */}
-      {!isCollapsed && isInfoPage && activeSection && (
-        <div className="bg-[#FFB255] bg-opacity-10 px-4 py-2 border-b border-[#3a3b40] flex items-center">
-          <div className="w-2 h-2 rounded-full bg-[#FFB255] mr-2"></div>
+      {/* Active Section Indicator - with fixed height to prevent layout shifts */}
+      {!isCollapsed && isInfoPage && (
+        <div className="bg-[#FFB255] bg-opacity-10 px-4 py-2 border-b border-[#3a3b40] h-[36px] flex items-center">
+          <div className="w-2 h-2 rounded-full bg-[#FFB255] mr-2 flex-shrink-0"></div>
           <span className="text-[#FFB255] text-xs font-medium truncate">
             Currently viewing: {getActiveSectionName()}
           </span>
@@ -280,26 +346,22 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
               )}
             </div>
             
-            <div className="space-y-0.5 max-h-[calc(100vh-280px)] overflow-y-auto pr-1" 
+            <div className="space-y-0.5 max-h-[calc(100vh-320px)] overflow-y-auto pr-1" 
                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {filteredFormSections.length > 0 ? (
                 filteredFormSections.map((section) => {
-                  // Check if this section is active - enhanced with more specific check
-                  const isActive = activeSection === section.id;
+                  // Use the stable active section for highlighting
+                  const isActive = stableActiveSection === section.id;
                   
                   return (
                     <div 
                       key={section.id}
-                      onClick={() => {
-                        console.log(`Clicked on section ${section.id}`);
-                        onFileSelect(section.id);
-                      }} 
-                      className={`flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-all duration-200 ${isCollapsed ? "justify-center" : ""}
+                      onClick={() => scrollToSection(section.id)} 
+                      className={`flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer transition-colors ${isCollapsed ? "justify-center" : ""}
                       ${isActive 
                         ? "bg-[#FFB255] bg-opacity-20 border-l-2 border-[#FFB255]" 
                         : "hover:bg-[#3a3b40]"}`}
                       title={isCollapsed ? section.title : ""}
-                      data-section-id={section.id} // Add data attribute for easier debugging
                     >
                       {isCollapsed ? (
                         <div 
@@ -326,7 +388,7 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
                             className={`text-xs transition-colors truncate ${
                               isActive 
                                 ? "text-[#FFB255] font-medium" 
-                                : "text-[#f5f5f5] group-hover:text-[#FFB255]"
+                                : "text-[#f5f5f5]"
                             }`}
                           >
                             {section.title}

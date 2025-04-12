@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import constants from "../constants";
 import axios from 'axios';
 import FeedbackForm from '../components/FeedbackForm';
@@ -15,6 +15,40 @@ const ErrorDisplay = ({ message }) => (
   </div>
 )
 
+// Improved debounce function that returns a promise for the last invocation
+function debounce(func, wait) {
+  let timeout;
+  return function(...args) {
+    const context = this;
+    clearTimeout(timeout);
+    return new Promise(resolve => {
+      timeout = setTimeout(() => {
+        const result = func.apply(context, args);
+        resolve(result);
+      }, wait);
+    });
+  };
+}
+
+// Function to check if an element is fully or partially within a container's viewport
+function isElementInViewport(el, container, threshold = 0.3) {
+  if (!el || !container) return false;
+  
+  const rect = el.getBoundingClientRect();
+  const containerRect = container.getBoundingClientRect();
+  
+  // Calculate the visible height of the element within the container
+  const visibleTop = Math.max(rect.top, containerRect.top);
+  const visibleBottom = Math.min(rect.bottom, containerRect.bottom);
+  const visibleHeight = visibleBottom - visibleTop;
+  
+  // Calculate what percentage of the element is visible
+  const percentVisible = visibleHeight / rect.height;
+  
+  // Return true if the percentage visible is greater than the threshold
+  return percentVisible > threshold;
+}
+
 const Info = () => {
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -23,9 +57,12 @@ const Info = () => {
   const [file, setFileData] = useState(null);
   const [error, setError] = useState(null);
   const [allFiles, setAllFiles] = useState(null);
-  const [activeSection, setActiveSection] = useState("header-section"); // Default active section
-  const observerRef = useRef(null);
+  const [activeSection, setActiveSection] = useState("header-section"); 
+  const scrollingProgrammaticallyRef = useRef(false);
+  const lastSetActiveRef = useRef("header-section");
   const sectionsRef = useRef([]);
+  const scrollContainerRef = useRef(null);
+  const scrollListenerRef = useRef(null);
   
   // Fetch all files for the sidebar
   useEffect(() => {
@@ -81,150 +118,176 @@ const Info = () => {
     return () => clearInterval(pollingInterval);
   }, [num, token]);
 
-  // Setup intersection observer for tracking the visible sections
-  useEffect(() => {
-    // Cleanup previous observer
-    if (observerRef.current) {
-      observerRef.current.disconnect();
+  // Save a reference to all section elements
+  const collectSections = useCallback(() => {
+    // Find all section elements 
+    const allSections = document.querySelectorAll('[id$="-section"]');
+    
+    // Convert to array and sort by Y position for more reliable detection
+    const sortedSections = Array.from(allSections).sort((a, b) => {
+      return a.getBoundingClientRect().top - b.getBoundingClientRect().top;
+    });
+    
+    // Store in ref for future use
+    sectionsRef.current = sortedSections;
+    return sortedSections;
+  }, []);
+
+  // Find the most visible section
+  const findMostVisibleSection = useCallback(() => {
+    if (!scrollContainerRef.current || sectionsRef.current.length === 0) return null;
+    
+    // Get all sections and their visibility status
+    const sections = sectionsRef.current;
+    
+    // First pass: find any section that's "significantly" visible
+    let bestSection = null;
+    let bestVisibility = 0;
+    
+    for (let i = 0; i < sections.length; i++) {
+      const section = sections[i];
+      if (!section) continue;
+      
+      const rect = section.getBoundingClientRect();
+      const containerRect = scrollContainerRef.current.getBoundingClientRect();
+      
+      // How much of the section is visible in the viewport?
+      const visibleTop = Math.max(rect.top, containerRect.top);
+      const visibleBottom = Math.min(rect.bottom, containerRect.bottom);
+      
+      // Skip if not visible at all
+      if (visibleBottom <= visibleTop) continue;
+      
+      const visibleHeight = visibleBottom - visibleTop;
+      const percentVisible = visibleHeight / rect.height;
+      
+      // If this section is more visible than the previous best, use it
+      if (percentVisible > bestVisibility) {
+        bestVisibility = percentVisible;
+        bestSection = section;
+      }
+      
+      // If we found a section that's mostly visible, use it immediately
+      if (percentVisible > 0.5) {
+        return section.id;
+      }
     }
     
-    // Wait for content to load before setting up observer
+    // If we found any visible section, return its ID
+    if (bestSection && bestVisibility > 0.1) { // At least 10% visible
+      return bestSection.id;
+    }
+    
+    // Fallback to finding the section closest to the top of the viewport
+    let closestToTop = null;
+    let closestDistance = Infinity;
+    
+    const containerTop = scrollContainerRef.current.getBoundingClientRect().top + 100; // Add offset
+    
+    for (let i = 0; i < sections.length; i++) {
+      const section = sections[i];
+      if (!section) continue;
+      
+      const rect = section.getBoundingClientRect();
+      const distanceToTop = Math.abs(rect.top - containerTop);
+      
+      if (distanceToTop < closestDistance) {
+        closestDistance = distanceToTop;
+        closestToTop = section;
+      }
+    }
+    
+    return closestToTop ? closestToTop.id : null;
+  }, []);
+
+  // Debounced function to update active section
+  const debouncedUpdateSection = useCallback(
+    debounce((ignoreScrolling = false) => {
+      // Skip if we're scrolling programmatically, unless explicitly told to check
+      if (scrollingProgrammaticallyRef.current && !ignoreScrolling) return;
+      
+      const mostVisibleSectionId = findMostVisibleSection();
+      
+      // Only update if we found a valid section and it's different from the current one
+      if (mostVisibleSectionId && mostVisibleSectionId !== lastSetActiveRef.current) {
+        lastSetActiveRef.current = mostVisibleSectionId;
+        setActiveSection(mostVisibleSectionId);
+      }
+    }, 100),
+    [findMostVisibleSection]
+  );
+
+  // Setup scroll handler
+  useEffect(() => {
     if (!file || file.done !== 1) return;
     
-    // Wait a bit for the DOM to be fully ready
-    const setupObserver = setTimeout(() => {
-      // Add section IDs to sections if they don't have them
-      const sections = document.querySelectorAll('[id$="-section"]');
-      sectionsRef.current = Array.from(sections);
+    // Small delay to ensure DOM is ready
+    const setupTimer = setTimeout(() => {
+      // Find and store the scroll container
+      scrollContainerRef.current = document.querySelector('.space-y-6.overflow-scroll');
+      if (!scrollContainerRef.current) return;
       
-      console.log(`Found ${sections.length} sections in the document`);
+      // Collect all sections
+      collectSections();
       
-      if (sections.length === 0) {
-        console.warn("No sections found with -section suffix");
-        return;
+      // Clear any existing listeners
+      if (scrollListenerRef.current) {
+        scrollContainerRef.current.removeEventListener('scroll', scrollListenerRef.current);
       }
       
-      // Create a new intersection observer
-      const observer = new IntersectionObserver(
-        (entries) => {
-          // Filter for entries that are currently intersecting
-          const visibleEntries = entries.filter(entry => entry.isIntersecting);
-          
-          if (visibleEntries.length > 0) {
-            // Sort by y position to prioritize the one at the top
-            visibleEntries.sort((a, b) => {
-              const aRect = a.boundingClientRect;
-              const bRect = b.boundingClientRect;
-              return aRect.top - bRect.top;
-            });
-            
-            const topSection = visibleEntries[0];
-            if (topSection && topSection.target.id) {
-              const newActiveSection = topSection.target.id;
-              console.log(`Setting active section to: ${newActiveSection}`);
-              setActiveSection(newActiveSection);
-            }
-          }
-        },
-        {
-          root: document.querySelector('.space-y-6.overflow-scroll'), // Scroll container
-          rootMargin: '-100px 0px -70% 0px', // Consider elements in the top portion of the viewport
-          threshold: 0.05 // Detect when just a small part is visible
+      // Create a new scroll handler
+      scrollListenerRef.current = () => {
+        if (!scrollingProgrammaticallyRef.current) {
+          debouncedUpdateSection();
         }
-      );
+      };
       
-      // Observe all sections
-      sections.forEach(section => {
-        observer.observe(section);
-      });
+      // Attach the scroll listener
+      scrollContainerRef.current.addEventListener('scroll', scrollListenerRef.current);
       
-      // Store the observer for cleanup
-      observerRef.current = observer;
-      
-    }, 1000);
+      // Initial check
+      debouncedUpdateSection(true);
+    }, 500);
     
     return () => {
-      clearTimeout(setupObserver);
-      if (observerRef.current) {
-        observerRef.current.disconnect();
+      clearTimeout(setupTimer);
+      if (scrollContainerRef.current && scrollListenerRef.current) {
+        scrollContainerRef.current.removeEventListener('scroll', scrollListenerRef.current);
       }
     };
-  }, [file]);
+  }, [file, collectSections, debouncedUpdateSection]);
 
-  // Function to manually check which section is visible when scrolling
-  useEffect(() => {
-    const handleScroll = () => {
-      const container = document.querySelector('.space-y-6.overflow-scroll');
-      if (!container || sectionsRef.current.length === 0) return;
-      
-      // Get container dimensions
-      const containerRect = container.getBoundingClientRect();
-      const containerTop = containerRect.top;
-      const viewableAreaTop = containerTop + 100; // Add some offset
-      
-      // Find the topmost visible section
-      let activeElement = null;
-      let smallestDistance = Infinity;
-      
-      sectionsRef.current.forEach(section => {
-        const rect = section.getBoundingClientRect();
-        
-        // If the top of the section is above the viewable area's top
-        // and it's the closest to the top of the viewable area
-        if (rect.top <= viewableAreaTop && (viewableAreaTop - rect.top) < smallestDistance) {
-          smallestDistance = viewableAreaTop - rect.top;
-          activeElement = section;
-        }
-      });
-      
-      if (activeElement && activeElement.id) {
-        setActiveSection(activeElement.id);
-      }
-    };
+  // Function to scroll to a specific section
+  const handleSectionSelect = useCallback((sectionId) => {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
     
     const container = document.querySelector('.space-y-6.overflow-scroll');
-    if (container) {
-      container.addEventListener('scroll', handleScroll);
-    }
+    if (!container) return;
     
-    return () => {
-      if (container) {
-        container.removeEventListener('scroll', handleScroll);
-      }
-    };
-  }, [file]);
+    // Mark that we're scrolling programmatically
+    scrollingProgrammaticallyRef.current = true;
+    
+    // Update active section immediately
+    lastSetActiveRef.current = sectionId;
+    setActiveSection(sectionId);
+    
+    // Perform the scroll
+    const offsetTop = section.offsetTop;
+    container.scrollTo({
+      top: offsetTop - 80,
+      behavior: 'smooth'
+    });
+    
+    // After scrolling completes, remove the programmatic scrolling flag
+    setTimeout(() => {
+      scrollingProgrammaticallyRef.current = false;
+    }, 1000);
+  }, []);
 
   if (error) {
     return <ErrorDisplay message={error} />;
   }
-
-  // Function to scroll to a specific section
-  const handleSectionSelect = (sectionId) => {
-    const section = document.getElementById(sectionId);
-    if (section) {
-      const container = document.querySelector('.space-y-6.overflow-scroll');
-      if (container) {
-        const containerRect = container.getBoundingClientRect();
-        const sectionRect = section.getBoundingClientRect();
-        const offsetTop = section.offsetTop;
-        
-        container.scrollTo({
-          top: offsetTop - 80, // Add offset for padding/margin
-          behavior: 'smooth'
-        });
-      } else {
-        section.scrollIntoView({ 
-          behavior: 'smooth',
-          block: 'start' 
-        });
-      }
-      
-      // Force update active section
-      setActiveSection(sectionId);
-    } else {
-      console.warn(`Section with id ${sectionId} not found`);
-    }
-  };
 
   return (
     <div className='dash'>
@@ -269,13 +332,6 @@ const Info = () => {
           )}
         </div>
       </div>
-      
-      {/* Add debugging overlay for active section */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="fixed bottom-0 right-0 bg-black bg-opacity-70 text-white p-2 text-xs z-50">
-          Active: {activeSection}
-        </div>
-      )}
     </div>
   );
 };
