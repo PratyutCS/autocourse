@@ -13,7 +13,7 @@ from docx2pdf import convert
 from PyPDF2 import PdfMerger
 
 # Read data from command line (expected to be a JSON string)
-input_data = sys.stdin.read()
+input_data = sys.stdin.buffer.read().decode('utf-8')
 data = json.loads(input_data)
 
 if data.get('Program'):
@@ -2020,6 +2020,8 @@ def create_feedback_section(doc, data):
             qual_para.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
             qual_run = qual_para.add_run(data['feedbackData']['qualitativeFeedback'])
             qual_run.font.size = Pt(12)
+
+############################################################################################################
 
 # Faculty Course Review Section
 def create_faculty_review_section(doc, data):
