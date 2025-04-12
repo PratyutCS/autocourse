@@ -659,6 +659,7 @@ app.post("/form", auth, async (req, res) => {
         jsonData[num]["copoMappingData"] = req.body.copoMappingData || "";
         jsonData[num]["internalAssessmentData"] = req.body.internalAssessmentData || "";
         jsonData[num]["actionsForWeakStudentsData"] = req.body.actionsForWeakStudentsData || "";
+        jsonData[num]["reflectionData"] = req.body.reflectionData || "";
         jsonData[num]["coWeightages"] = req.body.coWeightages || "";
         jsonData[num]["coAttainmentCriteria"] = req.body.coAttainmentCriteria || "";
         jsonData[num]["targetAttainment"] = req.body.targetAttainment || "";

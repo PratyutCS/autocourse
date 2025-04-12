@@ -26,6 +26,7 @@ import AssessmentSelection from "./AssessmentSelection";
 import InstructionsCard from "./InstructionsCard";
 import ExcelToJson from "./ExcelToJson";
 import StudentCOAchievement from './StudentCOAchievement';
+import MidSemReflection from './MidSemReflection';
 
 const FeedbackForm = (props) => {
   const token = localStorage.getItem("token");
@@ -69,6 +70,12 @@ const FeedbackForm = (props) => {
   const handleWeakStudentsChange = (updatedData) => {
     setChange(true);
     setActionsForWeakStudentsData(updatedData);
+  };
+
+  const [reflectionData, setReflectionData] = useState([]);
+  const handleReflectionChange = (updatedData) => {
+    setChange(true);
+    setReflectionData(updatedData);
   };
 
   const handleCourseSyllabusChange = (data) => {
@@ -318,6 +325,12 @@ const FeedbackForm = (props) => {
   }, [props.actionsForWeakStudentsData]);
 
   useEffect(() => {
+    if (props.reflectionData) {
+      setReflectionData(props.reflectionData);
+    }
+  }, [props.reflectionData]);
+
+  useEffect(() => {
     setWeeklyTimetableData(props.weeklyTimetableData || null);
   }, [props.weeklyTimetableData]);
 
@@ -511,6 +524,7 @@ const FeedbackForm = (props) => {
             selectedAssessments,
             par_sem_slowLearner,
             last_modified,
+            reflectionData,
           },
           {
             headers: {
@@ -603,6 +617,7 @@ const FeedbackForm = (props) => {
             selectedAssessments,
             par_sem_slowLearner,
             last_modified,
+            reflectionData,
           },
           {
             headers: {
@@ -738,6 +753,14 @@ const FeedbackForm = (props) => {
       auto_postData();
     }
   }, [facultyCourseReview]);
+  
+  useEffect(() => {
+    if (change) {
+      console.log("reflectionData changed");
+      setChange(false);
+      auto_postData();
+    }
+  }, [reflectionData]);
   
 
 
@@ -1042,6 +1065,13 @@ const FeedbackForm = (props) => {
           coAttainmentCriteria={coAttainmentCriteria}
           learnerCategories={par_sem_slowLearner}
           onSave={handlePar_sem_slowLearner}
+        />
+
+        {/* Actions for Weak Students */}
+        <MidSemReflection
+          label="Reflections"
+          initialData={reflectionData}
+          onSave={handleReflectionChange}
         />
 
         {/* Target Attainment Section with error border if invalid */}

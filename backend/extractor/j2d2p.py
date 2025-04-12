@@ -972,7 +972,40 @@ def create_actions_doc(data):
             action_run = para.add_run(action)
             action_run.font.size = Pt(12)
 
-create_actions_doc(data)        
+create_actions_doc(data)   
+
+
+###################################################################################################################
+
+def create_reflection_doc(data):
+    if data.get('reflectionData'):
+        # Add the main heading with a page break.
+        doc.add_page_break()
+        timetable_heading = doc.add_heading(level=1)
+        timetable_run = timetable_heading.add_run(
+            '15, 23. Reflections from the Mid-term semester feedback received, and interventions made to enhance the student learning and continuous improvement in teaching and learning strategies.'
+        )
+        timetable_run.font.name = 'Carlito'
+        timetable_run.font.size = Pt(16)
+        timetable_run.font.color.rgb = RGBColor(28, 132, 196)
+        timetable_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
+
+        doc.add_paragraph()
+
+        for action in data['reflectionData']:
+            para = doc.add_paragraph()
+            para.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            para.paragraph_format.left_indent = Inches(0.6)
+            para.paragraph_format.first_line_indent = Pt(0)
+            bullet_run = para.add_run("• ")
+            bullet_run.font.size = Pt(12)
+            action_run = para.add_run(action)
+            action_run.font.size = Pt(12)
+
+create_reflection_doc(data)
+
+
+###################################################################################################################
         
 
 if data.get('studentData'):

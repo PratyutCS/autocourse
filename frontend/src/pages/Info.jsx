@@ -314,7 +314,7 @@ const Info = () => {
               learningResources={file["Learning Resources"] || ""}
               copoMappingData={file["copoMappingData"] || ""}
               internalAssessmentData={file["internalAssessmentData"]}
-              actionsForWeakStudentsData={file["actionsForWeakStudentsData"] || ""}
+              actionsForWeakStudentsData={file["actionsForWeakStudentsData"] || []}
               program={file["Program"] || ""}
               weeklyTimetableData={file["weeklyTimetableData"] || ""}
               coWeightages={file["coWeightages"] || {}}
@@ -326,6 +326,7 @@ const Info = () => {
               learnerCategories={file["learnerCategories"] || [[],[]]}
               selectedAssessments={file["selectedAssessments"] || []}
               par_sem_slowLearner={file["par_sem_slowLearner"] || [[],[]]}
+              reflectionData={file["reflectionData" || []]}
             />
           ) : (
             <LoadingSpinner />
