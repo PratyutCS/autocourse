@@ -31,39 +31,27 @@ else:
 
 header = ""
 
-# Helper function to replace placeholders in the document
 def rep(doc, key):
+    placeholder = f'{{{{{key}}}}}'
+    value = data.get(key, "")
+    
     for paragraph in doc.paragraphs:
-        placeholder = f'{{{{{key}}}}}'
         if placeholder in paragraph.text:
-            if key == "Program":
-                # Program mapping based on numbers
-                program_options = {
-                    "1": "Computer Science Engineering",
-                    "2": "Mechanical Engineering", 
-                    "3": "Electronics and Computer Engineering",
-                    "4": "BBA",
-                    "5": "BCOM (Hons)",
-                    "6": "Integrated BBA MBA",
-                    "7": "BA (Hons) Liberal Arts",
-                    "8": "BA LLB (Hons)",
-                    "9": "BBA LLB (Hons)",
-                    "10":"MBA",
-                }
-                # Convert program number to string before lookup
-                program_value = data.get(key, "0")
-                program_number = str(program_value)
-                program_name = program_options.get(program_number, f"Unknown Program: {program_value}")
-                paragraph.text = paragraph.text.replace(placeholder, program_name)
+            text = paragraph.text.replace(placeholder, value)
+            paragraph.clear()
+            if ':' in text:
+                before_colon, after_colon = text.split(':', 1)
+                run1 = paragraph.add_run(before_colon + ':')
+                run1.bold = True
+                run1.font.size = Pt(14)
+                run2 = paragraph.add_run(after_colon)
+                run2.font.size = Pt(14)
             else:
-                value = data.get(key, "")
-                paragraph.text = paragraph.text.replace(placeholder, value)
+                run = paragraph.add_run(text)
+                run.font.size = Pt(14)
 
-# Replace placeholders if the keys exist
-# if data.get('Program'):
-#     rep(doc, "Program")
-if data.get('Session'):
-    rep(doc, "Session")
+header = ""
+
 if data.get('course_name'):
     rep(doc, "course_name")
     header += data.get("course_name", "") + " ("
@@ -73,6 +61,8 @@ if data.get('course_code'):
 if data.get('Module/Semester'):
     rep(doc, "Module/Semester")
     header += data.get("Module/Semester", "")
+if data.get('Session'):
+    rep(doc, "Session")
 
 #######################################################################################################################
 # Code for adding headers to the document
@@ -221,7 +211,7 @@ if data.get('copoMappingData'):
 if data.get('Course Syllabus'):
     doc.add_page_break()
     syllabus_heading = doc.add_heading(level=1)
-    syllabus_run = syllabus_heading.add_run('8. Course Syllabus')
+    syllabus_run = syllabus_heading.add_run('8. Detailed Session wise Plan & Course Syllabus')
     syllabus_run.font.name = 'Carlito'
     syllabus_run.font.size = Pt(16)
     syllabus_run.font.color.rgb = RGBColor(28, 132, 196)
@@ -282,6 +272,10 @@ if data.get('Course Syllabus'):
         trPr = tr.get_or_add_trPr()
         cantSplit = OxmlElement('w:cantSplit')
         trPr.append(cantSplit)
+    
+
+doc.add_paragraph()
+doc.add_paragraph()
 
 #######################################################################################################################
 # Learning Resources Section
@@ -718,7 +712,8 @@ if data.get('internalAssessmentData') and data['internalAssessmentData'].get('co
                     run.font.size = Pt(10)
 
     # Set column widths (adjustable based on content)
-    column_widths = [Inches(1)] * len(headers)
+    # Increase width of the last column
+    column_widths = [Inches(1)] * (len(headers) - 1) + [Inches(2.5)]  # Last column gets 2 inches
     for row in table.rows:
         for idx, cell in enumerate(row.cells):
             if idx < len(column_widths):
@@ -807,7 +802,7 @@ def create_learner_categorization_partial_sem(doc, data):
     # Add page break and section heading
     doc.add_page_break()
     heading = doc.add_heading(level=1)
-    run = heading.add_run('13 Student Learning Categories for Partial Semester')
+    run = heading.add_run('13. Sample Evaluated Internal Submissions and Identification of weak students.')
     run.font.name = 'Carlito'
     run.font.size = Pt(16)
     run.font.color.rgb = RGBColor(28, 132, 196)
@@ -956,7 +951,7 @@ def create_reflection_doc(data):
         doc.add_page_break()
         timetable_heading = doc.add_heading(level=1)
         timetable_run = timetable_heading.add_run(
-            '14 Reflections from the Mid-term semester feedback received, and interventions made to enhance the student learning and continuous improvement in teaching and learning strategies.'
+            '14. Reflections from the Mid-term semester feedback received, and interventions made to enhance the student learning and continuous improvement in teaching and learning strategies.'
         )
         timetable_run.font.name = 'Carlito'
         timetable_run.font.size = Pt(16)
@@ -997,7 +992,7 @@ def create_actions_doc(data):
         for action in data['actionsForWeakStudentsData']:
             para = doc.add_paragraph()
             para.alignment = WD_ALIGN_PARAGRAPH.LEFT
-            para.paragraph_format.left_indent = Inches(1)
+            para.paragraph_format.left_indent = Inches(0.6)
             para.paragraph_format.first_line_indent =  Pt(0)
             bullet_run = para.add_run("• ")
             bullet_run.font.size = Pt(12)
@@ -1011,6 +1006,10 @@ create_actions_doc(data)
 ###################################################################################################################
         
 
+doc.add_paragraph()
+doc.add_paragraph()
+doc.add_paragraph()
+doc.add_paragraph()
 if data.get('studentData'):
 
     # Get student data and find the attendance column
@@ -1019,10 +1018,10 @@ if data.get('studentData'):
 
 
      #2. DETAIL OF MARKS TABLE
-######################################## to add 18, 20 ################################################
-    doc.add_page_break()
+######################################## 17 ################################################
+    # doc.add_page_break()
     marks_heading = doc.add_heading(level=1)
-    marks_run = marks_heading.add_run('17 Detail of Marks in all components up to the End Semester')
+    marks_run = marks_heading.add_run('17. Details of Marks in all components up to the End Semester including the grades')
     marks_run.font.name = 'Carlito'
     marks_run.font.size = Pt(16)
     marks_run.font.color.rgb = RGBColor(28, 132, 196)
@@ -1181,7 +1180,7 @@ if data.get('studentData'):
         # Add page break and section heading
         doc.add_page_break()
         heading = doc.add_heading(level=1)
-        run = heading.add_run('18. Student Learning Categories')
+        run = heading.add_run('18. Identification of advanced learners and low performers conducted at the end of the semester')
         run.font.name = 'Carlito'
         run.font.size = Pt(16)
         run.font.color.rgb = RGBColor(28, 132, 196)
@@ -1482,8 +1481,8 @@ def create_co_attainment_analysis(doc, data):
     format_cell(header_cells[0], bold=True, alignment=WD_ALIGN_PARAGRAPH.LEFT)
     
     # Data rows
-    row_labels = ["Weights", "No. of students scored greater than 3", 
-                 "Percentage of students scored greater than 3", "Attainment Level"]
+    row_labels = ["Weights", "No. of students who scored at the highest attainment level (3)", 
+                 "Percentage of students who scored at the highest attainment level (3)", "Attainment Level"]
     
     for row_idx, label in enumerate(row_labels):
         row = summary_table.rows[row_idx + 1]
@@ -1671,7 +1670,7 @@ def create_co_attainment_analysis(doc, data):
 
 # Chart generation functions
 def add_percentage_scored3_chart(doc, result, cos):
-    """Create a horizontal bar chart showing percentage of students who scored ≥ 3 for each CO"""
+    """Create a horizontal bar chart showing Percentage of students who scored at the highest attainment level (3) for each CO"""
     plt.figure(figsize=(8, 4))
     
     # Extract data
@@ -1684,7 +1683,7 @@ def add_percentage_scored3_chart(doc, result, cos):
     # Customize chart
     plt.yticks(y_pos, cos)
     plt.xlabel('Percentage (%)')
-    plt.title('Percentage of Students Scored ≥ 3')
+    plt.title('Percentage of students who scored at the highest attainment level (3)')
     plt.xlim(0, 100)
     plt.grid(axis='x', linestyle='--', alpha=0.7)
     
