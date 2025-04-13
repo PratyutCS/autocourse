@@ -10,7 +10,7 @@ from docx.oxml import OxmlElement
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml.ns import qn
 from docx2pdf import convert
-import os
+from PyPDF2 import PdfMerger
 from pdf2image import convert_from_path
 
 # Read data from command line (expected to be a JSON string)
@@ -2302,9 +2302,10 @@ create_faculty_review_section(doc, data)
 
 
 
-
 #######################################################################################################################
-output_doc = "./download/" + data['filename'].replace('.pdf', '.docx')
+# Saving the Document and Converting to PDF
+unique_suffix = uuid.uuid4().hex
+output_doc = './download/' + data['filename'][:-4] + "_" + unique_suffix + '.docx'
 doc.save(output_doc)
 print("Document updated and saved:", output_doc)
 
@@ -2324,6 +2325,9 @@ except Timeout:
     print("Could not acquire lock for conversion. Another process may be converting.")
     sys.exit(1)
 
+# The PDF is generated with the same unique suffix
+pdf_path = output_doc.replace('.docx', '.pdf')
+
 # Remove the DOCX file after conversion
 try:
     os.remove(output_doc)
@@ -2331,7 +2335,79 @@ try:
 except Exception as e:
     print("Error removing DOCX file:", e)
 
-# Optionally: Remove the lock file if it exists
+# Prepare PDF list for merging
+# If an assignmentPDF is provided, include it; otherwise, just use our generated PDF.
+
+from PyPDF2 import PdfReader, PdfWriter
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from io import BytesIO
+
+def add_heading_to_pdf(input_pdf_path, heading_text):
+    # Step 1: Create a PDF with the heading text
+    packet = BytesIO()
+    can = canvas.Canvas(packet, pagesize=letter)
+    can.setFont("Helvetica-Bold", 14)
+    can.drawString(72, 750, heading_text)  # 1 inch margin from left and near the top
+    can.save()
+    packet.seek(0)
+
+    # Step 2: Read original PDF and overlay the heading
+    heading_pdf = PdfReader(packet)
+    original_pdf = PdfReader(input_pdf_path)
+    writer = PdfWriter()
+
+    # Merge heading on top of the first page
+    first_page = original_pdf.pages[0]
+    first_page.merge_page(heading_pdf.pages[0])
+    writer.add_page(first_page)
+
+    # Add the rest of the pages unchanged
+    for page in original_pdf.pages[1:]:
+        writer.add_page(page)
+
+    # Step 3: Save modified version (overwrite original or use temp path)
+    modified_pdf_path = input_pdf_path.replace(".pdf", "_with_heading.pdf")
+    with open(modified_pdf_path, "wb") as f_out:
+        writer.write(f_out)
+
+    return modified_pdf_path
+
+# if data.get('assignmentPDF'):
+#     assignment_pdf_path = "./data/assignments/" + data['assignmentPDF']
+#     heading_text = "Assignments / Quiz / Internal Components"
+#     updated_assignment_pdf = add_heading_to_pdf(assignment_pdf_path, heading_text)
+#     pdf_list = [pdf_path, updated_assignment_pdf]
+# else:
+#     pdf_list = [pdf_path]
+
+if data.get('assignmentPDF'):
+    pdf_list = [pdf_path, "./data/assignments/" + data['assignmentPDF']]
+else:
+    pdf_list = [pdf_path]
+
+merger = PdfMerger()
+for pdf in pdf_list:
+    print("Appending PDF:", pdf)
+    merger.append(pdf)
+
+# Merge PDFs into the final compiled PDF
+final_pdf_path = "./download/" + data['filename']
+merger.write(final_pdf_path)
+merger.close()
+print("Final PDF generated:", final_pdf_path)
+
+# Cleanup: Remove any and every other file (temporary PDFs) that are not the final compiled PDF.
+for pdf in pdf_list:
+    # Only remove temporary files that are in the './download' folder.
+    if pdf != final_pdf_path and pdf.startswith("./download/") and os.path.exists(pdf):
+        try:
+            os.remove(pdf)
+            print("Removed temporary PDF:", pdf)
+        except Exception as e:
+            print("Error removing temporary PDF file:", e)
+
+# Optionally: Remove the lock file if it exists (this is typically cleaned up automatically)
 if os.path.exists(lock_path):
     try:
         os.remove(lock_path)
