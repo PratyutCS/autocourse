@@ -125,7 +125,6 @@ def create_empty_template():
             "components": {
                 "component1": {
                     "component": "",
-                    "duration": "",
                     "weightage": "",
                     "evaluationWeek": "",
                     "remarks": ""
@@ -611,7 +610,6 @@ if __name__ == '__main__':
 #             "components": {
 #                 "component1": {
 #                     "component": "",
-#                     "duration": "",
 #                     "weightage": "",
 #                     "evaluationWeek": "",
 #                     "remarks": ""

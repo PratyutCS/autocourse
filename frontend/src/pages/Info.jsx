@@ -326,7 +326,7 @@ const Info = () => {
               learnerCategories={file["learnerCategories"] || [[],[]]}
               selectedAssessments={file["selectedAssessments"] || []}
               par_sem_slowLearner={file["par_sem_slowLearner"] || [[],[]]}
-              reflectionData={file["reflectionData" || []]}
+              reflectionData={file["reflectionData"] || []}
             />
           ) : (
             <LoadingSpinner />

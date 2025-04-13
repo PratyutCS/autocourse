@@ -285,8 +285,11 @@ doc.add_paragraph()
 # Learning Resources Section
 def create_learning_resources_doc(data):
     # doc.add_page_break()
+   
     timetable_heading = doc.add_heading(level=1)
+
     timetable_run = timetable_heading.add_run('Learning Resources')
+    doc.add_paragraph()
     timetable_run.font.name = 'Carlito'
     timetable_run.font.size = Pt(12)
     # timetable_run.font.color.rgb = RGBColor(28, 132, 196)
@@ -675,7 +678,7 @@ if data.get('internalAssessmentData') and data['internalAssessmentData'].get('co
     # Add a page break and heading for Internal Assessment Data
     doc.add_page_break()
     assessment_heading = doc.add_heading(level=1)
-    assessment_run = assessment_heading.add_run('11. Internal Assessment Data')
+    assessment_run = assessment_heading.add_run('11. Details of Internal Assessment, weightages and remarks')
     assessment_run.font.name = 'Carlito'
     assessment_run.font.size = Pt(16)
     assessment_run.font.color.rgb = RGBColor(28, 132, 196)
@@ -788,21 +791,20 @@ def extract_pdf_pages_as_images(pdf_path):
 
 def create_sample_submissions_section(doc, data):
     """Create section 12 for sample submissions"""
-    if data.get('assignmentPDF'):
+    if data.get('assignmentData'):
         try:
             # Add page break and section heading
             doc.add_page_break()
             heading = doc.add_heading(level=1)
-            run = heading.add_run('12. Sample Internal Assessment Submissions')
+            run = heading.add_run('12. Mid-Semester/ Internal Assessment Question papers with sample solutions')
             run.font.name = 'Carlito'
             run.font.size = Pt(16)
             run.font.color.rgb = RGBColor(28, 132, 196)
             heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
             
-            doc.add_paragraph()  # Add some space after heading
             
             # Path to the PDF file - corrected path
-            pdf_path = "./data/assignments/" + data['assignmentPDF']  # Changed from sample_submissions to assignments
+            pdf_path = "./data/assignments/" + data['assignmentData']['Assignment1']  # Changed from sample_submissions to assignments
             
             if not os.path.exists(pdf_path):
                 print(f"PDF file not found at: {pdf_path}")
@@ -917,7 +919,7 @@ def create_learner_categorization_partial_sem(doc, data):
     # Add page break and section heading
     doc.add_page_break()
     heading = doc.add_heading(level=1)
-    run = heading.add_run('13. Sample Evaluated Internal Submissions and Identification of weak students.')
+    run = heading.add_run('13. Low / Medium / Advance Learner Identification on the basis of Mid-Semester/Internal Assessment(s)')
     run.font.name = 'Carlito'
     run.font.size = Pt(16)
     run.font.color.rgb = RGBColor(28, 132, 196)
@@ -1095,7 +1097,7 @@ def create_actions_doc(data):
         # Add the main heading with a page break.
         doc.add_page_break()
         timetable_heading = doc.add_heading(level=1)
-        timetable_run = timetable_heading.add_run('15. Actions taken for low performers')
+        timetable_run = timetable_heading.add_run('15. Interventions made for Low performers and advanced learners, highlighting initiatives taken for student improvements (retest, resubmissions etc.)')
         timetable_run.font.name = 'Carlito'
         timetable_run.font.size = Pt(16)
         timetable_run.font.color.rgb = RGBColor(28, 132, 196)
@@ -1117,7 +1119,86 @@ def create_actions_doc(data):
 create_actions_doc(data)   
 
 ####################################### to add 16 ############################################################################
+def create_sample_submissions_section(doc, data):
+    """Create section 12 for sample submissions"""
+    if data.get('assignmentData'):
+        try:
+            # Add page break and section heading
+            doc.add_page_break()
+            heading = doc.add_heading(level=1)
+            run = heading.add_run('16. End Semester Question papers with sample solutions')
+            run.font.name = 'Carlito'
+            run.font.size = Pt(16)
+            run.font.color.rgb = RGBColor(28, 132, 196)
+            heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            
+            doc.add_paragraph()  # Add some space after heading
+            
+            # Path to the PDF file - corrected path
+            pdf_path = "./data/assignments/" + data['assignmentData']['Endterm']  # Changed from sample_submissions to assignments
+            
+            if not os.path.exists(pdf_path):
+                print(f"PDF file not found at: {pdf_path}")
+                error_para = doc.add_paragraph()
+                error_run = error_para.add_run(f"Error: PDF file not found at {pdf_path}")
+                error_run.font.color.rgb = RGBColor(255, 0, 0)
+                error_run.font.size = Pt(12)
+                return
 
+            # Create temporary directory if it doesn't exist
+            temp_dir = "./download/temp_images"
+            os.makedirs(temp_dir, exist_ok=True)
+            
+            try:
+                # Convert PDF pages to images
+                images = extract_pdf_pages_as_images(pdf_path)
+                
+                if not images:
+                    raise Exception("No images were extracted from the PDF")
+                
+                # Add each image to the document
+                for i, image in enumerate(images, 1):
+                    # Save the image temporarily
+                    temp_image_path = os.path.join(temp_dir, f'temp_image_{i}.png')
+                    image.save(temp_image_path, 'PNG')
+                    
+                    # Add image to document
+                    doc.add_picture(temp_image_path, width=Inches(6))
+                    
+                    # Center the image
+                    doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+                    
+                    # Add some space between images
+                    doc.add_paragraph()
+                    
+                    # Clean up temporary image file
+                    try:
+                        os.remove(temp_image_path)
+                    except Exception as e:
+                        print(f"Error removing temporary image {i}: {e}")
+                
+                # Clean up temporary directory
+                try:
+                    os.rmdir(temp_dir)
+                except Exception as e:
+                    print(f"Error removing temporary directory: {e}")
+                    
+            except Exception as e:
+                error_msg = f"Error processing sample submissions: {str(e)}"
+                print(error_msg)
+                error_para = doc.add_paragraph()
+                error_run = error_para.add_run(error_msg)
+                error_run.font.color.rgb = RGBColor(255, 0, 0)
+                error_run.font.size = Pt(12)
+                
+        except Exception as e:
+            print(f"Error in create_sample_submissions_section: {e}")
+            # Add error message to document
+            error_para = doc.add_paragraph()
+            error_run = error_para.add_run(f"Error creating sample submissions section: {str(e)}")
+            error_run.font.color.rgb = RGBColor(255, 0, 0)
+            error_run.font.size = Pt(12)
+create_sample_submissions_section(doc, data)
 ###################################################################################################################
         
 
@@ -1295,7 +1376,7 @@ if data.get('studentData'):
         # Add page break and section heading
         doc.add_page_break()
         heading = doc.add_heading(level=1)
-        run = heading.add_run('18. Identification of advanced learners and low performers conducted at the end of the semester')
+        run = heading.add_run('18. Identification of advance learners and low performers conducted at the end of the semester')
         run.font.name = 'Carlito'
         run.font.size = Pt(16)
         run.font.color.rgb = RGBColor(28, 132, 196)
@@ -1781,7 +1862,7 @@ def create_co_attainment_analysis(doc, data):
         doc.add_paragraph()
         
         add_course_attainment_chart(doc, result, cos)
-        doc.add_paragraph()
+        
 
 # Chart generation functions
 def add_percentage_scored3_chart(doc, result, cos):
@@ -2218,6 +2299,9 @@ def create_faculty_review_section(doc, data):
 # Call these functions after creating actions doc but before saving the document
 create_feedback_section(doc, data)
 create_faculty_review_section(doc, data)
+
+
+
 
 #######################################################################################################################
 output_doc = "./download/" + data['filename'].replace('.pdf', '.docx')

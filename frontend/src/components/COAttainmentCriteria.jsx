@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const COAttainmentCriteria = ({ copoMappingData, initialCriteria, onSave }) => {
   const [criteria, setCriteria] = useState({});
   const [focusedField, setFocusedField] = useState(null);
   const [toast, setToast] = useState({ show: false, message: '' });
+  const isInitialMount = useRef(true);
   
   // Clamp the value between 0 and 100
   const clampValue = (value) => {
@@ -15,7 +16,9 @@ const COAttainmentCriteria = ({ copoMappingData, initialCriteria, onSave }) => {
     return num;
   };
   
+  // Only initialize criteria on first render or when courseOutcomes change
   useEffect(() => {
+    // Initialize from props but don't trigger save
     const initialData = initialCriteria || {};
     const newCriteria = {};
     
@@ -27,20 +30,29 @@ const COAttainmentCriteria = ({ copoMappingData, initialCriteria, onSave }) => {
       };
     });
     
-    if (JSON.stringify(initialCriteria) !== JSON.stringify(newCriteria)) {
-      setCriteria(newCriteria);
-      // Only save if there are actual values to save
-      const dataToSave = {};
-      Object.keys(newCriteria).forEach((co) => {
-        dataToSave[co] = {
-          full: newCriteria[co].full === '' ? 0 : newCriteria[co].full,
-          partial: newCriteria[co].partial === '' ? 0 : newCriteria[co].partial,
-        };
+    // Just set the local state without calling onSave
+    setCriteria(newCriteria);
+  }, [copoMappingData.courseOutcomes]);
+  
+  // Sync with initialCriteria changes from the parent
+  useEffect(() => {
+    if (initialCriteria && Object.keys(initialCriteria).length > 0) {
+      setCriteria(prevCriteria => {
+        const newCriteria = { ...prevCriteria };
+        
+        Object.keys(initialCriteria).forEach(co => {
+          if (newCriteria[co]) {
+            newCriteria[co] = {
+              full: initialCriteria[co].full !== undefined ? initialCriteria[co].full : newCriteria[co].full,
+              partial: initialCriteria[co].partial !== undefined ? initialCriteria[co].partial : newCriteria[co].partial,
+            };
+          }
+        });
+        
+        return newCriteria;
       });
-      console.log("[COAttainmentCriteria] this ran 40");
-      onSave(dataToSave);
     }
-  }, [copoMappingData, initialCriteria]);
+  }, [initialCriteria]);
   
   const handleChange = (co, type, value) => {
     // Allow empty input while typing
@@ -85,7 +97,11 @@ const COAttainmentCriteria = ({ copoMappingData, initialCriteria, onSave }) => {
       };
     });
     
-    onSave(dataToSave);
+    // Only save if the data is different from the initial criteria
+    if (JSON.stringify(dataToSave) !== JSON.stringify(initialCriteria)) {
+      onSave(dataToSave);
+    }
+    
     setFocusedField(null);
   };
 
@@ -110,7 +126,7 @@ const COAttainmentCriteria = ({ copoMappingData, initialCriteria, onSave }) => {
 
       <div className="flex items-center gap-4 mb-6">
         <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-          11
+          C
         </div>
         <h2 className="section-title text-xl font-semibold">
           CO Attainment Criteria

@@ -12,6 +12,7 @@ const fs = require("fs");
 const jwt = require("jsonwebtoken");
 const { spawn } = require("child_process");
 const multer = require("multer");
+const assignmentRouter = require('./routes/assignment');
 // const imageUpload = require("./storage");
 
 const PORT = process.env.PORT || 3000;
@@ -444,6 +445,7 @@ app.post("/clone", auth, async (req, res) => {
 });
 // To download
 // To download
+app.use(assignmentRouter);
 app.post("/download", auth, async (req, res) => {
   const num = req.body.num;
 
@@ -884,68 +886,7 @@ const assignmentUpload = multer({
 });
 
 // Upload endpoint for assignment PDFs
-app.post('/upload-assignment-pdf', auth, (req, res) => {
-  assignmentUpload.single('file')(req, res, async (err) => {
-    if (err) {
-      if (err.code === 'LIMIT_FILE_SIZE') {
-        console.error('File size exceeds the limit of 50MB.');
-        return res.status(400).json({ message: 'File size exceeds the limit of 50MB.' });
-      }
-      console.error('File upload error:', err);
-      return res.status(400).json({ message: err.message });
-    }
 
-    const num = parseInt(req.headers.num);
-    
-    const file = req.file;
-    if (!file) {
-      return res.status(400).json({ message: 'Failed to upload file' });
-    }
-
-    try {
-      const user = await User.findById(req.user);
-      if (!user) {
-        return res.status(404).json({ error: 'User not found' });
-      }
-      
-      const jsonFilename = path.join(__dirname, '/json/', `${user.number}.json`);
-      let jsonData = [];
-      
-      if (fs.existsSync(jsonFilename)) {
-        const data = fs.readFileSync(jsonFilename, 'utf8');
-        jsonData = JSON.parse(data);
-      }
-
-      // Ensure that jsonData is an array and is large enough
-      while (jsonData.length <= num) {
-        jsonData.push({});
-      }
-
-      // Delete old file if it exists
-      if (jsonData[num]["assignmentPDF"] && jsonData[num]["assignmentPDF"] !== "") {
-        const oldFilePath = path.join(assignmentPdfDir, jsonData[num]["assignmentPDF"]);
-        if (fs.existsSync(oldFilePath)) {
-          fs.unlinkSync(oldFilePath);
-          console.log(`Deleted old file: ${oldFilePath}`);
-        }
-      }
-
-      // Store new file info
-      jsonData[num]["assignmentPDF"] = file.filename;
-      fs.writeFileSync(jsonFilename, JSON.stringify(jsonData, null, 2));
-
-      console.log('Assignment PDF uploaded: ' + file.filename);
-
-      res.status(200).json({
-        message: 'Assignment PDF uploaded successfully',
-        filename: file.filename,
-      });
-    } catch (error) {
-      console.error('Error during assignment PDF upload:', error);
-      res.status(500).json({ message: 'File operation failed' });
-    }
-  });
-});
 // Add this new route for PDF preview functionality
 app.post("/preview", auth, async (req, res) => {
   const num = req.body.num;
@@ -1046,96 +987,6 @@ app.get("/view-pdf/:filename", auth, (req, res) => {
 });
 
 // Delete endpoint for assignment PDFs
-app.post('/delete-assignment-pdf', auth, async (req, res) => {
-  const num = parseInt(req.headers.num);
-
-  if (num === undefined) {
-    return res.status(400).json({ message: "Error: 'num' is required in request headers." });
-  }
-
-  try {
-    const user = await User.findById(req.user);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    
-    const jsonFilename = path.join(__dirname, '/json/', `${user.number}.json`);
-
-    if (!fs.existsSync(jsonFilename)) {
-      return res.status(404).json({ message: "User data file not found" });
-    }
-
-    let jsonData = JSON.parse(fs.readFileSync(jsonFilename, 'utf8'));
-
-    if (num >= jsonData.length || num < 0) {
-      return res.status(400).json({ message: "Invalid 'num' parameter." });
-    }
-
-    // Delete the PDF file if it exists
-    if (jsonData[num]["assignmentPDF"] && jsonData[num]["assignmentPDF"] !== "") {
-      const filePath = path.join(assignmentPdfDir, jsonData[num]["assignmentPDF"]);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-        console.log(`Deleted assignment PDF: ${filePath}`);
-      }
-      
-      // Update the JSON to remove the file reference
-      jsonData[num]["assignmentPDF"] = "";
-      fs.writeFileSync(jsonFilename, JSON.stringify(jsonData, null, 2));
-      
-      res.status(200).json({ message: "Assignment PDF deleted successfully" });
-    } else {
-      res.status(404).json({ message: "No assignment PDF found to delete" });
-    }
-  } catch (error) {
-    console.error("Error during assignment PDF deletion:", error);
-    res.status(500).json({ message: "Error deleting assignment PDF" });
-  }
-});
-
-// Route to get the PDF file with authentication
-app.get('/get-assignment-pdf/:filename', auth, (req, res) => {
-  const { filename } = req.params;
-  
-  if (!filename) {
-    return res.status(400).json({ message: "Filename is required" });
-  }
-  
-  try {
-    const filePath = path.join(assignmentPdfDir, filename);
-    
-    // Check if file exists
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ message: "PDF file not found" });
-    }
-    
-    // Set appropriate headers for PDF
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
-    
-    // Send the file
-    const fileStream = fs.createReadStream(filePath);
-    fileStream.pipe(res);
-  } catch (error) {
-    console.error("Error serving PDF file:", error);
-    res.status(500).json({ message: "Error retrieving PDF file" });
-  }
-});
-
-// Alternative approach: Allow direct access to PDF files for authenticated users only
-// This could be used instead of get-assignment-pdf if you prefer
-app.get('/assignment-pdf/:filename', auth, (req, res) => {
-  const { filename } = req.params;
-  const filePath = path.join(assignmentPdfDir, filename);
-  
-  // Check if file exists
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).json({ message: "PDF file not found" });
-  }
-  
-  res.sendFile(filePath);
-});
-
 
 app.get("/pdf/:filename", auth, async (req, res) => {
   const { filename } = req.params;

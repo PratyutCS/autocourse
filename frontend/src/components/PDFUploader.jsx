@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Trash2, Upload, FileText, AlertCircle, Check, Eye } from 'lucide-react';
 import constants from "../constants";
 
-const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess }) => {
+const PDFUploader = ({ num, assignmentType, onUploadSuccess, onDeleteSuccess }) => {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
@@ -28,9 +28,11 @@ const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess }) => {
           }
         });
         
-        // Check if there's an assignmentPDF entry
-        if (response.data && response.data.assignmentPDF) {
-          setCurrentFileName(response.data.assignmentPDF);
+        // Check if there's an assignmentData entry with the specific type
+        if (response.data && 
+            response.data.assignmentData && 
+            response.data.assignmentData[assignmentType]) {
+          setCurrentFileName(response.data.assignmentData[assignmentType]);
         }
       } catch (error) {
         console.error('Error fetching file info:', error);
@@ -41,7 +43,7 @@ const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess }) => {
     };
     
     fetchFileInfo();
-  }, [num]);
+  }, [num, assignmentType]);
 
   const onDrop = useCallback((acceptedFiles) => {
     const selectedFile = acceptedFiles[0];
@@ -75,11 +77,12 @@ const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess }) => {
       setUploading(true);
       setError('');
       
-      // Use a dedicated endpoint for assignment PDFs
+      // Use a dedicated endpoint for assignment PDFs with assignmentType
       const response = await axios.post(constants.url + '/upload-assignment-pdf', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'num': num,
+          'assignment-type': assignmentType, // Pass assignment type in header
           'x-auth-token': localStorage.getItem('token'),
           'ngrok-skip-browser-warning': '69420'
         }
@@ -102,7 +105,9 @@ const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess }) => {
       setError('');
 
       // Use a dedicated endpoint for deleting assignment PDFs
-      await axios.post(constants.url + '/delete-assignment-pdf', {}, {
+      await axios.post(constants.url + '/delete-assignment-pdf', {
+        assignmentType: assignmentType // Pass the assignment type to delete
+      }, {
         headers: {
           'num': num,
           'x-auth-token': localStorage.getItem('token'),
@@ -133,8 +138,9 @@ const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess }) => {
       setUploading(true);
       setError('');
       
-      // Fetch the PDF as a blob with authentication headers
-      const response = await axios.get(`${constants.url}/get-assignment-pdf/${currentFileName}`, {
+      // Fetch the PDF as a blob with authentication headers and assignment type
+      const response = await axios.get(
+        `${constants.url}/get-assignment-pdf/${assignmentType}/${currentFileName}`, {
         responseType: 'blob',
         headers: {
           'x-auth-token': localStorage.getItem('token'),
@@ -168,33 +174,14 @@ const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess }) => {
 
   if (isLoading) {
     return (
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
-            17
-          </div>
-          <h2 className="text-xl font-semibold text-gray-800">
-            Assignments/Quiz/Projects with Sample Solution
-          </h2>
-        </div>
-        <div className="flex justify-center py-8">
-          <div className="animate-pulse text-gray-500">Loading...</div>
-        </div>
+      <div className="flex justify-center py-8">
+        <div className="animate-pulse text-gray-500">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
-          20
-        </div>
-        <h2 className="text-xl font-semibold text-gray-800">
-          Assignments/Quiz/Projects with Sample Solution
-        </h2>
-      </div>
-
+    <div>
       {/* Current File Display */}
       {currentFileName && (
         <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
@@ -245,7 +232,7 @@ const PDFUploader = ({ num, onUploadSuccess, onDeleteSuccess }) => {
             <div>
               <p className="text-gray-600 mb-2">Drag and drop your PDF file here, or click to select</p>
               <p className="text-yellow-600 mb-2">
-                (Upload only one pdf which covers all the assignment(s)/Quiz(s) etc. and solutions)
+                (Upload only one pdf for {assignmentType})
               </p>
               <p className="text-gray-400 text-sm">Maximum file size: 50MB</p>
             </div>

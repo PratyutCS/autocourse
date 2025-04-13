@@ -3,6 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
 import constants from '../constants';
+import { Info } from 'lucide-react';
 
 const ExcelToJSON = ({ onSave, initialData }) => {
   const token = localStorage.getItem("token");
@@ -327,12 +328,15 @@ const ExcelToJSON = ({ onSave, initialData }) => {
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
         <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              9
+              10
             </div>
           <h2 className="text-xl font-bold text-gray-800">
             Student Assessment Data
           </h2>
+          <span>(Please upload the data according to the specified template provided on the right-hand side.)</span>
         </div>
+        
+
 
         <button
           onClick={handleDownload}
@@ -352,7 +356,15 @@ const ExcelToJSON = ({ onSave, initialData }) => {
           Download Data Template Sample
         </button>
       </div>
-
+      <div className="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-lg flex items-start gap-3">
+        <Info className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
+        <div className="text-sm text-blue-700">
+          <span className="font-semibold"></span>
+          <p>
+          The Attendance list, Registered Student List, and Detailed marks will be generated automatically when you upload the data in the specified format. Please download the template to check the required format.
+          </p>
+        </div>
+      </div>
       <div className="space-y-6">
         <div
           {...getRootProps()}
