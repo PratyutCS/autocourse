@@ -90,8 +90,7 @@ default_paragraph.paragraph_format.right_indent = Inches(0.2)
 #######################################################################################################################
 # Course Description and Objectives
 if data.get('course_description'):
-    if doc.paragraphs and doc.paragraphs[-1].text.strip():
-        doc.add_page_break()
+    doc.add_page_break()
     course_heading = doc.add_heading(level=1)
     course_heading.paragraph_format.left_indent = Inches(0.5)
     course_run = course_heading.add_run('6. Course Description and its objectives')
@@ -100,13 +99,17 @@ if data.get('course_description'):
     course_run.font.color.rgb = RGBColor(28, 132, 196)
     course_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
 
-    doc.add_paragraph()
+    doc.add_paragraph()  # empty line after heading
+
     course_description = data['course_description'].encode('utf-8', 'ignore').decode('utf-8')
-    course_description_paragraph = doc.add_paragraph(course_description)
-    # course_description_paragraph = doc.add_paragraph(data['course_description'])
-    course_description_paragraph.paragraph_format.left_indent = Inches(0.7)
-    course_description_paragraph.paragraph_format.right_indent = Inches(0.5)
-    course_description_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+
+    for line in course_description.split('\n'):
+        if line.strip():  # skip empty lines
+            paragraph = doc.add_paragraph(line.strip())
+            paragraph.paragraph_format.left_indent = Inches(0.7)
+            paragraph.paragraph_format.right_indent = Inches(0.5)
+            paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+
 
 #######################################################################################################################
 # CO-PO Mapping Section
@@ -2056,18 +2059,24 @@ def create_feedback_section(doc, data):
         # Add qualitative feedback
         if data['feedbackData'].get('qualitativeFeedback'):
             doc.add_paragraph()  # Add space
+
+            # Heading
             qual_heading = doc.add_paragraph()
             qual_heading_run = qual_heading.add_run('Qualitative Feedback:')
             qual_heading_run.bold = True
             qual_heading_run.font.size = Pt(12)
             qual_heading.paragraph_format.left_indent = Inches(0.7)
-            
-            qual_para = doc.add_paragraph()
-            qual_para.paragraph_format.left_indent = Inches(0.7)
-            qual_para.paragraph_format.right_indent = Inches(0.5)
-            qual_para.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-            qual_run = qual_para.add_run(data['feedbackData']['qualitativeFeedback'])
-            qual_run.font.size = Pt(12)
+
+            # Feedback content
+            feedback_text = data['feedbackData']['qualitativeFeedback'].encode('utf-8', 'ignore').decode('utf-8')
+            for line in feedback_text.split('\n'):
+                if line.strip():  # skip empty lines
+                    para = doc.add_paragraph(line.strip())
+                    para.paragraph_format.left_indent = Inches(0.7)
+                    para.paragraph_format.right_indent = Inches(0.5)
+                    para.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+                    run = para.runs[0]
+                    run.font.size = Pt(12)
 
 ############################################################################################################
 
@@ -2082,14 +2091,17 @@ def create_faculty_review_section(doc, data):
         review_run.font.size = Pt(16)
         review_run.font.color.rgb = RGBColor(28, 132, 196)
         review_heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
-        
-        # Add review content
-        review_para = doc.add_paragraph()
-        review_para.paragraph_format.left_indent = Inches(0.7)
-        review_para.paragraph_format.right_indent = Inches(0.5)
-        # review_para.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-        review_run = review_para.add_run(data['facultyCourseReview'])
-        review_run.font.size = Pt(12)
+
+        # Process review content
+        review_text = data['facultyCourseReview'].encode('utf-8', 'ignore').decode('utf-8')
+        for line in review_text.split('\n'):
+            if line.strip():  # Skip empty lines
+                para = doc.add_paragraph(line.strip())
+                para.paragraph_format.left_indent = Inches(0.7)
+                para.paragraph_format.right_indent = Inches(0.5)
+                para.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+                run = para.runs[0]
+                run.font.size = Pt(12)
 
 # Call these functions after creating actions doc but before saving the document
 create_feedback_section(doc, data)

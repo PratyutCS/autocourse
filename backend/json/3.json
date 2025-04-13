@@ -1,1 +1,820 @@
-[]
+[
+    {
+        "filename": "1744389462_Business Laws AY2024-25.pdf",
+        "done": 1,
+        "Program": 5,
+        "Session": "Ist Semester",
+        "course_code": "TAL4702",
+        "course_name": "Business Laws",
+        "Module/Semester": "Ist Semest",
+        "course_description": "This introductory course will enable students to understand and apply key principles of Business Laws covering concepts of the Indian Contract Act, 1872, the Sale of Goods Act, 1930, and Limited Liability Partnership Act, 2008.\nThe course requires no prior knowledge of law and is especially designed to teach the basic concepts of business laws through real-world scenarios and by having hands-on assessments in class. By the end of the course, the students will be able to apply these legal concepts in business situations.",
+        "Course Syllabus": [
+            {
+                "srNo": 1,
+                "content": "Course overview, introduction to the subject, familiarize the students with the objectives, assessment pattern, etc.",
+                "co": "0",
+                "sessions": 1
+            },
+            {
+                "srNo": 2,
+                "content": "The Indian Contract Act - Offer: meaning of contract, its essentials, classifications of contracts basis formation, execution, and performance",
+                "co": "0",
+                "sessions": 1
+            },
+            {
+                "srNo": 3,
+                "content": "Offer - definition, communication of offer, kinds of offer (general, specific), invitation to offer",
+                "co": "0",
+                "sessions": 1
+            },
+            {
+                "srNo": 4,
+                "content": "Acceptance",
+                "co": "0",
+                "sessions": 1
+            },
+            {
+                "srNo": 5,
+                "content": "Intention to Enter into Contracts and introduction to concept of consideration",
+                "co": "0",
+                "sessions": 1
+            },
+            {
+                "srNo": 6,
+                "content": "Consideration – exceptions Concepts of privity of contract and consideration",
+                "co": "0",
+                "sessions": 1
+            },
+            {
+                "srNo": 7,
+                "content": "E-contracts",
+                "co": "0",
+                "sessions": 1
+            },
+            {
+                "srNo": 8,
+                "content": "Other Essentials Elements of Contract - Capacity",
+                "co": "0",
+                "sessions": 1
+            },
+            {
+                "srNo": 9,
+                "content": "Other Essentials Elements of Contract – Free Consent",
+                "co": "0",
+                "sessions": 1
+            },
+            {
+                "srNo": 10,
+                "content": "Other Essentials Elements of Contract - Lawful object and consideration, and not expressly declared to be void",
+                "co": "0",
+                "sessions": 1
+            },
+            {
+                "srNo": 11,
+                "content": "Negotiating a contract - practice exercise",
+                "co": "2",
+                "sessions": 1
+            },
+            {
+                "srNo": 12,
+                "content": "Performance of Contract - Frustration, Supervening impossibility, force majeure",
+                "co": "0",
+                "sessions": 1
+            },
+            {
+                "srNo": 13,
+                "content": "Breach of Contracts and Its Remedies – Understand the concept of breach of contract and its modes",
+                "co": "0",
+                "sessions": 1
+            },
+            {
+                "srNo": 14,
+                "content": "Breach of Contracts and Its Remedies – understand how damages are measured",
+                "co": "0",
+                "sessions": 1
+            },
+            {
+                "srNo": 15,
+                "content": "Contingent and Quasi Contracts – basic characteristics, the difference between a simple contract and contingent and quasi contracts, enforcement rules",
+                "co": "0",
+                "sessions": 1
+            },
+            {
+                "srNo": 16,
+                "content": "Analyzing real life contracts",
+                "co": "0",
+                "sessions": 1
+            },
+            {
+                "srNo": 17,
+                "content": "Negotiating a contract – Assessment",
+                "co": "2",
+                "sessions": 1
+            },
+            {
+                "srNo": 18,
+                "content": "Mid term",
+                "co": "2",
+                "sessions": 1
+            },
+            {
+                "srNo": 19,
+                "content": "The Limited Liability Partnership Act– LLP’s meaning, scope, need, advantages,",
+                "co": "1",
+                "sessions": 1
+            },
+            {
+                "srNo": 20,
+                "content": "The Limited Liability Partnership Act– differentiation from other forms of organization",
+                "co": "1",
+                "sessions": 1
+            },
+            {
+                "srNo": 21,
+                "content": "Incorporation of LLP, partners and their relations, financial disclosures, conversion, winding up, and dissolution",
+                "co": "1",
+                "sessions": 1
+            },
+            {
+                "srNo": 22,
+                "content": "The Sale of Goods Act – introduction, meaning of contract of sale, distinction of sale from other similar contracts, formation of sale",
+                "co": "3",
+                "sessions": 1
+            },
+            {
+                "srNo": 23,
+                "content": "The Sale of Goods Act – Conditions & Warranties",
+                "co": "3",
+                "sessions": 1
+            },
+            {
+                "srNo": 24,
+                "content": "The Sale of Goods Act – Conditions & Warranties Contd.",
+                "co": "3",
+                "sessions": 1
+            },
+            {
+                "srNo": 25,
+                "content": "LLP Registration Simulation Assessment",
+                "co": "1",
+                "sessions": 1
+            },
+            {
+                "srNo": 26,
+                "content": "The Sale of Goods Act – Transfer of Ownership/Passing of property, rule of nemo dat quad non habet",
+                "co": "3",
+                "sessions": 1
+            },
+            {
+                "srNo": 27,
+                "content": "Role playing practice exercise - Sales Dispute Resolution",
+                "co": "3",
+                "sessions": 1
+            },
+            {
+                "srNo": 28,
+                "content": "The Sale of Goods Act – Performance of Contract of Sale",
+                "co": "3",
+                "sessions": 1
+            },
+            {
+                "srNo": 29,
+                "content": "The Sale of Goods Act – Rights of parties to contract of sale, rights of unpaid seller",
+                "co": "3",
+                "sessions": 1
+            },
+            {
+                "srNo": 30,
+                "content": "Role playing assessment - Sales Dispute Resolution",
+                "co": "3",
+                "sessions": 1
+            },
+            {
+                "srNo": 31,
+                "content": "Revision",
+                "co": "0",
+                "sessions": 1
+            },
+            {
+                "srNo": 32,
+                "content": "Revision",
+                "co": "0",
+                "sessions": 1
+            }
+        ],
+        "Learning Resources": {
+            "textBooks": [
+                "Kapoor, N. (2022). Business Law. New Delhi: Sultan Chand.",
+                "Kuchhal, M., & Kuchhal, V. (2018). Business Law. New Delhi: Vikas Publishing House.",
+                "Pathak, A. (2022). Legal Aspects of Business. Noida: McGraw Hill.",
+                "Singh, A. (2021). Business Law. Lucknow: Eastern Book Company."
+            ],
+            "referenceLinks": []
+        },
+        "internalAssessmentData": {
+            "components": {
+                "component1": {
+                    "component": "Class Participation",
+                    "duration": "",
+                    "weightage": "10%",
+                    "evaluationWeek": "",
+                    "remarks": "CO1, CO2, CO3, CO4 PO1, PO2, PO3, PO4, PO5, PO7, PO8"
+                },
+                "component2": {
+                    "component": "Contract Law Activity (negotiating a contract)",
+                    "duration": "",
+                    "weightage": "10%",
+                    "evaluationWeek": "",
+                    "remarks": "CO2, CO4 PO1, PO2, PO3, PO4, PO5, PO7, PO8"
+                },
+                "component3": {
+                    "component": "LLP Registration Simulation",
+                    "duration": "",
+                    "weightage": "10%",
+                    "evaluationWeek": "",
+                    "remarks": "CO1, CO4 PO1, PO2, PO3, PO4, PO5, PO7, PO8"
+                },
+                "component4": {
+                    "component": "Mid Term (closed book)",
+                    "duration": "1.5 hours",
+                    "weightage": "20%",
+                    "evaluationWeek": "",
+                    "remarks": "CO2, CO4 PO1, PO2, PO3, PO4, PO5, PO7, PO8"
+                },
+                "component5": {
+                    "component": "Role playing exercise - Sales Dispute Resolution (Sale of Goods Act)",
+                    "duration": "",
+                    "weightage": "10%",
+                    "evaluationWeek": "",
+                    "remarks": "CO3, CO4 PO1, PO2, PO3, PO4, PO5, PO7, PO8"
+                },
+                "component6": {
+                    "component": "End Term Examination (closed book)",
+                    "duration": "3.0 hours",
+                    "weightage": "40%",
+                    "evaluationWeek": "",
+                    "remarks": "CO1, CO2, CO3, CO4 PO1, PO2, PO3, PO4, PO5, PO7, PO8"
+                }
+            }
+        },
+        "copoMappingData": {
+            "courseOutcomes": {
+                "CO1": {
+                    "description": "Understand the provisions of the LLP Act, 2008 in forming and managing a limited liability partnership",
+                    "bullets": []
+                },
+                "CO2": {
+                    "description": "Apply concepts of contract law to enter into valid business propositions.",
+                    "bullets": []
+                },
+                "CO3": {
+                    "description": "Analyze the rights and obligations of the parties involved in a sale transaction.",
+                    "bullets": []
+                },
+                "CO4": {
+                    "description": "Develop critical thinking and analytical skills in applying legal concepts to practical business situations.",
+                    "bullets": []
+                }
+            },
+            "mappingData": {
+                "CO1": {
+                    "PO1": "0",
+                    "PO2": "0",
+                    "PO3": "0",
+                    "PO4": "0",
+                    "PO5": "0",
+                    "PO6": "0",
+                    "PO7": "0",
+                    "PO8": "0"
+                },
+                "CO2": {
+                    "PO1": "1",
+                    "PO2": "0",
+                    "PO3": "2",
+                    "PO4": "3",
+                    "PO5": "0",
+                    "PO6": "0",
+                    "PO7": "0",
+                    "PO8": "2"
+                },
+                "CO3": {
+                    "PO1": "1",
+                    "PO2": "0",
+                    "PO3": "3",
+                    "PO4": "3",
+                    "PO5": "0",
+                    "PO6": "0",
+                    "PO7": "2",
+                    "PO8": "2"
+                },
+                "CO4": {
+                    "PO1": "3",
+                    "PO2": "1",
+                    "PO3": "3",
+                    "PO4": "3",
+                    "PO5": "1",
+                    "PO6": "0",
+                    "PO7": "1",
+                    "PO8": "3"
+                }
+            }
+        },
+        "weeklyTimetableData": {
+            "Monday": {
+                "9:15-10:10": true,
+                "10:15-11:10": true,
+                "11:15-12:10": false,
+                "12:15-13:10": false,
+                "13:15-14:10": false,
+                "14:15-15:10": false,
+                "15:15-16:10": false,
+                "16:15-17:10": false,
+                "17:15-18:10": false
+            },
+            "Tuesday": {
+                "9:15-10:10": false,
+                "10:15-11:10": false,
+                "11:15-12:10": false,
+                "12:15-13:10": false,
+                "13:15-14:10": false,
+                "14:15-15:10": false,
+                "15:15-16:10": false,
+                "16:15-17:10": false,
+                "17:15-18:10": false
+            },
+            "Wednesday": {
+                "9:15-10:10": true,
+                "10:15-11:10": true,
+                "11:15-12:10": false,
+                "12:15-13:10": false,
+                "13:15-14:10": false,
+                "14:15-15:10": false,
+                "15:15-16:10": false,
+                "16:15-17:10": false,
+                "17:15-18:10": false
+            },
+            "Thursday": {
+                "9:15-10:10": false,
+                "10:15-11:10": false,
+                "11:15-12:10": false,
+                "12:15-13:10": false,
+                "13:15-14:10": false,
+                "14:15-15:10": false,
+                "15:15-16:10": false,
+                "16:15-17:10": false,
+                "17:15-18:10": false
+            },
+            "Friday": {
+                "9:15-10:10": false,
+                "10:15-11:10": false,
+                "11:15-12:10": false,
+                "12:15-13:10": false,
+                "13:15-14:10": false,
+                "14:15-15:10": false,
+                "15:15-16:10": false,
+                "16:15-17:10": false,
+                "17:15-18:10": false
+            }
+        },
+        "actionsForWeakStudentsData": [
+            ""
+        ],
+        "last_modified": "12:44 pm, 13 Apr 2025",
+        "par_sem_slowLearner": [
+            [],
+            []
+        ],
+        "learnerCategories": [
+            [],
+            []
+        ],
+        "coWeightages": {
+            "CO1": {
+                "assignment": "0",
+                "end term examination": "25",
+                "group presentation": "50",
+                "individual class participation": "25",
+                "mid term exam": "0",
+                "role play": "0"
+            },
+            "CO2": {
+                "assignment": "50",
+                "end term examination": "25",
+                "group presentation": "0",
+                "individual class participation": "25",
+                "mid term exam": "50",
+                "role play": "0"
+            },
+            "CO3": {
+                "assignment": "0",
+                "end term examination": "25",
+                "group presentation": "0",
+                "individual class participation": "25",
+                "mid term exam": "0",
+                "role play": "50"
+            },
+            "CO4": {
+                "assignment": "50",
+                "end term examination": "25",
+                "group presentation": "50",
+                "individual class participation": "25",
+                "mid term exam": "50",
+                "role play": "50"
+            }
+        },
+        "coAttainmentCriteria": {
+            "CO1": {
+                "full": 60,
+                "partial": 40
+            },
+            "CO2": {
+                "full": 60,
+                "partial": 40
+            },
+            "CO3": {
+                "full": 60,
+                "partial": 40
+            },
+            "CO4": {
+                "full": 60,
+                "partial": 40
+            }
+        },
+        "targetAttainment": {
+            "CO1": {
+                "full": 60,
+                "partial": 40
+            },
+            "CO2": {
+                "full": 60,
+                "partial": 40
+            },
+            "CO3": {
+                "full": 60,
+                "partial": 40
+            },
+            "CO4": {
+                "full": 60,
+                "partial": 40
+            }
+        },
+        "studentData": {
+            "maxMarks": {
+                "Assignment": "10",
+                "End term examination": "40",
+                "Group Presentation": "10",
+                "Individual Class Participation": "10",
+                "Mid Term Exam": "20",
+                "Role Play": "10",
+                "Total Marks(100.0)": 100
+            },
+            "data": [
+                {
+                    "Sr.No": 1,
+                    "Unique Id.": "240334",
+                    "Student Name": "Aditya  Goel",
+                    "Assignment": "8.5",
+                    "End term examination": "0.0",
+                    "Group Presentation": "9.0",
+                    "Individual Class Participation": "0.0",
+                    "Mid Term Exam": "6.5",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "32.00",
+                    "Grading": "D",
+                    "Attendance": "75.00"
+                },
+                {
+                    "Sr.No": 2,
+                    "Unique Id.": "240335",
+                    "Student Name": "Anisha  Chhanpadia",
+                    "Assignment": "8.5",
+                    "End term examination": "21.0",
+                    "Group Presentation": "9.0",
+                    "Individual Class Participation": "9.0",
+                    "Mid Term Exam": "10.5",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "66.00",
+                    "Grading": "B+",
+                    "Attendance": "85.19"
+                },
+                {
+                    "Sr.No": 3,
+                    "Unique Id.": "240336",
+                    "Student Name": "Dhruv  Singla",
+                    "Assignment": "8.5",
+                    "End term examination": "24.0",
+                    "Group Presentation": "9.0",
+                    "Individual Class Participation": "1.0",
+                    "Mid Term Exam": "6.0",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "56.50",
+                    "Grading": "C",
+                    "Attendance": "71.43"
+                },
+                {
+                    "Sr.No": 4,
+                    "Unique Id.": "240337",
+                    "Student Name": "Dorjee Phinjo Sona  ",
+                    "Assignment": "8.5",
+                    "End term examination": "18.5",
+                    "Group Presentation": "9.0",
+                    "Individual Class Participation": "7.0",
+                    "Mid Term Exam": "3.0",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "54.00",
+                    "Grading": "C",
+                    "Attendance": "89.29"
+                },
+                {
+                    "Sr.No": 5,
+                    "Unique Id.": "240338",
+                    "Student Name": "EENA  CHAUDHARY",
+                    "Assignment": "9.0",
+                    "End term examination": "29.0",
+                    "Group Presentation": "9.0",
+                    "Individual Class Participation": "8.5",
+                    "Mid Term Exam": "8.0",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "71.50",
+                    "Grading": "B+",
+                    "Attendance": "100.00"
+                },
+                {
+                    "Sr.No": 6,
+                    "Unique Id.": "240339",
+                    "Student Name": "Eshaan  Chandra",
+                    "Assignment": "7.5",
+                    "End term examination": "26.0",
+                    "Group Presentation": "8.5",
+                    "Individual Class Participation": "6.0",
+                    "Mid Term Exam": "8.0",
+                    "Role Play": "7.5",
+                    "Total Marks(100.0)": "63.50",
+                    "Grading": "B",
+                    "Attendance": "85.71"
+                },
+                {
+                    "Sr.No": 7,
+                    "Unique Id.": "240340",
+                    "Student Name": "Hardik  Rustagi",
+                    "Assignment": "9.0",
+                    "End term examination": "21.0",
+                    "Group Presentation": "8.5",
+                    "Individual Class Participation": "7.5",
+                    "Mid Term Exam": "4.5",
+                    "Role Play": "7.5",
+                    "Total Marks(100.0)": "58.00",
+                    "Grading": "C+",
+                    "Attendance": "78.57"
+                },
+                {
+                    "Sr.No": 8,
+                    "Unique Id.": "240341",
+                    "Student Name": "Harsh  Gupta",
+                    "Assignment": "8.0",
+                    "End term examination": "20.0",
+                    "Group Presentation": "7.5",
+                    "Individual Class Participation": "0.0",
+                    "Mid Term Exam": "7.5",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "51.00",
+                    "Grading": "C",
+                    "Attendance": "82.14"
+                },
+                {
+                    "Sr.No": 9,
+                    "Unique Id.": "240342",
+                    "Student Name": "Jiya  Gera",
+                    "Assignment": "8.5",
+                    "End term examination": "26.5",
+                    "Group Presentation": "8.5",
+                    "Individual Class Participation": "7.5",
+                    "Mid Term Exam": "8.5",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "67.50",
+                    "Grading": "B+",
+                    "Attendance": "92.86"
+                },
+                {
+                    "Sr.No": 10,
+                    "Unique Id.": "240343",
+                    "Student Name": "Keshav  Gupta",
+                    "Assignment": "7.5",
+                    "End term examination": "5.0",
+                    "Group Presentation": "8.5",
+                    "Individual Class Participation": "0.0",
+                    "Mid Term Exam": "4.0",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "33.00",
+                    "Grading": "R",
+                    "Attendance": "75.00"
+                },
+                {
+                    "Sr.No": 11,
+                    "Unique Id.": "240345",
+                    "Student Name": "Luvisha  Verma",
+                    "Assignment": "8.0",
+                    "End term examination": "20.0",
+                    "Group Presentation": "7.5",
+                    "Individual Class Participation": "9.5",
+                    "Mid Term Exam": "7.5",
+                    "Role Play": "7.0",
+                    "Total Marks(100.0)": "59.50",
+                    "Grading": "B",
+                    "Attendance": "92.86"
+                },
+                {
+                    "Sr.No": 12,
+                    "Unique Id.": "240346",
+                    "Student Name": "Mehal  Raghav",
+                    "Assignment": "8.0",
+                    "End term examination": "30.0",
+                    "Group Presentation": "7.5",
+                    "Individual Class Participation": "3.0",
+                    "Mid Term Exam": "4.0",
+                    "Role Play": "7.0",
+                    "Total Marks(100.0)": "59.50",
+                    "Grading": "B",
+                    "Attendance": "81.48"
+                },
+                {
+                    "Sr.No": 13,
+                    "Unique Id.": "240347",
+                    "Student Name": "Neha Raju Shinde",
+                    "Assignment": "8.5",
+                    "End term examination": "20.5",
+                    "Group Presentation": "8.5",
+                    "Individual Class Participation": "6.0",
+                    "Mid Term Exam": "6.0",
+                    "Role Play": "7.5",
+                    "Total Marks(100.0)": "57.00",
+                    "Grading": "C+",
+                    "Attendance": "89.29"
+                },
+                {
+                    "Sr.No": 14,
+                    "Unique Id.": "240348",
+                    "Student Name": "Priya  Chadda",
+                    "Assignment": "9.0",
+                    "End term examination": "34.0",
+                    "Group Presentation": "8.5",
+                    "Individual Class Participation": "6.5",
+                    "Mid Term Exam": "16.0",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "82.00",
+                    "Grading": "A",
+                    "Attendance": "85.19"
+                },
+                {
+                    "Sr.No": 15,
+                    "Unique Id.": "240349",
+                    "Student Name": "Purnendu  Vashishtha",
+                    "Assignment": "8.0",
+                    "End term examination": "11.5",
+                    "Group Presentation": "8.0",
+                    "Individual Class Participation": "6.5",
+                    "Mid Term Exam": "8.0",
+                    "Role Play": "7.0",
+                    "Total Marks(100.0)": "49.00",
+                    "Grading": "C",
+                    "Attendance": "96.43"
+                },
+                {
+                    "Sr.No": 16,
+                    "Unique Id.": "240350",
+                    "Student Name": "Sagar  Bista",
+                    "Assignment": "9.5",
+                    "End term examination": "23.0",
+                    "Group Presentation": "8.0",
+                    "Individual Class Participation": "7.5",
+                    "Mid Term Exam": "12.0",
+                    "Role Play": "7.0",
+                    "Total Marks(100.0)": "67.00",
+                    "Grading": "B+",
+                    "Attendance": "96.43"
+                },
+                {
+                    "Sr.No": 17,
+                    "Unique Id.": "240351",
+                    "Student Name": "Shoryaveer  Singh",
+                    "Assignment": "8.0",
+                    "End term examination": "21.5",
+                    "Group Presentation": "0.0",
+                    "Individual Class Participation": "1.0",
+                    "Mid Term Exam": "2.5",
+                    "Role Play": "7.0",
+                    "Total Marks(100.0)": "40.00",
+                    "Grading": "R",
+                    "Attendance": "60.71"
+                },
+                {
+                    "Sr.No": 18,
+                    "Unique Id.": "240352",
+                    "Student Name": "Yash  Garg",
+                    "Assignment": "8.0",
+                    "End term examination": "5.0",
+                    "Group Presentation": "7.0",
+                    "Individual Class Participation": "0.0",
+                    "Mid Term Exam": "2.5",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "30.50",
+                    "Grading": "R",
+                    "Attendance": "71.43"
+                },
+                {
+                    "Sr.No": 19,
+                    "Unique Id.": "240870",
+                    "Student Name": "Sanchi  Narang",
+                    "Assignment": "9.5",
+                    "End term examination": "35.0",
+                    "Group Presentation": "8.0",
+                    "Individual Class Participation": "9.5",
+                    "Mid Term Exam": "17.0",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "87.00",
+                    "Grading": "A+",
+                    "Attendance": "96.43"
+                },
+                {
+                    "Sr.No": 20,
+                    "Unique Id.": "240871",
+                    "Student Name": "Cheshtha  Narang",
+                    "Assignment": "7.5",
+                    "End term examination": "33.0",
+                    "Group Presentation": "9.0",
+                    "Individual Class Participation": "9.5",
+                    "Mid Term Exam": "8.0",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "75.00",
+                    "Grading": "B+",
+                    "Attendance": "96.43"
+                },
+                {
+                    "Sr.No": 21,
+                    "Unique Id.": "240909",
+                    "Student Name": "Nishtha  Arora",
+                    "Assignment": "8.5",
+                    "End term examination": "18.5",
+                    "Group Presentation": "7.5",
+                    "Individual Class Participation": "8.5",
+                    "Mid Term Exam": "17.5",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "68.50",
+                    "Grading": "B+",
+                    "Attendance": "100.00"
+                },
+                {
+                    "Sr.No": 22,
+                    "Unique Id.": "240333",
+                    "Student Name": "Kshitij  Khera",
+                    "Assignment": "9.5",
+                    "End term examination": "15.5",
+                    "Group Presentation": "7.5",
+                    "Individual Class Participation": "4.5",
+                    "Mid Term Exam": "8.5",
+                    "Role Play": "7.0",
+                    "Total Marks(100.0)": "52.50",
+                    "Grading": "C",
+                    "Attendance": "78.57"
+                },
+                {
+                    "Sr.No": 23,
+                    "Unique Id.": "240943",
+                    "Student Name": "Hitansh  Goel",
+                    "Assignment": "8.0",
+                    "End term examination": "11.5",
+                    "Group Presentation": "7.5",
+                    "Individual Class Participation": "4.0",
+                    "Mid Term Exam": "3.5",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "42.50",
+                    "Grading": "D",
+                    "Attendance": "82.14"
+                },
+                {
+                    "Sr.No": 24,
+                    "Unique Id.": "240963",
+                    "Student Name": "Sneha Singh  ",
+                    "Assignment": "8.0",
+                    "End term examination": "26.5",
+                    "Group Presentation": "8.0",
+                    "Individual Class Participation": "5.5",
+                    "Mid Term Exam": "9.5",
+                    "Role Play": "8.0",
+                    "Total Marks(100.0)": "65.50",
+                    "Grading": "B+",
+                    "Attendance": "82.14"
+                }
+            ]
+        },
+        "feedbackData": {
+            "quantitativeFeedback": "4.64",
+            "qualitativeFeedback": "a) Extra Office Hours: I scheduled additional office hours to provide one-on-one support for students who need extra help.\nb) Review Sessions: I revised the challenging topics in the class.\nc) Formative Assessments with Feedback: I implemented formative assessments with prompt and constructive feedback. Students answer a small question after every class regarding the topic taught.\nd) I encouraged the students to ask questions. Simultaneously, I kept checking in on them to see if they are able to understand the topics."
+        },
+        "facultyCourseReview": "I had positive feedback from the class, especially regarding the assessments. I had assessments after every major component of the course was covered. A key element of the evaluation involved a project-based approach. In one of the assessments, students were asked to simulate registering an LLP. They were to research the steps of registering an LLP and complete the due diligence required. In another assessment, they negotiated a contract. This real-life scenario helped them understand the nuances of contract negotiation. Another assessment involved role-playing as a seller and a buyer under the Sales of Goods Act. \n\nCreating a Google Classroom page for the course helped me in uploading all the material in one place. I was able to ask small questions on it at the end of every topic. This exercise was appreciated by the students as it helped them revise the topic covered in the class. By the end of the semester, I had asked 20 questions. To encourage the students to answer these questions, I made this the criteria for awarding the class participation marks.\n",
+        "selectedAssessments": [
+            "Assignment",
+            "Mid Term Exam"
+        ]
+    }
+]
