@@ -67,7 +67,9 @@ authRouter.post("/tokenIsValid", async (req, res) => {
   }
 });
 
-// Sign Up
+const fs = require('fs');
+const path = require('path');
+
 authRouter.post("/api/signup", async (req, res) => {
   try {
     let { name, email, password } = req.body;
@@ -101,17 +103,11 @@ authRouter.post("/api/signup", async (req, res) => {
 
     // Calculate the user number
     const userCount = await User.countDocuments();
+    let number = userCount + 1;
 
-    // Try to find a gap in the numbering
-    let number = userCount + 1; // default if no gap is found
-
-    // Option 1: If you expect many users, you might want to fetch only the numbers.
-    // Here we fetch all users sorted by the `number` field.
     const users = await User.find({}, { number: 1, _id: 0 }).sort({ number: 1 });
-
-    // Loop from 1 to userCount to find the first missing number
     for (let i = 1; i <= userCount; i++) {
-      if (i != users[i-1].number) {
+      if (i !== users[i - 1].number) {
         number = i;
         break;
       }
@@ -122,24 +118,51 @@ authRouter.post("/api/signup", async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      u_pass:password,
+      u_pass: password,
       number,
     });
 
     // Save user to database
     await newUser.save();
 
+    // ==== Create folder and JSON file ====
+    const baseDir = path.join(__dirname, '../'); // You can customize this path
+    const userDir = path.join(baseDir, "data" , `${number}`);
+    const jsonFilePath = path.join(userDir, "" , `${number}.json`);
+
+    // Ensure base directory exists
+    if (!fs.existsSync(baseDir)) {
+      fs.mkdirSync(baseDir);
+    }
+
+    // Create folder for user
+    if (!fs.existsSync(userDir)) {
+      fs.mkdirSync(userDir);
+    }
+
+    // Create a JSON file with some basic user data (you can customize this)
+    const userJsonData = {
+      number,
+      name,
+      email,
+      createdAt: new Date().toISOString(),
+    };
+
+    fs.writeFileSync(jsonFilePath, JSON.stringify(userJsonData, null, 2), 'utf-8');
+    // ====================================
+
     // Generate JWT token
     const token = jwt.sign({ id: newUser._id }, "passwordKey", {
       expiresIn: "12h",
     });
 
-    // Return the created user (excluding password)
     return res.status(201).json({ token, ...newUser._doc, password: undefined });
   } catch (e) {
+    console.error(e);
     res.status(500).json({ error: e.message });
   }
 });
+
 
 
 // get user data
