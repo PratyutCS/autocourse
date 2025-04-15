@@ -15,8 +15,10 @@ export default function NewC(props) {
   const [isHovered, setIsHovered] = useState(false);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  const notificationTimerRef = useRef(null);
   
   const form = (num, userData) => {
     navigate('/form', { state: { num: num, userData: userData } });
@@ -74,20 +76,40 @@ export default function NewC(props) {
     }
   }
 
-  const showNotification = (type, message) => {
+  const showNotification = (type, message, duration = 3000) => {
+    // Clear any existing timeout to prevent conflicts
+    if (notificationTimerRef.current) {
+      clearTimeout(notificationTimerRef.current);
+      notificationTimerRef.current = null;
+    }
+    
     setNotification({ visible: true, type, message });
-    setTimeout(() => {
-      setNotification(prev => ({ ...prev, visible: false }));
-    }, 3000);
+    
+    // Only set auto-hide timeout for non-loading notifications or if specified
+    if (type !== 'loading' || duration > 0) {
+      notificationTimerRef.current = setTimeout(() => {
+        setNotification(prev => ({ ...prev, visible: false }));
+      }, duration);
+    }
   }
 
   const hideNotification = () => {
+    if (notificationTimerRef.current) {
+      clearTimeout(notificationTimerRef.current);
+      notificationTimerRef.current = null;
+    }
     setNotification(prev => ({ ...prev, visible: false }));
   }
 
   const Download = async (num) => {
     const token = localStorage.getItem('token');
-    showNotification('loading', 'Preparing your download...');
+    
+    // Prevent multiple downloads
+    if (isDownloading) return;
+    
+    setIsDownloading(true);
+    showNotification('loading', 'Preparing your download...', 0); // 0 means don't auto-hide
+    
     try {
       const response = await axios.post(constants.url + '/download', { num }, { 
         headers: { 
@@ -103,13 +125,32 @@ export default function NewC(props) {
         link.href = url;
         link.setAttribute('download', `${props.name || 'document'}.pdf`);
         document.body.appendChild(link);
+        
+        // Create a promise that resolves when the download starts
+        const downloadStarted = new Promise((resolve) => {
+          link.onload = resolve;
+          link.onclick = resolve;
+        });
+        
         link.click();
-        link.parentNode.removeChild(link);
+        
+        // Wait for download to start before showing success
+        await downloadStarted;
+        
+        // Clean up the link element
+        setTimeout(() => {
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        }, 100);
+        
+        // Show success notification after a small delay to ensure the download UI is visible
         showNotification('success', 'File downloaded successfully!');
       }
     } catch (error) {
       console.error("Error downloading file:", error);
       showNotification('error', 'Download failed. Please try again.');
+    } finally {
+      setIsDownloading(false);
     }
   }
 
@@ -132,7 +173,7 @@ export default function NewC(props) {
     }
     
     setIsLoadingPreview(true);
-    showNotification('loading', 'Generating PDF for preview...');
+    showNotification('loading', 'Generating PDF for preview...', 0);
     
     try {
       const response = await axios.post(constants.url + '/download', { num }, { 
@@ -167,6 +208,15 @@ export default function NewC(props) {
       setIsConfirmingDelete(false);
     }
   }, [isHovered, isConfirmingDelete]);
+
+  // Clear notification timer when component unmounts
+  useEffect(() => {
+    return () => {
+      if (notificationTimerRef.current) {
+        clearTimeout(notificationTimerRef.current);
+      }
+    };
+  }, []);
 
   // Handle clicks outside the menu to close it
   useEffect(() => {
@@ -312,9 +362,19 @@ export default function NewC(props) {
                       setMenuOpen(false);
                     }}
                     className="w-full flex items-center gap-2 px-4 py-2.5 text-left hover:bg-blue-50 text-gray-700 hover:text-blue-600 transition-colors"
+                    disabled={isDownloading}
                   >
-                    <IoMdDownload className="w-4 h-4" />
-                    <span>Download</span>
+                    {isDownloading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-blue-300 border-t-transparent rounded-full animate-spin"></div>
+                        <span>Downloading...</span>
+                      </>
+                    ) : (
+                      <>
+                        <IoMdDownload className="w-4 h-4" />
+                        <span>Download</span>
+                      </>
+                    )}
                   </button>
                   
                   <button 

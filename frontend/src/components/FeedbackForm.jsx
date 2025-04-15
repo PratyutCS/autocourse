@@ -5,6 +5,7 @@ import LoadingSpinner from "./LoadingSpinner";
 import "../css/feedback.css";
 import COPOMapping from "./COPOMapping";
 import InternalAssessmentTable from "./InternalAssessmentTable";
+import { IoMdDownload } from "react-icons/io";
 import ActionsForWeakStudents from "./ActionsForWeakStudents";
 import MBAWeeklyTimetable from "./MBAWeeklyTimetable";
 import EditableCourseDescription from "./EditableCourseDescription";
@@ -25,12 +26,17 @@ import InstructionsCard from "./InstructionsCard";
 import ExcelToJson from "./ExcelToJson";
 import StudentCOAchievement from "./StudentCOAchievement";
 import MidSemReflection from "./MidSemReflection";
+import SubmissionSuccessModal from "./SubmissionSuccessModal";
+
 
 const FeedbackForm = (props) => {
   const token = localStorage.getItem("token");
 
   let num = props.num;
   const [isLoading, setIsLoading] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [notification, setNotification] = useState({ visible: false, type: '', message: '' });
+
 
   const [coursecode, setCourseCode] = useState("");
   const [coursetitle, setCourseTitle] = useState("");
@@ -67,6 +73,45 @@ const FeedbackForm = (props) => {
     []
   );
   const [weeklyTimetableData, setWeeklyTimetableData] = useState(null);
+  const handleDownload = async () => {
+    showNotification('loading', 'Preparing your download...');
+    try {
+      const response = await axios.post(
+        constants.url + '/download', 
+        { num }, 
+        { 
+          headers: { 
+            'x-auth-token': token, 
+            'ngrok-skip-browser-warning': '69420' 
+          }, 
+          responseType: 'blob' 
+        }
+      );
+      
+      if (response.status === 200) {
+        const url = window.URL.createObjectURL(
+          new Blob([response.data], { type: 'application/pdf' })
+        );
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `${coursecode || 'course'}_${coursetitle || 'feedback'}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+        showNotification('success', 'File downloaded successfully!');
+      }
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      showNotification('error', 'Download failed. Please try again.');
+    }
+  };
+
+  const showNotification = (type, message) => {
+    setNotification({ visible: true, type, message });
+    setTimeout(() => {
+      setNotification(prev => ({ ...prev, visible: false }));
+    }, 3000);
+  };
 
   const handleWeakStudentsChange = (updatedData) => {
     setChange(true);
@@ -582,23 +627,15 @@ const FeedbackForm = (props) => {
       });
 
     if (!isWeightageValid) {
-      // alert("Please ensure all CO Assessment weightages add up to 100% before submitting.");
-      // return;
       setCoWeightages(props.coWeightages || {});
     }
     if (!validateCriteria()) {
-      // alert("Please ensure that the 'Min. % marks (fully attained)' are greater than or equal to 'Min. % marks (partially attained)' for all COs.");
-      // return;
       setCoAttainmentCriteria(props.coAttainmentCriteria || {});
     }
     if (!validateTargetAttainment()) {
-      // alert("Please ensure that in Target Attainment, the 'Min. % students (fully attained)' are greater than or equal to 'Min. % students (partially attained)' for all COs.");
-      // return;
       setTargetAttainment(props.targetAttainment || {});
     }
     if (!isCourseCodeValid) {
-      // alert("Please enter a valid course code (3 letters followed by 4 numbers).");
-      // return;
       setCourseCode(props.coursecode || "");
     }
 
@@ -645,16 +682,16 @@ const FeedbackForm = (props) => {
             },
           }
         );
-        console.log("[manual] Form submitted successfully:", response.data);
-        window.location.reload();
+        console.log("Form submitted successfully:", response.data);
+        setSubmitSuccess(true);
       } catch (error) {
         console.error("Error submitting form:", error);
-        alert("An error occurred while submitting the form.");
+        showNotification('error', 'An error occurred while submitting the form.');
       } finally {
         setIsLoading(false);
       }
     } else {
-      alert("wrong number of the file cannot save check with admin...");
+      alert("Wrong number of the file cannot save. Check with admin...");
       return;
     }
   };
@@ -778,9 +815,76 @@ const FeedbackForm = (props) => {
       auto_postData();
     }
   }, [reflectionData]);
+  const Notification = () => {
+    if (!notification.visible) return null;
+    
+    let icon;
+    let bgColor = "bg-[#FFB255]";
+    let textColor = "text-white";
+    
+    switch(notification.type) {
+      case 'success':
+        icon = (
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        );
+        bgColor = "bg-green-500";
+        break;
+      case 'error':
+        icon = (
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        );
+        bgColor = "bg-red-500";
+        break;
+      case 'loading':
+        icon = (
+          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+        );
+        break;
+      default:
+        icon = (
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        );
+    }
+    
+    return (
+      <div className="fixed top-6 right-6 z-50">
+        <div className={`${bgColor} ${textColor} flex items-center gap-3 py-3 px-4 rounded-lg shadow-lg max-w-xs animate-fade-in`}>
+          <div className="flex-shrink-0">
+            {icon}
+          </div>
+          <p className="text-sm font-medium">{notification.message}</p>
+          <button 
+            onClick={() => setNotification(prev => ({ ...prev, visible: false }))}
+            className="ml-auto text-white/80 hover:text-white transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="p-5 gap-[2rem] h-screen flex flex-col bg-[#FFFEFD]">
+
+{notification.visible && <Notification />}
+      
+      <SubmissionSuccessModal
+        isOpen={submitSuccess}
+        onClose={() => {
+          setSubmitSuccess(false);
+          window.location.reload();
+        }}
+        onDownload={handleDownload}
+      />
       <div
         id="header-section"
         className="bg-gradient-to-r from-white to-gray-50 rounded-2xl shadow-md p-5 border border-gray-200 mb-6 transition-all hover:shadow-lg"
@@ -1354,8 +1458,9 @@ const FeedbackForm = (props) => {
         </div>
         
 
-        {isLoading && <LoadingSpinner />}
+       
       </div>
+      {isLoading && <LoadingSpinner />}
     </div>
   );
 };
