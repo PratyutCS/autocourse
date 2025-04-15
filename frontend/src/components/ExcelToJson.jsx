@@ -365,6 +365,15 @@ const ExcelToJSON = ({ onSave, initialData }) => {
           </p>
         </div>
       </div>
+      <div className="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-lg flex items-start gap-3">
+        <Info className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
+        <div className="text-sm text-blue-700">
+          <span className="font-semibold"></span>
+          <p>
+            Note: Total Marks column should be 100 in the data
+          </p>
+        </div>
+      </div>
       <div className="space-y-6">
         <div
           {...getRootProps()}

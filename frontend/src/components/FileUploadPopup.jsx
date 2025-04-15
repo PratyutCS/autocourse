@@ -11,10 +11,32 @@ const FileUploadPopup = ({ isOpen, onClose }) => {
   const [file, setFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const validateFile = (selectedFile) => {
+    // Reset error message
+    setErrorMessage('');
+    
+    // Check if file exists
+    if (!selectedFile) return false;
+    
+    // Check file type
+    const fileType = selectedFile.type;
+    if (fileType !== 'application/pdf') {
+      setErrorMessage('Only PDF files are allowed.');
+      return false;
+    }
+    
+    return true;
+  };
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    if (selectedFile) setFile(selectedFile);
+    if (selectedFile && validateFile(selectedFile)) {
+      setFile(selectedFile);
+    } else {
+      setFile(null);
+    }
   };
 
   const handleDragEnter = useCallback((e) => {
@@ -39,12 +61,18 @@ const FileUploadPopup = ({ isOpen, onClose }) => {
     e.stopPropagation();
     setIsDragging(false);
     const droppedFile = e.dataTransfer.files[0];
-    if (droppedFile) setFile(droppedFile);
+    if (droppedFile && validateFile(droppedFile)) {
+      setFile(droppedFile);
+    } else {
+      setFile(null);
+    }
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMessage('');
+    
     const formData = new FormData();
     if (file) {
       formData.append('file', file);
@@ -62,9 +90,14 @@ const FileUploadPopup = ({ isOpen, onClose }) => {
       }
     } catch (error) {
       console.error(error);
+      // Extract error message from backend response
+      if (error.response && error.response.data && error.response.data.message) {
+        setErrorMessage(error.response.data.message);
+      } else {
+        setErrorMessage('An error occurred during file upload. Please try again.');
+      }
     } finally {
       setIsLoading(false);
-      setFile(null);
     }
   };
 
@@ -96,6 +129,7 @@ const FileUploadPopup = ({ isOpen, onClose }) => {
                     ? 'border-blue-500 bg-blue-50' 
                     : 'border-gray-300 hover:border-gray-400 bg-white'}
                   ${file ? 'border-green-500 bg-green-50' : ''}
+                  ${errorMessage ? 'border-red-500 bg-red-50' : ''}
                 `}
                 onDragEnter={handleDragEnter}
                 onDragOver={handleDragOver}
@@ -107,13 +141,17 @@ const FileUploadPopup = ({ isOpen, onClose }) => {
                   onChange={handleFileChange}
                   id="file-input"
                   className="hidden"
+                  accept="application/pdf"
                 />
                 <label 
                   htmlFor="file-input"
                   className="flex flex-col items-center py-12 cursor-pointer"
                 >
                   <IoCloudUploadOutline 
-                    className={`w-12 h-12 mb-4 ${file ? 'text-green-500' : 'text-gray-400'}`} 
+                    className={`w-12 h-12 mb-4 ${
+                      file ? 'text-green-500' : 
+                      errorMessage ? 'text-red-500' : 'text-gray-400'
+                    }`} 
                   />
                   {file ? (
                     <div className="text-center">
@@ -126,11 +164,18 @@ const FileUploadPopup = ({ isOpen, onClose }) => {
                         Drag and drop file here, or{' '}
                         <span className="text-blue-600 hover:text-blue-700">browse</span>
                       </p>
-                      <p className="text-sm text-gray-500 mt-1">Supports: PDF</p>
+                      <p className="text-sm text-gray-500 mt-1">Supports: PDF only</p>
                     </div>
                   )}
                 </label>
               </div>
+              
+              {/* Error Message */}
+              {errorMessage && (
+                <div className="mt-2 text-sm text-red-600">
+                  {errorMessage}
+                </div>
+              )}
 
               {/* Footer */}
               <div className="flex justify-end mt-8 gap-3">

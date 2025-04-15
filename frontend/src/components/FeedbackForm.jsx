@@ -1188,6 +1188,32 @@ const FeedbackForm = (props) => {
             onSave={handleCoAttainmentCriteriaSave}
           />
         </div>
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mt-8">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+              13
+            </div>
+            <h2 className="section-title text-xl font-semibold">
+            Low / Medium / Advance Learner Identification on the basis of Mid-Semester/Internal Assessments
+
+            </h2>
+          </div>
+          <AssessmentSelection
+            studentData={studentData}
+            selectedAssessments={selectedAssessments}
+            onChange={handleAssessmentSelectionChange}
+          />
+           <StudentCOAchievement
+          selectedAssessments={selectedAssessments}
+          coWeightages={coWeightages}
+          studentData={studentData}
+          coAttainmentCriteria={coAttainmentCriteria}
+          learnerCategories={par_sem_slowLearner}
+          onSave={handlePar_sem_slowLearner}
+        />
+        </div>
+        
+        
 
       
         <div
@@ -1201,6 +1227,14 @@ const FeedbackForm = (props) => {
             onSave={handleTargetAttainmentSave}
           />
         </div>
+        <COAttainmentAnalysis
+          coWeightages={coWeightages}
+          studentData={studentData}
+          coAttainmentCriteria={coAttainmentCriteria}
+          copoMappingData={copoMappingData}
+          targetAttainment={targetAttainment}
+        />
+        
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
@@ -1235,30 +1269,7 @@ const FeedbackForm = (props) => {
             }}
           />
         </div>
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mt-8">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              13
-            </div>
-            <h2 className="section-title text-xl font-semibold">
-            Low / Medium / Advance Learner Identification on the basis of Mid-Semester/Internal Assessments
-
-            </h2>
-          </div>
-          <AssessmentSelection
-            studentData={studentData}
-            selectedAssessments={selectedAssessments}
-            onChange={handleAssessmentSelectionChange}
-          />
-           <StudentCOAchievement
-          selectedAssessments={selectedAssessments}
-          coWeightages={coWeightages}
-          studentData={studentData}
-          coAttainmentCriteria={coAttainmentCriteria}
-          learnerCategories={par_sem_slowLearner}
-          onSave={handlePar_sem_slowLearner}
-        />
-        </div>
+        
         <MidSemReflection
           label="Reflections"
           initialData={reflectionData}
@@ -1294,17 +1305,12 @@ const FeedbackForm = (props) => {
           learnerCategories={learnerCategories}
           onSave={handleLearners}
         />
-         <COAttainmentAnalysis
-          coWeightages={coWeightages}
-          studentData={studentData}
-          coAttainmentCriteria={coAttainmentCriteria}
-          copoMappingData={copoMappingData}
-          targetAttainment={targetAttainment}
-        />
+         
         <FeedbackAndCorrectiveActions
           initialData={feedbackData}
           onSave={handleFeedbackChange}
         />
+        
         <FacultyCourseReview
           initialData={facultyCourseReview}
           onSave={(data) => {
