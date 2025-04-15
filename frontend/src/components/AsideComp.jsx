@@ -22,6 +22,9 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
   const location = useLocation();
   const isInfoPage = location.pathname.includes('/form');
 
+  // Support form URL
+  const supportFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSd1UrHTCGcP7GFV6W8LKzV3Moplsf3x9sPnX2dBcPwk7KuljA/viewform?usp=sharing";
+
   useEffect(() => {
     const fetchUserData = async () => {
       const token = localStorage.getItem("token");
@@ -57,6 +60,17 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Function to navigate to the form edit page
+  const navigateToFormEdit = (index) => {
+    // If onFileSelect is provided, call it
+    if (onFileSelect) {
+      onFileSelect(index);
+    }
+    
+    // Navigate to form page with the file index and user data
+    navigate('/form', { state: { num: index, userData: userData } });
+  };
 
   const handleLogout = async (e) => {
     e.preventDefault();
@@ -107,6 +121,10 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
       console.error("Download error:", error);
     }
     setMenuOpenIndex(null);
+  };
+
+  const handleOpenSupportForm = () => {
+    window.open(supportFormUrl, '_blank');
   };
 
   const getUserInitials = (name) => {
@@ -218,7 +236,7 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
                     <div 
                       key={index} 
                       className="group relative flex items-center py-3 px-3 rounded-lg hover:bg-zinc-800 transition-all cursor-pointer"
-                      onClick={() => onFileSelect(index)}
+                      onClick={() => navigateToFormEdit(index)}
                     >
                       {isCollapsed ? (
                         <div className="flex-grow flex justify-center">
@@ -389,12 +407,13 @@ const AsideComp = ({ isCollapsed, setIsCollapsed, files, onFileSelect, activeSec
           </button>
           
           <button 
-            className="flex flex-col items-center p-2 rounded-lg hover:bg-zinc-800 transition-all"
-            title="Support"
+            onClick={handleOpenSupportForm}
+            className="flex flex-col items-center p-2 rounded-lg hover:bg-zinc-800 transition-all group"
+            title="Get Help & Support"
           >
-            <RxQuestionMarkCircled className="text-zinc-400 text-lg mb-1" />
+            <RxQuestionMarkCircled className="text-zinc-400 group-hover:text-amber-500 text-lg mb-1 transition-colors" />
             {!isCollapsed && (
-              <span className="text-xs text-zinc-300">Support</span>
+              <span className="text-xs text-zinc-300 group-hover:text-amber-500 transition-colors">Support</span>
             )}
           </button>
         </div>

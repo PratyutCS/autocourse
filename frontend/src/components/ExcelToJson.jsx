@@ -14,6 +14,8 @@ const ExcelToJSON = ({ onSave, initialData }) => {
   const [isHovering, setIsHovering] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showFullPreview, setShowFullPreview] = useState(false);
+  // New state variables for min and max total marks
+  const [totalMarksStats, setTotalMarksStats] = useState({ min: null, max: null, avg: null });
 
   // Function to clean max marks data by removing undefined/empty values
   const cleanMaxMarksData = (data) => {
@@ -29,6 +31,46 @@ const ExcelToJSON = ({ onSave, initialData }) => {
     return Object.keys(cleanedData).length > 0 ? cleanedData : null;
   };
 
+  // New function to calculate total marks statistics
+  const calculateTotalMarksStats = (data) => {
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      return { min: null, max: null, avg: null };
+    }
+
+    // Find the "Total" or "Total Marks" column
+    const totalColumn = Object.keys(data[0]).find(key => 
+      key.toLowerCase().includes('total') || 
+      key.toLowerCase().includes('final') ||
+      key.toLowerCase().includes('grand total')
+    );
+
+    if (!totalColumn) {
+      return { min: null, max: null, avg: null };
+    }
+
+    const totalMarks = data
+      .map(row => {
+        const val = row[totalColumn];
+        return typeof val === 'number' ? val : Number(val);
+      })
+      .filter(val => !isNaN(val));
+
+    if (totalMarks.length === 0) {
+      return { min: null, max: null, avg: null };
+    }
+
+    const min = Math.min(...totalMarks);
+    const max = Math.max(...totalMarks);
+    const avg = totalMarks.reduce((sum, val) => sum + val, 0) / totalMarks.length;
+
+    return {
+      min: min,
+      max: max,
+      avg: parseFloat(avg.toFixed(2)),
+      column: totalColumn
+    };
+  };
+
   // Initialize the component with initialData
   useEffect(() => {
     if (initialData && initialData.data && initialData.maxMarks) {
@@ -39,6 +81,10 @@ const ExcelToJSON = ({ onSave, initialData }) => {
 
         setMaxMarksData(maxMarks);
         setProcessedData(remainingData);
+        
+        // Calculate total marks statistics
+        const stats = calculateTotalMarksStats(remainingData);
+        setTotalMarksStats(stats);
       } catch (error) {
         console.error('Error processing initial data:', error);
         setError('Error processing initial data');
@@ -98,8 +144,12 @@ const ExcelToJSON = ({ onSave, initialData }) => {
             const maxMarks = cleanMaxMarksData(processedData[0]);
             const remainingData = processedData.slice(1);
 
+            // Calculate total marks statistics
+            const stats = calculateTotalMarksStats(remainingData);
+            
             setMaxMarksData(maxMarks);
             setProcessedData(remainingData);
+            setTotalMarksStats(stats);
             onSave({ maxMarks, data: remainingData });
             setIsLoading(false);
           } catch (error) {
@@ -156,8 +206,12 @@ const ExcelToJSON = ({ onSave, initialData }) => {
           const maxMarks = cleanMaxMarksData(processedData[0]);
           const remainingData = processedData.slice(1);
 
+          // Calculate total marks statistics
+          const stats = calculateTotalMarksStats(remainingData);
+
           setMaxMarksData(maxMarks);
           setProcessedData(remainingData);
+          setTotalMarksStats(stats);
           onSave({ maxMarks, data: remainingData });
           setIsLoading(false);
         } catch (error) {
@@ -248,6 +302,32 @@ const ExcelToJSON = ({ onSave, initialData }) => {
                   <p className="text-lg font-semibold text-gray-900">{value}</p>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* New section: Total Marks Statistics */}
+        {totalMarksStats.min !== null && totalMarksStats.max !== null && (
+          <div className="mb-6 p-5 bg-amber-50 rounded-lg border border-amber-100 shadow-sm">
+            <h4 className="text-sm font-bold text-gray-800 mb-3 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-amber-600" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M3 3a1 1 0 000 2h10a1 1 0 100-2H3zm0 4a1 1 0 000 2h6a1 1 0 100-2H3zm0 4a1 1 0 100 2h4a1 1 0 100-2H3zm12-3a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L15 13.586V8z" clipRule="evenodd" />
+              </svg>
+              {totalMarksStats.column || 'Total Marks'} Statistics
+            </h4>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="bg-white p-3 rounded shadow-sm border border-amber-200">
+                <p className="font-medium text-gray-800 text-sm mb-1">Minimum</p>
+                <p className="text-lg font-semibold text-gray-900">{totalMarksStats.min}</p>
+              </div>
+              <div className="bg-white p-3 rounded shadow-sm border border-amber-200">
+                <p className="font-medium text-gray-800 text-sm mb-1">Maximum</p>
+                <p className="text-lg font-semibold text-gray-900">{totalMarksStats.max}</p>
+              </div>
+              <div className="bg-white p-3 rounded shadow-sm border border-amber-200">
+                <p className="font-medium text-gray-800 text-sm mb-1">Average</p>
+                <p className="text-lg font-semibold text-gray-900">{totalMarksStats.avg}</p>
+              </div>
             </div>
           </div>
         )}
