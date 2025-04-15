@@ -18,10 +18,12 @@ def extract(file):
                     text = page.extract_text(x_tolerance=3)  # Adjust tolerance for better word spacing.
                     if text:
                         eText.append(text)
+            # Return the joined text with proper encoding handling
             return '\n\n'.join(eText)
     except Exception as e:
         print(f"Error extracting PDF: {str(e)}")
         return ""
+
 def get_mapping_template(program):
     """
     Return the appropriate mapping template based on program.
@@ -384,7 +386,7 @@ Additional Extraction and Validation Restrictions:
 
     try:
         completion = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="llama-3.1-8b-instant",
             messages=[{"role": "user", "content": prompt}],
             temperature=1,
             top_p=1,
@@ -416,15 +418,15 @@ Additional Extraction and Validation Restrictions:
             current_timestamp = datetime.now().strftime("%I:%M %p, %d/%m/%Y")
             cleaned_response["last_modified"] = current_timestamp
 
-            return json.dumps(cleaned_response)
+            return json.dumps(cleaned_response, ensure_ascii=False)
         # If no cleaned response, just update the template with last_modified.
         initial_template["last_modified"] = datetime.now().strftime("%I:%M %p, %d/%m/%Y")
-        return json.dumps(initial_template)
+        return json.dumps(initial_template, ensure_ascii=False)
 
     except Exception as e:
         print(f"Error in AI processing: {str(e)}")
         initial_template["last_modified"] = datetime.now().strftime("%I:%M %p, %d/%m/%Y")
-        return json.dumps(initial_template)
+        return json.dumps(initial_template, ensure_ascii=False)
 
 if __name__ == '__main__':
     try:
@@ -432,12 +434,15 @@ if __name__ == '__main__':
         jfn = sys.argv[2]
         extracted_text = extract(fn)
         if extracted_text:
-            print(f"Extracted Text:\n{extracted_text}")
+            print(f"Extracted Text Length: {len(extracted_text)} characters")
         else:
             print("No text could be extracted from the PDF.")
+            
+        # Handle encoding issues by forcing UTF-8 with replacement of problematic characters
         extracted_text = extracted_text.encode("utf-8", "ignore").decode("utf-8")
         response = ai(extracted_text)
 
+        # Open JSON file with UTF-8 encoding
         with open(jfn, 'r', encoding="utf-8") as file:
             data = json.load(file)
         datnum = None
@@ -449,7 +454,7 @@ if __name__ == '__main__':
 
         try:
             res = json.loads(response)
-            print("AI Response:", json.dumps(res, indent=2))
+            print("AI Response processed successfully")
             if datnum is not None:
                 print(f"Updating entry {datnum}")
                 for key, value in res.items():
@@ -464,19 +469,18 @@ if __name__ == '__main__':
             else:
                 print(f"Filename {fn} not found in the JSON file.")
 
+            # Write to JSON file with UTF-8 encoding and ensure_ascii=False
             with open(jfn, 'w', encoding="utf-8") as f:
-                json.dump(data, f, indent=2)
+                json.dump(data, f, indent=2, ensure_ascii=False)
 
         except json.JSONDecodeError as e:
             print("------- Error in parsing AI response ---------")
-            print("Response:", response)
-            print("Error:", str(e))
+            print(f"Error: {str(e)}")
             print("Current template:", json.dumps(create_empty_template(), indent=2))
 
     except Exception as e:
         print(f"Error in main execution: {str(e)}")
         sys.exit(1)
-
 ########################################################################################################################################
 # import pdfplumber
 # import sys
