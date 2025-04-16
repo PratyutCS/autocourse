@@ -809,7 +809,7 @@ def create_sample_submissions_section(doc, data):
             if not os.path.exists(pdf_path):
                 print(f"PDF file not found at: {pdf_path}")
                 error_para = doc.add_paragraph()
-                error_run = error_para.add_run(f"Error: PDF file not found at {pdf_path}")
+                error_run = error_para.add_run(f"Error: PDF file not found at")
                 error_run.font.color.rgb = RGBColor(255, 0, 0)
                 error_run.font.size = Pt(12)
                 return
@@ -838,7 +838,7 @@ def create_sample_submissions_section(doc, data):
                     doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
                     
                     # Add some space between images
-                    # doc.add_paragraph()
+                    doc.add_paragraph()
                     
                     # Clean up temporary image file
                     try:
@@ -853,7 +853,7 @@ def create_sample_submissions_section(doc, data):
                     print(f"Error removing temporary directory: {e}")
                     
             except Exception as e:
-                error_msg = f"Error processing sample submissions: {str(e)}"
+                error_msg = f"Error processing sample submissions"
                 print(error_msg)
                 error_para = doc.add_paragraph()
                 error_run = error_para.add_run(error_msg)
@@ -1140,7 +1140,7 @@ def create_sample_submissions_section(doc, data):
             if not os.path.exists(pdf_path):
                 print(f"PDF file not found at: {pdf_path}")
                 error_para = doc.add_paragraph()
-                error_run = error_para.add_run(f"Error: PDF file not found at {pdf_path}")
+                error_run = error_para.add_run(f"Error: PDF file not found at")
                 error_run.font.color.rgb = RGBColor(255, 0, 0)
                 error_run.font.size = Pt(12)
                 return
@@ -1184,7 +1184,7 @@ def create_sample_submissions_section(doc, data):
                     print(f"Error removing temporary directory: {e}")
                     
             except Exception as e:
-                error_msg = f"Error processing sample submissions: {str(e)}"
+                error_msg = f"Error processing sample submissions"
                 print(error_msg)
                 error_para = doc.add_paragraph()
                 error_run = error_para.add_run(error_msg)
@@ -1195,7 +1195,7 @@ def create_sample_submissions_section(doc, data):
             print(f"Error in create_sample_submissions_section: {e}")
             # Add error message to document
             error_para = doc.add_paragraph()
-            error_run = error_para.add_run(f"Error creating sample submissions section: {str(e)}")
+            error_run = error_para.add_run(f"Error creating sample submissions section")
             error_run.font.color.rgb = RGBColor(255, 0, 0)
             error_run.font.size = Pt(12)
 create_sample_submissions_section(doc, data)
