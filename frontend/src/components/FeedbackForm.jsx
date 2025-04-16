@@ -27,6 +27,7 @@ import ExcelToJson from "./ExcelToJson";
 import StudentCOAchievement from "./StudentCOAchievement";
 import MidSemReflection from "./MidSemReflection";
 import SubmissionSuccessModal from "./SubmissionSuccessModal";
+import StudentDataAnalysis from "./StudentDataAnalysis";
 
 
 const FeedbackForm = (props) => {
@@ -1261,6 +1262,8 @@ const FeedbackForm = (props) => {
 
         {/* Excel to JSON to extract student data */}
         <ExcelToJson onSave={handleStudentDataSave} initialData={studentData} />
+
+
         {/* CO Assessment weightage Section */}
         <div
           className={`bg-white  rounded-xl shadow-sm border ${
@@ -1278,6 +1281,10 @@ const FeedbackForm = (props) => {
           />
         </div>
 
+        {/*max min average*/}
+
+        <StudentDataAnalysis studentData={studentData}/>
+
 
 
         {/* CO Attainment Criteria Section with error border if invalid */}
@@ -1292,6 +1299,8 @@ const FeedbackForm = (props) => {
             onSave={handleCoAttainmentCriteriaSave}
           />
         </div>
+
+
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
@@ -1331,6 +1340,9 @@ const FeedbackForm = (props) => {
             onSave={handleTargetAttainmentSave}
           />
         </div>
+
+
+
         <COAttainmentAnalysis
           coWeightages={coWeightages}
           studentData={studentData}
