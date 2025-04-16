@@ -108,9 +108,9 @@ const FeedbackForm = (props) => {
 
   const showNotification = (type, message) => {
     setNotification({ visible: true, type, message });
-    setTimeout(() => {
-      setNotification(prev => ({ ...prev, visible: false }));
-    }, 3000);
+    // setTimeout(() => {
+    //   setNotification(prev => ({ ...prev, visible: false }));
+    // }, 3000);
   };
 
   const handleWeakStudentsChange = (updatedData) => {
