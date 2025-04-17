@@ -12,7 +12,7 @@ from docx.oxml.ns import qn
 from docx2pdf import convert
 from PyPDF2 import PdfMerger
 from pdf2image import convert_from_path
-
+import shutil
 # Read data from command line (expected to be a JSON string)
 input_data = sys.stdin.buffer.read().decode('utf-8')
 data = json.loads(input_data)
@@ -760,34 +760,40 @@ if data.get('internalAssessmentData') and data['internalAssessmentData'].get('co
 ################################### to add 12 ###########################################################
 
 ############################################## Component 12 ###############################################
-def extract_pdf_pages_as_images(pdf_path):
+import tempfile
+import fitz  # PyMuPDF
+
+
+def extract_pdf_pages_as_images_fast(pdf_path, dpi=200):
     """
-    Extract pages from a PDF as images using pdf2image
-    Returns a list of PIL Image objects
+    Extract pages from a PDF as images using PyMuPDF (much faster than pdf2image)
+    Returns a list of temporary image paths
     """
     try:
-        from pdf2image import convert_from_path
-        # Add specific parameters for better compatibility
-        return convert_from_path(
-            pdf_path,
-            dpi=200,  # Lower DPI for manageable file size
-            fmt='PNG',
-            output_folder=None,
-            first_page=None,
-            last_page=None,
-            userpw=None,
-            use_cropbox=False,
-            strict=False,
-            transparent=False,
-            grayscale=False,
-            size=None
-        )
-    except ImportError:
-        print("pdf2image module not installed. Please install it using: pip install pdf2image")
-        return []
+        temp_dir = tempfile.mkdtemp()
+        image_paths = []
+        
+        # Open the PDF
+        pdf_document = fitz.open(pdf_path)
+        
+        # Calculate zoom factor for desired DPI (72 is the base DPI for PDFs)
+        zoom = dpi / 72
+        matrix = fitz.Matrix(zoom, zoom)
+        
+        # Convert each page to an image
+        for i, page in enumerate(pdf_document):
+            pix = page.get_pixmap(matrix=matrix)
+            img_path = os.path.join(temp_dir, f"page_{i+1}.png")
+            pix.save(img_path)
+            image_paths.append(img_path)
+            
+        return image_paths, temp_dir
     except Exception as e:
         print(f"Error converting PDF to images: {e}")
-        return []
+        return [], None
+
+#run = heading.add_run('12. Mid-Semester/ Internal Assessment Question papers with sample solutions')
+#pdf_path = "./data/assignments/" + data['assignmentData']['Assignment1']  
 
 def create_sample_submissions_section(doc, data):
     """Create section 12 for sample submissions"""
@@ -802,6 +808,7 @@ def create_sample_submissions_section(doc, data):
             run.font.color.rgb = RGBColor(28, 132, 196)
             heading.alignment = WD_ALIGN_PARAGRAPH.LEFT
             
+            doc.add_paragraph()  # Add some space after heading
             
             # Path to the PDF file - corrected path
             pdf_path = "./data/assignments/" + data['assignmentData']['Assignment1']  # Changed from sample_submissions to assignments
@@ -820,37 +827,28 @@ def create_sample_submissions_section(doc, data):
             
             try:
                 # Convert PDF pages to images
-                images = extract_pdf_pages_as_images(pdf_path)
+                image_paths, temp_image_dir = extract_pdf_pages_as_images_fast(pdf_path)
                 
-                if not images:
+                if not image_paths:
                     raise Exception("No images were extracted from the PDF")
                 
                 # Add each image to the document
-                for i, image in enumerate(images, 1):
-                    # Save the image temporarily
-                    temp_image_path = os.path.join(temp_dir, f'temp_image_{i}.png')
-                    image.save(temp_image_path, 'PNG')
-                    
-                    # Add image to document
-                    doc.add_picture(temp_image_path, width=Inches(6))
-                    
+                for i, image_path in enumerate(image_paths, 1):
+                    doc.add_picture(image_path, width=Inches(6))
+
                     # Center the image
                     doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
-                    
+
                     # Add some space between images
                     doc.add_paragraph()
-                    
-                    # Clean up temporary image file
-                    try:
-                        os.remove(temp_image_path)
-                    except Exception as e:
-                        print(f"Error removing temporary image {i}: {e}")
-                
-                # Clean up temporary directory
+                                # Clean up temporary directory
                 try:
-                    os.rmdir(temp_dir)
+                    if temp_image_dir:
+                        shutil.rmtree(temp_image_dir)
+                    
                 except Exception as e:
                     print(f"Error removing temporary directory: {e}")
+                    
                     
             except Exception as e:
                 error_msg = f"Error processing sample submissions"
@@ -868,7 +866,6 @@ def create_sample_submissions_section(doc, data):
             error_run.font.color.rgb = RGBColor(255, 0, 0)
             error_run.font.size = Pt(12)
 create_sample_submissions_section(doc, data)
-
 ###################################### create_learner_categorization_partial_sem ###################################################################################
 
 def format_cell(cell, bold=False, alignment=WD_ALIGN_PARAGRAPH.LEFT):
@@ -1151,37 +1148,29 @@ def create_sample_submissions_section(doc, data):
             
             try:
                 # Convert PDF pages to images
-                images = extract_pdf_pages_as_images(pdf_path)
+                image_paths, temp_image_dir = extract_pdf_pages_as_images_fast(pdf_path)
                 
-                if not images:
+                if not image_paths:
                     raise Exception("No images were extracted from the PDF")
                 
                 # Add each image to the document
-                for i, image in enumerate(images, 1):
-                    # Save the image temporarily
-                    temp_image_path = os.path.join(temp_dir, f'temp_image_{i}.png')
-                    image.save(temp_image_path, 'PNG')
-                    
-                    # Add image to document
-                    doc.add_picture(temp_image_path, width=Inches(6))
-                    
+                for i, image_path in enumerate(image_paths, 1):
+                    doc.add_picture(image_path, width=Inches(6))
+
                     # Center the image
                     doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
-                    
+
                     # Add some space between images
                     doc.add_paragraph()
-                    
-                    # Clean up temporary image file
-                    try:
-                        os.remove(temp_image_path)
-                    except Exception as e:
-                        print(f"Error removing temporary image {i}: {e}")
-                
-                # Clean up temporary directory
+                                # Clean up temporary directory
                 try:
-                    os.rmdir(temp_dir)
+                    if temp_image_dir:
+                        shutil.rmtree(temp_image_dir)
+                    
+                    
                 except Exception as e:
                     print(f"Error removing temporary directory: {e}")
+                    
                     
             except Exception as e:
                 error_msg = f"Error processing sample submissions"
