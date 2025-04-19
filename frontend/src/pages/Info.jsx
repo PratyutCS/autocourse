@@ -320,6 +320,7 @@ const Info = () => {
               coWeightages={file["coWeightages"] || {}}
               coAttainmentCriteria={file["coAttainmentCriteria"] || {}}
               studentData={file["studentData"] || {}}
+              originalStudentData={file["originalStudentData"] || {}}
               targetAttainment={file["targetAttainment"] || {}}
               feedbackData={file["feedbackData"] || {}}
               facultyCourseReview={file["facultyCourseReview"] || ""}

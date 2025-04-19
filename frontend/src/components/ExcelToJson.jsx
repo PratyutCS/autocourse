@@ -1,19 +1,40 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
 import constants from '../constants';
 import { Info } from 'lucide-react';
 
-const ExcelToJSON = ({ onSave, initialData }) => {
+const ExcelToJSON = ({ onSave, initialData, selectedProgram }) => {
   const token = localStorage.getItem("token");
   const [fileName, setFileName] = useState('');
   const [error, setError] = useState(null);
   const [processedData, setProcessedData] = useState(null);
+  const [filteredData, setFilteredData] = useState(null);
   const [maxMarksData, setMaxMarksData] = useState(null);
   const [isHovering, setIsHovering] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showFullPreview, setShowFullPreview] = useState(false);
+  
+  // Refs to track processing and prevent loops
+  const dataProcessedRef = useRef(false);
+  const lastProgramRef = useRef(selectedProgram);
+  const lastFilteredDataCountRef = useRef(0);
+  const processingRef = useRef(false);
+
+  // Program mapping for filtering
+  const programMapping = {
+    1: ["B.Tech CSE", "B.Tech. (CSE)", "Computer Science Engineering", "CSE"],
+    2: ["B.Tech ME", "B.Tech. (ME)", "Mechanical Engineering", "ME"],
+    3: ["B.Tech ECE", "B.Tech. (ECE)", "Electronics and Computer Engineering", "ECE"],
+    4: ["BBA", "Bachelor of Business Administration", "Bachelor of Business Administration (BBA)"],
+    5: ["B.Com", "BCOM", "Bachelor of Commerce", "Bachelor of Commerce BCOM(Hons)", "B.Com (Hons.)"],
+    6: ["Integrated BBA MBA", "IBM"],
+    7: ["BA (Hons) Liberal Arts", "B.A. (Hons.)-LS", "BA Liberal Arts", "Liberal Arts"],
+    8: ["BA LLB", "BA LLB (Hons)", "B.A., LL.B. (Hons.)"],
+    9: ["BBA LLB", "BBA LLB (Hons)", "B.B.A., LL.B. (Hons.)"],
+    10: ["MBA", "MBA (E)"]
+  };
 
   // Function to clean max marks data by removing undefined/empty values
   const cleanMaxMarksData = (data) => {
@@ -26,13 +47,85 @@ const ExcelToJSON = ({ onSave, initialData }) => {
         cleanedData[key] = value;
       }
     });
+    // console.log('Cleaned max marks data:', cleanedData);
     return Object.keys(cleanedData).length > 0 ? cleanedData : null;
   };
+  useEffect(() => {
+    console.log('Filtered data updated:', filteredData);
+  },[])
+
+  // Filter data based on selected program
+  const filterDataByProgram = useCallback((data) => {
+    if (!data || !Array.isArray(data) || data.length === 0 || !selectedProgram) {
+      return data;
+    }
+
+    // If no program is selected (0), return all data
+    if (selectedProgram === 0) {
+      return data;
+    }
+
+    // Get the possible program name variations for the selected program
+    const programVariations = programMapping[selectedProgram] || [];
+    
+    // Filter the data to only show rows matching the selected program
+    return data.filter(row => {
+      const programName = row["Program Name"] || row["Program"] || "";
+      
+      // Check if the program name in the data matches any of the variations
+      return programVariations.some(variation => 
+        programName.toLowerCase().includes(variation.toLowerCase())
+      );
+    });
+  }, [selectedProgram, programMapping]);
+
+  // Helper function to save data to parent component - with debouncing
+  const saveDataToParent = useCallback((maxMarks, filteredData, originalData) => {
+    if (processingRef.current) return;
+    console.log('Saving data to parent:',  originalData);
+    
+    // Skip if we don't have required data
+    if (!maxMarks || !filteredData || !originalData) return;
+    
+    // Skip if nothing has changed
+    const currentFilteredDataCount = filteredData.length;
+    if (
+      lastProgramRef.current === selectedProgram &&
+      lastFilteredDataCountRef.current === currentFilteredDataCount &&
+      dataProcessedRef.current
+    ) {
+      return;
+    }
+    
+    // Mark as processing to prevent concurrent calls
+    processingRef.current = true;
+    
+    try {
+      // Update refs with current state
+      lastProgramRef.current = selectedProgram;
+      lastFilteredDataCountRef.current = currentFilteredDataCount;
+      dataProcessedRef.current = true;
+      
+      // Send data in the proper structure to parent
+      const studentData = { maxMarks, data: filteredData };
+      const originalStudentData = { maxMarks, data: originalData };
+      
+      // Call parent save function with properly structured data
+      onSave({ studentData, originalStudentData });
+    } finally {
+      // Reset processing flag
+      processingRef.current = false;
+    }
+  }, [selectedProgram, onSave]);
 
   // Initialize the component with initialData
   useEffect(() => {
     if (initialData && initialData.data && initialData.maxMarks) {
+      console.log('Initial data provided:', initialData);
       try {
+        // Skip if we've already processed data (prevents loops)
+        if (dataProcessedRef.current && filteredData) return;
+        
         // Extract max marks from first row and clean it
         const maxMarks = cleanMaxMarksData(initialData.maxMarks);
         const remainingData = initialData.data;
@@ -40,12 +133,36 @@ const ExcelToJSON = ({ onSave, initialData }) => {
         setMaxMarksData(maxMarks);
         setProcessedData(remainingData);
         
+        // Apply filtering for the initial data
+        const filtered = filterDataByProgram(remainingData);
+        setFilteredData(filtered);
+        
+        // Mark as processed
+        dataProcessedRef.current = true;
       } catch (error) {
         console.error('Error processing initial data:', error);
         setError('Error processing initial data');
       }
     }
-  }, [initialData]);
+  }, [initialData, filterDataByProgram]);
+
+  // Update filtered data when program changes
+  useEffect(() => {
+    // Skip effect if we don't have data to filter
+    if (!processedData) return;
+    
+    // Only re-filter if program selection changed
+    if (lastProgramRef.current !== selectedProgram) {
+      const newFiltered = filterDataByProgram(processedData);
+      setFilteredData(newFiltered);
+      lastProgramRef.current = selectedProgram;
+      
+      // Update parent component with the new filtered data
+      if (maxMarksData && processedData) {
+        saveDataToParent(maxMarksData, newFiltered, processedData);
+      }
+    }
+  }, [selectedProgram, filterDataByProgram, processedData, maxMarksData, saveDataToParent]);
 
   // Function to find the starting row of actual data
   const findTableStart = (data) => {
@@ -70,6 +187,9 @@ const ExcelToJSON = ({ onSave, initialData }) => {
     setFileName(file.name);
     setError(null);
     setIsLoading(true);
+    
+    // Reset processed state when new file is uploaded
+    dataProcessedRef.current = false;
 
     if (file.type === "text/csv") {
       Papa.parse(file, {
@@ -98,11 +218,17 @@ const ExcelToJSON = ({ onSave, initialData }) => {
             // Extract and clean max marks from the first row
             const maxMarks = cleanMaxMarksData(processedData[0]);
             const remainingData = processedData.slice(1);
-
+            
+            // Filter the data based on the selected program
+            const filteredData = filterDataByProgram(remainingData);
             
             setMaxMarksData(maxMarks);
             setProcessedData(remainingData);
-            onSave({ maxMarks, data: remainingData });
+            setFilteredData(filteredData);
+            
+            // Save both filtered and original data
+            saveDataToParent(maxMarks, filteredData, remainingData);
+            
             setIsLoading(false);
           } catch (error) {
             console.error('Error processing CSV data:', error);
@@ -157,11 +283,17 @@ const ExcelToJSON = ({ onSave, initialData }) => {
           // Extract and clean max marks from the first row
           const maxMarks = cleanMaxMarksData(processedData[0]);
           const remainingData = processedData.slice(1);
-
+          
+          // Filter the data based on the selected program
+          const filteredData = filterDataByProgram(remainingData);
 
           setMaxMarksData(maxMarks);
           setProcessedData(remainingData);
-          onSave({ maxMarks, data: remainingData });
+          setFilteredData(filteredData);
+          
+          // Save both filtered and original data
+          saveDataToParent(maxMarks, filteredData, remainingData);
+          
           setIsLoading(false);
         } catch (error) {
           console.error('Error processing Excel file:', error);
@@ -177,7 +309,7 @@ const ExcelToJSON = ({ onSave, initialData }) => {
 
       reader.readAsArrayBuffer(file);
     }
-  }, [onSave]);
+  }, [filterDataByProgram, saveDataToParent]);
 
   const onDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
@@ -198,12 +330,26 @@ const ExcelToJSON = ({ onSave, initialData }) => {
   });
 
   const renderPreview = () => {
-    if (!processedData || !Array.isArray(processedData) || processedData.length === 0) {
-      return null;
+    if (!filteredData || !Array.isArray(filteredData) || filteredData.length === 0) {
+      return (
+        <div className="mt-6 text-center p-6 bg-gray-50 rounded-lg border border-gray-200">
+          {processedData && processedData.length > 0 ? (
+            <div className="text-amber-600">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <p className="text-lg font-medium">No data found for the selected program</p>
+              <p className="text-sm mt-1">Please select a different program or upload data containing this program.</p>
+            </div>
+          ) : (
+            <p className="text-gray-500">No data available for preview. Please upload a file.</p>
+          )}
+        </div>
+      );
     }
 
     // Ensure we have valid data with headers
-    const firstRow = processedData[0];
+    const firstRow = filteredData[0];
     if (!firstRow) {
       return null;
     }
@@ -213,7 +359,7 @@ const ExcelToJSON = ({ onSave, initialData }) => {
       return null;
     }
 
-    const displayRows = showFullPreview ? processedData : processedData.slice(0, 5);
+    const displayRows = showFullPreview ? filteredData : filteredData.slice(0, 5);
 
     return (
       <div className="mt-6 overflow-x-auto">
@@ -223,9 +369,9 @@ const ExcelToJSON = ({ onSave, initialData }) => {
               <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
               <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
             </svg>
-            Data Preview
+            Data Preview {selectedProgram > 0 && <span className="ml-2 text-sm bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Filtered by Program</span>}
           </h3>
-          {processedData.length > 5 && (
+          {filteredData.length > 5 && (
             <button 
               onClick={() => setShowFullPreview(!showFullPreview)}
               className="text-sm font-medium text-orange-600 hover:text-orange-800 transition-colors focus:outline-none"
@@ -234,6 +380,15 @@ const ExcelToJSON = ({ onSave, initialData }) => {
             </button>
           )}
         </div>
+
+        {/* Display stats about filtered vs total data */}
+        {processedData && processedData.length > 0 && (
+          <div className="mb-3 text-sm text-gray-600">
+            Showing {filteredData.length} {filteredData.length === 1 ? 'student' : 'students'} 
+            {selectedProgram > 0 ? ` for selected program` : ''}
+            {processedData.length !== filteredData.length && ` out of ${processedData.length} total`}
+          </div>
+        )}
 
         {/* Display Maximum Marks - Only if there are valid values */}
         {maxMarksData && Object.keys(maxMarksData).length > 0 && (
@@ -286,12 +441,12 @@ const ExcelToJSON = ({ onSave, initialData }) => {
             </tbody>
           </table>
         </div>
-        {!showFullPreview && processedData.length > 5 && (
+        {!showFullPreview && filteredData.length > 5 && (
           <div className="mt-3 text-sm text-gray-500 text-center flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            Showing first 5 rows of {processedData.length} total rows
+            Showing first 5 rows of {filteredData.length} total rows
           </div>
         )}
       </div>
@@ -330,17 +485,15 @@ const ExcelToJSON = ({ onSave, initialData }) => {
     <div className="p-6 bg-white rounded-xl shadow-lg border border-gray-200">
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
-        <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-              10
-            </div>
+          <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+            10
+          </div>
           <h2 className="text-xl font-bold text-gray-800">
             Student Assessment Data
           </h2>
           <span>(Please upload the data according to the specified template provided on the right-hand side.)</span>
         </div>
         
-
-
         <button
           onClick={handleDownload}
           disabled={isLoading}
@@ -359,24 +512,38 @@ const ExcelToJSON = ({ onSave, initialData }) => {
           Download Data Template Sample
         </button>
       </div>
+
       <div className="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-lg flex items-start gap-3">
         <Info className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
         <div className="text-sm text-blue-700">
-          <span className="font-semibold"></span>
           <p>
-          The Attendance list, Registered Student List, and Detailed marks will be generated automatically when you upload the data in the specified format. Please download the template to check the required format.
+            The Attendance list, Registered Student List, and Detailed marks will be generated automatically when you upload the data in the specified format. Please download the template to check the required format.
           </p>
         </div>
       </div>
+
       <div className="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-lg flex items-start gap-3">
         <Info className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
         <div className="text-sm text-blue-700">
-          <span className="font-semibold"></span>
           <p>
             Note: Total Marks column should be 100 in the data
           </p>
         </div>
       </div>
+
+      {/* Program filtering indicator */}
+      {selectedProgram > 0 && (
+        <div className="mb-6 p-4 bg-amber-50 border border-amber-100 rounded-lg flex items-start gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+          </svg>
+          <div className="text-sm text-amber-700">
+            <p className="font-medium">Program Filter Active</p>
+            <p>Showing only student data for the selected program. All data will still be saved.</p>
+          </div>
+        </div>
+      )}
+
       <div className="space-y-6">
         <div
           {...getRootProps()}
@@ -455,7 +622,8 @@ const ExcelToJSON = ({ onSave, initialData }) => {
             <div>
               <p className="font-medium text-green-800">Success!</p>
               <p className="text-sm text-green-600 mt-1">
-                File processed successfully. {processedData?.length} records loaded.
+                File processed successfully. {processedData?.length} records loaded
+                {selectedProgram > 0 && filteredData && ` (${filteredData.length} matching selected program)`}.
               </p>
             </div>
           </div>

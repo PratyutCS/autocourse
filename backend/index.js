@@ -666,6 +666,7 @@ app.post("/form", auth, async (req, res) => {
         jsonData[num]["coAttainmentCriteria"] = req.body.coAttainmentCriteria || "";
         jsonData[num]["targetAttainment"] = req.body.targetAttainment || "";
         jsonData[num]["studentData"] = req.body.studentData || "";
+        jsonData[num]["originalStudentData"] = req.body.originalStudentData || "";
         jsonData[num]["last_modified"] = req.body.last_modified || "";
 
 

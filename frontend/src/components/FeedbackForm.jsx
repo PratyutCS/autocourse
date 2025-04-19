@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import constants from "../constants";
 import axios from "axios";
 import LoadingSpinner from "./LoadingSpinner";
@@ -29,51 +29,121 @@ import MidSemReflection from "./MidSemReflection";
 import SubmissionSuccessModal from "./SubmissionSuccessModal";
 import StudentDataAnalysis from "./StudentDataAnalysis";
 
-
 const FeedbackForm = (props) => {
   const token = localStorage.getItem("token");
-
-  let num = props.num;
+  const num = props.num;
+  
+  // Refs for preventing unnecessary reprocessing
+  const processingRef = useRef(false);
+  const dataProcessedRef = useRef(false);
+  
+  // Form state
   const [isLoading, setIsLoading] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [notification, setNotification] = useState({ visible: false, type: '', message: '' });
-
-
-  const [coursecode, setCourseCode] = useState("");
-  const [coursetitle, setCourseTitle] = useState("");
-  const [module, setModule] = useState("");
-  const [session, setSession] = useState("");
-  const [program, setProgram] = useState("");
   const [change, setChange] = useState(false);
+  const [isCourseCodeValid, setIsCourseCodeValid] = useState(false);
 
-  const [courseSyllabus, setCourseSyllabus] = useState([
-    {
-      srNo: 1,
-      content: "",
-      co: "",
-      sessions: "",
-    },
-  ]);
-  const [learningResources, setLearningResources] = useState({
-    textBooks: [],
-    referenceLinks: [],
-  });
+  // Core form data
+  const [coursecode, setCourseCode] = useState(props.coursecode || "");
+  const [coursetitle, setCourseTitle] = useState(props.coursetitle || "");
+  const [module, setModule] = useState(props.module || "");
+  const [session, setSession] = useState(props.session || "");
+  const [program, setProgram] = useState(props.program || "");
+  
+  // Program selection
+  const [selectedProgram, setSelectedProgram] = useState(0);
+  
+  // Student data
+  const [studentData, setStudentData] = useState(props.studentData || {});
+  const [originalStudentData, setOriginalStudentData] = useState({});
 
-  const [EditableCourseDescriptionData, setEditableCourseDescriptionData] =
-    useState("");
 
-  const [copoMappingData, setCopoMappingData] = useState({
-    courseOutcomes: {},
-    mappingData: {},
-  });
-
-  const [internalAssessmentData, setInternalAssessmentData] = useState({
-    components: [],
-  });
-  const [actionsForWeakStudentsData, setActionsForWeakStudentsData] = useState(
-    []
+  
+  const [isWeightageValid, setIsWeightageValid] = useState(false);
+  
+  // Content sections data
+  const [courseSyllabus, setCourseSyllabus] = useState(
+    props.courseSyllabus || [{ srNo: 1, content: "", co: "", sessions: "" }]
   );
-  const [weeklyTimetableData, setWeeklyTimetableData] = useState(null);
+  const [learningResources, setLearningResources] = useState({
+    textBooks: props.learningResources?.textBooks || [],
+    referenceLinks: props.learningResources?.referenceLinks || [],
+  });
+  const [EditableCourseDescriptionData, setEditableCourseDescriptionData] = useState(props.courseDescription || "");
+  const [copoMappingData, setCopoMappingData] = useState(
+    props.copoMappingData || { courseOutcomes: {}, mappingData: {} }
+  );
+  const [internalAssessmentData, setInternalAssessmentData] = useState(
+    props.internalAssessmentData || { components: [] }
+  );
+  const [actionsForWeakStudentsData, setActionsForWeakStudentsData] = useState(
+    props.actionsForWeakStudentsData || []
+  );
+  const [weeklyTimetableData, setWeeklyTimetableData] = useState(props.weeklyTimetableData || null);
+  const [coWeightages, setCoWeightages] = useState(props.coWeightages || {});
+  const [coAttainmentCriteria, setCoAttainmentCriteria] = useState(props.coAttainmentCriteria || {});
+  const [targetAttainment, setTargetAttainment] = useState(props.targetAttainment || {});
+  const [reflectionData, setReflectionData] = useState(props.reflectionData || []);
+  const [feedbackData, setFeedbackData] = useState(
+    props.feedbackData || { quantitativeFeedback: "", qualitativeFeedback: "" }
+  );
+  const [facultyCourseReview, setFacultyCourseReview] = useState(props.facultyCourseReview || "");
+  const [selectedAssessments, setSelectedAssessments] = useState(props.selectedAssessments || []);
+  const [learnerCategories, setLearnerCategories] = useState(props.learnerCategories || [[], []]);
+  const [par_sem_slowLearner, setPar_sem_slowLearner] = useState(props.par_sem_slowLearner || [[], []]);
+
+  // Program mapping options
+  const programOptions = {
+    1: "Computer Science Engineering",
+    2: "Mechanical Engineering",
+    3: "Electronics and Computer Engineering",
+    4: "Bachelor of Business Administration (BBA)",
+    5: "Bachelor of Commerce BCOM(Hons)",
+    6: "Integrated BBA MBA",
+    7: "BA (Hons) Libreral Arts",
+    8: "BA LLB (Hons)",
+    9: "BBA LLB (Hons)",
+    10: "MBA",
+  };
+
+  console.log("Student Data:", studentData);
+  console.log("Student Data:", props.originalStudentData);
+  // AUTO-SAVE DEBOUNCER
+  // This will ensure auto-save is only triggered after changes have settled
+  const autoSaveTimeout = useRef(null);
+  
+  const debounceAutoSave = useCallback(() => {
+    if (autoSaveTimeout.current) {
+      clearTimeout(autoSaveTimeout.current);
+    }
+    
+    autoSaveTimeout.current = setTimeout(() => {
+      if (!processingRef.current) {
+        processingRef.current = true;
+        auto_postData().finally(() => {
+          processingRef.current = false;
+        });
+      }
+    }, 2000); // 2 second debounce
+  }, []);
+
+  // Initialize program selection from props
+  useEffect(() => {
+    const programNumber = parseInt(props.program);
+    if (programOptions[programNumber]) {
+      setSelectedProgram(programNumber);
+    } else {
+      setSelectedProgram(0);
+    }
+  }, [props.program]);
+
+  // Notification handling
+  const showNotification = (type, message) => {
+    setNotification({ visible: true, type, message });
+  };
+
+  // Download handler
   const handleDownload = async () => {
     showNotification('loading', 'Preparing your download...');
     try {
@@ -107,37 +177,32 @@ const FeedbackForm = (props) => {
     }
   };
 
-  const showNotification = (type, message) => {
-    setNotification({ visible: true, type, message });
-    // setTimeout(() => {
-    //   setNotification(prev => ({ ...prev, visible: false }));
-    // }, 3000);
-  };
-
-  const handleWeakStudentsChange = (updatedData) => {
-    setChange(true);
+  // OPTIMIZED EVENT HANDLERS
+  // These handlers mark data as changed but don't trigger instant saves
+  
+  const handleWeakStudentsChange = useCallback((updatedData) => {
     setActionsForWeakStudentsData(updatedData);
-  };
-
-  const [reflectionData, setReflectionData] = useState([]);
-  const handleReflectionChange = (updatedData) => {
     setChange(true);
+  }, []);
+
+  const handleReflectionChange = useCallback((updatedData) => {
     setReflectionData(updatedData);
-  };
-
-  const handleCourseSyllabusChange = (data) => {
-    if (data) {
-      setChange(true);
-      setCourseSyllabus(data);
-    }
-  };
-
-  const EditableCourseDescriptionDataChange = (data) => {
     setChange(true);
-    setEditableCourseDescriptionData(data);
-  };
+  }, []);
 
-  const handleCOPOMappingChange = (data) => {
+  const handleCourseSyllabusChange = useCallback((data) => {
+    if (data) {
+      setCourseSyllabus(data);
+      setChange(true);
+    }
+  }, []);
+
+  const EditableCourseDescriptionDataChange = useCallback((data) => {
+    setEditableCourseDescriptionData(data);
+    setChange(true);
+  }, []);
+
+  const handleCOPOMappingChange = useCallback((data) => {
     const newData = { ...copoMappingData };
 
     if (data.courseOutcomes) {
@@ -148,101 +213,128 @@ const FeedbackForm = (props) => {
       newData.mappingData = data.mappingData;
     }
 
-    setChange(true);
-    console.log("this ran 98");
     setCopoMappingData(newData);
-  };
+    setChange(true);
+  }, [copoMappingData]);
 
-  const handleInternalAssessmentChange = (data) => {
+  const handleInternalAssessmentChange = useCallback((data) => {
     if (data && data.components) {
-      setChange(true);
       setInternalAssessmentData({
         components: data.components,
       });
+      setChange(true);
     }
-  };
+  }, []);
 
-  const handleLearningResourcesChange = (updatedFields, fieldType) => {
-    setChange(true);
+  const handleLearningResourcesChange = useCallback((updatedFields, fieldType) => {
     setLearningResources((prevState) => ({
       ...prevState,
       [fieldType]: updatedFields,
     }));
-  };
+    setChange(true);
+  }, []);
 
-  const [coWeightages, setCoWeightages] = useState(props.coWeightages || {});
-  const [isWeightageValid, setIsWeightageValid] = useState(false);
-
-  const [coAttainmentCriteria, setCoAttainmentCriteria] = useState({});
-  const [targetAttainment, setTargetAttainment] = useState({});
-
-  const handleCoAttainmentCriteriaSave = (criteria) => {
+  const handleCoAttainmentCriteriaSave = useCallback((criteria) => {
     setCoAttainmentCriteria(criteria);
     setPar_sem_slowLearner([[], []]);
     setLearnerCategories([[], []]);
-    console.log("this ran 127");
-  };
+  }, []);
 
-  const handleAssessmentSelectionChange = (selected) => {
-    setChange(true);
+  const handleAssessmentSelectionChange = useCallback((selected) => {
     setSelectedAssessments(selected);
     setPar_sem_slowLearner([[], []]);
-    console.log("this ran 134");
-  };
-
-  const handleTargetAttainmentSave = (criteria) => {
-    setTargetAttainment(criteria);
-  };
-
-  const [learnerCategories, setLearnerCategories] = useState([[], []]);
-
-  const handleLearners = (learnerCategoriess) => {
-    console.log("this ran");
-    setLearnerCategories(learnerCategoriess);
-  };
-
-  const handlePar_sem_slowLearner = (learnerCategoriesss) => {
-    console.log("this ran1");
-    setPar_sem_slowLearner(learnerCategoriesss);
-  };
-
-  useEffect(() => {
-    setLearnerCategories(props.learnerCategories || [[], []]);
-  }, [props.learnerCategories]);
-
-  const [studentData, setStudentData] = useState([]);
-  const handleStudentDataSave = (data) => {
-    setStudentData(data);
-    setSelectedAssessments([]);
-    setPar_sem_slowLearner([[], []]);
-    setLearnerCategories([[], []]);
-  };
-
-  const [feedbackData, setFeedbackData] = useState({
-    quantitativeFeedback: "",
-    qualitativeFeedback: "",
-  });
-
-  useEffect(() => {
-    setFeedbackData(
-      props.feedbackData || {
-        quantitativeFeedback: "",
-        qualitativeFeedback: "",
-      }
-    );
-  }, [props.feedbackData]);
-
-  const handleFeedbackChange = (data) => {
     setChange(true);
+  }, []);
+
+  const handleTargetAttainmentSave = useCallback((criteria) => {
+    setTargetAttainment(criteria);
+  }, []);
+
+  const handleLearners = useCallback((learnerCategoriess) => {
+    setLearnerCategories(learnerCategoriess);
+  }, []);
+
+  const handlePar_sem_slowLearner = useCallback((learnerCategoriesss) => {
+    setPar_sem_slowLearner(learnerCategoriesss);
+  }, []);
+
+  const handleFeedbackChange = useCallback((data) => {
     setFeedbackData(data);
-  };
+    setChange(true);
+  }, []);
 
-  const [facultyCourseReview, setFacultyCourseReview] = useState("");
-  useEffect(() => {
-    setFacultyCourseReview(props.facultyCourseReview || "");
-  }, [props.facultyCourseReview]);
+  // CRITICAL FIX: The optimized handler for ExcelToJSON data
+  // This prevents the infinite loop of updates
+  const handleStudentDataSave = useCallback((data) => {
+    // Skip if no data or already processing
+    if (!data || processingRef.current) return;
+    
+    // For first load, always process the data
+    if (!dataProcessedRef.current) {
+      dataProcessedRef.current = true;
+      
+      if (data.studentData && data.originalStudentData) {
+        setStudentData(data.studentData);
+        setOriginalStudentData(data.originalStudentData);
+      } else {
+        // Handle legacy format
+        setStudentData({ 
+          maxMarks: data.maxMarks || {}, 
+          data: data.data || [] 
+        });
+        
+        setOriginalStudentData({ 
+          maxMarks: data.maxMarks || {}, 
+          data: data.originalData || [] 
+        });
+      }
+      
+      return;
+    }
+    
+    // For subsequent updates, check if data has actually changed
+    let shouldUpdate = false;
+    let newStudentData;
+    let newOriginalStudentData;
+    
+    if (data.studentData && data.originalStudentData) {
+      newStudentData = data.studentData;
+      newOriginalStudentData = data.originalStudentData;
+      
+      // Only update if data actually changed (basic length check)
+      shouldUpdate = 
+        newStudentData.data?.length !== studentData.data?.length ||
+        newOriginalStudentData.data?.length !== originalStudentData.data?.length;
+    } else {
+      // Legacy format
+      newStudentData = { 
+        maxMarks: data.maxMarks || {}, 
+        data: data.data || [] 
+      };
+      
+      newOriginalStudentData = { 
+        maxMarks: data.maxMarks || {}, 
+        data: data.originalData || [] 
+      };
+      
+      // Only update if data actually changed (basic length check)
+      shouldUpdate = 
+        newStudentData.data?.length !== studentData.data?.length ||
+        newOriginalStudentData.data?.length !== originalStudentData.data?.length;
+    }
+    
+    if (shouldUpdate) {
+      console.log("Student data actually changed, updating state");
+      setStudentData(newStudentData);
+      setOriginalStudentData(newOriginalStudentData);
+      setChange(true);
+    } else {
+      console.log("No change in student data, skipping update");
+    }
+  }, [studentData.data?.length, originalStudentData.data?.length]);
 
-  const validateCourseCode = (code) => {
+  // Course code validation
+  const validateCourseCode = useCallback((code) => {
     // Empty is not valid
     if (!code || code.length === 0) {
       setIsCourseCodeValid(false);
@@ -266,145 +358,191 @@ const FeedbackForm = (props) => {
     } else {
       setIsCourseCodeValid(false);
     }
+  }, []);
+
+  // Validate criteria for form submission
+  const validateCriteria = useCallback(() => {
+    return Object.keys(coAttainmentCriteria).every((co) => {
+      const { full, partial } = coAttainmentCriteria[co];
+      return parseFloat(full) > parseFloat(partial);
+    });
+  }, [coAttainmentCriteria]);
+
+  const validateTargetAttainment = useCallback(() => {
+    return Object.keys(targetAttainment).every((co) => {
+      const { full, partial } = targetAttainment[co];
+      return parseFloat(full) > parseFloat(partial);
+    });
+  }, [targetAttainment]);
+
+  // AUTO-SAVE IMPLEMENTATION
+  const auto_postData = async () => {
+    // Generate timestamp for modification
+    let last_modified =
+      new Date().toLocaleString("en-IN", {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      }) +
+      ", " +
+      new Date().toLocaleString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
+
+    // Check if all validation is passing before submission
+    if (!isWeightageValid) {
+      setCoWeightages(props.coWeightages || {});
+    }
+    if (!validateCriteria()) {
+      setCoAttainmentCriteria(props.coAttainmentCriteria || {});
+    }
+    if (!validateTargetAttainment()) {
+      setTargetAttainment(props.targetAttainment || {});
+    }
+    if (!isCourseCodeValid) {
+      setCourseCode(props.coursecode || "");
+    }
+
+    if (num !== undefined) {
+      if (selectedProgram <= 0 || selectedProgram > 10) {
+        return; // Don't auto-save without selecting a program
+      }
+
+      try {
+        const response = await axios.post(
+          constants.url + "/form",
+          {
+            program: selectedProgram,
+            num,
+            coursecode,
+            coursetitle,
+            module,
+            session,
+            EditableCourseDescriptionData,
+            courseSyllabus,
+            learningResources,
+            copoMappingData,
+            internalAssessmentData,
+            actionsForWeakStudentsData,
+            weeklyTimetableData,
+            coWeightages,
+            coAttainmentCriteria,
+            studentData,
+            originalStudentData,
+            targetAttainment,
+            feedbackData,
+            facultyCourseReview,
+            learnerCategories,
+            selectedAssessments,
+            par_sem_slowLearner,
+            last_modified,
+            reflectionData,
+          },
+          {
+            headers: {
+              "x-auth-token": token,
+              "ngrok-skip-browser-warning": "69420",
+            },
+          }
+        );
+        console.log("[auto] Form auto-saved successfully");
+      } catch (error) {
+        console.error("Error auto-saving form:", error);
+      }
+    }
   };
 
-  const [selectedAssessments, setSelectedAssessments] = useState(
-    props.selectedAssessments || []
-  );
-  useEffect(() => {
-    setSelectedAssessments(props.selectedAssessments || []);
-  }, [props.selectedAssessments]);
+  // MANUAL FORM SUBMISSION
+  const postData = async () => {
+    let last_modified =
+      new Date().toLocaleString("en-IN", {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      }) +
+      ", " +
+      new Date().toLocaleString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
+  
+    if (num !== undefined) {
+      if (selectedProgram <= 0 || selectedProgram > 10) {
+        alert("Please select a valid program option before submitting.");
+        return;
+      }
+  
+      try {
+        setIsLoading(true);
+        const response = await axios.post(
+          constants.url + "/form",
+          {
+            program: selectedProgram,
+            num,
+            coursecode,
+            coursetitle,
+            module,
+            session,
+            EditableCourseDescriptionData,
+            courseSyllabus,
+            learningResources,
+            copoMappingData,
+            internalAssessmentData,
+            actionsForWeakStudentsData,
+            weeklyTimetableData,
+            coWeightages,
+            coAttainmentCriteria,
+            studentData,
+            originalStudentData,
+            targetAttainment,
+            feedbackData,
+            facultyCourseReview,
+            learnerCategories,
+            selectedAssessments,
+            par_sem_slowLearner,
+            last_modified,
+            reflectionData,
+          },
+          {
+            headers: {
+              "x-auth-token": token,
+              "ngrok-skip-browser-warning": "69420",
+            },
+          }
+        );
+        console.log("Form submitted successfully:", response.data);
+        setSubmitSuccess(true);
+      } catch (error) {
+        console.error("Error submitting form:", error);
+        showNotification('error', 'An error occurred while submitting the form.');
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      alert("Wrong number of the file cannot save. Check with admin...");
+    }
+  };
 
-  const [par_sem_slowLearner, setPar_sem_slowLearner] = useState(
-    props.par_sem_slowLearner || [[], []]
-  );
-  useEffect(() => {
-    setPar_sem_slowLearner(props.par_sem_slowLearner || [[], []]);
-  }, [props.par_sem_slowLearner]);
-
-  /////////////////////////////////////////**Use Effect**//////////////////////////
-
-  const [isCourseCodeValid, setIsCourseCodeValid] = useState(false);
+  // EFFECT HOOKS FOR INITIALIZATION AND STATE UPDATES
+  
+  // Course code validation
   useEffect(() => {
     validateCourseCode(coursecode);
-  }, [coursecode]);
-
+  }, [coursecode, validateCourseCode]);
+  
+  // Auto-save trigger after change flag is set
   useEffect(() => {
-    setStudentData(props.studentData || {});
-  }, [props.studentData]);
-
-  useEffect(() => {
-    setCoAttainmentCriteria(props.coAttainmentCriteria || {});
-  }, [props.coAttainmentCriteria]);
-
-  useEffect(() => {
-    setTargetAttainment(props.targetAttainment || {});
-  }, [props.targetAttainment]);
-
-  useEffect(() => {
-    setCourseCode(props.coursecode || "");
-  }, [props.coursecode]);
-
-  useEffect(() => {
-    setCoWeightages(props.coWeightages || {});
-  }, [props.coWeightages]);
-
-  useEffect(() => {
-    setCourseTitle(props.coursetitle || "");
-  }, [props.coursetitle]);
-
-  useEffect(() => {
-    setModule(props.module || "");
-  }, [props.module]);
-
-  useEffect(() => {
-    setSession(props.session || "");
-  }, [props.session]);
-
-  useEffect(() => {
-    setProgram(props.program || "");
-  }, [props.program]);
-
-  useEffect(() => {
-    setCourseSyllabus(
-      props.courseSyllabus || [
-        {
-          srNo: 1,
-          content: "",
-          co: "",
-          sessions: "",
-        },
-      ]
-    );
-  }, [props.courseSyllabus]);
-
-  useEffect(() => {
-    setLearningResources({
-      textBooks: props.learningResources?.textBooks || [],
-      referenceLinks: props.learningResources?.referenceLinks || [],
-    });
-  }, [props.learningResources]);
-
-  useEffect(() => {
-    setEditableCourseDescriptionData(props.courseDescription || "");
-  }, [props.courseDescription]);
-
-  useEffect(() => {
-    setCopoMappingData(
-      props.copoMappingData || {
-        courseOutcomes: {},
-        mappingData: {},
-      }
-    );
-  }, [props.copoMappingData]);
-
-  useEffect(() => {
-    setInternalAssessmentData(
-      props.internalAssessmentData || {
-        components: [],
-      }
-    );
-  }, [props.internalAssessmentData]);
-
-  useEffect(() => {
-    if (props.actionsForWeakStudentsData) {
-      setActionsForWeakStudentsData(props.actionsForWeakStudentsData);
+    if (change) {
+      console.log("Change detected, scheduling auto-save");
+      setChange(false);
+      debounceAutoSave();
     }
-  }, [props.actionsForWeakStudentsData]);
+  }, [change, debounceAutoSave]);
 
-  useEffect(() => {
-    if (props.reflectionData) {
-      setReflectionData(props.reflectionData);
-    }
-  }, [props.reflectionData]);
-
-  useEffect(() => {
-    setWeeklyTimetableData(props.weeklyTimetableData || null);
-  }, [props.weeklyTimetableData]);
-
-  const [selectedProgram, setSelectedProgram] = useState(0);
-  useEffect(() => {
-    const programNumber = parseInt(props.program);
-    if (programOptions[programNumber]) {
-      setSelectedProgram(programNumber);
-    } else {
-      setSelectedProgram(0);
-    }
-  }, [props.program]);
-
-  const programOptions = {
-    1: "Computer Science Engineering",
-    2: "Mechanical Engineering",
-    3: "Electronics and Computer Engineering",
-    4: "Bachelor of Business Administration (BBA)",
-    5: "Bachelor of Commerce BCOM(Hons)",
-    6: "Integrated BBA MBA",
-    7: "BA (Hons) Libreral Arts",
-    8: "BA LLB (Hons)",
-    9: "BBA LLB (Hons)",
-    10: "MBA",
-  };
-
+  // SEARCHABLE DROPDOWN COMPONENT
   const SearchableDropdown = ({ options, value, onChange }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [isOpen, setIsOpen] = useState(false);
@@ -507,315 +645,7 @@ const FeedbackForm = (props) => {
     );
   };
 
-  const validateCriteria = () => {
-    return Object.keys(coAttainmentCriteria).every((co) => {
-      const { full, partial } = coAttainmentCriteria[co];
-      return parseFloat(full) > parseFloat(partial);
-    });
-  };
-
-  const validateTargetAttainment = () => {
-    return Object.keys(targetAttainment).every((co) => {
-      const { full, partial } = targetAttainment[co];
-      return parseFloat(full) > parseFloat(partial);
-    });
-  };
-
-  const auto_postData = async () => {
-    let last_modified =
-      new Date().toLocaleString("en-IN", {
-        hour: "numeric",
-        minute: "numeric",
-        hour12: true,
-      }) +
-      ", " +
-      new Date().toLocaleString("en-IN", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      });
-
-    if (!isWeightageValid) {
-      // alert("Please ensure all CO Assessment weightages add up to 100% before submitting.");
-      // return;
-      setCoWeightages(props.coWeightages || {});
-    }
-    if (!validateCriteria()) {
-      // alert("Please ensure that the 'Min. % marks (fully attained)' are greater than or equal to 'Min. % marks (partially attained)' for all COs.");
-      // return;
-      setCoAttainmentCriteria(props.coAttainmentCriteria || {});
-    }
-    if (!validateTargetAttainment()) {
-      // alert("Please ensure that in Target Attainment, the 'Min. % students (fully attained)' are greater than or equal to 'Min. % students (partially attained)' for all COs.");
-      // return;
-      setTargetAttainment(props.targetAttainment || {});
-    }
-    if (!isCourseCodeValid) {
-      // alert("Please enter a valid course code (3 letters followed by 4 numbers).");
-      // return;
-      setCourseCode(props.coursecode || "");
-    }
-
-    if (num !== undefined) {
-      if (selectedProgram <= 0 || selectedProgram > 10) {
-        alert("Please select a valid program option before submitting.");
-        return;
-      }
-
-      try {
-        // setIsLoading(true);
-        const response = await axios.post(
-          constants.url + "/form",
-          {
-            program: selectedProgram,
-            num,
-            coursecode,
-            coursetitle,
-            module,
-            session,
-            EditableCourseDescriptionData,
-            courseSyllabus,
-            learningResources,
-            copoMappingData,
-            internalAssessmentData,
-            actionsForWeakStudentsData,
-            weeklyTimetableData,
-            coWeightages,
-            coAttainmentCriteria,
-            studentData,
-            targetAttainment,
-            feedbackData,
-            facultyCourseReview,
-            learnerCategories,
-            selectedAssessments,
-            par_sem_slowLearner,
-            last_modified,
-            reflectionData,
-          },
-          {
-            headers: {
-              "x-auth-token": token,
-              "ngrok-skip-browser-warning": "69420",
-            },
-          }
-        );
-        console.log("[auto] Form submitted successfully:", response.data);
-        // window.location.reload();
-      } catch (error) {
-        console.error("Error submitting form:", error);
-        alert("An error occurred while submitting the form.");
-      } finally {
-        // setIsLoading(false);
-      }
-    } else {
-      alert("wrong number of the file cannot save check with admin...");
-      return;
-    }
-  };
-
-  const postData = async () => {
-    let last_modified =
-      new Date().toLocaleString("en-IN", {
-        hour: "numeric",
-        minute: "numeric",
-        hour12: true,
-      }) +
-      ", " +
-      new Date().toLocaleString("en-IN", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      });
-
-    if (!isWeightageValid) {
-      setCoWeightages(props.coWeightages || {});
-    }
-    if (!validateCriteria()) {
-      setCoAttainmentCriteria(props.coAttainmentCriteria || {});
-    }
-    if (!validateTargetAttainment()) {
-      setTargetAttainment(props.targetAttainment || {});
-    }
-    if (!isCourseCodeValid) {
-      setCourseCode(props.coursecode || "");
-    }
-
-    if (num !== undefined) {
-      if (selectedProgram <= 0 || selectedProgram > 10) {
-        alert("Please select a valid program option before submitting.");
-        return;
-      }
-
-      try {
-        setIsLoading(true);
-        const response = await axios.post(
-          constants.url + "/form",
-          {
-            program: selectedProgram,
-            num,
-            coursecode,
-            coursetitle,
-            module,
-            session,
-            EditableCourseDescriptionData,
-            courseSyllabus,
-            learningResources,
-            copoMappingData,
-            internalAssessmentData,
-            actionsForWeakStudentsData,
-            weeklyTimetableData,
-            coWeightages,
-            coAttainmentCriteria,
-            studentData,
-            targetAttainment,
-            feedbackData,
-            facultyCourseReview,
-            learnerCategories,
-            selectedAssessments,
-            par_sem_slowLearner,
-            last_modified,
-            reflectionData,
-          },
-          {
-            headers: {
-              "x-auth-token": token,
-              "ngrok-skip-browser-warning": "69420",
-            },
-          }
-        );
-        console.log("Form submitted successfully:", response.data);
-        setSubmitSuccess(true);
-      } catch (error) {
-        console.error("Error submitting form:", error);
-        showNotification('error', 'An error occurred while submitting the form.');
-      } finally {
-        setIsLoading(false);
-      }
-    } else {
-      alert("Wrong number of the file cannot save. Check with admin...");
-      return;
-    }
-  };
-
-  useEffect(() => {
-    if (change) {
-      console.log("selectedProgram changed");
-      setChange(false);
-      auto_postData();
-    }
-  }, [selectedProgram]);
-
-  useEffect(() => {
-    if (change) {
-      console.log("EditableCourseDescriptionData changed");
-      setChange(false);
-      auto_postData();
-    }
-  }, [EditableCourseDescriptionData]);
-
-  useEffect(() => {
-    if (change) {
-      console.log("coursetitle changed");
-      setChange(false);
-      auto_postData();
-    }
-  }, [coursetitle]);
-
-  useEffect(() => {
-    if (change) {
-      console.log("module changed");
-      setChange(false);
-      auto_postData();
-    }
-  }, [module]);
-
-  useEffect(() => {
-    if (change) {
-      console.log("session changed");
-      setChange(false);
-      auto_postData();
-    }
-  }, [session]);
-
-  useEffect(() => {
-    if (change) {
-      console.log("copoMappingData changed");
-      setChange(false);
-      auto_postData();
-    }
-  }, [copoMappingData]);
-
-  useEffect(() => {
-    if (change) {
-      console.log("internalAssessmentData changed");
-      setChange(false);
-      auto_postData();
-    }
-  }, [internalAssessmentData]);
-
-  useEffect(() => {
-    if (change) {
-      console.log("selectedAssessments changed");
-      setChange(false);
-      auto_postData();
-    }
-  }, [selectedAssessments]);
-
-  useEffect(() => {
-    if (change) {
-      console.log("courseSyllabus changed");
-      setChange(false);
-      auto_postData();
-    }
-  }, [courseSyllabus]);
-
-  useEffect(() => {
-    if (change) {
-      console.log("learningResources changed");
-      setChange(false);
-      auto_postData();
-    }
-  }, [learningResources]);
-
-  useEffect(() => {
-    if (change) {
-      console.log("weeklyTimetableData changed");
-      setChange(false);
-      auto_postData();
-    }
-  }, [weeklyTimetableData]);
-
-  useEffect(() => {
-    if (change) {
-      console.log("actionsForWeakStudentsData changed");
-      setChange(false);
-      auto_postData();
-    }
-  }, [actionsForWeakStudentsData]);
-
-  useEffect(() => {
-    if (change) {
-      console.log("feedbackData changed");
-      setChange(false);
-      auto_postData();
-    }
-  }, [feedbackData]);
-
-  useEffect(() => {
-    if (change) {
-      console.log("facultyCourseReview changed");
-      setChange(false);
-      auto_postData();
-    }
-  }, [facultyCourseReview]);
-
-  useEffect(() => {
-    if (change) {
-      console.log("reflectionData changed");
-      setChange(false);
-      auto_postData();
-    }
-  }, [reflectionData]);
+  // NOTIFICATION COMPONENT
   const Notification = () => {
     if (!notification.visible) return null;
     
@@ -873,10 +703,10 @@ const FeedbackForm = (props) => {
     );
   };
 
+  // RENDER THE COMPONENT
   return (
     <div className="p-5 gap-[2rem] h-screen flex flex-col bg-[#FFFEFD]">
-
-{notification.visible && <Notification />}
+      {notification.visible && <Notification />}
       
       <SubmissionSuccessModal
         isOpen={submitSuccess}
@@ -886,6 +716,7 @@ const FeedbackForm = (props) => {
         }}
         onDownload={handleDownload}
       />
+      
       <div
         id="header-section"
         className="bg-gradient-to-r from-white to-gray-50 rounded-2xl shadow-md p-5 border border-gray-200 mb-6 transition-all hover:shadow-lg"
@@ -966,10 +797,13 @@ const FeedbackForm = (props) => {
                 !validateCriteria() ||
                 !validateTargetAttainment() ||
                 selectedProgram === 0 ||
-                !isCourseCodeValid
+                !isCourseCodeValid ||
+                isLoading
               }
             >
-              <span className="relative z-10">Submit Form</span>
+              <span className="relative z-10">
+                {isLoading ? "Submitting..." : "Submit Form"}
+              </span>
               {isWeightageValid &&
               validateCriteria() &&
               validateTargetAttainment() &&
@@ -1098,8 +932,8 @@ const FeedbackForm = (props) => {
               options={programOptions}
               value={selectedProgram}
               onChange={(value) => {
-                setChange(true);
                 setSelectedProgram(value);
+                setChange(true);
               }}
             />
           </div>
@@ -1120,7 +954,10 @@ const FeedbackForm = (props) => {
             </div>
             <CourseCodeInput
               value={coursecode}
-              onChange={(value) => setCourseCode(value)}
+              onChange={(value) => {
+                setCourseCode(value);
+                setChange(true);
+              }}
             />
           </div>
 
@@ -1139,8 +976,8 @@ const FeedbackForm = (props) => {
               placeholder="Enter course title here..."
               value={coursetitle}
               onChange={(e) => {
-                setChange(true);
                 setCourseTitle(e.target.value);
+                setChange(true);
               }}
               rows="2"
             />
@@ -1161,8 +998,8 @@ const FeedbackForm = (props) => {
               placeholder="Enter module/semester here..."
               value={module}
               onChange={(e) => {
-                setChange(true);
                 setModule(e.target.value);
+                setChange(true);
               }}
               rows="2"
             />
@@ -1181,8 +1018,8 @@ const FeedbackForm = (props) => {
               placeholder="Enter session here..."
               value={session}
               onChange={(e) => {
-                setChange(true);
                 setSession(e.target.value);
+                setChange(true);
               }}
               rows="2"
             />
@@ -1222,13 +1059,13 @@ const FeedbackForm = (props) => {
             key={`copo-${selectedProgram}`}
           />
         </div>
+        
         <CourseSyllabus
           onSave={handleCourseSyllabusChange}
           initialData={courseSyllabus}
         />
 
         {/* Internal Assessments */}
-        
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
@@ -1243,30 +1080,32 @@ const FeedbackForm = (props) => {
               <MBAWeeklyTimetable
                 initialData={weeklyTimetableData}
                 onChange={(newTimetable) => {
-                  setChange(true);
                   setWeeklyTimetableData(newTimetable);
+                  setChange(true);
                 }}
               />
             ) : (
               <WeeklyTimetable
                 initialData={weeklyTimetableData}
                 onChange={(newTimetable) => {
-                  setChange(true);
                   setWeeklyTimetableData(newTimetable);
+                  setChange(true);
                 }}
               />
             )}
           </div>
         </div>
         
-
         {/* Excel to JSON to extract student data */}
-        <ExcelToJson onSave={handleStudentDataSave} initialData={studentData} />
-
+        <ExcelToJson 
+          onSave={handleStudentDataSave} 
+          initialData={props.originalStudentData} 
+          selectedProgram={selectedProgram}
+        />
 
         {/* CO Assessment weightage Section */}
         <div
-          className={`bg-white  rounded-xl shadow-sm border ${
+          className={`bg-white rounded-xl shadow-sm border ${
             !isWeightageValid ? "border-red-600" : "border-gray-100"
           } mt-8`}
         >
@@ -1276,16 +1115,14 @@ const FeedbackForm = (props) => {
             initialWeightages={coWeightages}
             onChange={(weightages) => {
               setCoWeightages(weightages);
+              setChange(true);
             }}
             onValidationChange={(isValid) => setIsWeightageValid(isValid)}
           />
         </div>
 
-        {/*max min average*/}
-
+        {/* Student Data Analysis */}
         <StudentDataAnalysis studentData={studentData}/>
-
-
 
         {/* CO Attainment Criteria Section with error border if invalid */}
         <div
@@ -1300,15 +1137,13 @@ const FeedbackForm = (props) => {
           />
         </div>
 
-
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="section-number bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
               13
             </div>
             <h2 className="section-title text-xl font-semibold">
-            Low / Medium / Advance Learner Identification on the basis of Mid-Semester/Internal Assessments
-
+              Low / Medium / Advance Learner Identification on the basis of Mid-Semester/Internal Assessments
             </h2>
           </div>
           <AssessmentSelection
@@ -1316,19 +1151,16 @@ const FeedbackForm = (props) => {
             selectedAssessments={selectedAssessments}
             onChange={handleAssessmentSelectionChange}
           />
-           <StudentCOAchievement
-          selectedAssessments={selectedAssessments}
-          coWeightages={coWeightages}
-          studentData={studentData}
-          coAttainmentCriteria={coAttainmentCriteria}
-          learnerCategories={par_sem_slowLearner}
-          onSave={handlePar_sem_slowLearner}
-        />
+          <StudentCOAchievement
+            selectedAssessments={selectedAssessments}
+            coWeightages={coWeightages}
+            studentData={studentData}
+            coAttainmentCriteria={coAttainmentCriteria}
+            learnerCategories={par_sem_slowLearner}
+            onSave={handlePar_sem_slowLearner}
+          />
         </div>
         
-        
-
-      
         <div
           className={`bg-white rounded-xl shadow-sm border ${
             !validateTargetAttainment() ? "border-red-600" : "border-gray-100"
@@ -1340,8 +1172,6 @@ const FeedbackForm = (props) => {
             onSave={handleTargetAttainmentSave}
           />
         </div>
-
-
 
         <COAttainmentAnalysis
           coWeightages={coWeightages}
@@ -1357,7 +1187,7 @@ const FeedbackForm = (props) => {
               11
             </div>
             <h2 className="section-title text-xl font-semibold">
-            Details of Internal Assessments, Weightages, Due dates and mapping to CO
+              Details of Internal Assessments, Weightages, Due dates and mapping to CO
             </h2>
           </div>
           <InternalAssessmentTable
@@ -1365,13 +1195,14 @@ const FeedbackForm = (props) => {
             initialData={internalAssessmentData}
           />
         </div>
+        
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
               12
             </div>
             <h2 className="text-xl font-semibold text-gray-800">
-            Mid-Semester/Internal Assessment Question papers with sample solutions
+              Mid-Semester/Internal Assessment Question papers with sample solutions
             </h2>
           </div>
           <PDFUploader
@@ -1391,17 +1222,21 @@ const FeedbackForm = (props) => {
           initialData={reflectionData}
           onSave={handleReflectionChange}
         />
+        
         <ActionsForWeakStudents
           label="Actions Taken for Low Performers"
           initialData={actionsForWeakStudentsData}
           onSave={handleWeakStudentsChange}
         />
+        
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-[#FFB255] text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold shadow-sm">
               16
             </div>
-            <h2 className="text-xl font-semibold text-gray-800">Endsem Question Paper with Sample Solutions</h2>
+            <h2 className="text-xl font-semibold text-gray-800">
+              Endsem Question Paper with Sample Solutions
+            </h2>
           </div>
           <PDFUploader
             num={num}
@@ -1414,6 +1249,7 @@ const FeedbackForm = (props) => {
             }}
           />
         </div>
+        
         <AdvanceAndWeakStudentIdentification
           coWeightages={coWeightages}
           studentData={studentData}
@@ -1430,16 +1266,10 @@ const FeedbackForm = (props) => {
         <FacultyCourseReview
           initialData={facultyCourseReview}
           onSave={(data) => {
-            setChange(true);
             setFacultyCourseReview(data);
+            setChange(true);
           }}
         />
-
-
-
-
-        
-        
 
         {/* Learning Resources Section */}
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
@@ -1468,10 +1298,8 @@ const FeedbackForm = (props) => {
             />
           </div>
         </div>
-        
-
-       
       </div>
+      
       {isLoading && <LoadingSpinner />}
     </div>
   );
